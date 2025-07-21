@@ -287,16 +287,23 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {featuredClinics.map((clinic, index) => (
-              <div 
-                key={clinic.id} 
-                className="animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <ClinicCard {...clinic} />
-              </div>
-            ))}
+          {/* Horizontal Scrollable Clinics */}
+          <div className="relative">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
+              {featuredClinics.map((clinic, index) => (
+                <div 
+                  key={clinic.id} 
+                  className="flex-none w-80 md:w-96 snap-start animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <ClinicCard {...clinic} />
+                </div>
+              ))}
+            </div>
+            
+            {/* Scroll indicators */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-8 h-full bg-gradient-to-r from-background to-transparent pointer-events-none"></div>
+            <div className="absolute top-1/2 -translate-y-1/2 right-0 w-8 h-full bg-gradient-to-l from-background to-transparent pointer-events-none"></div>
           </div>
 
           <div className="text-center mt-12 md:hidden">
