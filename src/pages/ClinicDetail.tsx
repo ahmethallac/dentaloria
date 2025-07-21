@@ -99,7 +99,7 @@ const ClinicDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <Navbar />
       
       {/* Breadcrumb */}
@@ -266,80 +266,66 @@ const ClinicDetail = () => {
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">Randevu Talebinde Bulun</h2>
-            <p className="text-muted-foreground">Bilgilerinizi bırakın, sizinle en kısa sürede iletişime geçelim.</p>
-          </div>
-          
-          <Card>
-            <CardContent className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Ad Soyad *</label>
-                    <Input 
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Telefon *</label>
-                    <Input 
-                      type="tel"
-                      value={contactForm.phone}
-                      onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium mb-2 block">E-posta</label>
-                  <Input 
-                    type="email"
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                  />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium mb-2 block">İlgilendiğiniz Tedavi</label>
-                  <Input 
-                    value={contactForm.treatment}
-                    onChange={(e) => setContactForm({...contactForm, treatment: e.target.value})}
-                    placeholder="Örn: İmplant tedavisi"
-                  />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Mesajınız</label>
-                  <Textarea 
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    placeholder="Tedavi hakkında sorularınız varsa buraya yazabilirsiniz..."
-                    rows={4}
-                  />
-                </div>
-                
-                <Button type="submit" size="lg" className="w-full bg-gradient-primary hover:opacity-90">
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Randevu Talebinde Bulun
-                </Button>
-                
-                <p className="text-xs text-muted-foreground text-center">
-                  Başvurunuzu göndererek <a href="#" className="text-primary hover:underline">Gizlilik Politikası</a>'nı kabul etmiş olursunuz.
-                </p>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       <Footer />
+
+      {/* Fixed Contact Form */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 shadow-strong">
+        <div className="container mx-auto px-4 py-4">
+          <form onSubmit={handleSubmit} className="flex items-center gap-3">
+            <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Input 
+                placeholder="Ad Soyad *"
+                value={contactForm.name}
+                onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                required
+                className="bg-background/80"
+              />
+              <Input 
+                placeholder="Telefon *"
+                type="tel"
+                value={contactForm.phone}
+                onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
+                required
+                className="bg-background/80"
+              />
+              <Input 
+                placeholder="E-posta"
+                type="email"
+                value={contactForm.email}
+                onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                className="bg-background/80 hidden md:block"
+              />
+              <Input 
+                placeholder="Tedavi türü"
+                value={contactForm.treatment}
+                onChange={(e) => setContactForm({...contactForm, treatment: e.target.value})}
+                className="bg-background/80 hidden md:block"
+              />
+            </div>
+            <Button type="submit" className="bg-gradient-primary hover:opacity-90 px-6 whitespace-nowrap">
+              <Calendar className="w-4 h-4 mr-2" />
+              Randevu Al
+            </Button>
+          </form>
+          
+          {/* Mobile additional fields toggle */}
+          <div className="md:hidden mt-3 space-y-2">
+            <Input 
+              placeholder="E-posta"
+              type="email"
+              value={contactForm.email}
+              onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+              className="bg-background/80"
+            />
+            <Input 
+              placeholder="Tedavi türü"
+              value={contactForm.treatment}
+              onChange={(e) => setContactForm({...contactForm, treatment: e.target.value})}
+              className="bg-background/80"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
