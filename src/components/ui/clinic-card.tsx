@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -21,6 +22,7 @@ interface ClinicCardProps {
 }
 
 export const ClinicCard = ({
+  id,
   name,
   location,
   city,
@@ -119,12 +121,14 @@ export const ClinicCard = ({
           <Phone className="w-4 h-4 mr-2" />
           İletişim
         </Button>
-        <Button 
-          size="sm" 
-          className="flex-1 bg-gradient-primary hover:opacity-90 transition-all duration-300"
-        >
-          Detayları Gör
-        </Button>
+        <Link to={`/clinic/${id}`} className="flex-1">
+          <Button 
+            size="sm" 
+            className="w-full bg-gradient-primary hover:opacity-90 transition-all duration-300"
+          >
+            Detayları Gör
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

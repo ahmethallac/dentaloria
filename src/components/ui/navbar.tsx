@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Menu, X, Search, User, Heart, Phone } from "lucide-react";
@@ -11,13 +12,13 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png" 
               alt="Dentaloria" 
               className="h-8"
             />
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
