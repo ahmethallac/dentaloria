@@ -151,9 +151,22 @@ const Index = () => {
                     </Select>
                   </div>
                   
-                  <Button size="lg" className="w-full h-12 bg-gradient-primary hover:opacity-90 text-lg font-semibold">
-                    🔍 Mükemmel Gülüşü Bul
-                  </Button>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <Button size="lg" className="h-12 bg-gradient-primary hover:opacity-90 text-lg font-semibold">
+                      <Search className="w-5 h-5 mr-2" />
+                      🔍 Mükemmel Gülüşü Bul
+                    </Button>
+                    
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="h-12 border-primary/30 hover:bg-primary/5 text-lg font-semibold"
+                      onClick={() => window.location.href = '/ai-xray-analysis'}
+                    >
+                      <Zap className="w-5 h-5 mr-2" />
+                      🧠 AI X-ray Analiz
+                    </Button>
+                  </div>
                 </div>
               </div>
 
