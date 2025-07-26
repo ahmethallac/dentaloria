@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, Zap, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
+import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
 
 // Mock data for clinics
 const featuredClinics = [
@@ -186,22 +186,13 @@ const Index = () => {
                 </Select>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="w-full">
                 <Button 
                   onClick={handleSearch}
-                  className="h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <Search className="h-5 w-5 mr-2" />
                   Search Clinics
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="h-12 border-primary/30 hover:bg-primary/5 font-semibold rounded-xl"
-                  onClick={() => navigate('/ai-xray-analysis')}
-                >
-                  <Zap className="h-5 w-5 mr-2" />
-                  AI X-ray Analysis
                 </Button>
               </div>
             </div>
