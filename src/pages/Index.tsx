@@ -99,7 +99,7 @@ const POPULAR_CITIES = [
   },
   {
     name: "Izmir",
-    image: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=800&q=80", 
+    image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png", 
     description: "Shining star of the Aegean"
   }
 ];
