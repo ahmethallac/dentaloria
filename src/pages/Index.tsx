@@ -13,15 +13,15 @@ import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, Zap, User
 const featuredClinics = [
   {
     id: "1",
-    name: "Smile Center İstanbul",
+    name: "Smile Center Istanbul",
     location: "Levent",
-    city: "İstanbul",
-    country: "Türkiye",
+    city: "Istanbul",
+    country: "Turkey",
     rating: 4.9,
     reviewCount: 1247,
     image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=300&fit=crop",
-    specialties: ["İmplant", "Ortodonti", "Estetik Diş"],
-    priceRange: "₺₺₺",
+    specialties: ["Implant", "Orthodontics", "Cosmetic Dentistry"],
+    priceRange: "$$$",
     experience: 15,
     patientCount: 5000,
     isVerified: true
@@ -31,12 +31,12 @@ const featuredClinics = [
     name: "Dental Plus Antalya",
     location: "Lara",
     city: "Antalya", 
-    country: "Türkiye",
+    country: "Turkey",
     rating: 4.8,
     reviewCount: 892,
     image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop",
-    specialties: ["Vener", "Beyazlatma", "İmplant"],
-    priceRange: "₺₺",
+    specialties: ["Veneers", "Whitening", "Implant"],
+    priceRange: "$$",
     experience: 12,
     patientCount: 3500,
     isVerified: true
@@ -46,12 +46,12 @@ const featuredClinics = [
     name: "Elite Dental Ankara",
     location: "Çankaya",
     city: "Ankara",
-    country: "Türkiye",
+    country: "Turkey",
     rating: 4.6,
     reviewCount: 523,
     image: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop",
-    specialties: ["Ortodonti", "Çocuk Diş", "Cerrahi"],
-    priceRange: "₺₺",
+    specialties: ["Orthodontics", "Pediatric Dentistry", "Surgery"],
+    priceRange: "$$",
     experience: 10,
     patientCount: 2800,
     isVerified: true
@@ -74,32 +74,32 @@ const TREATMENTS = [
   "Bone Graft"
 ];
 
-const COUNTRIES = ["Türkiye", "Amerika", "İngiltere"];
+const COUNTRIES = ["Turkey", "USA", "UK"];
 
 const HOMEPAGE_TREATMENTS = [
-  { name: "All-on-6", icon: Smile, description: "Tam protez çözümü" },
-  { name: "All-on-4", icon: UserCheck, description: "Ekonomik protez seçeneği" },
-  { name: "Hollywood Smile", icon: Star, description: "Mükemmel gülümseme" },
-  { name: "Implants", icon: Activity, description: "Kalıcı diş çözümü" },
-  { name: "Crowns", icon: Crown, description: "Diş kaplama" },
-  { name: "Root Canal", icon: Stethoscope, description: "Kanal tedavisi" }
+  { name: "All-on-6", icon: Smile, description: "Complete denture solution" },
+  { name: "All-on-4", icon: UserCheck, description: "Affordable denture option" },
+  { name: "Hollywood Smile", icon: Star, description: "Perfect smile makeover" },
+  { name: "Implants", icon: Activity, description: "Permanent tooth solution" },
+  { name: "Crowns", icon: Crown, description: "Tooth crowns" },
+  { name: "Root Canal", icon: Stethoscope, description: "Root canal treatment" }
 ];
 
 const POPULAR_CITIES = [
   {
-    name: "İstanbul",
+    name: "Istanbul",
     image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
-    description: "Türkiye'nin en büyük şehri"
+    description: "Turkey's largest city"
   },
   {
     name: "Antalya", 
     image: "https://images.unsplash.com/photo-1580058572462-c8dd4ea51de4?w=800&q=80",
-    description: "Akdeniz'in incisi"
+    description: "Pearl of the Mediterranean"
   },
   {
-    name: "İzmir",
+    name: "Izmir",
     image: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=800&q=80", 
-    description: "Ege'nin parlayan yıldızı"
+    description: "Shining star of the Aegean"
   }
 ];
 
@@ -147,13 +147,13 @@ const Index = () => {
         <div className="relative z-10 container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
-              En İyi Dental Kliniği
+              Find the Best
               <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-                Bulun
+                Dental Clinic
               </span>
             </h1>
             <p className="text-xl text-white/90 mb-12 animate-fade-in">
-              Dünya standartlarında dental tedavi için doğru adres
+              World-class dental treatment at your fingertips
             </p>
             
             {/* Search Bar */}
@@ -161,7 +161,7 @@ const Index = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Tedavi türü seçin" />
+                    <SelectValue placeholder="Select treatment type" />
                   </SelectTrigger>
                   <SelectContent>
                     {TREATMENTS.map((treatment) => (
@@ -174,7 +174,7 @@ const Index = () => {
                 
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Ülke seçin" />
+                    <SelectValue placeholder="Select country" />
                   </SelectTrigger>
                   <SelectContent>
                     {COUNTRIES.map((country) => (
@@ -192,7 +192,7 @@ const Index = () => {
                   className="h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <Search className="h-5 w-5 mr-2" />
-                  Klinik Ara
+                  Search Clinics
                 </Button>
                 
                 <Button 
@@ -201,7 +201,7 @@ const Index = () => {
                   onClick={() => navigate('/ai-xray-analysis')}
                 >
                   <Zap className="h-5 w-5 mr-2" />
-                  AI X-ray Analiz
+                  AI X-ray Analysis
                 </Button>
               </div>
             </div>
@@ -210,15 +210,15 @@ const Index = () => {
             <div className="grid grid-cols-3 gap-8 mt-16 text-white">
               <div className="text-center">
                 <div className="text-3xl font-bold mb-2">500+</div>
-                <div className="text-white/80">Doğrulanmış Klinik</div>
+                <div className="text-white/80">Verified Clinics</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold mb-2">10,000+</div>
-                <div className="text-white/80">Mutlu Hasta</div>
+                <div className="text-white/80">Happy Patients</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold mb-2">4.8/5</div>
-                <div className="text-white/80">Ortalama Puan</div>
+                <div className="text-white/80">Average Rating</div>
               </div>
             </div>
           </div>
@@ -229,9 +229,9 @@ const Index = () => {
       <section className="py-16 bg-gradient-to-br from-medical-light/50 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Popüler Klinikler</h2>
+            <h2 className="text-3xl font-bold mb-4">Popular Clinics</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              En yüksek puanlı ve güvenilir dental kliniklerini keşfedin
+              Discover the highest-rated and most trusted dental clinics
             </p>
           </div>
           
@@ -262,9 +262,9 @@ const Index = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Popüler Şehirler</h2>
+            <h2 className="text-3xl font-bold mb-4">Popular Cities</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              En çok tercih edilen destinasyonları keşfedin
+              Explore the most preferred destinations
             </p>
           </div>
           
@@ -298,9 +298,9 @@ const Index = () => {
       <section className="py-16 bg-gradient-to-br from-medical-light/30 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Nasıl Çalışır?</h2>
+            <h2 className="text-3xl font-bold mb-4">How It Works?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              3 basit adımda en uygun kliniği bulun
+              Find the perfect clinic in 3 simple steps
             </p>
           </div>
           
@@ -309,8 +309,8 @@ const Index = () => {
               <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Search className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">1. Karşılaştır</h3>
-              <p className="text-muted-foreground">Klinikleri karşılaştırın ve en uygun seçeneği bulun</p>
+              <h3 className="text-xl font-semibold mb-2">1. Compare</h3>
+              <p className="text-muted-foreground">Compare clinics and find the best option for you</p>
             </div>
             
             <div className="text-center group relative">
@@ -318,8 +318,8 @@ const Index = () => {
               <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <UserCheck className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">2. En Uygun Kliniği Bul</h3>
-              <p className="text-muted-foreground">İhtiyaçlarınıza en uygun kliniği seçin</p>
+              <h3 className="text-xl font-semibold mb-2">2. Find Perfect Clinic</h3>
+              <p className="text-muted-foreground">Choose the clinic that best suits your needs</p>
               <ArrowRight className="hidden md:block absolute -right-8 top-8 h-6 w-6 text-muted-foreground" />
             </div>
             
@@ -327,8 +327,8 @@ const Index = () => {
               <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <CheckCircle className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">3. Başvur</h3>
-              <p className="text-muted-foreground">Kolayca randevu alın ve tedavinize başlayın</p>
+              <h3 className="text-xl font-semibold mb-2">3. Apply</h3>
+              <p className="text-muted-foreground">Easily book an appointment and start your treatment</p>
             </div>
           </div>
         </div>
@@ -338,9 +338,9 @@ const Index = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Tedavi Seçenekleri</h2>
+            <h2 className="text-3xl font-bold mb-4">Treatment Options</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              En popüler dental tedavilerini keşfedin
+              Discover the most popular dental treatments
             </p>
           </div>
           
@@ -370,10 +370,10 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Mükemmel Gülüşünüz İçin Hemen Başlayın!
+              Start Your Perfect Smile Journey Today!
             </h2>
             <p className="text-xl mb-8 text-white/90">
-              Binlerce hasta bizim platformumuz sayesinde hayalindeki gülümsemeye kavuştu. Sıra sizde!
+              Thousands of patients have achieved their dream smile through our platform. It's your turn!
             </p>
             <Button 
               size="lg" 
@@ -381,7 +381,7 @@ const Index = () => {
               className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3"
               onClick={() => navigate('/clinic-listing')}
             >
-              Hemen Başla
+              Get Started
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </div>

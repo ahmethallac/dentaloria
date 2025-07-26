@@ -26,19 +26,19 @@ const TREATMENTS = [
 
 // Countries and cities
 const LOCATIONS = {
-  "Türkiye": ["İstanbul", "Antalya", "İzmir"],
-  "Amerika": ["New York", "Los Angeles"],
-  "İngiltere": ["London", "Birmingham"]
+  "Turkey": ["Istanbul", "Antalya", "Izmir"],
+  "USA": ["New York", "Los Angeles"],
+  "UK": ["London", "Birmingham"]
 };
 
 // Mock clinic data
 const mockClinics = [
   {
     id: "1",
-    name: "DentCare İstanbul",
-    location: "İstanbul, Türkiye",
-    country: "Türkiye",
-    city: "İstanbul",
+    name: "DentCare Istanbul",
+    location: "Istanbul, Turkey",
+    country: "Turkey",
+    city: "Istanbul",
     rating: 4.8,
     reviewCount: 324,
     image: "/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png",
@@ -51,8 +51,8 @@ const mockClinics = [
   {
     id: "2", 
     name: "Smile Center Antalya",
-    location: "Antalya, Türkiye",
-    country: "Türkiye",
+    location: "Antalya, Turkey",
+    country: "Turkey",
     city: "Antalya",
     rating: 4.9,
     reviewCount: 156,
@@ -113,7 +113,7 @@ export default function ClinicListing() {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Filter className="h-5 w-5 text-primary" />
-                    Filtreler
+                    Filters
                   </h3>
                   <Button 
                     variant="ghost" 
@@ -121,19 +121,19 @@ export default function ClinicListing() {
                     onClick={clearFilters}
                     className="text-muted-foreground hover:text-primary"
                   >
-                    Temizle
+                    Clear
                   </Button>
                 </div>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Tedavi</label>
+                    <label className="text-sm font-medium mb-2 block">Treatment</label>
                     <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Tedavi seçin" />
+                        <SelectValue placeholder="Select treatment" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Tümü</SelectItem>
+                        <SelectItem value="">All</SelectItem>
                         {TREATMENTS.map((treatment) => (
                           <SelectItem key={treatment} value={treatment}>
                             {treatment}
@@ -144,16 +144,16 @@ export default function ClinicListing() {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Ülke</label>
+                    <label className="text-sm font-medium mb-2 block">Country</label>
                     <Select value={selectedCountry} onValueChange={(value) => {
                       setSelectedCountry(value);
                       setSelectedCity(""); // Reset city when country changes
                     }}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Ülke seçin" />
+                        <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Tümü</SelectItem>
+                        <SelectItem value="">All</SelectItem>
                         {Object.keys(LOCATIONS).map((country) => (
                           <SelectItem key={country} value={country}>
                             {country}
@@ -164,17 +164,17 @@ export default function ClinicListing() {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Şehir</label>
+                    <label className="text-sm font-medium mb-2 block">City</label>
                     <Select 
                       value={selectedCity} 
                       onValueChange={setSelectedCity}
                       disabled={!selectedCountry}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Şehir seçin" />
+                        <SelectValue placeholder="Select city" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Tümü</SelectItem>
+                        <SelectItem value="">All</SelectItem>
                         {selectedCountry && LOCATIONS[selectedCountry as keyof typeof LOCATIONS]?.map((city) => (
                           <SelectItem key={city} value={city}>
                             {city}
@@ -191,9 +191,9 @@ export default function ClinicListing() {
           {/* Results */}
           <div className="lg:w-3/4">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold mb-2">Klinikler</h1>
+              <h1 className="text-3xl font-bold mb-2">Clinics</h1>
               <p className="text-muted-foreground">
-                {filteredClinics.length} klinik bulundu
+                {filteredClinics.length} clinics found
               </p>
             </div>
             
@@ -209,7 +209,7 @@ export default function ClinicListing() {
                       />
                       {clinic.isVerified && (
                         <Badge className="absolute top-3 left-3 bg-trust-indicator text-white">
-                          Doğrulanmış
+                          Verified
                         </Badge>
                       )}
                     </div>
@@ -226,15 +226,15 @@ export default function ClinicListing() {
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center">
                                 <Star className="h-4 w-4 mr-1 text-yellow-500 fill-current" />
-                                {clinic.rating} ({clinic.reviewCount} değerlendirme)
+                                {clinic.rating} ({clinic.reviewCount} reviews)
                               </div>
                               <div className="flex items-center">
                                 <Calendar className="h-4 w-4 mr-1" />
-                                {clinic.experience} yıl deneyim
+                                {clinic.experience} years experience
                               </div>
                               <div className="flex items-center">
                                 <Users className="h-4 w-4 mr-1" />
-                                {clinic.patientCount}+ hasta
+                                {clinic.patientCount}+ patients
                               </div>
                             </div>
                           </div>
@@ -244,7 +244,7 @@ export default function ClinicListing() {
                         </div>
                         
                         <div className="mb-4">
-                          <p className="text-sm text-muted-foreground mb-2">Uzmanık Alanları:</p>
+                          <p className="text-sm text-muted-foreground mb-2">Specialties:</p>
                           <div className="flex flex-wrap gap-2">
                             {clinic.treatments.map((treatment) => (
                               <Badge key={treatment} variant="secondary">
@@ -256,10 +256,10 @@ export default function ClinicListing() {
                         
                         <div className="flex gap-3 mt-auto">
                           <Button className="flex-1">
-                            İletişim
+                            Contact
                           </Button>
                           <Button variant="outline" className="flex-1">
-                            Detayları Görüntüle
+                            View Details
                           </Button>
                         </div>
                       </div>
@@ -271,12 +271,12 @@ export default function ClinicListing() {
             
             {filteredClinics.length === 0 && (
               <Card className="p-12 text-center">
-                <h3 className="text-xl font-semibold mb-2">Klinik bulunamadı</h3>
+                <h3 className="text-xl font-semibold mb-2">No clinics found</h3>
                 <p className="text-muted-foreground mb-4">
-                  Seçtiğiniz kriterlere uygun klinik bulunmuyor. Lütfen filtrelerinizi değiştirin.
+                  No clinics match your selected criteria. Please adjust your filters.
                 </p>
                 <Button onClick={clearFilters}>
-                  Filtreleri Temizle
+                  Clear Filters
                 </Button>
               </Card>
             )}
