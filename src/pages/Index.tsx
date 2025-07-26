@@ -1,30 +1,13 @@
-import { HeroSection } from "@/components/ui/hero-section";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { ClinicCard } from "@/components/ui/clinic-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Star, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Award, 
-  Heart, 
-  TrendingUp,
-  ArrowRight,
-  CheckCircle,
-  Search,
-  Shield,
-  Zap,
-  Target,
-  Quote,
-  Play,
-  Filter
-} from "lucide-react";
+import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, Zap, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
 
 // Mock data for clinics
 const featuredClinics = [
@@ -60,21 +43,6 @@ const featuredClinics = [
   },
   {
     id: "3",
-    name: "Cyprus Dental Clinic",
-    location: "Girne",
-    city: "Girne",
-    country: "Kıbrıs",
-    rating: 4.7,
-    reviewCount: 634,
-    image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=300&fit=crop",
-    specialties: ["All-on-4", "İmplant", "Protez"],
-    priceRange: "₺₺",
-    experience: 18,
-    patientCount: 4200,
-    isVerified: true
-  },
-  {
-    id: "4",
     name: "Elite Dental Ankara",
     location: "Çankaya",
     city: "Ankara",
@@ -90,305 +58,306 @@ const featuredClinics = [
   }
 ];
 
+// Treatment and location data
+const TREATMENTS = [
+  "Full Mouth All-on-4",
+  "Full Mouth All-on-6", 
+  "Hollywood Smile",
+  "Zirconium Crowns",
+  "Porcelain Crowns",
+  "Lamina Coatings",
+  "E-max Skins",
+  "Implant",
+  "Root Canal",
+  "Open Sinus Lift",
+  "Closed Sinus Lift",
+  "Bone Graft"
+];
+
+const COUNTRIES = ["Türkiye", "Amerika", "İngiltere"];
+
+const HOMEPAGE_TREATMENTS = [
+  { name: "All-on-6", icon: Smile, description: "Tam protez çözümü" },
+  { name: "All-on-4", icon: UserCheck, description: "Ekonomik protez seçeneği" },
+  { name: "Hollywood Smile", icon: Star, description: "Mükemmel gülümseme" },
+  { name: "Implants", icon: Activity, description: "Kalıcı diş çözümü" },
+  { name: "Crowns", icon: Crown, description: "Diş kaplama" },
+  { name: "Root Canal", icon: Stethoscope, description: "Kanal tedavisi" }
+];
+
+const POPULAR_CITIES = [
+  {
+    name: "İstanbul",
+    image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
+    description: "Türkiye'nin en büyük şehri"
+  },
+  {
+    name: "Antalya", 
+    image: "https://images.unsplash.com/photo-1580058572462-c8dd4ea51de4?w=800&q=80",
+    description: "Akdeniz'in incisi"
+  },
+  {
+    name: "İzmir",
+    image: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=800&q=80", 
+    description: "Ege'nin parlayan yıldızı"
+  }
+];
+
 const Index = () => {
+  const navigate = useNavigate();
+  const [selectedTreatment, setSelectedTreatment] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (selectedTreatment) params.set('treatment', selectedTreatment);
+    if (selectedCountry) params.set('country', selectedCountry);
+    navigate(`/clinic-listing?${params.toString()}`);
+  };
+
+  const handleCityClick = (cityName: string) => {
+    navigate(`/clinic-listing?city=${cityName}`);
+  };
+
+  const handleTreatmentClick = (treatmentName: string) => {
+    navigate(`/clinic-listing?treatment=${treatmentName}`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* New Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary-light/5"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--primary-light)/0.1),transparent_50%)]"></div>
+      {/* Hero Section with Video Background */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-dentist-working-on-a-patient-32808-large.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
+        </div>
         
-        <div className="container mx-auto px-4 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <Badge variant="outline" className="border-primary/30 text-primary px-4 py-2">
-                  🦷 Türkiye'nin #1 Diş Kliniği Platformu
-                </Badge>
-                
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                  <span className="text-foreground">Perfect</span>
-                  <br />
-                  <span className="bg-gradient-primary bg-clip-text text-transparent">Smile</span>
-                  <br />
-                  <span className="text-foreground">Guaranteed</span>
-                </h1>
-                
-                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-lg">
-                  Binlerce doğrulanmış hasta yorumu ile en iyi diş kliniklerini karşılaştır, 
-                  güvenle randevu al.
-                </p>
-              </div>
-
-              {/* Quick Search */}
-              <div className="bg-card/80 backdrop-blur-sm p-6 rounded-2xl border border-border/50 shadow-soft">
-                <div className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input 
-                        placeholder="Ne arıyorsunuz?"
-                        className="pl-10 h-12 bg-background/70"
-                      />
-                    </div>
-                    
-                    <Select>
-                      <SelectTrigger className="h-12 bg-background/70">
-                        <SelectValue placeholder="📍 Konum Seçin" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="istanbul">🏙️ İstanbul</SelectItem>
-                        <SelectItem value="ankara">🏛️ Ankara</SelectItem>
-                        <SelectItem value="izmir">🌊 İzmir</SelectItem>
-                        <SelectItem value="antalya">🏖️ Antalya</SelectItem>
-                        <SelectItem value="cyprus">🏝️ Kıbrıs</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <Button size="lg" className="h-12 bg-gradient-primary hover:opacity-90 text-lg font-semibold">
-                      <Search className="w-5 h-5 mr-2" />
-                      🔍 Mükemmel Gülüşü Bul
-                    </Button>
-                    
-                    <Button 
-                      size="lg" 
-                      variant="outline" 
-                      className="h-12 border-primary/30 hover:bg-primary/5 text-lg font-semibold"
-                      onClick={() => window.location.href = '/ai-xray-analysis'}
-                    >
-                      <Zap className="w-5 h-5 mr-2" />
-                      🧠 AI X-ray Analiz
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="flex items-center gap-8">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {[1,2,3,4].map((i) => (
-                      <div key={i} className="w-10 h-10 rounded-full bg-gradient-primary border-2 border-background flex items-center justify-center text-white text-sm font-bold">
-                        {i}K
-                      </div>
+        {/* Hero Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
+              En İyi Dental Kliniği
+              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+                Bulun
+              </span>
+            </h1>
+            <p className="text-xl text-white/90 mb-12 animate-fade-in">
+              Dünya standartlarında dental tedavi için doğru adres
+            </p>
+            
+            {/* Search Bar */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto animate-scale-in">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Tedavi türü seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TREATMENTS.map((treatment) => (
+                      <SelectItem key={treatment} value={treatment}>
+                        {treatment}
+                      </SelectItem>
                     ))}
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-semibold">50,000+</div>
-                    <div className="text-muted-foreground">Mutlu Hasta</div>
-                  </div>
-                </div>
+                  </SelectContent>
+                </Select>
                 
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-trust-gold text-trust-gold" />
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Ülke seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
                     ))}
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-semibold">4.8/5</div>
-                    <div className="text-muted-foreground">Trustpilot</div>
-                  </div>
-                </div>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button 
+                  onClick={handleSearch}
+                  className="h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Search className="h-5 w-5 mr-2" />
+                  Klinik Ara
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="h-12 border-primary/30 hover:bg-primary/5 font-semibold rounded-xl"
+                  onClick={() => navigate('/ai-xray-analysis')}
+                >
+                  <Zap className="h-5 w-5 mr-2" />
+                  AI X-ray Analiz
+                </Button>
               </div>
             </div>
-
-            {/* Right Content - Video/Image */}
-            <div className="relative">
-              <div className="relative aspect-square max-w-lg mx-auto">
-                {/* Main Circle */}
-                <div className="absolute inset-0 rounded-full bg-gradient-primary/10 animate-pulse"></div>
-                <div className="absolute inset-4 rounded-full bg-gradient-primary/20"></div>
-                <div className="absolute inset-8 rounded-full bg-gradient-primary/30"></div>
-                
-                {/* Center Content */}
-                <div className="absolute inset-16 rounded-full bg-background border-4 border-primary/20 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto cursor-pointer hover:scale-110 transition-transform">
-                      <Play className="w-8 h-8 text-white ml-1" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold">2 DK</div>
-                      <div className="text-sm text-muted-foreground">Nasıl Çalışır?</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Elements */}
-                <div className="absolute top-8 right-8 bg-card p-3 rounded-xl shadow-soft border animate-float">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 fill-trust-gold text-trust-gold" />
-                    <span className="text-sm font-semibold">4.9</span>
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-8 left-8 bg-card p-3 rounded-xl shadow-soft border animate-float" style={{ animationDelay: '1s' }}>
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-medical-green" />
-                    <span className="text-sm font-semibold">Güvenli</span>
-                  </div>
-                </div>
+            
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-3 gap-8 mt-16 text-white">
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">500+</div>
+                <div className="text-white/80">Doğrulanmış Klinik</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">10,000+</div>
+                <div className="text-white/80">Mutlu Hasta</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">4.8/5</div>
+                <div className="text-white/80">Ortalama Puan</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Popular Treatments */}
-      <section className="py-20 bg-muted/20">
+      {/* Featured Clinics */}
+      <section className="py-16 bg-gradient-to-br from-medical-light/50 to-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Popüler <span className="bg-gradient-primary bg-clip-text text-transparent">Tedaviler</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              En çok aranan diş tedavileri ve ortalama fiyat aralıkları
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Popüler Klinikler</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              En yüksek puanlı ve güvenilir dental kliniklerini keşfedin
             </p>
           </div>
+          
+          {/* Horizontal scrolling clinic cards */}
+          <div className="relative">
+            <div className="absolute left-0 top-0 w-8 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 w-8 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+            
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
+              {featuredClinics.map((clinic, index) => (
+                <div 
+                  key={clinic.id} 
+                  className="flex-none w-80 md:w-96 snap-start animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <ClinicCard
+                    {...clinic}
+                    onClick={() => console.log(`Clicked clinic ${clinic.id}`)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "İmplant Tedavisi", price: "₺2.500+", icon: "🦷", color: "from-blue-500 to-blue-600" },
-              { name: "Diş Beyazlatma", price: "₺800+", icon: "✨", color: "from-yellow-400 to-yellow-500" },
-              { name: "Ortodonti", price: "₺8.000+", icon: "🦷", color: "from-green-500 to-green-600" },
-              { name: "Vener Kaplama", price: "₺1.200+", icon: "💎", color: "from-purple-500 to-purple-600" }
-            ].map((treatment, index) => (
-              <Card key={index} className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-2 cursor-pointer border-border/50">
-                <CardContent className="p-6 text-center">
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${treatment.color} flex items-center justify-center mx-auto mb-4 text-2xl group-hover:scale-110 transition-transform`}>
-                    {treatment.icon}
+      {/* Popular Cities */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Popüler Şehirler</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              En çok tercih edilen destinasyonları keşfedin
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {POPULAR_CITIES.map((city, index) => (
+              <Card 
+                key={city.name}
+                className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handleCityClick(city.name)}
+              >
+                <div className="relative h-64">
+                  <img
+                    src={city.image}
+                    alt={city.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 text-white">
+                    <h3 className="text-2xl font-bold mb-2">{city.name}</h3>
+                    <p className="text-white/90">{city.description}</p>
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{treatment.name}</h3>
-                  <p className="text-2xl font-bold text-primary mb-2">{treatment.price}</p>
-                  <p className="text-sm text-muted-foreground">başlayan fiyatlarla</p>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Clinics */}
-      <section className="py-20">
+      {/* How It Works */}
+      <section className="py-16 bg-gradient-to-br from-medical-light/30 to-background">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-16">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Öne Çıkan <span className="bg-gradient-primary bg-clip-text text-transparent">Klinikler</span>
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                En yüksek puanlı ve güvenilir diş klinikleri
-              </p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Nasıl Çalışır?</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              3 basit adımda en uygun kliniği bulun
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center group">
+              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Search className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">1. Karşılaştır</h3>
+              <p className="text-muted-foreground">Klinikleri karşılaştırın ve en uygun seçeneği bulun</p>
             </div>
             
-            <div className="hidden md:flex gap-4">
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filtrele
-              </Button>
-              <Button variant="outline" size="sm">
-                Tümünü Gör
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Horizontal Scrollable Clinics */}
-          <div className="relative">
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
-              {featuredClinics.map((clinic, index) => (
-                <div 
-                  key={clinic.id} 
-                  className="flex-none w-80 md:w-96 snap-start animate-slide-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <ClinicCard {...clinic} />
-                </div>
-              ))}
+            <div className="text-center group relative">
+              <ArrowRight className="hidden md:block absolute -left-8 top-8 h-6 w-6 text-muted-foreground" />
+              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <UserCheck className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">2. En Uygun Kliniği Bul</h3>
+              <p className="text-muted-foreground">İhtiyaçlarınıza en uygun kliniği seçin</p>
+              <ArrowRight className="hidden md:block absolute -right-8 top-8 h-6 w-6 text-muted-foreground" />
             </div>
             
-            {/* Scroll indicators */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-8 h-full bg-gradient-to-r from-background to-transparent pointer-events-none"></div>
-            <div className="absolute top-1/2 -translate-y-1/2 right-0 w-8 h-full bg-gradient-to-l from-background to-transparent pointer-events-none"></div>
-          </div>
-
-          <div className="text-center mt-12 md:hidden">
-            <Button size="lg" variant="outline" className="border-primary/30 hover:bg-primary/5">
-              Tüm Klinikleri Gör
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="text-center group">
+              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">3. Başvur</h3>
+              <p className="text-muted-foreground">Kolayca randevu alın ve tedavinize başlayın</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-primary-light/5">
+      {/* Treatments Section */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Hasta <span className="bg-gradient-primary bg-clip-text text-transparent">Yorumları</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Binlerce memnun hastamızın gerçek deneyimleri
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Tedavi Seçenekleri</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              En popüler dental tedavilerini keşfedin
             </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Ayşe K.",
-                location: "İstanbul",
-                rating: 5,
-                text: "İmplant tedavim harika geçti. Fiyat karşılaştırması sayesinde en uygun kliniği buldum.",
-                treatment: "İmplant Tedavisi"
-              },
-              {
-                name: "Mehmet Y.",
-                location: "Ankara", 
-                rating: 5,
-                text: "Platform sayesinde güvenilir bir klinik buldum. Ortodonti tedavim mükemmel sonuç verdi.",
-                treatment: "Ortodonti"
-              },
-              {
-                name: "Fatma D.",
-                location: "Antalya",
-                rating: 5,
-                text: "Diş beyazlatma için araştırma yaparken buradaki yorumlar çok yardımcı oldu.",
-                treatment: "Diş Beyazlatma"
-              }
-            ].map((testimonial, index) => (
-              <Card key={index} className="border-border/50 hover:shadow-medium transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <Quote className="w-8 h-8 text-primary/60" />
-                    
-                    <p className="text-muted-foreground italic leading-relaxed">
-                      "{testimonial.text}"
-                    </p>
-                    
-                    <div className="flex items-center gap-1 mb-3">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-trust-gold text-trust-gold" />
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold">{testimonial.name}</div>
-                        <div className="text-sm text-muted-foreground">{testimonial.location}</div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {testimonial.treatment}
-                      </Badge>
-                    </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {HOMEPAGE_TREATMENTS.map((treatment, index) => (
+              <Card 
+                key={treatment.name}
+                className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handleTreatmentClick(treatment.name)}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className="bg-gradient-to-br from-primary/10 to-blue-600/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:from-primary/20 group-hover:to-blue-600/20 transition-colors duration-300">
+                    <treatment.icon className="h-8 w-8 text-primary" />
                   </div>
+                  <h3 className="font-semibold mb-2">{treatment.name}</h3>
+                  <p className="text-sm text-muted-foreground">{treatment.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -397,51 +366,24 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-primary rounded-3xl p-12 text-center text-white relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-white/10 bg-[radial-gradient(circle_at_30%_20%,white_1px,transparent_1px)] bg-[length:20px_20px]"></div>
-            
-            <div className="relative space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  Mükemmel Gülüşünüz İçin
-                  <br />
-                  Hemen Başlayın!
-                </h2>
-                <p className="text-xl opacity-90 max-w-2xl mx-auto">
-                  Binlerce klinik arasından size en uygun olanını bulun. 
-                  Ücretsiz danışmanlık ve fiyat karşılaştırması.
-                </p>
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <Button size="lg" variant="secondary" className="text-primary font-semibold px-8">
-                  <Search className="w-5 h-5 mr-2" />
-                  Klinik Ara
-                </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8">
-                  <Play className="w-5 h-5 mr-2" />
-                  Nasıl Çalışır?
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-8 max-w-md mx-auto pt-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold">500+</div>
-                  <div className="text-sm opacity-80">Klinik</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">50K+</div>
-                  <div className="text-sm opacity-80">Hasta</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">4.8★</div>
-                  <div className="text-sm opacity-80">Puan</div>
-                </div>
-              </div>
-            </div>
+      <section className="py-16 bg-gradient-to-br from-primary to-blue-600 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Mükemmel Gülüşünüz İçin Hemen Başlayın!
+            </h2>
+            <p className="text-xl mb-8 text-white/90">
+              Binlerce hasta bizim platformumuz sayesinde hayalindeki gülümsemeye kavuştu. Sıra sizde!
+            </p>
+            <Button 
+              size="lg" 
+              variant="secondary"
+              className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3"
+              onClick={() => navigate('/clinic-listing')}
+            >
+              Hemen Başla
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
