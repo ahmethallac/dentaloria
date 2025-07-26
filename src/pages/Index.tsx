@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/ui/navbar";
@@ -93,7 +94,7 @@ const POPULAR_CITIES = [
   },
   {
     name: "Antalya", 
-    image: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800&q=80",
     description: "Pearl of the Mediterranean"
   },
   {
