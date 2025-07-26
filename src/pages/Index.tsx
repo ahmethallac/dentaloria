@@ -93,7 +93,7 @@ const POPULAR_CITIES = [
   },
   {
     name: "Antalya", 
-    image: "https://images.unsplash.com/photo-1580058572462-c8dd4ea51de4?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&q=80",
     description: "Pearl of the Mediterranean"
   },
   {
