@@ -645,18 +645,15 @@ export default function ClinicListing() {
                         </div>
                       </div>
 
-                      {/* Action Button - Positioned on Right */}
-                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-2">
-                        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                      {/* Action Button - Bottom Right Corner */}
+                      <div className="absolute bottom-4 right-4">
+                        <div className="bg-white/90 backdrop-blur-sm border border-primary/20 rounded-lg p-2 shadow-md hover:shadow-lg transition-all duration-300 group">
                           <Button 
                             size="sm"
-                            className="bg-transparent hover:bg-white/10 text-white border-0 rounded-lg px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap"
+                            className="bg-primary hover:bg-primary/90 text-white border-0 rounded-md px-4 py-2 text-xs font-medium transition-all duration-300 group-hover:scale-105"
                           >
-                            Kliniği İncele
+                            İncele
                           </Button>
-                        </div>
-                        <div className="text-xs text-center text-foreground/50 hidden lg:block">
-                          Detayları<br/>Görüntüle
                         </div>
                       </div>
                     </div>
