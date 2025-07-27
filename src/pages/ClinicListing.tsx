@@ -4,12 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+import { getClinics, getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
+import type { Clinic, Country, City, Treatment, TreatmentCategory } from "@/lib/supabase";
 
-// Import clinic images
+// Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
 import clinic2 from "@/assets/clinic-2.jpg";
 import clinic3 from "@/assets/clinic-3.jpg";
@@ -21,117 +23,8 @@ import clinic8 from "@/assets/clinic-8.jpg";
 import clinic9 from "@/assets/clinic-9.jpg";
 import clinic10 from "@/assets/clinic-10.jpg";
 
-const TREATMENTS = [
-  "All-on-4 Dental Implants",
-  "All-on-6 Dental Implants", 
-  "Single Dental Implant",
-  "Dental Crown",
-  "Dental Veneer",
-  "Root Canal Treatment",
-  "Teeth Whitening",
-  "Orthodontic Treatment",
-  "Gum Disease Treatment",
-  "Oral Surgery"
-];
-
-const LOCATIONS = {
-  "Turkey": ["Antalya", "Istanbul", "Izmir"],
-  "United States": ["New York City", "Los Angeles", "Florida"],
-  "United Kingdom": ["London", "Manchester"]
-};
-
-const mockClinics = [
-  {
-    id: 1,
-    name: "Smile Center Turkey",
-    images: [clinic1, clinic2, clinic3, clinic4, clinic5],
-    country: "Turkey",
-    city: "Antalya",
-    rating: 4.8,
-    reviewCount: 245,
-    treatments: {
-      "All-on-4 Dental Implants": "€3,500",
-      "Single Dental Implant": "€450",
-      "Dental Crown": "€250"
-    },
-    experience: 15,
-    transferService: true,
-    accommodationService: true,
-    featured: true
-  },
-  {
-    id: 2,
-    name: "Elite Dental Clinic",
-    images: [clinic6, clinic7, clinic8, clinic9],
-    country: "Turkey",
-    city: "Istanbul",
-    rating: 4.9,
-    reviewCount: 189,
-    treatments: {
-      "All-on-4 Dental Implants": "€4,200",
-      "Dental Veneer": "€180",
-      "Teeth Whitening": "€120"
-    },
-    experience: 12,
-    transferService: true,
-    accommodationService: false,
-    featured: false
-  },
-  {
-    id: 3,
-    name: "Perfect Smile NY",
-    images: [clinic10, clinic1, clinic3, clinic5],
-    country: "United States",
-    city: "New York City",
-    rating: 4.7,
-    reviewCount: 312,
-    treatments: {
-      "All-on-6 Dental Implants": "$8,500",
-      "Orthodontic Treatment": "$4,200",
-      "Root Canal Treatment": "$650"
-    },
-    experience: 20,
-    transferService: false,
-    accommodationService: false,
-    featured: true
-  },
-  {
-    id: 4,
-    name: "London Dental Excellence",
-    images: [clinic2, clinic4, clinic6, clinic8, clinic10],
-    country: "United Kingdom",
-    city: "London",
-    rating: 4.6,
-    reviewCount: 156,
-    treatments: {
-      "All-on-4 Dental Implants": "£5,200",
-      "Dental Crown": "£480",
-      "Gum Disease Treatment": "£280"
-    },
-    experience: 18,
-    transferService: false,
-    accommodationService: true,
-    featured: false
-  },
-  {
-    id: 5,
-    name: "Dental Paradise Antalya",
-    images: [clinic7, clinic9, clinic1, clinic3],
-    country: "Turkey",
-    city: "Antalya",
-    rating: 4.9,
-    reviewCount: 298,
-    treatments: {
-      "All-on-4 Dental Implants": "€3,200",
-      "Single Dental Implant": "€420",
-      "Oral Surgery": "€180"
-    },
-    experience: 22,
-    transferService: true,
-    accommodationService: true,
-    featured: true
-  }
-];
+// Default images for clinics without images
+const defaultImages = [clinic1, clinic2, clinic3, clinic4, clinic5, clinic6, clinic7, clinic8, clinic9, clinic10];
 
 // Image Carousel Component
 const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
@@ -223,7 +116,6 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
       
       {images.length > 1 && (
         <>
-          {/* Navigation Buttons */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -243,7 +135,6 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
             <ChevronRight className="h-4 w-4" />
           </button>
           
-          {/* Dots Indicator */}
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
             {images.map((_, index) => (
               <button
@@ -266,67 +157,168 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
 
 export default function ClinicListing() {
   const [searchParams] = useSearchParams();
+  
+  // State
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Filters
   const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "all");
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
-  const [filteredClinics, setFilteredClinics] = useState(mockClinics);
   const [sortBy, setSortBy] = useState("rating");
   const [showAllTreatments, setShowAllTreatments] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalClinics, setTotalClinics] = useState(0);
 
+  // Load initial data
   useEffect(() => {
-    let filtered = mockClinics;
-    
-    if (selectedTreatment && selectedTreatment !== "all") {
-      filtered = filtered.filter(clinic => 
-        Object.keys(clinic.treatments).some(treatment => 
-          treatment.toLowerCase().includes(selectedTreatment.toLowerCase())
-        )
-      );
-    }
-    
-    if (selectedCountry && selectedCountry !== "all") {
-      filtered = filtered.filter(clinic => clinic.country === selectedCountry);
-    }
-    
-    if (selectedCity && selectedCity !== "all") {
-      filtered = filtered.filter(clinic => clinic.city === selectedCity);
-    }
-
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(clinic => 
-        clinic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        Object.keys(clinic.treatments).some(treatment => 
-          treatment.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
-
-    // Sort clinics
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "rating":
-          return b.rating - a.rating;
-        case "price":
-          const aPrice = parseFloat(Object.values(a.treatments)[0].replace(/[€$£,]/g, ''));
-          const bPrice = parseFloat(Object.values(b.treatments)[0].replace(/[€$£,]/g, ''));
-          return aPrice - bPrice;
-        case "experience":
-          return b.experience - a.experience;
-        default:
-          return 0;
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [countriesData, treatmentsData, treatmentCategoriesData] = await Promise.all([
+          getCountries(),
+          getTreatments(),
+          getTreatmentCategories()
+        ]);
+        
+        setCountries(countriesData);
+        setTreatments(treatmentsData);
+        setTreatmentCategories(treatmentCategoriesData);
+      } catch (err) {
+        setError('Failed to load data. Please try again.');
+        console.error('Error loading data:', err);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    setFilteredClinics(filtered);
-  }, [selectedTreatment, selectedCountry, selectedCity, sortBy, searchQuery]);
+    loadData();
+  }, []);
+
+  // Load cities when country changes
+  useEffect(() => {
+    const loadCities = async () => {
+      if (selectedCountry && selectedCountry !== "all") {
+        try {
+          const citiesData = await getCities(selectedCountry);
+          setCities(citiesData);
+        } catch (err) {
+          console.error('Error loading cities:', err);
+        }
+      } else {
+        setCities([]);
+      }
+    };
+
+    loadCities();
+  }, [selectedCountry]);
+
+  // Load clinics when filters change
+  useEffect(() => {
+    const loadClinics = async () => {
+      try {
+        setLoading(true);
+        
+        const filters: any = {
+          page,
+          limit: 12
+        };
+
+        if (selectedCountry !== "all") {
+          filters.countryId = selectedCountry;
+        }
+        
+        if (selectedCity !== "all") {
+          filters.cityId = selectedCity;
+        }
+        
+        if (selectedTreatment !== "all") {
+          filters.treatmentId = selectedTreatment;
+        }
+        
+        if (searchQuery.trim()) {
+          filters.searchQuery = searchQuery.trim();
+        }
+
+        const { clinics: clinicsData, total } = await getClinics(filters);
+        
+        // Add default images to clinics without images
+        const clinicsWithImages = clinicsData.map((clinic, index) => ({
+          ...clinic,
+          clinic_images: clinic.clinic_images?.length 
+            ? clinic.clinic_images 
+            : [{ 
+                id: `default-${clinic.id}`, 
+                clinic_id: clinic.id, 
+                image_url: defaultImages[index % defaultImages.length], 
+                is_primary: true, 
+                created_at: clinic.created_at 
+              }]
+        }));
+        
+        setClinics(clinicsWithImages);
+        setTotalClinics(total);
+      } catch (err) {
+        setError('Failed to load clinics. Please try again.');
+        console.error('Error loading clinics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClinics();
+  }, [selectedTreatment, selectedCountry, selectedCity, sortBy, searchQuery, page]);
 
   const clearFilters = () => {
     setSelectedTreatment("all");
     setSelectedCountry("all");
     setSelectedCity("all");
     setSearchQuery("");
+    setPage(1);
   };
+
+  const getClinicImages = (clinic: Clinic): string[] => {
+    if (clinic.clinic_images && clinic.clinic_images.length > 0) {
+      return clinic.clinic_images.map(img => img.image_url);
+    }
+    return [defaultImages[0]]; // Return at least one default image
+  };
+
+  const getClinicPrice = (clinic: Clinic): string => {
+    if (clinic.clinic_treatments && clinic.clinic_treatments.length > 0) {
+      const treatment = clinic.clinic_treatments[0];
+      if (treatment.price_from) {
+        return `${treatment.currency} ${treatment.price_from}`;
+      }
+    }
+    return "Contact for pricing";
+  };
+
+  const getClinicLocation = (clinic: Clinic): string => {
+    return `${clinic.cities?.name || 'Unknown'}, ${clinic.cities?.countries?.name || 'Unknown'}`;
+  };
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-mesh">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
@@ -337,10 +329,10 @@ export default function ClinicListing() {
         <div className="absolute inset-0 bg-white/30"></div>
         <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
-            World's Best Dental Clinics
+            World's Best Medical Clinics
           </h1>
           <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80">
-            Find your perfect smile with expert doctors, modern technology and reliable service
+            Find your perfect healthcare solution with expert doctors, modern technology and reliable service
           </p>
         </div>
       </div>
@@ -390,25 +382,25 @@ export default function ClinicListing() {
                         All
                       </span>
                     </div>
-                    {TREATMENTS.slice(0, showAllTreatments ? TREATMENTS.length : 7).map((treatment) => (
+                    {treatments.slice(0, showAllTreatments ? treatments.length : 7).map((treatment) => (
                       <div
-                        key={treatment}
-                        onClick={() => setSelectedTreatment(treatment)}
+                        key={treatment.id}
+                        onClick={() => setSelectedTreatment(treatment.id)}
                         className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                       >
                         <div className="relative">
-                          {selectedTreatment === treatment ? (
+                          {selectedTreatment === treatment.id ? (
                             <CheckCircle2 className="h-5 w-5 text-primary" />
                           ) : (
                             <Circle className="h-5 w-5 text-muted-foreground" />
                           )}
                         </div>
-                        <span className={`text-sm ${selectedTreatment === treatment ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          {treatment}
+                        <span className={`text-sm ${selectedTreatment === treatment.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+                          {treatment.name}
                         </span>
                       </div>
                     ))}
-                    {TREATMENTS.length > 7 && (
+                    {treatments.length > 7 && (
                       <button
                         onClick={() => setShowAllTreatments(!showAllTreatments)}
                         className="text-primary text-sm hover:underline ml-8"
@@ -441,24 +433,24 @@ export default function ClinicListing() {
                         All
                       </span>
                     </div>
-                    {Object.keys(LOCATIONS).map((country) => (
+                    {countries.map((country) => (
                       <div
-                        key={country}
+                        key={country.id}
                         onClick={() => {
-                          setSelectedCountry(country);
+                          setSelectedCountry(country.id);
                           setSelectedCity("all");
                         }}
                         className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                       >
                         <div className="relative">
-                          {selectedCountry === country ? (
+                          {selectedCountry === country.id ? (
                             <CheckCircle2 className="h-5 w-5 text-primary" />
                           ) : (
                             <Circle className="h-5 w-5 text-muted-foreground" />
                           )}
                         </div>
-                        <span className={`text-sm ${selectedCountry === country ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          {country}
+                        <span className={`text-sm ${selectedCountry === country.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+                          {country.flag_url} {country.name}
                         </span>
                       </div>
                     ))}
@@ -466,7 +458,7 @@ export default function ClinicListing() {
                 </div>
                 
                 {/* Cities Filter */}
-                {selectedCountry !== "all" && LOCATIONS[selectedCountry as keyof typeof LOCATIONS] && (
+                {selectedCountry !== "all" && cities.length > 0 && (
                   <div>
                     <h4 className="text-sm font-semibold mb-4 text-foreground/80">Cities</h4>
                     <div className="space-y-3">
@@ -485,21 +477,21 @@ export default function ClinicListing() {
                           All
                         </span>
                       </div>
-                      {LOCATIONS[selectedCountry as keyof typeof LOCATIONS].map((city) => (
+                      {cities.map((city) => (
                         <div
-                          key={city}
-                          onClick={() => setSelectedCity(city)}
+                          key={city.id}
+                          onClick={() => setSelectedCity(city.id)}
                           className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                         >
                           <div className="relative">
-                            {selectedCity === city ? (
+                            {selectedCity === city.id ? (
                               <CheckCircle2 className="h-5 w-5 text-primary" />
                             ) : (
                               <Circle className="h-5 w-5 text-muted-foreground" />
                             )}
                           </div>
-                          <span className={`text-sm ${selectedCity === city ? "text-primary font-medium" : "text-foreground/70"}`}>
-                            {city}
+                          <span className={`text-sm ${selectedCity === city.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+                            {city.name}
                           </span>
                         </div>
                       ))}
@@ -525,9 +517,16 @@ export default function ClinicListing() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">
-                  {filteredClinics.length} Clinics Found
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Loading...
+                    </div>
+                  ) : (
+                    `${totalClinics} Clinics Found`
+                  )}
                 </h2>
-                <p className="text-foreground/70">Discover the best dental clinics</p>
+                <p className="text-foreground/70">Discover the best medical clinics worldwide</p>
               </div>
               
               <div className="flex items-center gap-2">
@@ -545,126 +544,120 @@ export default function ClinicListing() {
               </div>
             </div>
 
-            {/* Clinic Cards */}
-            <div className="space-y-6">
-              {filteredClinics.map((clinic, index) => (
-                <Card 
-                  key={clinic.id} 
-                  className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 hover:scale-[1.02] animate-fade-in ${
-                    clinic.featured ? 'ring-2 ring-primary/20 shadow-colored' : ''
-                  }`}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CardContent className="p-0">
-                    <div className="flex flex-col lg:flex-row h-auto lg:h-48 relative">
-                      {/* Image Section */}
-                      <div className="lg:w-64 h-48 lg:h-full relative">
-                        <ImageCarousel images={clinic.images} alt={clinic.name} />
-                        {clinic.featured && (
-                          <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
-                            Featured
-                          </Badge>
-                        )}
-                        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white z-10">
-                          <MapPin className="h-3 w-3" />
-                          <span className="text-xs font-medium">{clinic.city}, {clinic.country}</span>
-                        </div>
-                      </div>
+            {/* Loading State */}
+            {loading && (
+              <div className="flex justify-center items-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            )}
 
-                      {/* Content Section */}
-                      <div className="flex-1 p-4 pr-20 lg:pr-28">
-                        <div className="flex flex-col h-full">
-                          {/* Header */}
-                          <div className="mb-3">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                                <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                  <div className="flex items-center gap-1">
-                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                    <span className="font-semibold">{clinic.rating}</span>
-                                    <span>({clinic.reviewCount})</span>
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <Users className="h-3 w-3" />
-                                    <span>{clinic.experience} years</span>
+            {/* Clinic Cards */}
+            {!loading && (
+              <div className="space-y-6">
+                {clinics.map((clinic, index) => (
+                  <Card 
+                    key={clinic.id} 
+                    className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 hover:scale-[1.02] animate-fade-in ${
+                      clinic.is_featured ? 'ring-2 ring-primary/20 shadow-colored' : ''
+                    }`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <CardContent className="p-0">
+                      <div className="flex flex-col lg:flex-row h-auto lg:h-48 relative">
+                        {/* Image Section */}
+                        <div className="lg:w-64 h-48 lg:h-full relative">
+                          <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
+                          {clinic.is_featured && (
+                            <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
+                              Featured
+                            </Badge>
+                          )}
+                          <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white z-10">
+                            <MapPin className="h-3 w-3" />
+                            <span className="text-xs font-medium">{getClinicLocation(clinic)}</span>
+                          </div>
+                        </div>
+
+                        {/* Content Section */}
+                        <div className="flex-1 p-4 pr-20 lg:pr-28">
+                          <div className="flex flex-col h-full">
+                            {/* Header */}
+                            <div className="mb-3">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
+                                  <div className="flex items-center gap-3 text-xs text-foreground/70">
+                                    <div className="flex items-center gap-1">
+                                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="font-semibold">{clinic.rating}</span>
+                                      <span>({clinic.review_count})</span>
+                                    </div>
+                                    {clinic.is_verified && (
+                                      <div className="flex items-center gap-1">
+                                        <CheckCircle className="h-3 w-3 text-green-500" />
+                                        <span>Verified</span>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
 
-                          {/* Price - Centered */}
-                          <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
-                            <div className="text-xs text-foreground/70 mb-1">Starting</div>
-                            <div className="text-lg font-bold text-primary">
-                              {Object.values(clinic.treatments)[0]}
+                            {/* Price - Centered */}
+                            <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
+                              <div className="text-xs text-foreground/70 mb-1">Starting</div>
+                              <div className="text-lg font-bold text-primary">
+                                {getClinicPrice(clinic)}
+                              </div>
                             </div>
-                          </div>
 
-                          {/* Services */}
-                          <div className="flex gap-4 mb-3">
-                            <div className="flex items-center gap-1">
-                              {clinic.transferService ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-500" />
-                              )}
-                              <span className="text-xs text-foreground/80">Transfer</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {clinic.accommodationService ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-500" />
-                              )}
-                              <span className="text-xs text-foreground/80">Accommodation</span>
-                            </div>
-                          </div>
-
-                          {/* Treatments */}
-                          <div className="flex-1">
-                            <div className="flex flex-wrap gap-1">
-                              {Object.entries(clinic.treatments).slice(0, 2).map(([treatment, price]) => (
-                                <Badge 
-                                  key={treatment} 
-                                  variant="secondary" 
-                                  className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
-                                >
-                                  {treatment} - {price}
-                                </Badge>
-                              ))}
-                              {Object.keys(clinic.treatments).length > 2 && (
-                                <Badge 
-                                  variant="outline" 
-                                  className="border-primary/20 text-primary bg-white/50 px-2 py-1 rounded-full text-xs"
-                                >
-                                  +{Object.keys(clinic.treatments).length - 2}
-                                </Badge>
+                            {/* Treatments */}
+                            <div className="flex-1">
+                              {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment) => (
+                                    <Badge 
+                                      key={clinicTreatment.id} 
+                                      variant="secondary" 
+                                      className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
+                                    >
+                                      {clinicTreatment.treatments?.name}
+                                      {clinicTreatment.price_from && ` - ${clinicTreatment.currency} ${clinicTreatment.price_from}`}
+                                    </Badge>
+                                  ))}
+                                  {clinic.clinic_treatments.length > 2 && (
+                                    <Badge 
+                                      variant="outline" 
+                                      className="border-primary/20 text-primary bg-white/50 px-2 py-1 rounded-full text-xs"
+                                    >
+                                      +{clinic.clinic_treatments.length - 2}
+                                    </Badge>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Action Button - Right Edge Vertical */}
-                      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group cursor-pointer">
-                        <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
-                          <span className="group-hover:hidden">View</span>
-                          <div className="hidden group-hover:block text-center leading-tight">
-                            <div>View</div>
-                            <div>Clinic</div>
+                        {/* Action Button - Right Edge Vertical */}
+                        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group cursor-pointer">
+                          <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
+                            <span className="group-hover:hidden">View</span>
+                            <div className="hidden group-hover:block text-center leading-tight">
+                              <div>View</div>
+                              <div>Clinic</div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             {/* No Results */}
-            {filteredClinics.length === 0 && (
+            {!loading && clinics.length === 0 && (
               <div className="text-center py-16">
                 <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-8 shadow-card border border-white/20 max-w-md mx-auto">
                   <div className="text-6xl mb-4">🔍</div>
