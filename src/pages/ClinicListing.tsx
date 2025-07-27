@@ -595,7 +595,7 @@ export default function ClinicListing() {
                           </div>
 
                           {/* Price - Centered */}
-                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-right">
+                          <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
                             <div className="text-xs text-foreground/70 mb-1">Starting</div>
                             <div className="text-lg font-bold text-primary">
                               {Object.values(clinic.treatments)[0]}
