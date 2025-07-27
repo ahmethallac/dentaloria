@@ -4,10 +4,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2 } from "lucide-react";
+import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+
+// Import clinic images
+import clinic1 from "@/assets/clinic-1.jpg";
+import clinic2 from "@/assets/clinic-2.jpg";
+import clinic3 from "@/assets/clinic-3.jpg";
+import clinic4 from "@/assets/clinic-4.jpg";
+import clinic5 from "@/assets/clinic-5.jpg";
+import clinic6 from "@/assets/clinic-6.jpg";
+import clinic7 from "@/assets/clinic-7.jpg";
+import clinic8 from "@/assets/clinic-8.jpg";
+import clinic9 from "@/assets/clinic-9.jpg";
+import clinic10 from "@/assets/clinic-10.jpg";
 
 const TREATMENTS = [
   "All-on-4 Dental Implants",
@@ -32,11 +44,7 @@ const mockClinics = [
   {
     id: 1,
     name: "Smile Center Turkey",
-    images: [
-      "/lovable-uploads/34e1d1a2-cfa4-44f4-bb32-889286bde89a.png",
-      "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png",
-      "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png"
-    ],
+    images: [clinic1, clinic2, clinic3, clinic4, clinic5],
     country: "Türkiye",
     city: "Antalya",
     rating: 4.8,
@@ -54,10 +62,7 @@ const mockClinics = [
   {
     id: 2,
     name: "Elite Dental Clinic",
-    images: [
-      "/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png",
-      "/lovable-uploads/34e1d1a2-cfa4-44f4-bb32-889286bde89a.png"
-    ],
+    images: [clinic6, clinic7, clinic8, clinic9],
     country: "Türkiye",
     city: "İstanbul",
     rating: 4.9,
@@ -75,9 +80,7 @@ const mockClinics = [
   {
     id: 3,
     name: "Perfect Smile NY",
-    images: [
-      "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png"
-    ],
+    images: [clinic10, clinic1, clinic3, clinic5],
     country: "Amerika Birleşik Devletleri",
     city: "New York City",
     rating: 4.7,
@@ -95,10 +98,7 @@ const mockClinics = [
   {
     id: 4,
     name: "London Dental Excellence",
-    images: [
-      "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png",
-      "/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png"
-    ],
+    images: [clinic2, clinic4, clinic6, clinic8, clinic10],
     country: "İngiltere",
     city: "London",
     rating: 4.6,
@@ -116,10 +116,7 @@ const mockClinics = [
   {
     id: 5,
     name: "Dental Paradise Antalya",
-    images: [
-      "/lovable-uploads/34e1d1a2-cfa4-44f4-bb32-889286bde89a.png",
-      "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png"
-    ],
+    images: [clinic7, clinic9, clinic1, clinic3],
     country: "Türkiye",
     city: "Antalya",
     rating: 4.9,
@@ -135,6 +132,60 @@ const mockClinics = [
     featured: true
   }
 ];
+
+// Image Carousel Component
+const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className="relative w-full h-full group">
+      <img
+        src={images[currentIndex]}
+        alt={alt}
+        className="w-full h-full object-cover transition-opacity duration-300"
+      />
+      
+      {images.length > 1 && (
+        <>
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevImage}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={nextImage}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          
+          {/* Dots Indicator */}
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                  index === currentIndex ? 'bg-white' : 'bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 export default function ClinicListing() {
   const [searchParams] = useSearchParams();
@@ -431,17 +482,13 @@ export default function ClinicListing() {
                     <div className="flex flex-col lg:flex-row h-auto lg:h-48">
                       {/* Image Section */}
                       <div className="lg:w-64 h-48 lg:h-full relative">
-                        <img
-                          src={clinic.images[0]}
-                          alt={clinic.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <ImageCarousel images={clinic.images} alt={clinic.name} />
                         {clinic.featured && (
-                          <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs">
+                          <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
                             Öne Çıkan
                           </Badge>
                         )}
-                        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white">
+                        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white z-10">
                           <MapPin className="h-3 w-3" />
                           <span className="text-xs font-medium">{clinic.city}, {clinic.country}</span>
                         </div>
