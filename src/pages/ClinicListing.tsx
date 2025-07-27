@@ -649,7 +649,10 @@ export default function ClinicListing() {
                       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group cursor-pointer">
                         <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
                           <span className="group-hover:hidden">View</span>
-                          <span className="hidden group-hover:inline">View Clinic</span>
+                          <div className="hidden group-hover:block text-center leading-tight">
+                            <div>View</div>
+                            <div>Clinic</div>
+                          </div>
                         </div>
                       </div>
                     </div>
