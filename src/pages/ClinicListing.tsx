@@ -162,6 +162,7 @@ export default function ClinicListing() {
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [filteredClinics, setFilteredClinics] = useState(mockClinics);
   const [sortBy, setSortBy] = useState("rating");
+  const [showAllTreatments, setShowAllTreatments] = useState(false);
 
   useEffect(() => {
     let filtered = mockClinics;
@@ -233,63 +234,111 @@ export default function ClinicListing() {
                 </div>
                 
                 <div className="space-y-6">
+                  {/* Treatments Filter */}
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Treatment</label>
-                    <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select treatment" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {TREATMENTS.map((treatment) => (
-                          <SelectItem key={treatment} value={treatment}>
-                            {treatment}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <h4 className="text-sm font-medium mb-3">Tedaviler</h4>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setSelectedTreatment("all")}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                          selectedTreatment === "all" 
+                            ? "bg-primary text-primary-foreground" 
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        Tümü
+                      </button>
+                      {TREATMENTS.slice(0, showAllTreatments ? TREATMENTS.length : 7).map((treatment) => (
+                        <button
+                          key={treatment}
+                          onClick={() => setSelectedTreatment(treatment)}
+                          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                            selectedTreatment === treatment 
+                              ? "bg-primary text-primary-foreground" 
+                              : "hover:bg-muted"
+                          }`}
+                        >
+                          {treatment}
+                        </button>
+                      ))}
+                      {TREATMENTS.length > 7 && (
+                        <button
+                          onClick={() => setShowAllTreatments(!showAllTreatments)}
+                          className="w-full text-left px-3 py-2 rounded-md text-sm text-primary hover:bg-muted"
+                        >
+                          {showAllTreatments ? "Daha Az Göster" : "Tümünü Göster"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                   
+                  {/* Countries Filter */}
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Country</label>
-                    <Select value={selectedCountry} onValueChange={(value) => {
-                      setSelectedCountry(value);
-                      setSelectedCity("all"); // Reset city when country changes
-                    }}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {Object.keys(LOCATIONS).map((country) => (
-                          <SelectItem key={country} value={country}>
-                            {country}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <h4 className="text-sm font-medium mb-3">Ülkeler</h4>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => {
+                          setSelectedCountry("all");
+                          setSelectedCity("all");
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                          selectedCountry === "all" 
+                            ? "bg-primary text-primary-foreground" 
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        Tümü
+                      </button>
+                      {Object.keys(LOCATIONS).map((country) => (
+                        <button
+                          key={country}
+                          onClick={() => {
+                            setSelectedCountry(country);
+                            setSelectedCity("all");
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                            selectedCountry === country 
+                              ? "bg-primary text-primary-foreground" 
+                              : "hover:bg-muted"
+                          }`}
+                        >
+                          {country}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">City</label>
-                    <Select 
-                      value={selectedCity} 
-                      onValueChange={setSelectedCity}
-                      disabled={!selectedCountry || selectedCountry === "all"}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select city" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {selectedCountry && LOCATIONS[selectedCountry as keyof typeof LOCATIONS]?.map((city) => (
-                          <SelectItem key={city} value={city}>
+                  {/* Cities Filter */}
+                  {selectedCountry !== "all" && LOCATIONS[selectedCountry as keyof typeof LOCATIONS] && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Şehirler</h4>
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setSelectedCity("all")}
+                          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                            selectedCity === "all" 
+                              ? "bg-primary text-primary-foreground" 
+                              : "hover:bg-muted"
+                          }`}
+                        >
+                          Tümü
+                        </button>
+                        {LOCATIONS[selectedCountry as keyof typeof LOCATIONS].map((city) => (
+                          <button
+                            key={city}
+                            onClick={() => setSelectedCity(city)}
+                            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                              selectedCity === city 
+                                ? "bg-primary text-primary-foreground" 
+                                : "hover:bg-muted"
+                            }`}
+                          >
                             {city}
-                          </SelectItem>
+                          </button>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
