@@ -3,11 +3,16 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+// Temporary fallback for development - remove this when Supabase is properly connected
+const isDevelopment = !supabaseUrl || !supabaseAnonKey
+
+if (isDevelopment) {
+  console.warn('Supabase environment variables not found. Using mock mode.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = isDevelopment 
+  ? null 
+  : createClient(supabaseUrl, supabaseAnonKey)
 
 // Database types
 export interface Country {

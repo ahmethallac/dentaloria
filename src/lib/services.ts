@@ -11,8 +11,80 @@ import type {
   Doctor 
 } from './supabase'
 
+// Mock data for when Supabase is not connected
+const mockCountries: Country[] = [
+  { id: '1', name: 'Turkey', code: 'TR', flag_url: '🇹🇷', created_at: new Date().toISOString() },
+  { id: '2', name: 'Thailand', code: 'TH', flag_url: '🇹🇭', created_at: new Date().toISOString() },
+  { id: '3', name: 'Mexico', code: 'MX', flag_url: '🇲🇽', created_at: new Date().toISOString() },
+  { id: '4', name: 'India', code: 'IN', flag_url: '🇮🇳', created_at: new Date().toISOString() },
+]
+
+const mockCities: City[] = [
+  { id: '1', name: 'Istanbul', country_id: '1', created_at: new Date().toISOString() },
+  { id: '2', name: 'Antalya', country_id: '1', created_at: new Date().toISOString() },
+  { id: '3', name: 'Bangkok', country_id: '2', created_at: new Date().toISOString() },
+  { id: '4', name: 'Phuket', country_id: '2', created_at: new Date().toISOString() },
+]
+
+const mockTreatmentCategories: TreatmentCategory[] = [
+  { id: '1', name: 'Dental', description: 'Dental treatments', icon: 'Tooth', created_at: new Date().toISOString() },
+  { id: '2', name: 'Hair Transplant', description: 'Hair restoration', icon: 'Scissors', created_at: new Date().toISOString() },
+  { id: '3', name: 'Plastic Surgery', description: 'Cosmetic surgery', icon: 'Sparkles', created_at: new Date().toISOString() },
+]
+
+const mockTreatments: Treatment[] = [
+  { id: '1', name: 'Dental Implants', category_id: '1', description: 'Tooth replacement', created_at: new Date().toISOString() },
+  { id: '2', name: 'Veneers', category_id: '1', description: 'Cosmetic enhancement', created_at: new Date().toISOString() },
+  { id: '3', name: 'FUE Hair Transplant', category_id: '2', description: 'Hair restoration', created_at: new Date().toISOString() },
+]
+
+const mockClinics: Clinic[] = [
+  {
+    id: '1',
+    name: 'Smile Center Turkey',
+    description: 'Premium dental clinic in Turkey',
+    address: 'Istanbul, Turkey',
+    city_id: '1',
+    phone: '+90 555 123 4567',
+    email: 'info@smilecenter.com',
+    website: 'www.smilecenter.com',
+    rating: 4.8,
+    review_count: 245,
+    is_verified: true,
+    is_featured: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    owner_id: 'owner1',
+    cities: { id: '1', name: 'Istanbul', country_id: '1', created_at: new Date().toISOString() },
+    clinic_images: [{
+      id: '1',
+      clinic_id: '1',
+      image_url: '/placeholder.jpg',
+      is_primary: true,
+      created_at: new Date().toISOString()
+    }],
+    clinic_treatments: [{
+      id: '1',
+      clinic_id: '1',
+      treatment_id: '1',
+      price_from: 3500,
+      price_to: 5000,
+      currency: 'EUR',
+      duration_minutes: 120,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      treatments: mockTreatments[0]
+    }]
+  }
+]
+
 // Countries and Cities
 export const getCountries = async (): Promise<Country[]> => {
+  if (!supabase) {
+    // Return mock data when Supabase is not connected
+    return mockCountries;
+  }
+  
   const { data, error } = await supabase
     .from('countries')
     .select('*')
@@ -23,6 +95,15 @@ export const getCountries = async (): Promise<Country[]> => {
 }
 
 export const getCities = async (countryId?: string): Promise<City[]> => {
+  if (!supabase) {
+    // Return mock data when Supabase is not connected
+    let cities = mockCities;
+    if (countryId) {
+      cities = cities.filter(city => city.country_id === countryId);
+    }
+    return cities;
+  }
+  
   let query = supabase
     .from('cities')
     .select(`
@@ -43,6 +124,10 @@ export const getCities = async (countryId?: string): Promise<City[]> => {
 
 // Treatment Categories and Treatments
 export const getTreatmentCategories = async (): Promise<TreatmentCategory[]> => {
+  if (!supabase) {
+    return mockTreatmentCategories;
+  }
+  
   const { data, error } = await supabase
     .from('treatment_categories')
     .select('*')
@@ -53,6 +138,14 @@ export const getTreatmentCategories = async (): Promise<TreatmentCategory[]> => 
 }
 
 export const getTreatments = async (categoryId?: string): Promise<Treatment[]> => {
+  if (!supabase) {
+    let treatments = mockTreatments;
+    if (categoryId) {
+      treatments = treatments.filter(treatment => treatment.category_id === categoryId);
+    }
+    return treatments;
+  }
+  
   let query = supabase
     .from('treatments')
     .select(`
@@ -80,6 +173,25 @@ export const getClinics = async (filters?: {
   page?: number
   limit?: number
 }): Promise<{ clinics: Clinic[], total: number }> => {
+  if (!supabase) {
+    // Return mock data when Supabase is not connected
+    let filteredClinics = [...mockClinics];
+    
+    // Apply basic filtering for mock data
+    if (filters?.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      filteredClinics = filteredClinics.filter(clinic => 
+        clinic.name.toLowerCase().includes(query) ||
+        (clinic.description && clinic.description.toLowerCase().includes(query))
+      );
+    }
+    
+    return {
+      clinics: filteredClinics,
+      total: filteredClinics.length
+    };
+  }
+  
   let query = supabase
     .from('clinics')
     .select(`
@@ -138,6 +250,10 @@ export const getClinics = async (filters?: {
 }
 
 export const getClinicById = async (id: string): Promise<Clinic | null> => {
+  if (!supabase) {
+    return mockClinics.find(clinic => clinic.id === id) || null;
+  }
+  
   const { data, error } = await supabase
     .from('clinics')
     .select(`
@@ -164,6 +280,10 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
 }
 
 export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> => {
+  if (!supabase) {
+    return mockClinics.filter(clinic => clinic.is_featured).slice(0, limit);
+  }
+  
   const { data, error } = await supabase
     .from('clinics')
     .select(`

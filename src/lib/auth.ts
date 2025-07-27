@@ -8,6 +8,10 @@ export interface AuthUser extends User {
 
 // Auth functions
 export const signUp = async (email: string, password: string, fullName: string, userType: 'patient' | 'clinic_admin' = 'patient') => {
+  if (!supabase) {
+    throw new Error('Authentication not available. Please connect Supabase.');
+  }
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -24,6 +28,10 @@ export const signUp = async (email: string, password: string, fullName: string, 
 }
 
 export const signIn = async (email: string, password: string) => {
+  if (!supabase) {
+    throw new Error('Authentication not available. Please connect Supabase.');
+  }
+  
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
@@ -34,11 +42,19 @@ export const signIn = async (email: string, password: string) => {
 }
 
 export const signOut = async () => {
+  if (!supabase) {
+    return;
+  }
+  
   const { error } = await supabase.auth.signOut()
   if (error) throw error
 }
 
 export const getCurrentUser = async (): Promise<AuthUser | null> => {
+  if (!supabase) {
+    return null;
+  }
+  
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) return null
@@ -57,6 +73,10 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
 }
 
 export const updateProfile = async (updates: Partial<Profile>) => {
+  if (!supabase) {
+    throw new Error('Authentication not available. Please connect Supabase.');
+  }
+  
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   
   if (userError || !user) throw new Error('User not authenticated')
@@ -74,6 +94,17 @@ export const updateProfile = async (updates: Partial<Profile>) => {
 
 // Auth state management
 export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => {
+  if (!supabase) {
+    // Return a dummy subscription when Supabase is not connected
+    return {
+      data: {
+        subscription: {
+          unsubscribe: () => {}
+        }
+      }
+    };
+  }
+  
   return supabase.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
       const user = await getCurrentUser()
