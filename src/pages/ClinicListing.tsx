@@ -157,16 +157,16 @@ const mockClinics = [
 
 export default function ClinicListing() {
   const [searchParams] = useSearchParams();
-  const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "");
-  const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "");
-  const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "");
+  const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "all");
+  const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
+  const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [filteredClinics, setFilteredClinics] = useState(mockClinics);
   const [sortBy, setSortBy] = useState("rating");
 
   useEffect(() => {
     let filtered = mockClinics;
     
-    if (selectedTreatment) {
+    if (selectedTreatment && selectedTreatment !== "all") {
       filtered = filtered.filter(clinic => 
         Object.keys(clinic.treatments).some(treatment => 
           treatment.toLowerCase().includes(selectedTreatment.toLowerCase())
@@ -174,11 +174,11 @@ export default function ClinicListing() {
       );
     }
     
-    if (selectedCountry) {
+    if (selectedCountry && selectedCountry !== "all") {
       filtered = filtered.filter(clinic => clinic.country === selectedCountry);
     }
     
-    if (selectedCity) {
+    if (selectedCity && selectedCity !== "all") {
       filtered = filtered.filter(clinic => clinic.city === selectedCity);
     }
 
@@ -202,9 +202,9 @@ export default function ClinicListing() {
   }, [selectedTreatment, selectedCountry, selectedCity, sortBy]);
 
   const clearFilters = () => {
-    setSelectedTreatment("");
-    setSelectedCountry("");
-    setSelectedCity("");
+    setSelectedTreatment("all");
+    setSelectedCountry("all");
+    setSelectedCity("all");
   };
 
   return (
@@ -240,7 +240,7 @@ export default function ClinicListing() {
                         <SelectValue placeholder="Select treatment" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All</SelectItem>
+                        <SelectItem value="all">Tümü</SelectItem>
                         {TREATMENTS.map((treatment) => (
                           <SelectItem key={treatment} value={treatment}>
                             {treatment}
@@ -254,13 +254,13 @@ export default function ClinicListing() {
                     <label className="text-sm font-medium mb-2 block">Country</label>
                     <Select value={selectedCountry} onValueChange={(value) => {
                       setSelectedCountry(value);
-                      setSelectedCity(""); // Reset city when country changes
+                      setSelectedCity("all"); // Reset city when country changes
                     }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All</SelectItem>
+                        <SelectItem value="all">Tümü</SelectItem>
                         {Object.keys(LOCATIONS).map((country) => (
                           <SelectItem key={country} value={country}>
                             {country}
@@ -275,13 +275,13 @@ export default function ClinicListing() {
                     <Select 
                       value={selectedCity} 
                       onValueChange={setSelectedCity}
-                      disabled={!selectedCountry}
+                      disabled={!selectedCountry || selectedCountry === "all"}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select city" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All</SelectItem>
+                        <SelectItem value="all">Tümü</SelectItem>
                         {selectedCountry && LOCATIONS[selectedCountry as keyof typeof LOCATIONS]?.map((city) => (
                           <SelectItem key={city} value={city}>
                             {city}
