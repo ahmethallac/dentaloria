@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search } from "lucide-react";
+import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
@@ -205,13 +205,13 @@ export default function ClinicListing() {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="relative bg-gradient-primary py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-mesh opacity-50"></div>
-        <div className="relative max-w-7xl mx-auto text-center text-white">
-          <h1 className="text-5xl font-bold mb-6 animate-fade-in">
+      <div className="relative bg-gradient-to-r from-primary/20 to-accent/20 py-16 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-white/30"></div>
+        <div className="relative max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
             Dünya Çapında En İyi Dental Klinikler
           </h1>
-          <p className="text-xl opacity-90 max-w-2xl mx-auto animate-slide-up">
+          <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80">
             Uzman doktorlar, modern teknoloji ve güvenilir hizmet ile mükemmel gülümsemenizi bulun
           </p>
         </div>
@@ -246,34 +246,44 @@ export default function ClinicListing() {
                 {/* Treatments Filter */}
                 <div>
                   <h4 className="text-sm font-semibold mb-4 text-foreground/80">Tedaviler</h4>
-                  <div className="space-y-2">
-                    <button
+                  <div className="space-y-3">
+                    <div
                       onClick={() => setSelectedTreatment("all")}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                        selectedTreatment === "all" 
-                          ? "bg-gradient-primary text-white shadow-glow" 
-                          : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                      }`}
+                      className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                     >
-                      Tümü
-                    </button>
+                      <div className="relative">
+                        {selectedTreatment === "all" ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <span className={`text-sm ${selectedTreatment === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
+                        Tümü
+                      </span>
+                    </div>
                     {TREATMENTS.slice(0, showAllTreatments ? TREATMENTS.length : 7).map((treatment) => (
-                      <button
+                      <div
                         key={treatment}
                         onClick={() => setSelectedTreatment(treatment)}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                          selectedTreatment === treatment 
-                            ? "bg-gradient-primary text-white shadow-glow" 
-                            : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                        }`}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                       >
-                        {treatment}
-                      </button>
+                        <div className="relative">
+                          {selectedTreatment === treatment ? (
+                            <CheckCircle2 className="h-5 w-5 text-primary" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <span className={`text-sm ${selectedTreatment === treatment ? "text-primary font-medium" : "text-foreground/70"}`}>
+                          {treatment}
+                        </span>
+                      </div>
                     ))}
                     {TREATMENTS.length > 7 && (
                       <button
                         onClick={() => setShowAllTreatments(!showAllTreatments)}
-                        className="w-full text-left px-4 py-3 rounded-xl text-sm bg-gradient-secondary text-white hover:opacity-90 transition-all duration-300"
+                        className="text-primary text-sm hover:underline ml-8"
                       >
                         {showAllTreatments ? "Daha Az Göster" : "Tümünü Göster"}
                       </button>
@@ -284,35 +294,45 @@ export default function ClinicListing() {
                 {/* Countries Filter */}
                 <div>
                   <h4 className="text-sm font-semibold mb-4 text-foreground/80">Ülkeler</h4>
-                  <div className="space-y-2">
-                    <button
+                  <div className="space-y-3">
+                    <div
                       onClick={() => {
                         setSelectedCountry("all");
                         setSelectedCity("all");
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                        selectedCountry === "all" 
-                          ? "bg-gradient-primary text-white shadow-glow" 
-                          : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                      }`}
+                      className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                     >
-                      Tümü
-                    </button>
+                      <div className="relative">
+                        {selectedCountry === "all" ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <span className={`text-sm ${selectedCountry === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
+                        Tümü
+                      </span>
+                    </div>
                     {Object.keys(LOCATIONS).map((country) => (
-                      <button
+                      <div
                         key={country}
                         onClick={() => {
                           setSelectedCountry(country);
                           setSelectedCity("all");
                         }}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                          selectedCountry === country 
-                            ? "bg-gradient-primary text-white shadow-glow" 
-                            : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                        }`}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                       >
-                        {country}
-                      </button>
+                        <div className="relative">
+                          {selectedCountry === country ? (
+                            <CheckCircle2 className="h-5 w-5 text-primary" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <span className={`text-sm ${selectedCountry === country ? "text-primary font-medium" : "text-foreground/70"}`}>
+                          {country}
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -321,29 +341,39 @@ export default function ClinicListing() {
                 {selectedCountry !== "all" && LOCATIONS[selectedCountry as keyof typeof LOCATIONS] && (
                   <div>
                     <h4 className="text-sm font-semibold mb-4 text-foreground/80">Şehirler</h4>
-                    <div className="space-y-2">
-                      <button
+                    <div className="space-y-3">
+                      <div
                         onClick={() => setSelectedCity("all")}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                          selectedCity === "all" 
-                            ? "bg-gradient-primary text-white shadow-glow" 
-                            : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                        }`}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                       >
-                        Tümü
-                      </button>
+                        <div className="relative">
+                          {selectedCity === "all" ? (
+                            <CheckCircle2 className="h-5 w-5 text-primary" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <span className={`text-sm ${selectedCity === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
+                          Tümü
+                        </span>
+                      </div>
                       {LOCATIONS[selectedCountry as keyof typeof LOCATIONS].map((city) => (
-                        <button
+                        <div
                           key={city}
                           onClick={() => setSelectedCity(city)}
-                          className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 ${
-                            selectedCity === city 
-                              ? "bg-gradient-primary text-white shadow-glow" 
-                              : "bg-white/50 hover:bg-white/70 text-foreground/70 hover:text-foreground"
-                          }`}
+                          className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                         >
-                          {city}
-                        </button>
+                          <div className="relative">
+                            {selectedCity === city ? (
+                              <CheckCircle2 className="h-5 w-5 text-primary" />
+                            ) : (
+                              <Circle className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <span className={`text-sm ${selectedCity === city ? "text-primary font-medium" : "text-foreground/70"}`}>
+                            {city}
+                          </span>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -398,94 +428,92 @@ export default function ClinicListing() {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardContent className="p-0">
-                    <div className="flex flex-col lg:flex-row">
+                    <div className="flex flex-col lg:flex-row h-auto lg:h-48">
                       {/* Image Section */}
-                      <div className="lg:w-80 h-64 lg:h-auto relative">
-                        <div className="absolute inset-0 bg-gradient-card"></div>
+                      <div className="lg:w-64 h-48 lg:h-full relative">
                         <img
                           src={clinic.images[0]}
                           alt={clinic.name}
                           className="w-full h-full object-cover"
                         />
                         {clinic.featured && (
-                          <Badge className="absolute top-4 left-4 bg-gradient-accent text-white border-0 px-3 py-1 rounded-full">
+                          <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs">
                             Öne Çıkan
                           </Badge>
                         )}
-                        <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white">
-                          <MapPin className="h-4 w-4" />
-                          <span className="text-sm font-medium">{clinic.city}, {clinic.country}</span>
+                        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white">
+                          <MapPin className="h-3 w-3" />
+                          <span className="text-xs font-medium">{clinic.city}, {clinic.country}</span>
                         </div>
                       </div>
 
                       {/* Content Section */}
-                      <div className="flex-1 p-6">
+                      <div className="flex-1 p-4">
                         <div className="flex flex-col h-full">
                           {/* Header */}
-                          <div className="flex justify-between items-start mb-4">
+                          <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="text-xl font-bold text-foreground mb-2">{clinic.name}</h3>
-                              <div className="flex items-center gap-4 text-sm text-foreground/70">
+                              <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
+                              <div className="flex items-center gap-3 text-xs text-foreground/70">
                                 <div className="flex items-center gap-1">
-                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                                   <span className="font-semibold">{clinic.rating}</span>
-                                  <span>({clinic.reviewCount} yorum)</span>
+                                  <span>({clinic.reviewCount})</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Users className="h-4 w-4" />
-                                  <span>{clinic.experience} yıl deneyim</span>
+                                  <Users className="h-3 w-3" />
+                                  <span>{clinic.experience} yıl</span>
                                 </div>
                               </div>
                             </div>
                             
                             {/* Price */}
                             <div className="text-right">
-                              <div className="text-sm text-foreground/70 mb-1">Başlangıç fiyatı</div>
-                              <div className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                              <div className="text-xs text-foreground/70 mb-1">Başlangıç</div>
+                              <div className="text-lg font-bold text-primary">
                                 {Object.values(clinic.treatments)[0]}
                               </div>
                             </div>
                           </div>
 
                           {/* Services */}
-                          <div className="flex gap-6 mb-6">
-                            <div className="flex items-center gap-2">
+                          <div className="flex gap-4 mb-3">
+                            <div className="flex items-center gap-1">
                               {clinic.transferService ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <CheckCircle className="h-4 w-4 text-green-500" />
                               ) : (
-                                <XCircle className="h-5 w-5 text-red-500" />
+                                <XCircle className="h-4 w-4 text-red-500" />
                               )}
-                              <span className="text-sm text-foreground/80">Transfer Hizmeti</span>
+                              <span className="text-xs text-foreground/80">Transfer</span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               {clinic.accommodationService ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <CheckCircle className="h-4 w-4 text-green-500" />
                               ) : (
-                                <XCircle className="h-5 w-5 text-red-500" />
+                                <XCircle className="h-4 w-4 text-red-500" />
                               )}
-                              <span className="text-sm text-foreground/80">Konaklama Hizmeti</span>
+                              <span className="text-xs text-foreground/80">Konaklama</span>
                             </div>
                           </div>
 
                           {/* Treatments */}
-                          <div className="flex-1 mb-6">
-                            <h4 className="text-sm font-semibold text-foreground/80 mb-3">Sunulan Tedaviler</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {Object.entries(clinic.treatments).slice(0, 3).map(([treatment, price]) => (
+                          <div className="flex-1 mb-3">
+                            <div className="flex flex-wrap gap-1">
+                              {Object.entries(clinic.treatments).slice(0, 2).map(([treatment, price]) => (
                                 <Badge 
                                   key={treatment} 
                                   variant="secondary" 
-                                  className="bg-gradient-subtle text-foreground/80 border-0 px-3 py-1 rounded-full"
+                                  className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
                                 >
                                   {treatment} - {price}
                                 </Badge>
                               ))}
-                              {Object.keys(clinic.treatments).length > 3 && (
+                              {Object.keys(clinic.treatments).length > 2 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="border-primary/20 text-primary bg-white/50 px-3 py-1 rounded-full"
+                                  className="border-primary/20 text-primary bg-white/50 px-2 py-1 rounded-full text-xs"
                                 >
-                                  +{Object.keys(clinic.treatments).length - 3} daha
+                                  +{Object.keys(clinic.treatments).length - 2}
                                 </Badge>
                               )}
                             </div>
@@ -493,7 +521,8 @@ export default function ClinicListing() {
 
                           {/* Action Button */}
                           <Button 
-                            className="bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl px-8 py-3 font-semibold shadow-glow transition-all duration-300 hover:scale-105"
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90 text-white border-0 rounded-lg px-4 py-2 font-medium transition-all duration-300 self-start"
                           >
                             Kliniği İncele
                           </Button>
