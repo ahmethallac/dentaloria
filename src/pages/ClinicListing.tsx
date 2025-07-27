@@ -136,35 +136,109 @@ const mockClinics = [
 // Image Carousel Component
 const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const nextImage = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev + 1) % images.length);
+    setTimeout(() => setIsTransitioning(false), 300);
   };
 
   const prevImage = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(0);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && images.length > 1) {
+      nextImage();
+    }
+    if (isRightSwipe && images.length > 1) {
+      prevImage();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setTouchEnd(0);
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (touchStart === 0) return;
+    setTouchEnd(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && images.length > 1) {
+      nextImage();
+    }
+    if (isRightSwipe && images.length > 1) {
+      prevImage();
+    }
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   return (
-    <div className="relative w-full h-full group">
+    <div 
+      className="relative w-full h-full group cursor-grab active:cursor-grabbing select-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <img
         src={images[currentIndex]}
         alt={alt}
-        className="w-full h-full object-cover transition-opacity duration-300"
+        className="w-full h-full object-cover transition-opacity duration-300 pointer-events-none"
+        draggable={false}
       />
       
       {images.length > 1 && (
         <>
           {/* Navigation Buttons */}
           <button
-            onClick={prevImage}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              prevImage();
+            }}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 z-10"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
-            onClick={nextImage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextImage();
+            }}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 z-10"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -174,9 +248,12 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
             {images.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  index === currentIndex ? 'bg-white' : 'bg-white/50'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentIndex(index);
+                }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'
                 }`}
               />
             ))}
@@ -479,7 +556,7 @@ export default function ClinicListing() {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardContent className="p-0">
-                    <div className="flex flex-col lg:flex-row h-auto lg:h-48">
+                    <div className="flex flex-col lg:flex-row h-auto lg:h-48 relative">
                       {/* Image Section */}
                       <div className="lg:w-64 h-48 lg:h-full relative">
                         <ImageCarousel images={clinic.images} alt={clinic.name} />
@@ -495,7 +572,7 @@ export default function ClinicListing() {
                       </div>
 
                       {/* Content Section */}
-                      <div className="flex-1 p-4">
+                      <div className="flex-1 p-4 pr-20 lg:pr-28">
                         <div className="flex flex-col h-full">
                           {/* Header */}
                           <div className="flex justify-between items-start mb-3">
@@ -544,7 +621,7 @@ export default function ClinicListing() {
                           </div>
 
                           {/* Treatments */}
-                          <div className="flex-1 mb-3">
+                          <div className="flex-1">
                             <div className="flex flex-wrap gap-1">
                               {Object.entries(clinic.treatments).slice(0, 2).map(([treatment, price]) => (
                                 <Badge 
@@ -565,14 +642,21 @@ export default function ClinicListing() {
                               )}
                             </div>
                           </div>
+                        </div>
+                      </div>
 
-                          {/* Action Button */}
+                      {/* Action Button - Positioned on Right */}
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-2">
+                        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
                           <Button 
                             size="sm"
-                            className="bg-primary hover:bg-primary/90 text-white border-0 rounded-lg px-4 py-2 font-medium transition-all duration-300 self-start"
+                            className="bg-transparent hover:bg-white/10 text-white border-0 rounded-lg px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap"
                           >
                             Kliniği İncele
                           </Button>
+                        </div>
+                        <div className="text-xs text-center text-foreground/50 hidden lg:block">
+                          Detayları<br/>Görüntüle
                         </div>
                       </div>
                     </div>
