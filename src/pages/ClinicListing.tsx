@@ -575,28 +575,30 @@ export default function ClinicListing() {
                       <div className="flex-1 p-4 pr-20 lg:pr-28">
                         <div className="flex flex-col h-full">
                           {/* Header */}
-                          <div className="flex justify-between items-start mb-3">
-                            <div>
-                              <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                              <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                <div className="flex items-center gap-1">
-                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                  <span className="font-semibold">{clinic.rating}</span>
-                                  <span>({clinic.reviewCount})</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Users className="h-3 w-3" />
-                                  <span>{clinic.experience} years</span>
+                          <div className="mb-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
+                                <div className="flex items-center gap-3 text-xs text-foreground/70">
+                                  <div className="flex items-center gap-1">
+                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                    <span className="font-semibold">{clinic.rating}</span>
+                                    <span>({clinic.reviewCount})</span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Users className="h-3 w-3" />
+                                    <span>{clinic.experience} years</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                            
-                            {/* Price */}
-                            <div className="text-right">
-                              <div className="text-xs text-foreground/70 mb-1">Starting</div>
-                              <div className="text-lg font-bold text-primary">
-                                {Object.values(clinic.treatments)[0]}
-                              </div>
+                          </div>
+
+                          {/* Price - Centered */}
+                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-right">
+                            <div className="text-xs text-foreground/70 mb-1">Starting</div>
+                            <div className="text-lg font-bold text-primary">
+                              {Object.values(clinic.treatments)[0]}
                             </div>
                           </div>
 
