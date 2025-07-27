@@ -35,9 +35,9 @@ const TREATMENTS = [
 ];
 
 const LOCATIONS = {
-  "Türkiye": ["Antalya", "İstanbul", "İzmir"],
-  "Amerika Birleşik Devletleri": ["New York City", "Los Angeles", "Florida"],
-  "İngiltere": ["London", "Manchester"]
+  "Turkey": ["Antalya", "Istanbul", "Izmir"],
+  "United States": ["New York City", "Los Angeles", "Florida"],
+  "United Kingdom": ["London", "Manchester"]
 };
 
 const mockClinics = [
@@ -45,7 +45,7 @@ const mockClinics = [
     id: 1,
     name: "Smile Center Turkey",
     images: [clinic1, clinic2, clinic3, clinic4, clinic5],
-    country: "Türkiye",
+    country: "Turkey",
     city: "Antalya",
     rating: 4.8,
     reviewCount: 245,
@@ -63,8 +63,8 @@ const mockClinics = [
     id: 2,
     name: "Elite Dental Clinic",
     images: [clinic6, clinic7, clinic8, clinic9],
-    country: "Türkiye",
-    city: "İstanbul",
+    country: "Turkey",
+    city: "Istanbul",
     rating: 4.9,
     reviewCount: 189,
     treatments: {
@@ -81,7 +81,7 @@ const mockClinics = [
     id: 3,
     name: "Perfect Smile NY",
     images: [clinic10, clinic1, clinic3, clinic5],
-    country: "Amerika Birleşik Devletleri",
+    country: "United States",
     city: "New York City",
     rating: 4.7,
     reviewCount: 312,
@@ -99,7 +99,7 @@ const mockClinics = [
     id: 4,
     name: "London Dental Excellence",
     images: [clinic2, clinic4, clinic6, clinic8, clinic10],
-    country: "İngiltere",
+    country: "United Kingdom",
     city: "London",
     rating: 4.6,
     reviewCount: 156,
@@ -117,7 +117,7 @@ const mockClinics = [
     id: 5,
     name: "Dental Paradise Antalya",
     images: [clinic7, clinic9, clinic1, clinic3],
-    country: "Türkiye",
+    country: "Turkey",
     city: "Antalya",
     rating: 4.9,
     reviewCount: 298,
@@ -337,10 +337,10 @@ export default function ClinicListing() {
         <div className="absolute inset-0 bg-white/30"></div>
         <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
-            Dünya Çapında En İyi Dental Klinikler
+            World's Best Dental Clinics
           </h1>
           <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80">
-            Uzman doktorlar, modern teknoloji ve güvenilir hizmet ile mükemmel gülümsemenizi bulun
+            Find your perfect smile with expert doctors, modern technology and reliable service
           </p>
         </div>
       </div>
@@ -353,7 +353,7 @@ export default function ClinicListing() {
               <div className="flex items-center gap-2 mb-6">
                 <Filter className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
-                  Filtreler
+                  Filters
                 </h3>
               </div>
 
@@ -362,7 +362,7 @@ export default function ClinicListing() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Klinik veya tedavi ara..."
+                    placeholder="Search clinic or treatment..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-white/70 border-white/30 rounded-xl"
@@ -373,7 +373,7 @@ export default function ClinicListing() {
               <div className="space-y-6">
                 {/* Treatments Filter */}
                 <div>
-                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Tedaviler</h4>
+                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Treatments</h4>
                   <div className="space-y-3">
                     <div
                       onClick={() => setSelectedTreatment("all")}
@@ -387,7 +387,7 @@ export default function ClinicListing() {
                         )}
                       </div>
                       <span className={`text-sm ${selectedTreatment === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                        Tümü
+                        All
                       </span>
                     </div>
                     {TREATMENTS.slice(0, showAllTreatments ? TREATMENTS.length : 7).map((treatment) => (
@@ -413,7 +413,7 @@ export default function ClinicListing() {
                         onClick={() => setShowAllTreatments(!showAllTreatments)}
                         className="text-primary text-sm hover:underline ml-8"
                       >
-                        {showAllTreatments ? "Daha Az Göster" : "Tümünü Göster"}
+                        {showAllTreatments ? "Show Less" : "Show All"}
                       </button>
                     )}
                   </div>
@@ -421,7 +421,7 @@ export default function ClinicListing() {
                 
                 {/* Countries Filter */}
                 <div>
-                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Ülkeler</h4>
+                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Countries</h4>
                   <div className="space-y-3">
                     <div
                       onClick={() => {
@@ -438,7 +438,7 @@ export default function ClinicListing() {
                         )}
                       </div>
                       <span className={`text-sm ${selectedCountry === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                        Tümü
+                        All
                       </span>
                     </div>
                     {Object.keys(LOCATIONS).map((country) => (
@@ -468,7 +468,7 @@ export default function ClinicListing() {
                 {/* Cities Filter */}
                 {selectedCountry !== "all" && LOCATIONS[selectedCountry as keyof typeof LOCATIONS] && (
                   <div>
-                    <h4 className="text-sm font-semibold mb-4 text-foreground/80">Şehirler</h4>
+                    <h4 className="text-sm font-semibold mb-4 text-foreground/80">Cities</h4>
                     <div className="space-y-3">
                       <div
                         onClick={() => setSelectedCity("all")}
@@ -482,7 +482,7 @@ export default function ClinicListing() {
                           )}
                         </div>
                         <span className={`text-sm ${selectedCity === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          Tümü
+                          All
                         </span>
                       </div>
                       {LOCATIONS[selectedCountry as keyof typeof LOCATIONS].map((city) => (
@@ -513,7 +513,7 @@ export default function ClinicListing() {
                   variant="outline"
                   className="w-full bg-white/50 border-white/30 hover:bg-white/70 rounded-xl"
                 >
-                  Filtreleri Temizle
+                  Clear Filters
                 </Button>
               </div>
             </div>
@@ -525,9 +525,9 @@ export default function ClinicListing() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">
-                  {filteredClinics.length} Klinik Bulundu
+                  {filteredClinics.length} Clinics Found
                 </h2>
-                <p className="text-foreground/70">En iyi dental klinikleri keşfedin</p>
+                <p className="text-foreground/70">Discover the best dental clinics</p>
               </div>
               
               <div className="flex items-center gap-2">
@@ -537,9 +537,9 @@ export default function ClinicListing() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
-                    <SelectItem value="rating">Puana Göre</SelectItem>
-                    <SelectItem value="price">Fiyata Göre</SelectItem>
-                    <SelectItem value="experience">Deneyime Göre</SelectItem>
+                    <SelectItem value="rating">By Rating</SelectItem>
+                    <SelectItem value="price">By Price</SelectItem>
+                    <SelectItem value="experience">By Experience</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -562,7 +562,7 @@ export default function ClinicListing() {
                         <ImageCarousel images={clinic.images} alt={clinic.name} />
                         {clinic.featured && (
                           <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
-                            Öne Çıkan
+                            Featured
                           </Badge>
                         )}
                         <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white z-10">
@@ -586,14 +586,14 @@ export default function ClinicListing() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <Users className="h-3 w-3" />
-                                  <span>{clinic.experience} yıl</span>
+                                  <span>{clinic.experience} years</span>
                                 </div>
                               </div>
                             </div>
                             
                             {/* Price */}
                             <div className="text-right">
-                              <div className="text-xs text-foreground/70 mb-1">Başlangıç</div>
+                              <div className="text-xs text-foreground/70 mb-1">Starting</div>
                               <div className="text-lg font-bold text-primary">
                                 {Object.values(clinic.treatments)[0]}
                               </div>
@@ -616,7 +616,7 @@ export default function ClinicListing() {
                               ) : (
                                 <XCircle className="h-4 w-4 text-red-500" />
                               )}
-                              <span className="text-xs text-foreground/80">Konaklama</span>
+                              <span className="text-xs text-foreground/80">Accommodation</span>
                             </div>
                           </div>
 
@@ -648,8 +648,8 @@ export default function ClinicListing() {
                       {/* Action Button - Right Edge Vertical */}
                       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group cursor-pointer">
                         <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
-                          <span className="group-hover:hidden">İncele</span>
-                          <span className="hidden group-hover:inline">Kliniği İncele</span>
+                          <span className="group-hover:hidden">View</span>
+                          <span className="hidden group-hover:inline">View Clinic</span>
                         </div>
                       </div>
                     </div>
@@ -663,15 +663,15 @@ export default function ClinicListing() {
               <div className="text-center py-16">
                 <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-8 shadow-card border border-white/20 max-w-md mx-auto">
                   <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-xl font-semibold text-foreground mb-4">Klinik Bulunamadı</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-4">No Clinics Found</h3>
                   <p className="text-foreground/70 mb-6">
-                    Seçilen kriterlere uygun klinik bulunamadı. Filtrelerinizi değiştirmeyi deneyin.
+                    No clinics match your selected criteria. Try changing your filters.
                   </p>
                   <Button 
                     onClick={clearFilters}
                     className="bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl px-6 py-2"
                   >
-                    Filtreleri Temizle
+                    Clear Filters
                   </Button>
                 </div>
               </div>
