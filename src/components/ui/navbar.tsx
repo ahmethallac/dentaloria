@@ -23,19 +23,19 @@ export const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Ana Sayfa
+              Home
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Klinikler
+              Clinics
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Tedaviler
+              Treatments
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Hakkımızda
+              About Us
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              İletişim
+              Contact
             </a>
           </div>
 
@@ -43,19 +43,19 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Button variant="ghost" size="sm" className="hover:bg-primary/10">
               <Search className="w-4 h-4 mr-2" />
-              Ara
+              Search
             </Button>
             <Button variant="ghost" size="sm" className="hover:bg-primary/10">
               <Heart className="w-4 h-4 mr-2" />
-              Favoriler
+              Favorites
             </Button>
             <Button variant="outline" size="sm" className="border-primary/30 hover:bg-primary/5">
               <User className="w-4 h-4 mr-2" />
-              Giriş Yap
+              Sign In
             </Button>
             <Button size="sm" className="bg-gradient-primary hover:opacity-90">
               <Phone className="w-4 h-4 mr-2" />
-              Klinik Ekle
+              Add Clinic
             </Button>
           </div>
 
@@ -80,29 +80,29 @@ export const Navbar = () => {
           <div className="md:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-md border-b border-border/50 animate-fade-in">
             <div className="container mx-auto px-4 py-6 space-y-4">
               <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Ana Sayfa
+                Home
               </a>
               <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Klinikler
+                Clinics
               </a>
               <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Tedaviler
+                Treatments
               </a>
               <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Hakkımızda
+                About Us
               </a>
               <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                İletişim
+                Contact
               </a>
               
               <div className="pt-4 border-t border-border/50 space-y-3">
                 <Button variant="outline" size="sm" className="w-full border-primary/30">
                   <User className="w-4 h-4 mr-2" />
-                  Giriş Yap
+                  Sign In
                 </Button>
                 <Button size="sm" className="w-full bg-gradient-primary hover:opacity-90">
                   <Phone className="w-4 h-4 mr-2" />
-                  Klinik Ekle
+                  Add Clinic
                 </Button>
               </div>
             </div>
@@ -114,9 +114,9 @@ export const Navbar = () => {
       <div className="bg-gradient-primary text-white text-center py-2 text-sm">
         <div className="container mx-auto px-4 flex items-center justify-center gap-2">
           <Badge variant="secondary" className="bg-white/20 text-white border-0">
-            YENİ
+            NEW
           </Badge>
-          <span>Ücretsiz danışmanlık için hemen başvurun! 🦷</span>
+          <span>Apply for free consultation now! 🦷</span>
         </div>
       </div>
     </nav>

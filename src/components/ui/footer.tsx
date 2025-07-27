@@ -29,8 +29,8 @@ export const Footer = () => {
                 className="h-10 mb-4"
               />
               <p className="text-muted-foreground leading-relaxed">
-                Türkiye'nin en güvenilir diş kliniği karşılaştırma platformu. 
-                En iyi tedaviyi en uygun fiyata bulmanızı sağlıyoruz.
+                Turkey's most trusted dental clinic comparison platform. 
+                We help you find the best treatment at the most affordable price.
               </p>
             </div>
             
@@ -38,11 +38,11 @@ export const Footer = () => {
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <Shield className="w-4 h-4 text-medical-green" />
-                <span>Güvenli Platform</span>
+                <span>Secure Platform</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Award className="w-4 h-4 text-trust-gold" />
-                <span>Doğrulanmış Klinikler</span>
+                <span>Verified Clinics</span>
               </div>
             </div>
 
@@ -65,16 +65,16 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Hızlı Linkler</h3>
+            <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-3">
               {[
-                "Ana Sayfa",
-                "Klinikler",
-                "Tedavi Türleri",
-                "Fiyat Karşılaştırma",
-                "Hasta Yorumları",
+                "Home",
+                "Clinics",
+                "Treatment Types",
+                "Price Comparison",
+                "Patient Reviews",
                 "Blog",
-                "SSS"
+                "FAQ"
               ].map((link) => (
                 <li key={link}>
                   <a 
@@ -90,16 +90,16 @@ export const Footer = () => {
 
           {/* Services */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Popüler Tedaviler</h3>
+            <h3 className="text-lg font-semibold">Popular Treatments</h3>
             <ul className="space-y-3">
               {[
-                "İmplant Tedavisi",
-                "Diş Beyazlatma",
-                "Ortodonti",
-                "Vener Kaplama",
-                "Diş Çekimi",
-                "Kanal Tedavisi",
-                "Protez Diş"
+                "Implant Treatment",
+                "Teeth Whitening",
+                "Orthodontics",
+                "Veneer Coating",
+                "Tooth Extraction",
+                "Root Canal Treatment",
+                "Dentures"
               ].map((service) => (
                 <li key={service}>
                   <a 
@@ -115,7 +115,7 @@ export const Footer = () => {
 
           {/* Contact & Newsletter */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">İletişim</h3>
+            <h3 className="text-lg font-semibold">Contact</h3>
             
             {/* Contact Info */}
             <div className="space-y-4">
@@ -130,27 +130,27 @@ export const Footer = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary mt-1" />
                 <span className="text-muted-foreground">
-                  Levent Mahallesi<br />
-                  Büyükdere Caddesi No:123<br />
-                  Şişli, İstanbul
+                  Levent District<br />
+                  Büyükdere Avenue No:123<br />
+                  Şişli, Istanbul
                 </span>
               </div>
             </div>
 
             {/* Newsletter */}
             <div className="space-y-3">
-              <h4 className="font-medium">Bültenimize Abone Olun</h4>
+              <h4 className="font-medium">Subscribe to Our Newsletter</h4>
               <div className="flex gap-2">
                 <Input 
-                  placeholder="E-posta adresiniz" 
+                  placeholder="Your email address" 
                   className="flex-1 bg-background/70 border-border/50 focus:border-primary"
                 />
                 <Button size="sm" className="bg-gradient-primary hover:opacity-90">
-                  Abone Ol
+                  Subscribe
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                En yeni kampanya ve fırsatlardan haberdar olun.
+                Stay informed about the latest campaigns and opportunities.
               </p>
             </div>
           </div>
@@ -161,27 +161,27 @@ export const Footer = () => {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            © 2024 Dentaloria. Tüm hakları saklıdır.
+            © 2024 Dentaloria. All rights reserved.
           </div>
           
           <div className="flex flex-wrap gap-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Gizlilik Politikası
+              Privacy Policy
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Kullanım Şartları
+              Terms of Service
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Çerez Politikası
+              Cookie Policy
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              KVKK
+              GDPR
             </a>
           </div>
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Star className="w-4 h-4 fill-trust-gold text-trust-gold" />
-            <span>Trustpilot ile güvence altında</span>
+            <span>Secured with Trustpilot</span>
           </div>
         </div>
       </div>
