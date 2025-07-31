@@ -1,61 +1,52 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Menu, X, Search, User, Heart, Phone } from "lucide-react";
+import { Menu, X, Building2 } from "lucide-react";
 import { useState } from "react";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center group">
             <img 
-              src="/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png" 
+              src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png" 
               alt="Dentaloria" 
-              className="h-8"
+              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Home
+          <div className="hidden md:flex items-center space-x-10">
+            <Link to="/" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
+              Ana Sayfa
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link to="/clinic-listing" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
+              Klinikler
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <a href="#treatments" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
+              Tedaviler
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Clinics
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Treatments
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              About Us
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors duration-300 font-medium">
-              Contact
+            <a href="#about" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
+              Hakkımızda
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
           </div>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-              <Search className="w-4 h-4 mr-2" />
-              Search
-            </Button>
-            <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-              <Heart className="w-4 h-4 mr-2" />
-              Favorites
-            </Button>
-            <Button variant="outline" size="sm" className="border-primary/30 hover:bg-primary/5">
-              <User className="w-4 h-4 mr-2" />
-              Sign In
-            </Button>
-            <Button size="sm" className="bg-gradient-primary hover:opacity-90">
-              <Phone className="w-4 h-4 mr-2" />
-              Add Clinic
+          {/* Desktop Action */}
+          <div className="hidden md:flex items-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
+            >
+              <Building2 className="w-5 h-5 mr-2" />
+              Klinik Girişi
             </Button>
           </div>
 
@@ -65,11 +56,12 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="hover:bg-primary/10"
             >
               {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-6 h-6" />
               )}
             </Button>
           </div>
@@ -77,47 +69,33 @@ export const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-md border-b border-border/50 animate-fade-in">
-            <div className="container mx-auto px-4 py-6 space-y-4">
-              <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Home
+          <div className="md:hidden absolute top-20 left-0 right-0 bg-background/98 backdrop-blur-xl border-b border-primary/20 shadow-xl animate-fade-in">
+            <div className="container mx-auto px-6 py-8 space-y-6">
+              <Link to="/" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
+                Ana Sayfa
+              </Link>
+              <Link to="/clinic-listing" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
+                Klinikler
+              </Link>
+              <a href="#treatments" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
+                Tedaviler
               </a>
-              <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Clinics
-              </a>
-              <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Treatments
-              </a>
-              <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                About Us
-              </a>
-              <a href="#" className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2">
-                Contact
+              <a href="#about" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
+                Hakkımızda
               </a>
               
-              <div className="pt-4 border-t border-border/50 space-y-3">
-                <Button variant="outline" size="sm" className="w-full border-primary/30">
-                  <User className="w-4 h-4 mr-2" />
-                  Sign In
-                </Button>
-                <Button size="sm" className="w-full bg-gradient-primary hover:opacity-90">
-                  <Phone className="w-4 h-4 mr-2" />
-                  Add Clinic
+              <div className="pt-6 border-t border-primary/20">
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-4 rounded-full shadow-lg shadow-primary/25"
+                >
+                  <Building2 className="w-5 h-5 mr-2" />
+                  Klinik Girişi
                 </Button>
               </div>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Promotional Banner */}
-      <div className="bg-gradient-primary text-white text-center py-2 text-sm">
-        <div className="container mx-auto px-4 flex items-center justify-center gap-2">
-          <Badge variant="secondary" className="bg-white/20 text-white border-0">
-            NEW
-          </Badge>
-          <span>Apply for free consultation now! 🦷</span>
-        </div>
       </div>
     </nav>
   );
