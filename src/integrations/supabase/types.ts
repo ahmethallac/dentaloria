@@ -14,7 +14,371 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cities: {
+        Row: {
+          country_id: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          country_id: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          country_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cities_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_images: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          image_url: string
+          is_primary: boolean | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          image_url: string
+          is_primary?: boolean | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_primary?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_images_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_treatments: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          price: number | null
+          treatment_id: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          price?: number | null
+          treatment_id: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          price?: number | null
+          treatment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_treatments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
+            referencedRelation: "treatments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinics: {
+        Row: {
+          address: string | null
+          city_id: string
+          created_at: string
+          description: string | null
+          email: string | null
+          experience_years: number | null
+          id: string
+          is_featured: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          patient_count: number | null
+          phone: string | null
+          rating: number | null
+          review_count: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city_id: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          patient_count?: number | null
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city_id?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          patient_count?: number | null
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinics_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_requests: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      countries: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      doctors: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          experience_years: number | null
+          id: string
+          image_url: string | null
+          name: string
+          specialization: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          image_url?: string | null
+          name: string
+          specialization?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          specialization?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          clinic_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reviewer_name: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reviewer_name: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewer_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      treatment_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      treatments: {
+        Row: {
+          category_id: string
+          created_at: string
+          description: string | null
+          id: string
+          max_price: number | null
+          min_price: number | null
+          name: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          name: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "treatment_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
