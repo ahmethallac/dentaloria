@@ -130,7 +130,7 @@ const Index = () => {
       
       {/* Hero Section with Video Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Video */}
+        {/* Background Video/Gradient */}
         <div className="absolute inset-0 w-full h-full">
           <video
             autoPlay
@@ -138,11 +138,12 @@ const Index = () => {
             loop
             playsInline
             className="w-full h-full object-cover"
+            style={{ display: 'none' }}
           >
-            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-            <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4" />
+            <source src="/videos/dental-background.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-blue-800/80 to-indigo-900/90"></div>
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop')] bg-cover bg-center opacity-20"></div>
         </div>
         
         {/* Hero Content */}
