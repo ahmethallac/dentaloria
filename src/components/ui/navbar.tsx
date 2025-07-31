@@ -22,19 +22,19 @@ export const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-10">
             <Link to="/" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Ana Sayfa
+              Home
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link to="/clinic-listing" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Klinikler
+              Clinics
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <a href="#treatments" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Tedaviler
+              Treatments
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a href="#about" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Hakkımızda
+              About Us
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
           </div>
@@ -46,7 +46,7 @@ export const Navbar = () => {
               className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
             >
               <Building2 className="w-5 h-5 mr-2" />
-              Klinik Girişi
+              Clinic Login
             </Button>
           </div>
 
@@ -72,16 +72,16 @@ export const Navbar = () => {
           <div className="md:hidden absolute top-20 left-0 right-0 bg-background/98 backdrop-blur-xl border-b border-primary/20 shadow-xl animate-fade-in">
             <div className="container mx-auto px-6 py-8 space-y-6">
               <Link to="/" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Ana Sayfa
+                Home
               </Link>
               <Link to="/clinic-listing" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Klinikler
+                Clinics
               </Link>
               <a href="#treatments" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Tedaviler
+                Treatments
               </a>
               <a href="#about" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Hakkımızda
+                About Us
               </a>
               
               <div className="pt-6 border-t border-primary/20">
@@ -90,7 +90,7 @@ export const Navbar = () => {
                   className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-4 rounded-full shadow-lg shadow-primary/25"
                 >
                   <Building2 className="w-5 h-5 mr-2" />
-                  Klinik Girişi
+                  Clinic Login
                 </Button>
               </div>
             </div>
