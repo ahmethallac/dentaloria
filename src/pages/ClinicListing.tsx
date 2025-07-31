@@ -382,24 +382,24 @@ export default function ClinicListing() {
                         All
                       </span>
                     </div>
-                    {treatments.slice(0, showAllTreatments ? treatments.length : 7).map((treatment) => (
-                      <div
-                        key={treatment.id}
-                        onClick={() => setSelectedTreatment(treatment.id)}
-                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                      >
-                        <div className="relative">
-                          {selectedTreatment === treatment.id ? (
-                            <CheckCircle2 className="h-5 w-5 text-primary" />
-                          ) : (
-                            <Circle className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <span className={`text-sm ${selectedTreatment === treatment.id ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          {treatment.name}
-                        </span>
-                      </div>
-                    ))}
+                     {["All-on-6", "All-on-4", "Hollywood Smile", "Implants", "Crowns", "Root Canal"].map((treatmentName) => (
+                       <div
+                         key={treatmentName}
+                         onClick={() => setSelectedTreatment(treatmentName)}
+                         className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+                       >
+                         <div className="relative">
+                           {selectedTreatment === treatmentName ? (
+                             <CheckCircle2 className="h-5 w-5 text-primary" />
+                           ) : (
+                             <Circle className="h-5 w-5 text-muted-foreground" />
+                           )}
+                         </div>
+                         <span className={`text-sm ${selectedTreatment === treatmentName ? "text-primary font-medium" : "text-foreground/70"}`}>
+                           {treatmentName}
+                         </span>
+                       </div>
+                     ))}
                     {treatments.length > 7 && (
                       <button
                         onClick={() => setShowAllTreatments(!showAllTreatments)}
