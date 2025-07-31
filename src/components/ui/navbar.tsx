@@ -15,7 +15,7 @@ export const Navbar = () => {
             <img 
               src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png" 
               alt="Dentaloria" 
-              className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
