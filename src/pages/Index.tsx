@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/ui/navbar";
@@ -11,134 +10,115 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
 
 // Mock data for clinics
-const featuredClinics = [
-  {
-    id: "1",
-    name: "Smile Center Istanbul",
-    location: "Levent",
-    city: "Istanbul",
-    country: "Turkey",
-    rating: 4.9,
-    reviewCount: 1247,
-    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=300&fit=crop",
-    specialties: ["Implant", "Orthodontics", "Cosmetic Dentistry"],
-    priceRange: "$$$",
-    experience: 15,
-    patientCount: 5000,
-    isVerified: true
-  },
-  {
-    id: "2", 
-    name: "Dental Plus Antalya",
-    location: "Lara",
-    city: "Antalya", 
-    country: "Turkey",
-    rating: 4.8,
-    reviewCount: 892,
-    image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop",
-    specialties: ["Veneers", "Whitening", "Implant"],
-    priceRange: "$$",
-    experience: 12,
-    patientCount: 3500,
-    isVerified: true
-  },
-  {
-    id: "3",
-    name: "Elite Dental Ankara",
-    location: "Çankaya",
-    city: "Ankara",
-    country: "Turkey",
-    rating: 4.6,
-    reviewCount: 523,
-    image: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop",
-    specialties: ["Orthodontics", "Pediatric Dentistry", "Surgery"],
-    priceRange: "$$",
-    experience: 10,
-    patientCount: 2800,
-    isVerified: true
-  }
-];
+const featuredClinics = [{
+  id: "1",
+  name: "Smile Center Istanbul",
+  location: "Levent",
+  city: "Istanbul",
+  country: "Turkey",
+  rating: 4.9,
+  reviewCount: 1247,
+  image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=300&fit=crop",
+  specialties: ["Implant", "Orthodontics", "Cosmetic Dentistry"],
+  priceRange: "$$$",
+  experience: 15,
+  patientCount: 5000,
+  isVerified: true
+}, {
+  id: "2",
+  name: "Dental Plus Antalya",
+  location: "Lara",
+  city: "Antalya",
+  country: "Turkey",
+  rating: 4.8,
+  reviewCount: 892,
+  image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop",
+  specialties: ["Veneers", "Whitening", "Implant"],
+  priceRange: "$$",
+  experience: 12,
+  patientCount: 3500,
+  isVerified: true
+}, {
+  id: "3",
+  name: "Elite Dental Ankara",
+  location: "Çankaya",
+  city: "Ankara",
+  country: "Turkey",
+  rating: 4.6,
+  reviewCount: 523,
+  image: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop",
+  specialties: ["Orthodontics", "Pediatric Dentistry", "Surgery"],
+  priceRange: "$$",
+  experience: 10,
+  patientCount: 2800,
+  isVerified: true
+}];
 
 // Treatment and location data
-const TREATMENTS = [
-  "Full Mouth All-on-4",
-  "Full Mouth All-on-6", 
-  "Hollywood Smile",
-  "Zirconium Crowns",
-  "Porcelain Crowns",
-  "Lamina Coatings",
-  "E-max Skins",
-  "Implant",
-  "Root Canal",
-  "Open Sinus Lift",
-  "Closed Sinus Lift",
-  "Bone Graft"
-];
-
+const TREATMENTS = ["Full Mouth All-on-4", "Full Mouth All-on-6", "Hollywood Smile", "Zirconium Crowns", "Porcelain Crowns", "Lamina Coatings", "E-max Skins", "Implant", "Root Canal", "Open Sinus Lift", "Closed Sinus Lift", "Bone Graft"];
 const COUNTRIES = ["Turkey", "USA", "UK"];
-
-const HOMEPAGE_TREATMENTS = [
-  { name: "All-on-6", icon: Smile, description: "Complete denture solution" },
-  { name: "All-on-4", icon: UserCheck, description: "Affordable denture option" },
-  { name: "Hollywood Smile", icon: Star, description: "Perfect smile makeover" },
-  { name: "Implants", icon: Activity, description: "Permanent tooth solution" },
-  { name: "Crowns", icon: Crown, description: "Tooth crowns" },
-  { name: "Root Canal", icon: Stethoscope, description: "Root canal treatment" }
-];
-
-const POPULAR_CITIES = [
-  {
-    name: "Istanbul",
-    image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
-    description: "Turkey's largest city"
-  },
-  {
-    name: "Antalya", 
-    image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png",
-    description: "Pearl of the Mediterranean"
-  },
-  {
-    name: "Izmir",
-    image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png", 
-    description: "Shining star of the Aegean"
-  }
-];
-
+const HOMEPAGE_TREATMENTS = [{
+  name: "All-on-6",
+  icon: Smile,
+  description: "Complete denture solution"
+}, {
+  name: "All-on-4",
+  icon: UserCheck,
+  description: "Affordable denture option"
+}, {
+  name: "Hollywood Smile",
+  icon: Star,
+  description: "Perfect smile makeover"
+}, {
+  name: "Implants",
+  icon: Activity,
+  description: "Permanent tooth solution"
+}, {
+  name: "Crowns",
+  icon: Crown,
+  description: "Tooth crowns"
+}, {
+  name: "Root Canal",
+  icon: Stethoscope,
+  description: "Root canal treatment"
+}];
+const POPULAR_CITIES = [{
+  name: "Istanbul",
+  image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
+  description: "Turkey's largest city"
+}, {
+  name: "Antalya",
+  image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png",
+  description: "Pearl of the Mediterranean"
+}, {
+  name: "Izmir",
+  image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png",
+  description: "Shining star of the Aegean"
+}];
 const Index = () => {
   const navigate = useNavigate();
   const [selectedTreatment, setSelectedTreatment] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedTreatment) params.set('treatment', selectedTreatment);
     if (selectedCountry) params.set('country', selectedCountry);
     navigate(`/clinic-listing?${params.toString()}`);
   };
-
   const handleCityClick = (cityName: string) => {
     navigate(`/clinic-listing?city=${cityName}`);
   };
-
   const handleTreatmentClick = (treatmentName: string) => {
     navigate(`/clinic-listing?treatment=${treatmentName}`);
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* Hero Section with Video Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-          >
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
             <source src="https://videos.pexels.com/video-files/4490548/4490548-uhd_2560_1440_25fps.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/70 via-blue-700/60 to-indigo-800/70"></div>
@@ -149,7 +129,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
               Find the Best
-              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-gray-50">
                 Dental Clinic
               </span>
             </h1>
@@ -165,11 +145,9 @@ const Index = () => {
                     <SelectValue placeholder="Select treatment type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {TREATMENTS.map((treatment) => (
-                      <SelectItem key={treatment} value={treatment}>
+                    {TREATMENTS.map(treatment => <SelectItem key={treatment} value={treatment}>
                         {treatment}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 
@@ -178,20 +156,15 @@ const Index = () => {
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
                   <SelectContent>
-                    {COUNTRIES.map((country) => (
-                      <SelectItem key={country} value={country}>
+                    {COUNTRIES.map(country => <SelectItem key={country} value={country}>
                         {country}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="w-full">
-                <Button 
-                  onClick={handleSearch}
-                  className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                >
+                <Button onClick={handleSearch} className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                   <Search className="h-5 w-5 mr-2" />
                   Search Clinics
                 </Button>
@@ -233,18 +206,11 @@ const Index = () => {
             <div className="absolute right-0 top-0 w-8 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
             
             <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-              {featuredClinics.map((clinic, index) => (
-                <div 
-                  key={clinic.id} 
-                  className="flex-none w-80 md:w-96 snap-start animate-fade-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <ClinicCard
-                    {...clinic}
-                    onClick={() => console.log(`Clicked clinic ${clinic.id}`)}
-                  />
-                </div>
-              ))}
+              {featuredClinics.map((clinic, index) => <div key={clinic.id} className="flex-none w-80 md:w-96 snap-start animate-fade-in" style={{
+              animationDelay: `${index * 0.1}s`
+            }}>
+                  <ClinicCard {...clinic} onClick={() => console.log(`Clicked clinic ${clinic.id}`)} />
+                </div>)}
             </div>
           </div>
         </div>
@@ -261,27 +227,18 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {POPULAR_CITIES.map((city, index) => (
-              <Card 
-                key={city.name}
-                className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => handleCityClick(city.name)}
-              >
+            {POPULAR_CITIES.map((city, index) => <Card key={city.name} className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in" style={{
+            animationDelay: `${index * 0.1}s`
+          }} onClick={() => handleCityClick(city.name)}>
                 <div className="relative h-64">
-                  <img
-                    src={city.image}
-                    alt={city.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
+                  <img src={city.image} alt={city.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 text-white">
                     <h3 className="text-2xl font-bold mb-2">{city.name}</h3>
                     <p className="text-white/90">{city.description}</p>
                   </div>
                 </div>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -337,13 +294,9 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {HOMEPAGE_TREATMENTS.map((treatment, index) => (
-              <Card 
-                key={treatment.name}
-                className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => handleTreatmentClick(treatment.name)}
-              >
+            {HOMEPAGE_TREATMENTS.map((treatment, index) => <Card key={treatment.name} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
+            animationDelay: `${index * 0.1}s`
+          }} onClick={() => handleTreatmentClick(treatment.name)}>
                 <CardContent className="p-6 text-center">
                   <div className="bg-gradient-to-br from-primary/10 to-blue-600/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:from-primary/20 group-hover:to-blue-600/20 transition-colors duration-300">
                     <treatment.icon className="h-8 w-8 text-primary" />
@@ -351,8 +304,7 @@ const Index = () => {
                   <h3 className="font-semibold mb-2">{treatment.name}</h3>
                   <p className="text-sm text-muted-foreground">{treatment.description}</p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -367,12 +319,7 @@ const Index = () => {
             <p className="text-xl mb-8 text-white/90">
               Thousands of patients have achieved their dream smile through our platform. It's your turn!
             </p>
-            <Button 
-              size="lg" 
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3"
-              onClick={() => navigate('/clinic-listing')}
-            >
+            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3" onClick={() => navigate('/clinic-listing')}>
               Get Started
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
@@ -381,8 +328,6 @@ const Index = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
