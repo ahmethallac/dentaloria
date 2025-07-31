@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { getClinics, getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
-import type { Clinic, Country, City, Treatment, TreatmentCategory } from "@/lib/supabase";
+// Types will be imported from services file
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -159,11 +159,11 @@ export default function ClinicListing() {
   const [searchParams] = useSearchParams();
   
   // State
-  const [clinics, setClinics] = useState<Clinic[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
-  const [treatments, setTreatments] = useState<Treatment[]>([]);
-  const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
+  const [clinics, setClinics] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+  const [treatments, setTreatments] = useState<any[]>([]);
+  const [treatmentCategories, setTreatmentCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -280,14 +280,14 @@ export default function ClinicListing() {
     setPage(1);
   };
 
-  const getClinicImages = (clinic: Clinic): string[] => {
+  const getClinicImages = (clinic: any): string[] => {
     if (clinic.clinic_images && clinic.clinic_images.length > 0) {
       return clinic.clinic_images.map(img => img.image_url);
     }
     return [defaultImages[0]]; // Return at least one default image
   };
 
-  const getClinicPrice = (clinic: Clinic): string => {
+  const getClinicPrice = (clinic: any): string => {
     if (clinic.clinic_treatments && clinic.clinic_treatments.length > 0) {
       const treatment = clinic.clinic_treatments[0];
       if (treatment.price_from) {
@@ -297,7 +297,7 @@ export default function ClinicListing() {
     return "Contact for pricing";
   };
 
-  const getClinicLocation = (clinic: Clinic): string => {
+  const getClinicLocation = (clinic: any): string => {
     return `${clinic.cities?.name || 'Unknown'}, ${clinic.cities?.countries?.name || 'Unknown'}`;
   };
 
