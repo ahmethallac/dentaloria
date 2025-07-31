@@ -240,7 +240,7 @@ export default function ClinicListing() {
         }
         
         if (selectedTreatment !== "all") {
-          filters.treatmentId = selectedTreatment;
+          filters.searchQuery = selectedTreatment;
         }
         
 
