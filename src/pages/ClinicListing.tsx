@@ -173,7 +173,7 @@ export default function ClinicListing() {
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [sortBy, setSortBy] = useState("rating");
   const [showAllTreatments, setShowAllTreatments] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  
   const [page, setPage] = useState(1);
   const [totalClinics, setTotalClinics] = useState(0);
 
@@ -243,9 +243,6 @@ export default function ClinicListing() {
           filters.treatmentId = selectedTreatment;
         }
         
-        if (searchQuery.trim()) {
-          filters.searchQuery = searchQuery.trim();
-        }
 
         const { clinics: clinicsData, total } = await getClinics(filters);
         
@@ -274,13 +271,12 @@ export default function ClinicListing() {
     };
 
     loadClinics();
-  }, [selectedTreatment, selectedCountry, selectedCity, sortBy, searchQuery, page]);
+  }, [selectedTreatment, selectedCountry, selectedCity, sortBy, page]);
 
   const clearFilters = () => {
     setSelectedTreatment("all");
     setSelectedCountry("all");
     setSelectedCity("all");
-    setSearchQuery("");
     setPage(1);
   };
 
@@ -349,18 +345,6 @@ export default function ClinicListing() {
                 </h3>
               </div>
 
-              {/* Search */}
-              <div className="mb-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search clinic or treatment..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/70 border-white/30 rounded-xl"
-                  />
-                </div>
-              </div>
 
               <div className="space-y-6">
                 {/* Treatments Filter */}
