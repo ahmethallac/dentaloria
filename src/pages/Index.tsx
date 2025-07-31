@@ -130,20 +130,11 @@ const Index = () => {
       
       {/* Hero Section with Video Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Video/Gradient */}
+        {/* Modern Dental Clinic Background */}
         <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-            style={{ display: 'none' }}
-          >
-            <source src="/videos/dental-background.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-blue-800/80 to-indigo-900/90"></div>
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop')] bg-cover bg-center opacity-20"></div>
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920&h=1080&fit=crop')] bg-cover bg-center"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/85 via-blue-700/75 to-indigo-800/85"></div>
+          <div className="absolute inset-0 backdrop-blur-[1px]"></div>
         </div>
         
         {/* Hero Content */}
