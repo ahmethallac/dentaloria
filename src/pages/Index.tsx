@@ -139,7 +139,8 @@ const Index = () => {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-dentist-working-on-a-patient-32808-large.mp4" type="video/mp4" />
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
         </div>
