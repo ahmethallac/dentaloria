@@ -38,8 +38,9 @@ const Auth = () => {
         title: "Success!",
         description: "Logged in successfully."
       })
-      navigate('/')
+      navigate('/add-clinic')
     } catch (error: any) {
+      console.error('Login error:', error)
       toast({
         title: "Login Error",
         description: error.message || "An error occurred during login.",
