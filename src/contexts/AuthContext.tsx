@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
-import { Profile } from '@/lib/supabase'
+import type { Database } from '@/integrations/supabase/types'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 import { getCurrentUser, onAuthStateChange, signIn, signUp, signOut } from '@/lib/auth'
 import type { AuthUser } from '@/lib/auth'
 

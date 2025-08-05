@@ -1,6 +1,8 @@
-import { supabase } from './supabase'
+import { supabase } from '@/integrations/supabase/client'
 import type { User } from '@supabase/supabase-js'
-import type { Profile } from './supabase'
+import type { Database } from '@/integrations/supabase/types'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 export interface AuthUser extends User {
   profile?: Profile
