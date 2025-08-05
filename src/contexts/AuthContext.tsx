@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Listen for auth changes
     const { data: { subscription } } = onAuthStateChange((user) => {
+      console.log('Auth state changed:', user)
       setUser(user)
       setLoading(false)
     })
@@ -51,10 +52,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      await signIn(email, password)
-      const user = await getCurrentUser()
-      setUser(user)
+      const result = await signIn(email, password)
+      // Force user update after successful sign in
+      const updatedUser = await getCurrentUser()
+      setUser(updatedUser)
+      console.log('User signed in:', updatedUser)
     } catch (error) {
+      console.error('Sign in error:', error)
       throw error
     }
   }
