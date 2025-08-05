@@ -133,6 +133,7 @@ export type Database = {
           rating: number | null
           review_count: number | null
           updated_at: string
+          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -153,6 +154,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           updated_at?: string
+          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -173,6 +175,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           updated_at?: string
+          user_id?: string | null
           website?: string | null
         }
         Relationships: [
@@ -281,6 +284,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+          user_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_type?: string | null
+        }
+        Relationships: []
       }
       reviews: {
         Row: {
