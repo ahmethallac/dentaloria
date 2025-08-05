@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -11,9 +11,16 @@ import { Loader2 } from 'lucide-react'
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, user, loading } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/add-clinic')
+    }
+  }, [user, loading, navigate])
 
   const [loginForm, setLoginForm] = useState({
     email: '',
