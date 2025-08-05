@@ -294,6 +294,19 @@ export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> =
   return data || []
 }
 
+// Trustpilot integration helper
+export const fetchTrustpilotRating = async (trustpilotUrl: string): Promise<number | null> => {
+  try {
+    // For now, return a mock rating since Trustpilot API requires complex setup
+    // In production, you would implement actual Trustpilot API integration
+    const mockRating = Math.random() * 2 + 3; // Random rating between 3-5
+    return parseFloat(mockRating.toFixed(1));
+  } catch (error) {
+    console.error('Error fetching Trustpilot rating:', error);
+    return null;
+  }
+};
+
 // Reviews
 export const getClinicReviews = async (clinicId: string, page: number = 1, limit: number = 10): Promise<{ reviews: Review[], total: number }> => {
   const from = (page - 1) * limit

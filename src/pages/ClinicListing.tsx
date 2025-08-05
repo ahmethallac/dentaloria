@@ -290,8 +290,8 @@ export default function ClinicListing() {
   const getClinicPrice = (clinic: any): string => {
     if (clinic.clinic_treatments && clinic.clinic_treatments.length > 0) {
       const treatment = clinic.clinic_treatments[0];
-      if (treatment.price_from) {
-        return `${treatment.currency} ${treatment.price_from}`;
+      if (treatment.starting_price_euro) {
+        return `€${treatment.starting_price_euro}`;
       }
     }
     return "Contact for pricing";
@@ -605,9 +605,9 @@ export default function ClinicListing() {
                                       variant="secondary" 
                                       className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
                                     >
-                                      {clinicTreatment.treatments?.name}
-                                      {clinicTreatment.price_from && ` - ${clinicTreatment.currency} ${clinicTreatment.price_from}`}
-                                    </Badge>
+                                       {clinicTreatment.treatments?.name}
+                                       {clinicTreatment.starting_price_euro && ` - €${clinicTreatment.starting_price_euro}`}
+                                     </Badge>
                                   ))}
                                   {clinic.clinic_treatments.length > 2 && (
                                     <Badge 
