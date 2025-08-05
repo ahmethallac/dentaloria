@@ -81,6 +81,7 @@ export type Database = {
           created_at: string
           id: string
           price: number | null
+          starting_price_euro: number | null
           treatment_id: string
         }
         Insert: {
@@ -88,6 +89,7 @@ export type Database = {
           created_at?: string
           id?: string
           price?: number | null
+          starting_price_euro?: number | null
           treatment_id: string
         }
         Update: {
@@ -95,6 +97,7 @@ export type Database = {
           created_at?: string
           id?: string
           price?: number | null
+          starting_price_euro?: number | null
           treatment_id?: string
         }
         Relationships: [
@@ -132,6 +135,8 @@ export type Database = {
           phone: string | null
           rating: number | null
           review_count: number | null
+          trustpilot_rating: number | null
+          trustpilot_url: string | null
           updated_at: string
           user_id: string | null
           website: string | null
@@ -153,6 +158,8 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           review_count?: number | null
+          trustpilot_rating?: number | null
+          trustpilot_url?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
@@ -174,6 +181,8 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           review_count?: number | null
+          trustpilot_rating?: number | null
+          trustpilot_url?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
@@ -255,7 +264,9 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          profile_image_url: string | null
           specialization: string | null
+          title: string | null
         }
         Insert: {
           clinic_id: string
@@ -264,7 +275,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          profile_image_url?: string | null
           specialization?: string | null
+          title?: string | null
         }
         Update: {
           clinic_id?: string
@@ -273,7 +286,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          profile_image_url?: string | null
           specialization?: string | null
+          title?: string | null
         }
         Relationships: [
           {

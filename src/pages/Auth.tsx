@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 
@@ -26,7 +25,7 @@ const Auth = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    userType: 'patient' as 'patient' | 'clinic_admin'
+    userType: 'clinic_admin' as const
   })
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -36,14 +35,14 @@ const Auth = () => {
     try {
       await signIn(loginForm.email, loginForm.password)
       toast({
-        title: "Başarılı!",
-        description: "Giriş yapıldı."
+        title: "Success!",
+        description: "Logged in successfully."
       })
       navigate('/')
     } catch (error: any) {
       toast({
-        title: "Giriş Hatası",
-        description: error.message || "Giriş yapılırken bir hata oluştu.",
+        title: "Login Error",
+        description: error.message || "An error occurred during login.",
         variant: "destructive"
       })
     } finally {
@@ -56,8 +55,8 @@ const Auth = () => {
 
     if (signupForm.password !== signupForm.confirmPassword) {
       toast({
-        title: "Hata",
-        description: "Şifreler eşleşmiyor.",
+        title: "Error",
+        description: "Passwords do not match.",
         variant: "destructive"
       })
       return
@@ -65,8 +64,8 @@ const Auth = () => {
 
     if (signupForm.password.length < 6) {
       toast({
-        title: "Hata", 
-        description: "Şifre en az 6 karakter olmalıdır.",
+        title: "Error", 
+        description: "Password must be at least 6 characters long.",
         variant: "destructive"
       })
       return
@@ -77,8 +76,8 @@ const Auth = () => {
     try {
       await signUp(signupForm.email, signupForm.password, signupForm.fullName, signupForm.userType)
       toast({
-        title: "Başarılı!",
-        description: "Hesabınız oluşturuldu. Giriş yapabilirsiniz."
+        title: "Success!",
+        description: "Account created successfully. You can now sign in."
       })
       // Reset form
       setSignupForm({
@@ -86,12 +85,12 @@ const Auth = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        userType: 'patient'
+        userType: 'clinic_admin'
       })
     } catch (error: any) {
       toast({
-        title: "Kayıt Hatası",
-        description: error.message || "Kayıt olurken bir hata oluştu.",
+        title: "Registration Error",
+        description: error.message || "An error occurred during registration.",
         variant: "destructive"
       })
     } finally {
@@ -103,16 +102,16 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Medical Tourism</CardTitle>
+          <CardTitle className="text-2xl font-bold">Dental Tourism Platform</CardTitle>
           <CardDescription>
-            Hesabınıza giriş yapın veya yeni hesap oluşturun
+            Sign in to your account or create a new clinic account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Giriş Yap</TabsTrigger>
-              <TabsTrigger value="signup">Kayıt Ol</TabsTrigger>
+              <TabsTrigger value="login">Sign In</TabsTrigger>
+              <TabsTrigger value="signup">Register Clinic</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
@@ -122,14 +121,14 @@ const Auth = () => {
                   <Input
                     id="login-email"
                     type="email"
-                    placeholder="ornek@email.com"
+                    placeholder="example@email.com"
                     value={loginForm.email}
                     onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password">Şifre</Label>
+                  <Label htmlFor="login-password">Password</Label>
                   <Input
                     id="login-password"
                     type="password"
@@ -141,7 +140,7 @@ const Auth = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Giriş Yap
+                  Sign In
                 </Button>
               </form>
             </TabsContent>
@@ -149,10 +148,10 @@ const Auth = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Ad Soyad</Label>
+                  <Label htmlFor="signup-name">Full Name</Label>
                   <Input
                     id="signup-name"
-                    placeholder="Ad Soyad"
+                    placeholder="Dr. John Smith"
                     value={signupForm.fullName}
                     onChange={(e) => setSignupForm(prev => ({ ...prev, fullName: e.target.value }))}
                     required
@@ -163,14 +162,14 @@ const Auth = () => {
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="ornek@email.com"
+                    placeholder="clinic@example.com"
                     value={signupForm.email}
                     onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Şifre</Label>
+                  <Label htmlFor="signup-password">Password</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -181,7 +180,7 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Şifre Tekrar</Label>
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -191,27 +190,14 @@ const Auth = () => {
                     required
                   />
                 </div>
-                <div className="space-y-3">
-                  <Label>Hesap Türü</Label>
-                  <RadioGroup
-                    value={signupForm.userType}
-                    onValueChange={(value: 'patient' | 'clinic_admin') => 
-                      setSignupForm(prev => ({ ...prev, userType: value }))
-                    }
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="patient" id="patient" />
-                      <Label htmlFor="patient">Hasta</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="clinic_admin" id="clinic_admin" />
-                      <Label htmlFor="clinic_admin">Klinik Sahibi</Label>
-                    </div>
-                  </RadioGroup>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    This platform is exclusively for dental clinics. By registering, you confirm that you represent a dental clinic.
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Kayıt Ol
+                  Register Clinic
                 </Button>
               </form>
             </TabsContent>
