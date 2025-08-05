@@ -2,7 +2,7 @@
 import { supabase } from '@/integrations/supabase/client'
 
 // Define types based on our database schema
-interface Country {
+export interface Country {
   id: string
   name: string
   code: string
@@ -10,7 +10,7 @@ interface Country {
   created_at: string
 }
 
-interface City {
+export interface City {
   id: string
   name: string
   country_id: string
@@ -18,7 +18,7 @@ interface City {
   countries?: Country
 }
 
-interface TreatmentCategory {
+export interface TreatmentCategory {
   id: string
   name: string
   description?: string
@@ -26,7 +26,7 @@ interface TreatmentCategory {
   created_at: string
 }
 
-interface Treatment {
+export interface Treatment {
   id: string
   name: string
   category_id: string
@@ -68,7 +68,7 @@ interface Doctor {
   created_at: string
 }
 
-interface Clinic {
+export interface Clinic {
   id: string
   name: string
   description?: string
@@ -84,6 +84,11 @@ interface Clinic {
   created_at: string
   updated_at: string
   owner_id?: string
+  user_id?: string
+  experience_years?: number
+  patient_count?: number
+  latitude?: number
+  longitude?: number
   cities?: City & { countries?: Country }
   clinic_images?: ClinicImage[]
   clinic_treatments?: ClinicTreatment[]
@@ -383,7 +388,7 @@ export const getUserClinics = async (userId: string): Promise<Clinic[]> => {
         treatments (*)
       )
     `)
-    .eq('owner_id', userId)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
   
   if (error) throw error

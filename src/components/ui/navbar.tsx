@@ -1,10 +1,19 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Building2 } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, User, LogOut, Building2 } from "lucide-react";
+import { Button } from "./button";
+import { useAuth } from "@/contexts/AuthContext";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5">
@@ -39,15 +48,41 @@ export const Navbar = () => {
             </a>
           </div>
 
-          {/* Desktop Action */}
-          <div className="hidden md:flex items-center">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
-            >
-              <Building2 className="w-5 h-5 mr-2" />
-              Clinic Login
-            </Button>
+          {/* Auth Section */}
+          <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    {profile?.full_name || user.email}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  {profile?.user_type === 'clinic_admin' && (
+                    <DropdownMenuItem onClick={() => navigate('/add-clinic')}>
+                      Klinik Ekle
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Çıkış Yap
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button onClick={() => navigate('/auth')} 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
+              >
+                <Building2 className="w-5 h-5 mr-2" />
+                Giriş Yap
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,14 +119,34 @@ export const Navbar = () => {
                 About Us
               </a>
               
-              <div className="pt-6 border-t border-primary/20">
-                <Button 
-                  size="lg" 
-                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-4 rounded-full shadow-lg shadow-primary/25"
-                >
-                  <Building2 className="w-5 h-5 mr-2" />
-                  Clinic Login
-                </Button>
+              {/* Mobile Auth */}
+              <div className="mt-4 pt-4 border-t border-primary/20">
+                {user ? (
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-muted-foreground">
+                      {profile?.full_name || user.email}
+                    </div>
+                    <Button onClick={() => navigate('/dashboard')} variant="outline" className="w-full">
+                      Dashboard
+                    </Button>
+                    {profile?.user_type === 'clinic_admin' && (
+                      <Button onClick={() => navigate('/add-clinic')} variant="outline" className="w-full">
+                        Klinik Ekle
+                      </Button>
+                    )}
+                    <Button onClick={handleSignOut} variant="ghost" className="w-full">
+                      Çıkış Yap
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={() => navigate('/auth')} 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-4 rounded-full shadow-lg shadow-primary/25"
+                  >
+                    <Building2 className="w-5 h-5 mr-2" />
+                    Giriş Yap
+                  </Button>
+                )}
               </div>
             </div>
           </div>

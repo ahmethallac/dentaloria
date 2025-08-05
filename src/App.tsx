@@ -7,7 +7,9 @@ import Index from "./pages/Index";
 import ClinicDetail from "./pages/ClinicDetail";
 import ClinicPanel from "./pages/ClinicPanel";
 import ClinicListing from "./pages/ClinicListing";
-
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import AddClinic from "./pages/AddClinic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +22,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/add-clinic" element={<AddClinic />} />
           <Route path="/clinic/:id" element={<ClinicDetail />} />
           <Route path="/clinic/:id/panel" element={<ClinicPanel />} />
           <Route path="/clinic-listing" element={<ClinicListing />} />
