@@ -61,9 +61,11 @@ const AddClinic = () => {
     email: '',
     website: '',
     trustpilot_url: '',
-    country_id: '',
     city_id: ''
   })
+
+  // Separate state for country selection (used only for city filtering)
+  const [selectedCountryId, setSelectedCountryId] = useState('')
 
   // Data states
   const [countries, setCountries] = useState<Country[]>([])
@@ -117,7 +119,8 @@ const AddClinic = () => {
   }
 
   const handleCountryChange = async (countryId: string) => {
-    setFormData(prev => ({ ...prev, country_id: countryId, city_id: '' }))
+    setSelectedCountryId(countryId)
+    setFormData(prev => ({ ...prev, city_id: '' }))
     
     // Fetch cities for selected country
     const { data: citiesData } = await supabase
@@ -423,7 +426,7 @@ const AddClinic = () => {
                     <Label>City *</Label>
                     <Select 
                       onValueChange={(value) => setFormData(prev => ({ ...prev, city_id: value }))}
-                      disabled={!formData.country_id}
+                      disabled={!selectedCountryId}
                       required
                     >
                       <SelectTrigger>
