@@ -240,7 +240,7 @@ export default function ClinicListing() {
         }
         
         if (selectedTreatment !== "all") {
-          filters.searchQuery = selectedTreatment;
+          filters.treatmentId = selectedTreatment;
         }
         
 
@@ -366,21 +366,21 @@ export default function ClinicListing() {
                         All
                       </span>
                     </div>
-                     {["All-on-6", "All-on-4", "Hollywood Smile", "Implants", "Crowns", "Root Canal"].map((treatmentName) => (
+                     {treatments.map((treatment) => (
                        <div
-                         key={treatmentName}
-                         onClick={() => setSelectedTreatment(treatmentName)}
+                         key={treatment.id}
+                         onClick={() => setSelectedTreatment(treatment.id)}
                          className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
                        >
                          <div className="relative">
-                           {selectedTreatment === treatmentName ? (
+                           {selectedTreatment === treatment.id ? (
                              <CheckCircle2 className="h-5 w-5 text-primary" />
                            ) : (
                              <Circle className="h-5 w-5 text-muted-foreground" />
                            )}
                          </div>
-                         <span className={`text-sm ${selectedTreatment === treatmentName ? "text-primary font-medium" : "text-foreground/70"}`}>
-                           {treatmentName}
+                         <span className={`text-sm ${selectedTreatment === treatment.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+                           {treatment.name}
                          </span>
                        </div>
                      ))}

@@ -217,7 +217,8 @@ export const getClinics = async (filters?: {
   }
   
   if (filters?.treatmentId) {
-    query = query.eq('clinic_treatments.treatment_id', filters.treatmentId)
+    // Filter clinics that have the specific treatment
+    query = query.contains('clinic_treatments', `[{"treatment_id": "${filters.treatmentId}"}]`)
   }
   
   if (filters?.searchQuery) {
