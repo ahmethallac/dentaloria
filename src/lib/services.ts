@@ -217,8 +217,19 @@ export const getClinics = async (filters?: {
   }
   
   if (filters?.treatmentId) {
-    // Filter clinics that have the specific treatment
-    query = query.contains('clinic_treatments', `[{"treatment_id": "${filters.treatmentId}"}]`)
+    // First get clinic IDs that offer this treatment
+    const { data: clinicTreatments } = await supabase
+      .from('clinic_treatments')
+      .select('clinic_id')
+      .eq('treatment_id', filters.treatmentId)
+    
+    if (clinicTreatments && clinicTreatments.length > 0) {
+      const clinicIds = clinicTreatments.map(ct => ct.clinic_id)
+      query = query.in('id', clinicIds)
+    } else {
+      // No clinics offer this treatment, return empty result
+      query = query.eq('id', '00000000-0000-0000-0000-000000000000')
+    }
   }
   
   if (filters?.searchQuery) {
