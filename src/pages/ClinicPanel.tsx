@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
+import { getClinicById, updateClinic } from "@/lib/services";
+import type { Clinic } from "@/lib/services";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Phone,
   Mail,
@@ -77,9 +81,90 @@ const mockStats = {
 
 const ClinicPanel = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [clinic, setClinic] = useState<Clinic | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [leads, setLeads] = useState(mockLeads);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [clinicForm, setClinicForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    description: ''
+  });
+
+  useEffect(() => {
+    if (!id) {
+      navigate('/dashboard');
+      return;
+    }
+    loadClinic();
+  }, [id, navigate]);
+
+  const loadClinic = async () => {
+    if (!id) return;
+    
+    try {
+      const clinicData = await getClinicById(id);
+      setClinic(clinicData);
+      setClinicForm({
+        name: clinicData.name || '',
+        phone: clinicData.phone || '',
+        email: clinicData.email || '',
+        address: clinicData.address || '',
+        description: clinicData.description || ''
+      });
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: "Klinik bilgileri yüklenirken hata oluştu.",
+        variant: "destructive"
+      });
+      navigate('/dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateClinic = async () => {
+    if (!id || !clinic) return;
+    
+    try {
+      await updateClinic(id, clinicForm);
+      toast({
+        title: "Başarılı",
+        description: "Klinik bilgileri güncellendi.",
+      });
+      // Reload clinic data
+      loadClinic();
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: "Klinik bilgileri güncellenirken hata oluştu.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">Yükleniyor...</div>
+      </div>
+    );
+  }
+
+  if (!clinic) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">Klinik bulunamadı.</div>
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -110,7 +195,7 @@ const ClinicPanel = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Smile Center İstanbul - Admin Panel</h1>
+              <h1 className="text-2xl font-bold">{clinic.name} - Admin Panel</h1>
               <p className="text-muted-foreground">Klinik yönetim paneli</p>
             </div>
             <div className="flex items-center gap-4">
@@ -370,36 +455,48 @@ const ClinicPanel = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm font-medium mb-2 block">Klinik Adı</label>
-                    <Input defaultValue="Smile Center İstanbul" />
+                    <Input 
+                      value={clinicForm.name}
+                      onChange={(e) => setClinicForm({...clinicForm, name: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">Telefon</label>
-                    <Input defaultValue="+90 (212) 123 45 67" />
+                    <Input 
+                      value={clinicForm.phone}
+                      onChange={(e) => setClinicForm({...clinicForm, phone: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">E-posta</label>
-                    <Input defaultValue="info@smilecenter.com" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Şehir</label>
-                    <Input defaultValue="İstanbul" />
+                    <Input 
+                      value={clinicForm.email}
+                      onChange={(e) => setClinicForm({...clinicForm, email: e.target.value})}
+                    />
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Adres</label>
-                  <Textarea defaultValue="Levent Mahallesi, Büyükdere Caddesi No:145" />
+                  <Textarea 
+                    value={clinicForm.address}
+                    onChange={(e) => setClinicForm({...clinicForm, address: e.target.value})}
+                  />
                 </div>
                 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Açıklama</label>
                   <Textarea 
-                    defaultValue="İstanbul'un kalbi Levent'te yer alan Smile Center, 15 yıllık deneyimi ile en kaliteli diş tedavilerini sunmaktadır."
+                    value={clinicForm.description}
+                    onChange={(e) => setClinicForm({...clinicForm, description: e.target.value})}
                     rows={4}
                   />
                 </div>
                 
-                <Button className="bg-gradient-primary hover:opacity-90">
+                <Button 
+                  onClick={handleUpdateClinic}
+                  className="bg-gradient-primary hover:opacity-90"
+                >
                   Bilgileri Güncelle
                 </Button>
               </CardContent>
