@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Upload, X, Plus, Camera } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
 import { supabase } from '@/integrations/supabase/client'
+import { optimizeClinicImages, optimizeDoctorImages } from '@/lib/imageUtils'
 
 interface Country {
   id: string
@@ -51,6 +53,8 @@ const AddClinic = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [currentStep, setCurrentStep] = useState('')
 
   // Form state
   const [formData, setFormData] = useState({
@@ -155,7 +159,7 @@ const AddClinic = () => {
     )
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length + clinicImages.length > 10) {
       toast({
@@ -165,14 +169,31 @@ const AddClinic = () => {
       })
       return
     }
-    setClinicImages(prev => [...prev, ...files])
+    
+    // Optimize images before adding to state
+    try {
+      const optimizedFiles = await optimizeClinicImages(files)
+      setClinicImages(prev => [...prev, ...optimizedFiles])
+      toast({
+        title: "Success",
+        description: `${files.length} image(s) optimized and added`
+      })
+    } catch (error) {
+      console.error('Error optimizing images:', error)
+      toast({
+        title: "Warning",
+        description: "Images added but optimization failed",
+        variant: "destructive"
+      })
+      setClinicImages(prev => [...prev, ...files])
+    }
   }
 
   const removeImage = (index: number) => {
     setClinicImages(prev => prev.filter((_, i) => i !== index))
   }
 
-  const addDoctor = () => {
+  const addDoctor = async () => {
     if (!doctorForm.title || !doctorForm.name || !doctorForm.experience_years || !doctorForm.profile_image) {
       toast({
         title: "Error",
@@ -182,13 +203,33 @@ const AddClinic = () => {
       return
     }
 
-    setDoctors(prev => [...prev, { ...doctorForm }])
-    setDoctorForm({
-      title: '',
-      name: '',
-      experience_years: 0,
-      profile_image: null
-    })
+    try {
+      // Optimize doctor image
+      const optimizedImage = await optimizeDoctorImages([doctorForm.profile_image])
+      const optimizedDoctor = { ...doctorForm, profile_image: optimizedImage[0] }
+      
+      setDoctors(prev => [...prev, optimizedDoctor])
+      setDoctorForm({
+        title: '',
+        name: '',
+        experience_years: 0,
+        profile_image: null
+      })
+      
+      toast({
+        title: "Success",
+        description: "Doctor added with optimized image"
+      })
+    } catch (error) {
+      console.error('Error optimizing doctor image:', error)
+      setDoctors(prev => [...prev, { ...doctorForm }])
+      setDoctorForm({
+        title: '',
+        name: '',
+        experience_years: 0,
+        profile_image: null
+      })
+    }
   }
 
   const removeDoctor = (index: number) => {
@@ -241,9 +282,13 @@ const AddClinic = () => {
     }
 
     setIsLoading(true)
+    setUploadProgress(0)
 
     try {
-      // Create clinic
+      // Step 1: Create clinic
+      setCurrentStep('Creating clinic...')
+      setUploadProgress(10)
+      
       const { data: clinicData, error: clinicError } = await supabase
         .from('clinics')
         .insert({
@@ -254,53 +299,89 @@ const AddClinic = () => {
         .single()
 
       if (clinicError) throw clinicError
-
       const clinicId = clinicData.id
 
-      // Upload clinic images
-      for (let i = 0; i < clinicImages.length; i++) {
-        const file = clinicImages[i]
+      // Step 2: Upload clinic images in parallel
+      setCurrentStep('Uploading clinic images...')
+      setUploadProgress(25)
+      
+      const clinicImagePromises = clinicImages.map(async (file, i) => {
         const fileName = `${clinicId}/${Date.now()}-${i}-${file.name}`
         const imageUrl = await uploadImage(file, 'clinic-images', fileName)
-        
-        await supabase
-          .from('clinic_images')
-          .insert({
-            clinic_id: clinicId,
-            image_url: imageUrl,
-            is_primary: i === 0
-          })
-      }
+        return {
+          clinic_id: clinicId,
+          image_url: imageUrl,
+          is_primary: i === 0
+        }
+      })
+      
+      const clinicImageData = await Promise.all(clinicImagePromises)
+      setUploadProgress(45)
 
-      // Add treatments
-      for (const treatment of selectedTreatments) {
-        await supabase
-          .from('clinic_treatments')
-          .insert({
-            clinic_id: clinicId,
-            treatment_id: treatment.treatment_id,
-            starting_price_euro: treatment.starting_price_euro
-          })
-      }
-
-      // Add doctors
-      for (const doctor of doctors) {
-        let doctorImageUrl = ''
+      // Step 3: Upload doctor images in parallel
+      setCurrentStep('Processing doctor profiles...')
+      
+      const doctorImagePromises = doctors.map(async (doctor) => {
         if (doctor.profile_image) {
           const fileName = `${clinicId}/doctors/${Date.now()}-${doctor.profile_image.name}`
-          doctorImageUrl = await uploadImage(doctor.profile_image, 'doctor-images', fileName)
+          const imageUrl = await uploadImage(doctor.profile_image, 'doctor-images', fileName)
+          return { ...doctor, profile_image_url: imageUrl }
         }
+        return { ...doctor, profile_image_url: '' }
+      })
+      
+      const doctorsWithImages = await Promise.all(doctorImagePromises)
+      setUploadProgress(65)
 
-        await supabase
-          .from('doctors')
-          .insert({
-            clinic_id: clinicId,
-            title: doctor.title,
-            name: doctor.name,
-            experience_years: doctor.experience_years,
-            profile_image_url: doctorImageUrl
-          })
+      // Step 4: Batch insert clinic images
+      setCurrentStep('Saving clinic images...')
+      
+      if (clinicImageData.length > 0) {
+        const { error: imageError } = await supabase
+          .from('clinic_images')
+          .insert(clinicImageData)
+        
+        if (imageError) throw imageError
       }
+      setUploadProgress(75)
+
+      // Step 5: Batch insert treatments
+      setCurrentStep('Adding treatments...')
+      
+      const treatmentData = selectedTreatments.map(treatment => ({
+        clinic_id: clinicId,
+        treatment_id: treatment.treatment_id,
+        starting_price_euro: treatment.starting_price_euro
+      }))
+      
+      if (treatmentData.length > 0) {
+        const { error: treatmentError } = await supabase
+          .from('clinic_treatments')
+          .insert(treatmentData)
+        
+        if (treatmentError) throw treatmentError
+      }
+      setUploadProgress(85)
+
+      // Step 6: Batch insert doctors
+      setCurrentStep('Adding doctors...')
+      
+      const doctorData = doctorsWithImages.map(doctor => ({
+        clinic_id: clinicId,
+        title: doctor.title,
+        name: doctor.name,
+        experience_years: doctor.experience_years,
+        profile_image_url: doctor.profile_image_url
+      }))
+      
+      if (doctorData.length > 0) {
+        const { error: doctorError } = await supabase
+          .from('doctors')
+          .insert(doctorData)
+        
+        if (doctorError) throw doctorError
+      }
+      setUploadProgress(100)
 
       toast({
         title: "Success!",
@@ -317,6 +398,8 @@ const AddClinic = () => {
       })
     } finally {
       setIsLoading(false)
+      setUploadProgress(0)
+      setCurrentStep('')
     }
   }
 
@@ -614,10 +697,21 @@ const AddClinic = () => {
                 >
                   Back to Dashboard
                 </Button>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Create Clinic
-                </Button>
+                <div className="flex flex-col items-end space-y-2">
+                  {isLoading && (
+                    <div className="w-full max-w-xs space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>{currentStep}</span>
+                        <span>{uploadProgress}%</span>
+                      </div>
+                      <Progress value={uploadProgress} className="w-full" />
+                    </div>
+                  )}
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Create Clinic
+                  </Button>
+                </div>
               </div>
             </form>
           </CardContent>
