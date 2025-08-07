@@ -40,13 +40,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLoading(false)
     })
 
-    // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange(async (user) => {
-      console.log('Auth state changed:', user)
-      if (user) {
-        // Get fresh user data with profile
-        const freshUser = await getCurrentUser()
-        setUser(freshUser)
+    // Listen for auth changes - NO ASYNC in callback to prevent deadlock
+    const { data: { subscription } } = onAuthStateChange((authUser) => {
+      console.log('Auth state changed:', authUser)
+      if (authUser) {
+        // Simple state update - fetch profile separately
+        setUser(authUser as AuthUser)
+        // Fetch profile data separately to avoid deadlock
+        setTimeout(() => {
+          getCurrentUser().then(setUser)
+        }, 0)
       } else {
         setUser(null)
       }
