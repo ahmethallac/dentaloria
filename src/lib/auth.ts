@@ -107,10 +107,13 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
     };
   }
   
-  return supabase.auth.onAuthStateChange(async (event, session) => {
+  return supabase.auth.onAuthStateChange((event, session) => {
     if (session?.user) {
-      const user = await getCurrentUser()
-      callback(user)
+      // Pass the user directly from session to avoid deadlock
+      callback({
+        ...session.user,
+        profile: undefined // Profile will be loaded separately
+      } as AuthUser)
     } else {
       callback(null)
     }
