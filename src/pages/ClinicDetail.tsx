@@ -82,7 +82,8 @@ const ClinicDetail = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  const clinic = getClinicData(id || "1");
+  const [clinic, setClinic] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({
     name: "",
     phone: "",
@@ -90,6 +91,34 @@ const ClinicDetail = () => {
     treatment: "",
     message: ""
   });
+
+  useEffect(() => {
+    if (!id) return;
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await getClinicById(id);
+        if (data) {
+          setClinic(mapClinic(data));
+        } else {
+          setClinic(null);
+        }
+      } catch (e) {
+        console.error("Klinik yüklenemedi", e);
+        toast({ title: "Hata", description: "Klinik bilgileri yüklenemedi.", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Yükleniyor...</div>
+      </div>
+    );
+  }
 
   if (!clinic) {
     return (
@@ -322,11 +351,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                 className="bg-background/80"
               />
               <Input 
-                placeholder="E-posta"
+                placeholder="E-posta *"
                 type="email"
                 value={contactForm.email}
                 onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                className="bg-background/80 hidden md:block"
+                required
+                className="bg-background/80"
               />
               <Input 
                 placeholder="Tedavi türü"
@@ -341,15 +371,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             </Button>
           </form>
           
-          {/* Mobile additional fields toggle */}
+          {/* Mobile additional fields */}
           <div className="md:hidden mt-3 space-y-2">
-            <Input 
-              placeholder="E-posta"
-              type="email"
-              value={contactForm.email}
-              onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-              className="bg-background/80"
-            />
             <Input 
               placeholder="Tedavi türü"
               value={contactForm.treatment}
