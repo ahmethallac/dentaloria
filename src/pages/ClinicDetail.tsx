@@ -22,6 +22,9 @@ import {
   Heart
 } from "lucide-react";
 import { useState } from "react";
+import { createContactRequest } from "@/lib/services";
+import { useToast } from "@/hooks/use-toast";
+
 
 // Mock clinic data - gerçek uygulamada API'den gelecek
 const getClinicData = (id: string) => {
@@ -69,6 +72,8 @@ const getClinicData = (id: string) => {
 
 const ClinicDetail = () => {
   const { id } = useParams();
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const clinic = getClinicData(id || "1");
   const [contactForm, setContactForm] = useState({
     name: "",
@@ -91,11 +96,31 @@ const ClinicDetail = () => {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission logic burada olacak
-    console.log("Form submitted:", contactForm);
-    alert("Başvurunuz alındı! Klinik en kısa sürede sizinle iletişime geçecektir.");
+    if (!id) {
+      toast({ title: "Hata", description: "Klinik bilgisi bulunamadı.", variant: "destructive" });
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await createContactRequest({
+        clinic_id: id,
+        name: contactForm.name,
+        email: contactForm.email,
+        phone: contactForm.phone,
+        message: contactForm.message || (contactForm.treatment ? `Tedavi: ${contactForm.treatment}` : undefined),
+        source: "website",
+        status: "new",
+      } as any);
+      toast({ title: "Başvurunuz alındı", description: "Klinik en kısa sürede sizinle iletişime geçecek." });
+      setContactForm({ name: "", phone: "", email: "", treatment: "", message: "" });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Hata", description: "Başvuru gönderilemedi. Lütfen tekrar deneyin.", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -302,9 +327,9 @@ const ClinicDetail = () => {
                 className="bg-background/80 hidden md:block"
               />
             </div>
-            <Button type="submit" className="bg-gradient-primary hover:opacity-90 px-6 whitespace-nowrap">
+<Button type="submit" disabled={submitting} className="bg-gradient-primary hover:opacity-90 px-6 whitespace-nowrap">
               <Calendar className="w-4 h-4 mr-2" />
-              Randevu Al
+              {submitting ? "Gönderiliyor..." : "Randevu Al"}
             </Button>
           </form>
           
