@@ -1,33 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin,
-  Star,
-  Shield,
-  Award
-} from "lucide-react";
-
+import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Star, Shield, Award } from "lucide-react";
 export const Footer = () => {
-  return (
-    <footer className="bg-gradient-to-br from-primary/5 to-primary-light/5 border-t border-border/50">
+  return <footer className="bg-gradient-to-br from-primary/5 to-primary-light/5 border-t border-border/50">
       <div className="container mx-auto px-4 py-16">
         {/* Main Footer Content */}
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 mb-12">
           {/* Company Info */}
           <div className="space-y-6">
             <div>
-              <img 
-                src="/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png" 
-                alt="Dentaloria" 
-                className="h-10 mb-4"
-              />
+              <img src="/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png" alt="Dentaloria" className="h-10 mb-4" />
               <p className="text-muted-foreground leading-relaxed">
                 Turkey's most trusted dental clinic comparison platform. 
                 We help you find the best treatment at the most affordable price.
@@ -67,24 +50,11 @@ export const Footer = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-3">
-              {[
-                "Home",
-                "Clinics",
-                "Treatment Types",
-                "Price Comparison",
-                "Patient Reviews",
-                "Blog",
-                "FAQ"
-              ].map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline"
-                  >
+              {["Home", "Clinics", "Treatment Types", "Price Comparison", "Patient Reviews", "Blog", "FAQ"].map(link => <li key={link}>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
                     {link}
                   </a>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -92,24 +62,11 @@ export const Footer = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">Popular Treatments</h3>
             <ul className="space-y-3">
-              {[
-                "Implant Treatment",
-                "Teeth Whitening",
-                "Orthodontics",
-                "Veneer Coating",
-                "Tooth Extraction",
-                "Root Canal Treatment",
-                "Dentures"
-              ].map((service) => (
-                <li key={service}>
-                  <a 
-                    href="#" 
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline"
-                  >
+              {["Implant Treatment", "Teeth Whitening", "Orthodontics", "Veneer Coating", "Tooth Extraction", "Root Canal Treatment", "Dentures"].map(service => <li key={service}>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
                     {service}
                   </a>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -120,20 +77,16 @@ export const Footer = () => {
             {/* Contact Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary" />
-                <span className="text-muted-foreground">+90 (212) 123 45 67</span>
+                
+                
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary" />
                 <span className="text-muted-foreground">info@dentaloria.com</span>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary mt-1" />
-                <span className="text-muted-foreground">
-                  Levent District<br />
-                  Büyükdere Avenue No:123<br />
-                  Şişli, Istanbul
-                </span>
+                
+                
               </div>
             </div>
 
@@ -141,10 +94,7 @@ export const Footer = () => {
             <div className="space-y-3">
               <h4 className="font-medium">Subscribe to Our Newsletter</h4>
               <div className="flex gap-2">
-                <Input 
-                  placeholder="Your email address" 
-                  className="flex-1 bg-background/70 border-border/50 focus:border-primary"
-                />
+                <Input placeholder="Your email address" className="flex-1 bg-background/70 border-border/50 focus:border-primary" />
                 <Button size="sm" className="bg-gradient-primary hover:opacity-90">
                   Subscribe
                 </Button>
@@ -160,9 +110,7 @@ export const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            © 2024 Dentaloria. All rights reserved.
-          </div>
+          <div className="text-sm text-muted-foreground">© 2024 HALLAC HEALTH TOURISM TRAVEL AGENCY All rights reserved.</div>
           
           <div className="flex flex-wrap gap-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
@@ -185,6 +133,5 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
