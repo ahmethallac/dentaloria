@@ -167,6 +167,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       } as any);
       toast({ title: "Inquiry received", description: "The clinic will contact you soon.", variant: "default" });
       setContactForm({ name: "", phone: "", email: "", treatment: "", message: "" });
+      setOpen(false);
     } catch (err) {
       console.error(err);
       toast({ title: "Error", description: "Submission failed. Please try again.", variant: "destructive" });
@@ -358,13 +359,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                       required
                     />
                     <Input 
-                      placeholder="Telefon *" type="tel"
+                      placeholder="Phone *" type="tel"
                       value={contactForm.phone}
                       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                       required
                     />
                     <Input 
-                      placeholder="E-posta *" type="email"
+                      placeholder="Email *" type="email"
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                       required
