@@ -95,25 +95,18 @@ export interface Clinic {
   doctors?: Doctor[]
 }
 
-interface Review {
-  id: string
-  clinic_id: string
-  user_id?: string
-  treatment_id?: string
-  rating: number
-  comment?: string
-  created_at: string
-  updated_at: string
-}
-
-interface ContactRequest {
+export interface ContactRequest {
   id: string
   clinic_id: string
   name: string
   email: string
   phone?: string
   message?: string
+  status: string
+  source?: string
+  notes?: string
   created_at: string
+  updated_at: string
 }
 
 // Countries and Cities
@@ -320,7 +313,7 @@ export const fetchTrustpilotRating = async (trustpilotUrl: string): Promise<numb
 };
 
 // Reviews
-export const getClinicReviews = async (clinicId: string, page: number = 1, limit: number = 10): Promise<{ reviews: Review[], total: number }> => {
+export const getClinicReviews = async (clinicId: string, page: number = 1, limit: number = 10): Promise<{ reviews: any[], total: number }> => {
   const from = (page - 1) * limit
   const to = from + limit - 1
   
@@ -339,7 +332,7 @@ export const getClinicReviews = async (clinicId: string, page: number = 1, limit
   }
 }
 
-export const createReview = async (review: Omit<Review, 'id' | 'created_at' | 'updated_at'>): Promise<Review> => {
+export const createReview = async (review: any): Promise<any> => {
   const { data, error } = await supabase
     .from('reviews')
     .insert(review)
@@ -351,13 +344,64 @@ export const createReview = async (review: Omit<Review, 'id' | 'created_at' | 'u
 }
 
 // Contact Requests
-export const createContactRequest = async (request: Omit<ContactRequest, 'id' | 'created_at'>): Promise<ContactRequest> => {
+export const createContactRequest = async (request: Omit<ContactRequest, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: string }): Promise<ContactRequest> => {
   const { data, error } = await supabase
     .from('contact_requests')
     .insert(request)
     .select()
     .single()
   
+  if (error) throw error
+  return data
+}
+
+// Klinik başvurularını listeleme (filtre + sayfalama)
+export const getContactRequests = async (
+  clinicId: string,
+  opts?: { status?: 'new' | 'contacted' | 'completed' | 'all'; q?: string; page?: number; limit?: number }
+): Promise<{ requests: ContactRequest[]; total: number }> => {
+  const page = opts?.page ?? 1
+  const limit = opts?.limit ?? 10
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+
+  let query = supabase
+    .from('contact_requests')
+    .select('*', { count: 'exact' })
+    .eq('clinic_id', clinicId)
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (opts?.status && opts.status !== 'all') {
+    query = query.eq('status', opts.status)
+  }
+
+  if (opts?.q && opts.q.trim().length > 0) {
+    const q = opts.q.trim()
+    query = query.or(`name.ilike.%${q}%,email.ilike.%${q}%,phone.ilike.%${q}%`)
+  }
+
+  const { data, error, count } = await query
+  if (error) throw error
+
+  return {
+    requests: data || [],
+    total: count || 0
+  }
+}
+
+// Başvuru güncelleme (durum, notlar vs.)
+export const updateContactRequest = async (
+  id: string,
+  updates: Partial<Pick<ContactRequest, 'status' | 'notes'>>
+): Promise<ContactRequest> => {
+  const { data, error } = await supabase
+    .from('contact_requests')
+    .update({ ...updates })
+    .eq('id', id)
+    .select('*')
+    .single()
+
   if (error) throw error
   return data
 }
@@ -421,7 +465,7 @@ export const getUserClinics = async (userId: string): Promise<Clinic[]> => {
 }
 
 // Analytics and Stats
-export const getPopularTreatments = async (limit: number = 10): Promise<Treatment[]> => {
+export const getPopularTreatments = async (limit: number = 10): Promise<any[]> => {
   const { data, error } = await supabase
     .from('treatments')
     .select(`

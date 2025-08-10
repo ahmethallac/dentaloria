@@ -205,7 +205,11 @@ export type Database = {
           id: string
           message: string | null
           name: string
+          notes: string | null
           phone: string | null
+          source: string | null
+          status: string
+          updated_at: string
         }
         Insert: {
           clinic_id: string
@@ -214,7 +218,11 @@ export type Database = {
           id?: string
           message?: string | null
           name: string
+          notes?: string | null
           phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
         }
         Update: {
           clinic_id?: string
@@ -223,7 +231,11 @@ export type Database = {
           id?: string
           message?: string | null
           name?: string
+          notes?: string | null
           phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: [
           {
