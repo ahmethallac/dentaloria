@@ -109,7 +109,7 @@ export const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-20 left-0 right-0 bg-background/98 backdrop-blur-xl border-b border-primary/20 shadow-xl animate-fade-in">
+          <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 z-50 bg-background border-b border-primary/20 shadow-xl animate-fade-in overflow-auto">
             <div className="container mx-auto px-6 py-8 space-y-6">
               <Link to="/" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
                 {t('navbar.home')}
