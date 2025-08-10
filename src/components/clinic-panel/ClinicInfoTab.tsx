@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -197,16 +196,30 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
         {/* Advanced sections */}
         <div className="border-t mt-6 pt-6 space-y-6">
           {/* Images */}
-          {/* @ts-ignore - lazy import to avoid circular types */}
-          <ImagesSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
+          <ClinicImagesManager
+            clinicId={clinic.id}
+            images={(clinic.clinic_images as any) || []}
+            onChanged={() => onUpdated?.(clinic)}
+          />
 
           {/* Treatments */}
-          {/* @ts-ignore */}
-          <TreatmentsSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
+          <ClinicTreatmentsManager
+            clinicId={clinic.id}
+            selections={
+              ((clinic.clinic_treatments as any) || []).map((ct: any) => ({
+                treatment_id: ct.treatment_id,
+                starting_price_euro: ct.starting_price_euro ?? ct.price ?? 0,
+              }))
+            }
+            onChanged={() => onUpdated?.(clinic)}
+          />
 
           {/* Doctors */}
-          {/* @ts-ignore */}
-          <DoctorsSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
+          <ClinicDoctorsManager
+            clinicId={clinic.id}
+            doctors={(clinic.doctors as any) || []}
+            onChanged={() => onUpdated?.(clinic)}
+          />
         </div>
       </CardContent>
     </Card>
