@@ -1,6 +1,7 @@
 {
   "navbar.home": "Ana Sayfa",
   "navbar.clinics": "Klinikler",
+  "navbar.featuredClinic": "Klinik (Öne Çıkan)",
   "navbar.treatments": "Tedaviler",
   "navbar.about": "Hakkımızda",
   "auth.signIn": "Giriş Yap",

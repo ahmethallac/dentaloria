@@ -39,6 +39,10 @@ export const Navbar = () => {
               {t('navbar.clinics')}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
+            <Link to="/clinic" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
+              {t('navbar.featuredClinic')}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
             <a href="#treatments" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
               {t('navbar.treatments')}
               <span className="absolute -bottom-1 left-0 w-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
@@ -116,6 +120,9 @@ export const Navbar = () => {
               </Link>
               <Link to="/clinic-listing" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
                 {t('navbar.clinics')}
+              </Link>
+              <Link to="/clinic" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
+                {t('navbar.featuredClinic')}
               </Link>
               <a href="#treatments" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
                 {t('navbar.treatments')}

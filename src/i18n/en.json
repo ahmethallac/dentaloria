@@ -1,6 +1,7 @@
 {
   "navbar.home": "Home",
   "navbar.clinics": "Clinics",
+  "navbar.featuredClinic": "Featured Clinic",
   "navbar.treatments": "Treatments",
   "navbar.about": "About Us",
   "auth.signIn": "Sign In",
