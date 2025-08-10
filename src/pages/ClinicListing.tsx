@@ -26,6 +26,10 @@ import clinic10 from "@/assets/clinic-10.jpg";
 // Default images for clinics without images
 const defaultImages = [clinic1, clinic2, clinic3, clinic4, clinic5, clinic6, clinic7, clinic8, clinic9, clinic10];
 
+// Helper to check if a string is a valid UUID
+const isUUID = (val: string) =>
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(val);
+
 // Image Carousel Component
 const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -202,10 +206,42 @@ export default function ClinicListing() {
     loadData();
   }, []);
 
+  // Map URL query params (names) to IDs once data is loaded
+  useEffect(() => {
+    if (!countries.length && !treatments.length) return;
+
+    const countryParam = searchParams.get('country');
+    const treatmentParam = searchParams.get('treatment');
+
+    if (countryParam && countryParam !== 'all' && !isUUID(countryParam)) {
+      const match = countries.find(
+        (c) =>
+          c.name?.toLowerCase() === countryParam.toLowerCase() ||
+          c.code?.toLowerCase() === countryParam.toLowerCase()
+      );
+      setSelectedCountry(match?.id || 'all');
+    } else if (countryParam && isUUID(countryParam)) {
+      setSelectedCountry(countryParam);
+    }
+
+    if (treatmentParam && treatmentParam !== 'all' && !isUUID(treatmentParam)) {
+      const match = treatments.find(
+        (t) => t.name?.toLowerCase() === treatmentParam.toLowerCase()
+      );
+      setSelectedTreatment(match?.id || 'all');
+    } else if (treatmentParam && isUUID(treatmentParam)) {
+      setSelectedTreatment(treatmentParam);
+    }
+  }, [countries, treatments, searchParams]);
+
   // Load cities when country changes
   useEffect(() => {
     const loadCities = async () => {
       if (selectedCountry && selectedCountry !== "all") {
+        // Wait until the country value is a proper UUID (URL may contain a name initially)
+        if (!isUUID(selectedCountry)) {
+          return;
+        }
         try {
           const citiesData = await getCities(selectedCountry);
           setCities(citiesData);
@@ -220,12 +256,33 @@ export default function ClinicListing() {
     loadCities();
   }, [selectedCountry]);
 
+  // Map city param (name) to ID once cities are loaded
+  useEffect(() => {
+    const cityParam = searchParams.get('city');
+    if (!cityParam || cityParam === 'all') return;
+    if (isUUID(cityParam)) {
+      setSelectedCity(cityParam);
+      return;
+    }
+    const match = cities.find((c) => c.name?.toLowerCase() === cityParam.toLowerCase());
+    setSelectedCity(match?.id || 'all');
+  }, [cities, searchParams]);
+
   // Load clinics when filters change
   useEffect(() => {
     const loadClinics = async () => {
+      // Guard: avoid fetching with non-UUID filters coming from URL names
+      if (
+        (selectedCountry !== "all" && !isUUID(selectedCountry)) ||
+        (selectedCity !== "all" && !isUUID(selectedCity)) ||
+        (selectedTreatment !== "all" && !isUUID(selectedTreatment))
+      ) {
+        return;
+      }
       try {
         setLoading(true);
-        
+        setError(null);
+
         const filters: any = {
           page,
           limit: 12
