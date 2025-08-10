@@ -6,6 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { type Clinic, getCountries, getCities, updateClinic, type Country, type City } from "@/lib/services";
+import ClinicImagesManager from "./ClinicImagesManager";
+import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
+import ClinicDoctorsManager from "./ClinicDoctorsManager";
 
 interface ClinicInfoTabProps {
   clinic: Clinic;
@@ -189,6 +192,21 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
           <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
             {saving ? "Kaydediliyor..." : "Bilgileri Güncelle"}
           </Button>
+        </div>
+
+        {/* Advanced sections */}
+        <div className="border-t mt-6 pt-6 space-y-6">
+          {/* Images */}
+          {/* @ts-ignore - lazy import to avoid circular types */}
+          <ImagesSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
+
+          {/* Treatments */}
+          {/* @ts-ignore */}
+          <TreatmentsSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
+
+          {/* Doctors */}
+          {/* @ts-ignore */}
+          <DoctorsSection clinicId={clinic.id} onChanged={() => onUpdated?.(clinic)} />
         </div>
       </CardContent>
     </Card>
