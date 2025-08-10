@@ -4,11 +4,12 @@ import { Menu, X, User, LogOut, Building2 } from "lucide-react";
 import { Button } from "./button";
 import { useAuth } from "@/contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
-
+import { useI18n } from "@/i18n";
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t, lang, setLang } = useI18n();
 
   const handleSignOut = async () => {
     await signOut();
@@ -31,25 +32,29 @@ export const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-10">
             <Link to="/" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Home
+              {t('navbar.home')}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link to="/clinic-listing" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Clinics
+              {t('navbar.clinics')}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <a href="#treatments" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              Treatments
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+              {t('navbar.treatments')}
+              <span className="absolute -bottom-1 left-0 w-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a href="#about" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-              About Us
+              {t('navbar.about')}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </a>
           </div>
 
-          {/* Auth Section */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Right Section: Language + Auth */}
+          <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Button variant={lang === 'en' ? 'default' : 'outline'} size="sm" onClick={() => setLang('en')}>EN</Button>
+              <Button variant={lang === 'tr' ? 'default' : 'outline'} size="sm" onClick={() => setLang('tr')}>TR</Button>
+            </div>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -60,17 +65,17 @@ export const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                    Dashboard
+                    {t('dashboard')}
                   </DropdownMenuItem>
                   {profile?.user_type === 'clinic_admin' && (
                     <DropdownMenuItem onClick={() => navigate('/add-clinic')}>
-                      Add Clinic
+                      {t('addClinic')}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                    {t('signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -80,7 +85,7 @@ export const Navbar = () => {
                 className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
               >
                 <Building2 className="w-5 h-5 mr-2" />
-                Sign In
+                {t('auth.signIn')}
               </Button>
             )}
           </div>
@@ -107,19 +112,22 @@ export const Navbar = () => {
           <div className="md:hidden absolute top-20 left-0 right-0 bg-background/98 backdrop-blur-xl border-b border-primary/20 shadow-xl animate-fade-in">
             <div className="container mx-auto px-6 py-8 space-y-6">
               <Link to="/" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Home
+                {t('navbar.home')}
               </Link>
               <Link to="/clinic-listing" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Clinics
+                {t('navbar.clinics')}
               </Link>
               <a href="#treatments" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                Treatments
+                {t('navbar.treatments')}
               </a>
               <a href="#about" className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                About Us
+                {t('navbar.about')}
               </a>
-              
-              {/* Mobile Auth */}
+
+              <div className="flex items-center gap-2 pt-2">
+                <Button variant={lang === 'en' ? 'default' : 'outline'} size="sm" onClick={() => setLang('en')}>EN</Button>
+                <Button variant={lang === 'tr' ? 'default' : 'outline'} size="sm" onClick={() => setLang('tr')}>TR</Button>
+              </div>
               <div className="mt-4 pt-4 border-t border-primary/20">
                 {user ? (
                   <div className="space-y-2">
@@ -127,15 +135,15 @@ export const Navbar = () => {
                       {profile?.full_name || user.email}
                     </div>
                     <Button onClick={() => navigate('/dashboard')} variant="outline" className="w-full">
-                      Dashboard
+                      {t('dashboard')}
                     </Button>
                     {profile?.user_type === 'clinic_admin' && (
                       <Button onClick={() => navigate('/add-clinic')} variant="outline" className="w-full">
-                        Add Clinic
+                        {t('addClinic')}
                       </Button>
                     )}
                     <Button onClick={handleSignOut} variant="ghost" className="w-full">
-                      Sign Out
+                      {t('signOut')}
                     </Button>
                   </div>
                 ) : (
@@ -144,7 +152,7 @@ export const Navbar = () => {
                     className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-4 rounded-full shadow-lg shadow-primary/25"
                   >
                     <Building2 className="w-5 h-5 mr-2" />
-                    Sign In
+                    {t('auth.signIn')}
                   </Button>
                 )}
               </div>

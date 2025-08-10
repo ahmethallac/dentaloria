@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
 import { Mail, Phone, Search } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ApplicationsTabProps {
   clinicId: string;
@@ -108,6 +108,9 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
             </select>
             <Button variant="outline" onClick={handleApplySearch}>
               Ara
+            </Button>
+            <Button variant="outline" onClick={load}>
+              Yenile
             </Button>
           </div>
           <div className="text-sm text-muted-foreground">Toplam: {total}</div>

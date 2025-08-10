@@ -1,0 +1,11 @@
+{
+  "navbar.home": "Ana Sayfa",
+  "navbar.clinics": "Klinikler",
+  "navbar.treatments": "Tedaviler",
+  "navbar.about": "Hakkımızda",
+  "auth.signIn": "Giriş Yap",
+  "dashboard": "Panel",
+  "addClinic": "Klinik Ekle",
+  "signOut": "Çıkış Yap",
+  "actions.refresh": "Yenile"
+}

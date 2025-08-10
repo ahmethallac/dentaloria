@@ -1,0 +1,11 @@
+{
+  "navbar.home": "Home",
+  "navbar.clinics": "Clinics",
+  "navbar.treatments": "Treatments",
+  "navbar.about": "About Us",
+  "auth.signIn": "Sign In",
+  "dashboard": "Dashboard",
+  "addClinic": "Add Clinic",
+  "signOut": "Sign Out",
+  "actions.refresh": "Refresh"
+}

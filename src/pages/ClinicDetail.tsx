@@ -21,53 +21,61 @@ import {
   CheckCircle,
   Heart
 } from "lucide-react";
-import { useState } from "react";
-import { createContactRequest } from "@/lib/services";
+import { useEffect, useState } from "react";
+import { getClinicById, createContactRequest } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 
 
-// Mock clinic data - gerçek uygulamada API'den gelecek
-const getClinicData = (id: string) => {
-  const clinics = {
-    "1": {
-      id: "1",
-      name: "Smile Center İstanbul",
-      location: "Levent Mahallesi, Büyükdere Caddesi No:145",
-      city: "İstanbul",
-      country: "Türkiye",
-      rating: 4.9,
-      reviewCount: 1247,
-      images: [
-        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=800&h=600&fit=crop"
-      ],
-      specialties: ["İmplant Tedavisi", "Ortodonti", "Estetik Diş Hekimliği", "Diş Beyazlatma"],
-      description: "İstanbul'un kalbi Levent'te yer alan Smile Center, 15 yıllık deneyimi ile en kaliteli diş tedavilerini sunmaktadır. Uzman hekimlerimiz ve son teknoloji ekipmanlarımız ile gülüşünüzü yeniden kazanın.",
-      experience: 15,
-      patientCount: 5000,
-      isVerified: true,
-      phone: "+90 (212) 123 45 67",
-      email: "info@smilecenter.com",
-      workingHours: "Pzt-Cmt: 09:00-18:00, Pazar: Kapalı",
-      doctors: [
-        { name: "Dr. Mehmet Yılmaz", specialty: "İmplant Uzmanı", experience: 15 },
-        { name: "Dr. Ayşe Kaya", specialty: "Ortodonti Uzmanı", experience: 12 },
-        { name: "Dr. Can Özdemir", specialty: "Estetik Diş Hekimi", experience: 10 }
-      ],
-      treatments: [
-        { name: "İmplant Tedavisi", price: "₺2.500 - ₺4.000", duration: "1-3 seans" },
-        { name: "Ortodonti (Braket)", price: "₺8.000 - ₺15.000", duration: "12-24 ay" },
-        { name: "Vener Kaplama", price: "₺1.200 - ₺2.500", duration: "2-3 seans" },
-        { name: "Diş Beyazlatma", price: "₺800 - ₺1.500", duration: "1 seans" }
-      ],
-      beforeAfterImages: [
-        { before: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=300&h=200&fit=crop", after: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=300&h=200&fit=crop" }
-      ]
-    }
+// Map Supabase clinic to the view model this page expects
+const mapClinic = (db: any) => {
+  const images = (db?.clinic_images || [])
+    .sort((a: any, b: any) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+    .map((i: any) => i.image_url);
+
+  const treatments = (db?.clinic_treatments || []).map((ct: any) => ({
+    name: ct?.treatments?.name || "",
+    price: ct?.price_from && ct?.price_to
+      ? `${ct.price_from} - ${ct.price_to} ${ct.currency || ''}`.trim()
+      : ct?.price_from
+      ? `${ct.price_from} ${ct.currency || ''}`.trim()
+      : ct?.price_to
+      ? `${ct.price_to} ${ct.currency || ''}`.trim()
+      : "",
+    duration: ct?.duration_minutes ? `${ct.duration_minutes} dk` : "",
+  }));
+
+  const doctors = (db?.doctors || []).map((d: any) => ({
+    name: d.name,
+    specialty: d.specialization || d.title || "",
+    experience: d.experience_years || 0,
+  }));
+
+  const specialties = Array.from(
+    new Set((db?.clinic_treatments || [])
+      .map((ct: any) => ct?.treatments?.treatment_categories?.name)
+      .filter(Boolean))
+  );
+
+  return {
+    id: db.id,
+    name: db.name,
+    location: db.address || "",
+    city: db?.cities?.name || "",
+    country: db?.cities?.countries?.name || "",
+    rating: db.rating ?? 4.8,
+    reviewCount: db.review_count ?? 0,
+    images: images.length ? images : ["/placeholder.svg"],
+    specialties,
+    description: db.description || "",
+    experience: db.experience_years || 0,
+    patientCount: db.patient_count || 0,
+    isVerified: !!db.is_verified,
+    phone: db.phone || "",
+    email: db.email || "",
+    workingHours: "",
+    doctors,
+    treatments,
   };
-  
-  return clinics[id as keyof typeof clinics];
 };
 
 const ClinicDetail = () => {
