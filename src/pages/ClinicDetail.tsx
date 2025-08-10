@@ -34,17 +34,23 @@ const mapClinic = (db: any) => {
     .sort((a: any, b: any) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
     .map((i: any) => i.image_url);
 
-  const treatments = (db?.clinic_treatments || []).map((ct: any) => ({
-    name: ct?.treatments?.name || "",
-    price: ct?.price_from && ct?.price_to
-      ? `${ct.price_from} - ${ct.price_to} ${ct.currency || ''}`.trim()
-      : ct?.price_from
-      ? `${ct.price_from} ${ct.currency || ''}`.trim()
-      : ct?.price_to
-      ? `${ct.price_to} ${ct.currency || ''}`.trim()
-      : "",
-    duration: ct?.duration_minutes ? `${ct.duration_minutes} dk` : "",
-  }));
+  const treatments = (db?.clinic_treatments || []).map((ct: any) => {
+    const starting = ct?.starting_price_euro ?? ct?.price_from ?? ct?.price ?? null;
+    const priceText = starting ? `€${starting}` : (
+      ct?.price_from && ct?.price_to
+        ? `${ct.price_from} - ${ct.price_to} ${ct.currency || ''}`.trim()
+        : ct?.price_from
+        ? `${ct.price_from} ${ct.currency || ''}`.trim()
+        : ct?.price_to
+        ? `${ct.price_to} ${ct.currency || ''}`.trim()
+        : ""
+    );
+    return {
+      name: ct?.treatments?.name || "",
+      price: priceText,
+      duration: ct?.duration_minutes ? `${ct.duration_minutes} dk` : "",
+    };
+  });
 
   const doctors = (db?.doctors || []).map((d: any) => ({
     name: d.name,
@@ -201,8 +207,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="hidden md:flex" />
-                <CarouselNext className="hidden md:flex" />
+                <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white border-0 hover:bg-black/80" />
+                <CarouselNext className="right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white border-0 hover:bg-black/80" />
               </Carousel>
             </div>
 
@@ -298,17 +304,20 @@ const handleSubmit = async (e: React.FormEvent) => {
             {/* Treatment Prices */}
             <section>
               <h2 className="text-3xl font-bold mb-6">Tedavi Fiyatları</h2>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl border border-border bg-card divide-y">
                 {clinic.treatments.map((treatment, index) => (
-                  <Card key={index}>
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-lg">{treatment.name}</h3>
-                        {treatment.duration && <Badge variant="outline">{treatment.duration}</Badge>}
-                      </div>
-                      <div className="text-2xl font-bold text-primary">{treatment.price}</div>
-                    </CardContent>
-                  </Card>
+                  <div key={index} className="flex items-center justify-between p-4">
+                    <div>
+                      <div className="font-semibold">{treatment.name}</div>
+                      {treatment.duration && (
+                        <div className="text-xs text-muted-foreground mt-1">Süre: {treatment.duration}</div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground">Başlangıç</div>
+                      <div className="text-xl font-bold text-primary">{treatment.price || "Bilgi alın"}</div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>
