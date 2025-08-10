@@ -9,7 +9,7 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const { t, lang, setLang } = useI18n();
+  const { t } = useI18n();
 
   const handleSignOut = async () => {
     await signOut();
@@ -53,12 +53,8 @@ export const Navbar = () => {
             </a>
           </div>
 
-          {/* Right Section: Language + Auth */}
+          {/* Right Section: Auth */}
           <div className="hidden md:flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Button variant={lang === 'en' ? 'default' : 'outline'} size="sm" onClick={() => setLang('en')}>EN</Button>
-              <Button variant={lang === 'tr' ? 'default' : 'outline'} size="sm" onClick={() => setLang('tr')}>TR</Button>
-            </div>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -131,10 +127,6 @@ export const Navbar = () => {
                 {t('navbar.about')}
               </a>
 
-              <div className="flex items-center gap-2 pt-2">
-                <Button variant={lang === 'en' ? 'default' : 'outline'} size="sm" onClick={() => setLang('en')}>EN</Button>
-                <Button variant={lang === 'tr' ? 'default' : 'outline'} size="sm" onClick={() => setLang('tr')}>TR</Button>
-              </div>
               <div className="mt-4 pt-4 border-t border-primary/20">
                 {user ? (
                   <div className="space-y-2">

@@ -48,7 +48,7 @@ const mapClinic = (db: any) => {
     return {
       name: ct?.treatments?.name || "",
       price: priceText,
-      duration: ct?.duration_minutes ? `${ct.duration_minutes} dk` : "",
+      duration: ct?.duration_minutes ? `${ct.duration_minutes} min` : "",
     };
   });
 
@@ -119,8 +119,8 @@ const ClinicDetail = () => {
           setClinic(null);
         }
       } catch (e) {
-        console.error("Klinik yüklenemedi", e);
-        toast({ title: "Hata", description: "Klinik bilgileri yüklenemedi.", variant: "destructive" });
+        console.error("Failed to load clinic", e);
+        toast({ title: "Error", description: "Failed to load clinic data.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
@@ -130,7 +130,7 @@ const ClinicDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div>Yükleniyor...</div>
+        <div>Loading...</div>
       </div>
     );
   }
@@ -139,9 +139,9 @@ const ClinicDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Klinik bulunamadı</h1>
+          <h1 className="text-2xl font-bold mb-4">Clinic not found</h1>
           <Link to="/">
-            <Button>Ana Sayfaya Dön</Button>
+            <Button>Back to Home</Button>
           </Link>
         </div>
       </div>
@@ -151,7 +151,7 @@ const ClinicDetail = () => {
 const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) {
-      toast({ title: "Hata", description: "Klinik bilgisi bulunamadı.", variant: "destructive" });
+      toast({ title: "Error", description: "Clinic info not found.", variant: "destructive" });
       return;
     }
     try {
@@ -161,15 +161,15 @@ const handleSubmit = async (e: React.FormEvent) => {
         name: contactForm.name,
         email: contactForm.email,
         phone: contactForm.phone,
-        message: contactForm.message || (contactForm.treatment ? `Tedavi: ${contactForm.treatment}` : undefined),
+        message: contactForm.message || (contactForm.treatment ? `Treatment: ${contactForm.treatment}` : undefined),
         source: "website",
         status: "new",
       } as any);
-      toast({ title: "Başvurunuz alındı", description: "Klinik en kısa sürede sizinle iletişime geçecek." });
+      toast({ title: "Inquiry received", description: "The clinic will contact you soon.", variant: "default" });
       setContactForm({ name: "", phone: "", email: "", treatment: "", message: "" });
     } catch (err) {
       console.error(err);
-      toast({ title: "Hata", description: "Başvuru gönderilemedi. Lütfen tekrar deneyin.", variant: "destructive" });
+      toast({ title: "Error", description: "Submission failed. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -182,9 +182,9 @@ const handleSubmit = async (e: React.FormEvent) => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Ana Sayfa</Link>
+          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
           <span>/</span>
-          <span>Klinikler</span>
+          <span>Clinics</span>
           <span>/</span>
           <span className="text-foreground">{clinic.name}</span>
         </div>
@@ -202,7 +202,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   {clinic.images.map((src: string, idx: number) => (
                     <CarouselItem key={idx}>
                       <div className="aspect-video overflow-hidden rounded-2xl">
-                        <img src={src} alt={`${clinic.name} görüntü ${idx + 1}`} className="w-full h-full object-cover" />
+                        <img src={src} alt={`${clinic.name} image ${idx + 1}`} className="w-full h-full object-cover" />
                       </div>
                     </CarouselItem>
                   ))}
@@ -221,7 +221,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     {clinic.isVerified && (
                       <Badge className="bg-medical-green text-white">
                         <Award className="w-3 h-3 mr-1" />
-                        Doğrulanmış
+                        Verified
                       </Badge>
                     )}
                   </div>
@@ -245,7 +245,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
                   <span className="text-2xl font-bold">{clinic.rating}</span>
                 </div>
-                <span className="text-muted-foreground">({clinic.reviewCount} değerlendirme)</span>
+                <span className="text-muted-foreground">({clinic.reviewCount} reviews)</span>
               </div>
 
               {/* Description */}
@@ -253,7 +253,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
               {/* Specialties */}
               <div>
-                <h3 className="font-semibold mb-3">Uzmanlık Alanları</h3>
+                <h3 className="font-semibold mb-3">Specialties</h3>
                 <div className="flex flex-wrap gap-2">
                   {clinic.specialties.map((specialty, index) => (
                     <Badge key={index} variant="secondary">{specialty}</Badge>
@@ -266,15 +266,15 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
                   <Clock className="w-8 h-8 text-primary" />
                   <div>
-                    <div className="font-semibold">{clinic.experience} Yıl</div>
-                    <div className="text-sm text-muted-foreground">Deneyim</div>
+                    <div className="font-semibold">{clinic.experience} Years</div>
+                    <div className="text-sm text-muted-foreground">Experience</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
                   <Users className="w-8 h-8 text-primary" />
                   <div>
                     <div className="font-semibold">{clinic.patientCount}+</div>
-                    <div className="text-sm text-muted-foreground">Mutlu Hasta</div>
+                    <div className="text-sm text-muted-foreground">Happy Patients</div>
                   </div>
                 </div>
               </div>
@@ -282,7 +282,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               {/* Contact Info */}
               <Card>
                 <CardHeader>
-                  <CardTitle>İletişim Bilgileri</CardTitle>
+                  <CardTitle>Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -303,19 +303,19 @@ const handleSubmit = async (e: React.FormEvent) => {
 
             {/* Treatment Prices */}
             <section>
-              <h2 className="text-3xl font-bold mb-6">Tedavi Fiyatları</h2>
+              <h2 className="text-3xl font-bold mb-6">Treatment Prices</h2>
               <div className="rounded-2xl border border-border bg-card divide-y">
                 {clinic.treatments.map((treatment, index) => (
                   <div key={index} className="flex items-center justify-between p-4">
                     <div>
                       <div className="font-semibold">{treatment.name}</div>
                       {treatment.duration && (
-                        <div className="text-xs text-muted-foreground mt-1">Süre: {treatment.duration}</div>
+                        <div className="text-xs text-muted-foreground mt-1">Duration: {treatment.duration}</div>
                       )}
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-muted-foreground">Başlangıç</div>
-                      <div className="text-xl font-bold text-primary">{treatment.price || "Bilgi alın"}</div>
+                      <div className="text-sm text-muted-foreground">Starting</div>
+                      <div className="text-xl font-bold text-primary">{treatment.price || "Contact for pricing"}</div>
                     </div>
                   </div>
                 ))}
@@ -324,7 +324,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
             {/* Doctors */}
             <section className="bg-muted/30 rounded-2xl p-6">
-              <h2 className="text-3xl font-bold mb-6">Uzman Hekimlerimiz</h2>
+              <h2 className="text-3xl font-bold mb-6">Our Doctors</h2>
               <div className="grid md:grid-cols-3 gap-6">
                 {clinic.doctors.map((doctor, index) => (
                   <Card key={index}>
@@ -334,7 +334,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       </div>
                       <h3 className="font-semibold text-lg mb-2">{doctor.name}</h3>
                       <p className="text-muted-foreground mb-2">{doctor.specialty}</p>
-                      <p className="text-sm text-muted-foreground">{doctor.experience} yıl deneyim</p>
+                      <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -347,12 +347,12 @@ const handleSubmit = async (e: React.FormEvent) => {
             <div className="sticky top-24">
               <Card className="shadow-card">
                 <CardHeader>
-                  <CardTitle>Klinğe Başvur</CardTitle>
+                  <CardTitle>Contact Clinic</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-3">
                     <Input 
-                      placeholder="Ad Soyad *"
+                      placeholder="Full Name *"
                       value={contactForm.name}
                       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                       required
@@ -370,18 +370,18 @@ const handleSubmit = async (e: React.FormEvent) => {
                       required
                     />
                     <Input 
-                      placeholder="Tedavi (opsiyonel)"
+                      placeholder="Treatment (optional)"
                       value={contactForm.treatment}
                       onChange={(e) => setContactForm({ ...contactForm, treatment: e.target.value })}
                     />
                     <Textarea 
-                      placeholder="Mesajınız (opsiyonel)"
+                      placeholder="Your message (optional)"
                       value={contactForm.message}
                       onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                       className="min-h-[80px]"
                     />
                     <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary">
-                      {submitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
+                      {submitting ? "Sending..." : "Send Request"}
                     </Button>
                   </form>
                 </CardContent>
@@ -397,20 +397,20 @@ const handleSubmit = async (e: React.FormEvent) => {
       <Dialog open={open} onOpenChange={setOpen}>
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 shadow-strong lg:hidden">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Sorunuz mu var? Hemen başvurun.</div>
+            <div className="text-sm text-muted-foreground">Have a question? Apply now.</div>
             <Button onClick={() => setOpen(true)} className="bg-gradient-primary">
-              Klinğe Başvur
+              Contact Clinic
             </Button>
           </div>
         </div>
 
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Klinğe Başvur</DialogTitle>
+            <DialogTitle>Contact Clinic</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3">
             <Input 
-              placeholder="Ad Soyad *"
+              placeholder="Full Name *"
               value={contactForm.name}
               onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
               required
@@ -428,18 +428,18 @@ const handleSubmit = async (e: React.FormEvent) => {
               required
             />
             <Input 
-              placeholder="Tedavi (opsiyonel)"
+              placeholder="Treatment (optional)"
               value={contactForm.treatment}
               onChange={(e) => setContactForm({ ...contactForm, treatment: e.target.value })}
             />
             <Textarea 
-              placeholder="Mesajınız (opsiyonel)"
+              placeholder="Your message (optional)"
               value={contactForm.message}
               onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
               className="min-h-[80px]"
             />
             <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary">
-              {submitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
+              {submitting ? "Sending..." : "Send Request"}
             </Button>
           </form>
         </DialogContent>
