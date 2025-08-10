@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -358,6 +358,10 @@ export default function ClinicListing() {
     return `${clinic.cities?.name || 'Unknown'}, ${clinic.cities?.countries?.name || 'Unknown'}`;
   };
 
+  const selectedTreatmentName = selectedTreatment !== "all"
+    ? treatments.find((t) => t.id === selectedTreatment)?.name
+    : undefined;
+
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-mesh">
@@ -681,7 +685,10 @@ export default function ClinicListing() {
                         </div>
 
                         {/* Action Button - Right Edge Vertical */}
-                        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group cursor-pointer">
+                        <Link
+                          to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                          className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group"
+                        >
                           <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
                             <span className="group-hover:hidden">View</span>
                             <div className="hidden group-hover:block text-center leading-tight">
@@ -689,7 +696,7 @@ export default function ClinicListing() {
                               <div>Clinic</div>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       </div>
                     </CardContent>
                   </Card>
