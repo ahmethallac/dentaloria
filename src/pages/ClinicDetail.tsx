@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { 
@@ -22,10 +20,11 @@ import {
   Heart
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getClinicById, createContactRequest } from "@/lib/services";
+import { getClinicById } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ContactClinicForm } from "@/components/forms/ContactClinicForm";
 
 
 // Map Supabase clinic to the view model this page expects
@@ -90,22 +89,12 @@ const ClinicDetail = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const [submitting, setSubmitting] = useState(false);
+  
   const [clinic, setClinic] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    treatment: "",
-    message: ""
-  });
 
-  useEffect(() => {
-    const t = searchParams.get('treatment');
-    if (t) setContactForm((prev) => ({ ...prev, treatment: t }));
-  }, [searchParams]);
+  const initialTreatment = searchParams.get('treatment') || "";
 
   useEffect(() => {
     if (!id) return;
@@ -148,33 +137,6 @@ const ClinicDetail = () => {
     );
   }
 
-const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id) {
-      toast({ title: "Error", description: "Clinic info not found.", variant: "destructive" });
-      return;
-    }
-    try {
-      setSubmitting(true);
-      await createContactRequest({
-        clinic_id: id,
-        name: contactForm.name,
-        email: contactForm.email,
-        phone: contactForm.phone,
-        message: contactForm.message || (contactForm.treatment ? `Treatment: ${contactForm.treatment}` : undefined),
-        source: "website",
-        status: "new",
-      } as any);
-      toast({ title: "Inquiry received", description: "The clinic will contact you soon.", variant: "default" });
-      setContactForm({ name: "", phone: "", email: "", treatment: "", message: "" });
-      setOpen(false);
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Error", description: "Submission failed. Please try again.", variant: "destructive" });
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -351,40 +313,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   <CardTitle>Contact Clinic</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-3">
-                    <Input 
-                      placeholder="Full Name *"
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      required
-                    />
-                    <Input 
-                      placeholder="Phone *" type="tel"
-                      value={contactForm.phone}
-                      onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                      required
-                    />
-                    <Input 
-                      placeholder="Email *" type="email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      required
-                    />
-                    <Input 
-                      placeholder="Treatment (optional)"
-                      value={contactForm.treatment}
-                      onChange={(e) => setContactForm({ ...contactForm, treatment: e.target.value })}
-                    />
-                    <Textarea 
-                      placeholder="Your message (optional)"
-                      value={contactForm.message}
-                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                      className="min-h-[80px]"
-                    />
-                    <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary">
-                      {submitting ? "Sending..." : "Send Request"}
-                    </Button>
-                  </form>
+                  <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} />
                 </CardContent>
               </Card>
             </div>
@@ -409,40 +338,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <DialogHeader>
             <DialogTitle>Contact Clinic</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <Input 
-              placeholder="Full Name *"
-              value={contactForm.name}
-              onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-              required
-            />
-            <Input 
-              placeholder="Telefon *" type="tel"
-              value={contactForm.phone}
-              onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-              required
-            />
-            <Input 
-              placeholder="E-posta *" type="email"
-              value={contactForm.email}
-              onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-              required
-            />
-            <Input 
-              placeholder="Treatment (optional)"
-              value={contactForm.treatment}
-              onChange={(e) => setContactForm({ ...contactForm, treatment: e.target.value })}
-            />
-            <Textarea 
-              placeholder="Your message (optional)"
-              value={contactForm.message}
-              onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-              className="min-h-[80px]"
-            />
-            <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary">
-              {submitting ? "Sending..." : "Send Request"}
-            </Button>
-          </form>
+          <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} onSuccess={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>
