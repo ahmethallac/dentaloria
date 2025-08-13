@@ -73,6 +73,13 @@ export type Database = {
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "clinic_images_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       clinic_treatments: {
@@ -106,6 +113,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -245,6 +259,13 @@ export type Database = {
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contact_requests_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       countries: {
@@ -310,6 +331,13 @@ export type Database = {
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -370,6 +398,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -435,7 +470,71 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      clinics_public: {
+        Row: {
+          address: string | null
+          city_id: string | null
+          created_at: string | null
+          description: string | null
+          experience_years: number | null
+          id: string | null
+          is_featured: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string | null
+          patient_count: number | null
+          rating: number | null
+          review_count: number | null
+          trustpilot_rating: number | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          experience_years?: number | null
+          id?: string | null
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string | null
+          patient_count?: number | null
+          rating?: number | null
+          review_count?: number | null
+          trustpilot_rating?: number | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          experience_years?: number | null
+          id?: string | null
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string | null
+          patient_count?: number | null
+          rating?: number | null
+          review_count?: number | null
+          trustpilot_rating?: number | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinics_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
