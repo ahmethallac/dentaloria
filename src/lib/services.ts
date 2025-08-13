@@ -344,16 +344,17 @@ export const createReview = async (review: any): Promise<any> => {
 }
 
 // Contact Requests
-export const createContactRequest = async (request: Omit<ContactRequest, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: string }): Promise<ContactRequest> => {
-  const { data, error } = await supabase
+export const createContactRequest = async (
+  request: Omit<ContactRequest, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: string }
+): Promise<void> => {
+  const payload = { ...request, status: request.status ?? 'new' }
+  const { error } = await supabase
     .from('contact_requests')
-    .insert(request)
-    .select()
-    .single()
-  
+    .insert(payload, { returning: 'minimal' })
+
   if (error) throw error
-  return data
 }
+
 
 // Klinik başvurularını listeleme (filtre + sayfalama)
 export const getContactRequests = async (
