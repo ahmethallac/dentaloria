@@ -58,29 +58,29 @@ const featuredClinics = [{
 const TREATMENTS = ["Full Mouth All-on-4", "Full Mouth All-on-6", "Hollywood Smile", "Zirconium Crowns", "Porcelain Crowns", "Lamina Coatings", "E-max Skins", "Implant", "Root Canal", "Open Sinus Lift", "Closed Sinus Lift", "Bone Graft"];
 const COUNTRIES = ["Turkey", "USA", "UK"];
 const HOMEPAGE_TREATMENTS = [{
-  name: "All-on-6",
+  name: "All-on-6 Dental Implants",
   icon: Smile,
   description: "Complete denture solution"
 }, {
-  name: "All-on-4",
+  name: "All-on-4 Dental Implants",
   icon: UserCheck,
   description: "Affordable denture option"
 }, {
-  name: "Hollywood Smile",
+  name: "Porcelain Veneers",
   icon: Star,
   description: "Perfect smile makeover"
 }, {
-  name: "Implants",
+  name: "Single Tooth Implant",
   icon: Activity,
   description: "Permanent tooth solution"
 }, {
-  name: "Crowns",
+  name: "Dental Crown",
   icon: Crown,
   description: "Tooth crowns"
 }, {
-  name: "Root Canal",
+  name: "Teeth Whitening",
   icon: Stethoscope,
-  description: "Root canal treatment"
+  description: "Professional whitening treatment"
 }];
 const POPULAR_CITIES = [{
   name: "Istanbul",

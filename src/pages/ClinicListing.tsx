@@ -225,10 +225,44 @@ export default function ClinicListing() {
     }
 
     if (treatmentParam && treatmentParam !== 'all' && !isUUID(treatmentParam)) {
-      const match = treatments.find(
-        (t) => t.name?.toLowerCase() === treatmentParam.toLowerCase()
-      );
-      setSelectedTreatment(match?.id || 'all');
+      // Enhanced matching logic for treatment names
+      const normalizedParam = treatmentParam.toLowerCase().trim();
+      
+      const match = treatments.find((t) => {
+        const normalizedName = t.name?.toLowerCase().trim();
+        
+        // Exact match first
+        if (normalizedName === normalizedParam) return true;
+        
+        // Handle common variations and mappings
+        const treatmentMappings: Record<string, string[]> = {
+          "all-on-6": ["all-on-6 dental implants"],
+          "all-on-4": ["all-on-4 dental implants"],
+          "hollywood smile": ["porcelain veneers"],
+          "implants": ["single tooth implant", "multiple tooth implants"],
+          "crowns": ["dental crown"],
+          "root canal": ["root canal treatment"],
+          "veneers": ["porcelain veneers"],
+          "whitening": ["teeth whitening"]
+        };
+        
+        // Check if the parameter matches any mapping
+        for (const [key, values] of Object.entries(treatmentMappings)) {
+          if (normalizedParam === key && values.includes(normalizedName)) {
+            return true;
+          }
+        }
+        
+        // Partial matching as fallback
+        return normalizedName?.includes(normalizedParam) || normalizedParam.includes(normalizedName);
+      });
+      
+      if (match) {
+        setSelectedTreatment(match.id);
+      } else {
+        console.warn(`No treatment found for: ${treatmentParam}`);
+        setSelectedTreatment('all');
+      }
     } else if (treatmentParam && isUUID(treatmentParam)) {
       setSelectedTreatment(treatmentParam);
     }
