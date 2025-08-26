@@ -178,24 +178,10 @@ export const getClinics = async (filters?: {
   page?: number
   limit?: number
 }): Promise<{ clinics: Clinic[], total: number }> => {
+  // Use clinics_public view for public access
   let query = supabase
-    .from('clinics')
-    .select(`
-      *,
-      cities (
-        *,
-        countries (*)
-      ),
-      clinic_images (*),
-      clinic_treatments (
-        *,
-        treatments (
-          *,
-          treatment_categories (*)
-        )
-      ),
-      doctors (*)
-    `, { count: 'exact' })
+    .from('clinics_public')
+    .select('*', { count: 'exact' })
     .order('is_featured', { ascending: false })
     .order('rating', { ascending: false })
     .order('review_count', { ascending: false })
@@ -206,7 +192,18 @@ export const getClinics = async (filters?: {
   }
   
   if (filters?.countryId) {
-    query = query.eq('cities.country_id', filters.countryId)
+    // For country filtering, we need to join with cities
+    const { data: citiesInCountry } = await supabase
+      .from('cities')
+      .select('id')
+      .eq('country_id', filters.countryId)
+    
+    if (citiesInCountry && citiesInCountry.length > 0) {
+      const cityIds = citiesInCountry.map(c => c.id)
+      query = query.in('city_id', cityIds)
+    } else {
+      query = query.eq('id', '00000000-0000-0000-0000-000000000000')
+    }
   }
   
   if (filters?.treatmentId) {
@@ -237,66 +234,179 @@ export const getClinics = async (filters?: {
   
   query = query.range(from, to)
   
-  const { data, error, count } = await query
+  const { data: clinicsData, error, count } = await query
   
   if (error) throw error
   
+  // If no clinics found, return empty result
+  if (!clinicsData || clinicsData.length === 0) {
+    return { clinics: [], total: count || 0 }
+  }
+  
+  // Fetch related data separately
+  const clinicIds = clinicsData.map(c => c.id)
+  
+  // Fetch cities with countries
+  const { data: cities } = await supabase
+    .from('cities')
+    .select(`
+      *,
+      countries (*)
+    `)
+    .in('id', clinicsData.map(c => c.city_id).filter(Boolean))
+  
+  // Fetch clinic images
+  const { data: images } = await supabase
+    .from('clinic_images')
+    .select('*')
+    .in('clinic_id', clinicIds)
+  
+  // Fetch clinic treatments with treatment details
+  const { data: treatments } = await supabase
+    .from('clinic_treatments')
+    .select(`
+      *,
+      treatments (
+        *,
+        treatment_categories (*)
+      )
+    `)
+    .in('clinic_id', clinicIds)
+  
+  // Fetch doctors
+  const { data: doctors } = await supabase
+    .from('doctors')
+    .select('*')
+    .in('clinic_id', clinicIds)
+  
+  // Combine data
+  const enrichedClinics = clinicsData.map(clinic => ({
+    ...clinic,
+    cities: cities?.find(c => c.id === clinic.city_id),
+    clinic_images: images?.filter(img => img.clinic_id === clinic.id) || [],
+    clinic_treatments: treatments?.filter(t => t.clinic_id === clinic.id) || [],
+    doctors: doctors?.filter(d => d.clinic_id === clinic.id) || []
+  }))
+  
   return {
-    clinics: data || [],
+    clinics: enrichedClinics,
     total: count || 0
   }
 }
 
 export const getClinicById = async (id: string): Promise<Clinic | null> => {
-  const { data, error } = await supabase
-    .from('clinics')
-    .select(`
-      *,
-      cities (
-        *,
-        countries (*)
-      ),
-      clinic_images (*),
-      clinic_treatments (
-        *,
-        treatments (
-          *,
-          treatment_categories (*)
-        )
-      ),
-      doctors (*)
-    `)
+  // First try to get basic clinic data from public view
+  const { data: clinicData, error } = await supabase
+    .from('clinics_public')
+    .select('*')
     .eq('id', id)
     .maybeSingle()
   
   if (error) throw error
-  return data
-}
-
-export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> => {
-  const { data, error } = await supabase
-    .from('clinics')
-    .select(`
-      *,
-      cities (
+  if (!clinicData) return null
+  
+  // Fetch related data separately
+  const [citiesData, imagesData, treatmentsData, doctorsData] = await Promise.all([
+    // Fetch city with country
+    supabase
+      .from('cities')
+      .select(`
         *,
         countries (*)
-      ),
-      clinic_images (*),
-      clinic_treatments (
+      `)
+      .eq('id', clinicData.city_id)
+      .maybeSingle(),
+    
+    // Fetch clinic images
+    supabase
+      .from('clinic_images')
+      .select('*')
+      .eq('clinic_id', id),
+    
+    // Fetch clinic treatments with treatment details
+    supabase
+      .from('clinic_treatments')
+      .select(`
         *,
         treatments (
           *,
           treatment_categories (*)
         )
-      )
-    `)
+      `)
+      .eq('clinic_id', id),
+    
+    // Fetch doctors
+    supabase
+      .from('doctors')
+      .select('*')
+      .eq('clinic_id', id)
+  ])
+  
+  // Combine all data
+  const enrichedClinic = {
+    ...clinicData,
+    cities: citiesData.data,
+    clinic_images: imagesData.data || [],
+    clinic_treatments: treatmentsData.data || [],
+    doctors: doctorsData.data || []
+  }
+  
+  return enrichedClinic
+}
+
+export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> => {
+  // Use clinics_public view for public access
+  const { data: clinicsData, error } = await supabase
+    .from('clinics_public')
+    .select('*')
     .eq('is_featured', true)
     .order('rating', { ascending: false })
     .limit(limit)
   
   if (error) throw error
-  return data || []
+  if (!clinicsData || clinicsData.length === 0) return []
+  
+  // Fetch related data separately
+  const clinicIds = clinicsData.map(c => c.id)
+  
+  const [citiesData, imagesData, treatmentsData] = await Promise.all([
+    // Fetch cities with countries
+    supabase
+      .from('cities')
+      .select(`
+        *,
+        countries (*)
+      `)
+      .in('id', clinicsData.map(c => c.city_id).filter(Boolean)),
+    
+    // Fetch clinic images
+    supabase
+      .from('clinic_images')
+      .select('*')
+      .in('clinic_id', clinicIds),
+    
+    // Fetch clinic treatments with treatment details
+    supabase
+      .from('clinic_treatments')
+      .select(`
+        *,
+        treatments (
+          *,
+          treatment_categories (*)
+        )
+      `)
+      .in('clinic_id', clinicIds)
+  ])
+  
+  // Combine data
+  const enrichedClinics = clinicsData.map(clinic => ({
+    ...clinic,
+    cities: citiesData.data?.find(c => c.id === clinic.city_id),
+    clinic_images: imagesData.data?.filter(img => img.clinic_id === clinic.id) || [],
+    clinic_treatments: treatmentsData.data?.filter(t => t.clinic_id === clinic.id) || []
+  }))
+  
+  return enrichedClinics
 }
 
 // Trustpilot integration helper
@@ -481,21 +591,44 @@ export const getPopularTreatments = async (limit: number = 10): Promise<any[]> =
 }
 
 export const getTopRatedClinics = async (limit: number = 10): Promise<Clinic[]> => {
-  const { data, error } = await supabase
-    .from('clinics')
-    .select(`
-      *,
-      cities (
-        *,
-        countries (*)
-      ),
-      clinic_images (*)
-    `)
+  // Use clinics_public view for public access
+  const { data: clinicsData, error } = await supabase
+    .from('clinics_public')
+    .select('*')
     .gte('review_count', 5) // Only clinics with at least 5 reviews
     .order('rating', { ascending: false })
     .order('review_count', { ascending: false })
     .limit(limit)
   
   if (error) throw error
-  return data || []
+  if (!clinicsData || clinicsData.length === 0) return []
+  
+  // Fetch related data separately
+  const clinicIds = clinicsData.map(c => c.id)
+  
+  const [citiesData, imagesData] = await Promise.all([
+    // Fetch cities with countries
+    supabase
+      .from('cities')
+      .select(`
+        *,
+        countries (*)
+      `)
+      .in('id', clinicsData.map(c => c.city_id).filter(Boolean)),
+    
+    // Fetch clinic images
+    supabase
+      .from('clinic_images')
+      .select('*')
+      .in('clinic_id', clinicIds)
+  ])
+  
+  // Combine data
+  const enrichedClinics = clinicsData.map(clinic => ({
+    ...clinic,
+    cities: citiesData.data?.find(c => c.id === clinic.city_id),
+    clinic_images: imagesData.data?.filter(img => img.clinic_id === clinic.id) || []
+  }))
+  
+  return enrichedClinics
 }
