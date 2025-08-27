@@ -86,8 +86,20 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       <Input placeholder="Email *" type="email" autoComplete="email" {...register("email")} required />
       <Input placeholder="Treatment (optional)" {...register("treatment")} />
       <Textarea placeholder="Your message (optional)" className="min-h-[80px]" {...register("message")} />
-      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-primary">
-        {isSubmitting ? "Sending..." : submitLabel}
+      <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-primary group overflow-hidden">
+        <span className="inline-flex">
+          {(isSubmitting ? "Sending..." : submitLabel).split('').map((letter, index) => (
+            <span
+              key={index}
+              className="inline-block opacity-100 transition-all duration-300 group-hover:animate-[letter-fade-in_0.5s_ease-out_forwards]"
+              style={{
+                animationDelay: `${index * 0.05}s`
+              }}
+            >
+              {letter === ' ' ? '\u00A0' : letter}
+            </span>
+          ))}
+        </span>
       </Button>
     </form>
   );
