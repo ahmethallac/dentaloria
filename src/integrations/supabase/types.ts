@@ -254,6 +254,36 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_request_tracking: {
+        Row: {
+          blocked_until: string | null
+          created_at: string
+          email: string | null
+          id: string
+          ip_address: unknown | null
+          last_submission: string
+          submissions_count: number | null
+        }
+        Insert: {
+          blocked_until?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_address?: unknown | null
+          last_submission?: string
+          submissions_count?: number | null
+        }
+        Update: {
+          blocked_until?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_address?: unknown | null
+          last_submission?: string
+          submissions_count?: number | null
+        }
+        Relationships: []
+      }
       contact_requests: {
         Row: {
           clinic_id: string
@@ -519,6 +549,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_contact_submission_allowed: {
+        Args: { _email: string; _ip_address: unknown }
+        Returns: boolean
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]

@@ -5,10 +5,12 @@ import type { Database } from '@/integrations/supabase/types'
 type Profile = Database['public']['Tables']['profiles']['Row']
 import { getCurrentUser, onAuthStateChange, signIn, signUp, signOut } from '@/lib/auth'
 import type { AuthUser } from '@/lib/auth'
+import { getCurrentUserRole, type AppRole } from '@/lib/roleService'
 
 interface AuthContextType {
   user: AuthUser | null
   profile: Profile | null
+  userRole: AppRole | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, fullName: string, userType?: 'patient' | 'clinic_admin') => Promise<void>
@@ -31,12 +33,16 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [userRole, setUserRole] = useState<AppRole | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Get initial user
     getCurrentUser().then((user) => {
       setUser(user)
+      if (user) {
+        getCurrentUserRole().then(setUserRole)
+      }
       setLoading(false)
     })
 
@@ -46,12 +52,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (authUser) {
         // Simple state update - fetch profile separately
         setUser(authUser as AuthUser)
-        // Fetch profile data separately to avoid deadlock
+        // Fetch profile and role data separately to avoid deadlock
         setTimeout(() => {
           getCurrentUser().then(setUser)
+          getCurrentUserRole().then(setUserRole)
         }, 0)
       } else {
         setUser(null)
+        setUserRole(null)
       }
       setLoading(false)
     })
@@ -82,6 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await signOut()
       setUser(null)
+      setUserRole(null)
     } catch (error) {
       throw error
     }
@@ -90,6 +99,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     user,
     profile: user?.profile || null,
+    userRole,
     loading,
     signIn: handleSignIn,
     signUp: handleSignUp,

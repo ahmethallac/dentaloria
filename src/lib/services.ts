@@ -457,12 +457,39 @@ export const createReview = async (review: any): Promise<any> => {
 export const createContactRequest = async (
   request: Omit<ContactRequest, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: string }
 ): Promise<void> => {
+  if (!supabase) {
+    throw new Error('Database not available. Please connect Supabase.');
+  }
+
+  // Check if submission is allowed (abuse prevention)
+  const { data: isAllowed, error: checkError } = await supabase.rpc('check_contact_submission_allowed', {
+    _ip_address: null, // Note: IP detection would need server-side implementation
+    _email: request.email
+  })
+
+  if (checkError) {
+    console.error('Rate limit check failed:', checkError)
+    // Continue anyway - don't block legitimate users due to check failure
+  }
+
+  if (isAllowed === false) {
+    throw new Error('Too many submissions. Please try again later.')
+  }
+
   const payload = { ...request, status: request.status ?? 'new' }
   const { error } = await supabase
     .from('contact_requests')
     .insert(payload, { returning: 'minimal' })
 
   if (error) throw error
+
+  // Track the submission for abuse prevention
+  if (isAllowed !== false) {
+    await supabase.rpc('track_contact_submission', {
+      _ip_address: null, // Note: IP detection would need server-side implementation  
+      _email: request.email
+    }).catch(err => console.error('Failed to track submission:', err))
+  }
 }
 
 
