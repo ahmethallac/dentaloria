@@ -290,6 +290,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          ip_address: unknown | null
           message: string | null
           name: string
           notes: string | null
@@ -297,12 +298,14 @@ export type Database = {
           source: string | null
           status: string
           updated_at: string
+          user_agent: string | null
         }
         Insert: {
           clinic_id: string
           created_at?: string
           email: string
           id?: string
+          ip_address?: unknown | null
           message?: string | null
           name: string
           notes?: string | null
@@ -310,12 +313,14 @@ export type Database = {
           source?: string | null
           status?: string
           updated_at?: string
+          user_agent?: string | null
         }
         Update: {
           clinic_id?: string
           created_at?: string
           email?: string
           id?: string
+          ip_address?: unknown | null
           message?: string | null
           name?: string
           notes?: string | null
@@ -323,6 +328,7 @@ export type Database = {
           source?: string | null
           status?: string
           updated_at?: string
+          user_agent?: string | null
         }
         Relationships: [
           {
@@ -420,6 +426,33 @@ export type Database = {
           id?: string
           updated_at?: string
           user_type?: string | null
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: unknown
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address: unknown
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          request_count?: number
+          window_start?: string
         }
         Relationships: []
       }
