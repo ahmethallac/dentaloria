@@ -404,8 +404,8 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
 }
 
 export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> => {
-  // Use clinics_public view for public access
-  const { data: clinicsData, error } = await supabase
+  // First try to get featured clinics
+  let { data: clinicsData, error } = await supabase
     .from('clinics_public')
     .select('*')
     .eq('is_featured', true)
@@ -413,6 +413,20 @@ export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> =
     .limit(limit)
   
   if (error) throw error
+  
+  // If no featured clinics, fall back to any published clinics
+  if (!clinicsData || clinicsData.length === 0) {
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('clinics_public')
+      .select('*')
+      .order('rating', { ascending: false })
+      .order('review_count', { ascending: false })
+      .limit(limit)
+    
+    if (fallbackError) throw fallbackError
+    clinicsData = fallbackData
+  }
+  
   if (!clinicsData || clinicsData.length === 0) return []
   
   // Fetch related data separately
