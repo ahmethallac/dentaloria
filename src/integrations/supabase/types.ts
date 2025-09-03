@@ -127,6 +127,7 @@ export type Database = {
           experience_years: number | null
           id: string
           is_featured: boolean | null
+          is_published: boolean
           is_verified: boolean | null
           latitude: number | null
           longitude: number | null
@@ -150,6 +151,7 @@ export type Database = {
           experience_years?: number | null
           id?: string
           is_featured?: boolean | null
+          is_published?: boolean
           is_verified?: boolean | null
           latitude?: number | null
           longitude?: number | null
@@ -173,6 +175,7 @@ export type Database = {
           experience_years?: number | null
           id?: string
           is_featured?: boolean | null
+          is_published?: boolean
           is_verified?: boolean | null
           latitude?: number | null
           longitude?: number | null
@@ -408,6 +411,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email_verified: boolean
           full_name: string | null
           id: string
           updated_at: string
@@ -415,6 +419,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email_verified?: boolean
           full_name?: string | null
           id: string
           updated_at?: string
@@ -422,6 +427,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email_verified?: boolean
           full_name?: string | null
           id?: string
           updated_at?: string

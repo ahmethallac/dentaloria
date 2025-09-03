@@ -83,18 +83,25 @@ const Auth = () => {
 
     try {
       await signUp(signupForm.email, signupForm.password, signupForm.fullName, signupForm.userType)
+      
+      // Auto-login after successful registration
+      await signIn(signupForm.email, signupForm.password)
+      
       toast({
         title: "Success!",
-        description: "Account created successfully. You can now sign in."
+        description: "Account created successfully. You are now logged in."
       })
-      // Reset form
-      setSignupForm({
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        userType: 'clinic_admin'
-      })
+      
+      // Show email verification notification
+      setTimeout(() => {
+        toast({
+          title: "Please verify your email",
+          description: "Please check your email to verify your account.",
+          variant: "default"
+        })
+      }, 1000)
+      
+      // User will be redirected by useEffect
     } catch (error: any) {
       toast({
         title: "Registration Error",

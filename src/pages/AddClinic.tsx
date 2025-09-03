@@ -304,7 +304,8 @@ const AddClinic = () => {
         .from('clinics')
         .insert({
           ...formData,
-          user_id: user?.id
+          user_id: user?.id,
+          is_published: false // Save as draft by default
         })
         .select()
         .single()
@@ -396,7 +397,7 @@ const AddClinic = () => {
 
       toast({
         title: "Success!",
-        description: "Clinic added successfully"
+        description: "Clinic saved as draft. You can publish it when ready."
       })
 
       navigate('/dashboard')

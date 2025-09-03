@@ -81,6 +81,7 @@ export interface Clinic {
   review_count: number
   is_verified: boolean
   is_featured: boolean
+  is_published?: boolean
   created_at: string
   updated_at: string
   owner_id?: string
@@ -643,4 +644,30 @@ export const getTopRatedClinics = async (limit: number = 10): Promise<Clinic[]> 
   }))
   
   return enrichedClinics
+}
+
+// Publish clinic with email verification check
+export const publishClinic = async (clinicId: string): Promise<{ success: boolean; emailVerificationRequired?: boolean }> => {
+  // Check if user's email is verified
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    throw new Error('User not authenticated')
+  }
+  
+  // Check email verification status
+  if (!user.email_confirmed_at) {
+    return { success: false, emailVerificationRequired: true }
+  }
+  
+  // Update clinic to published
+  const { error } = await supabase
+    .from('clinics')
+    .update({ is_published: true })
+    .eq('id', clinicId)
+    .eq('user_id', user.id) // Ensure user owns this clinic
+  
+  if (error) throw error
+  
+  return { success: true }
 }
