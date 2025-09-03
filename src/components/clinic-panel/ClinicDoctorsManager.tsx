@@ -37,7 +37,7 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
 
   const add = async () => {
     if (!form.name || !form.image) {
-      toast({ title: "Uyarı", description: "İsim ve görsel gerekli", variant: "destructive" });
+      toast({ title: "Warning", description: "Name and image are required", variant: "destructive" });
       return;
     }
     setIsWorking(true);
@@ -58,11 +58,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       if (error) throw error;
       setList((prev) => [...prev, data as Doctor]);
       setForm({ title: "Dr.", name: "", experience_years: 0, image: null });
-      toast({ title: "Eklendi", description: "Doktor eklendi." });
+      toast({ title: "Added", description: "Doctor added." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Doktor eklenemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not add doctor.", variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -76,11 +76,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
         .update({ title: doc.title, name: doc.name, experience_years: doc.experience_years })
         .eq("id", doc.id);
       if (error) throw error;
-      toast({ title: "Kaydedildi", description: "Doktor güncellendi." });
+      toast({ title: "Saved", description: "Doctor updated." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Doktor güncellenemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not update doctor.", variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -92,11 +92,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       const { error } = await supabase.from("doctors").delete().eq("id", id);
       if (error) throw error;
       setList((prev) => prev.filter((d) => d.id !== id));
-      toast({ title: "Silindi", description: "Doktor kaldırıldı." });
+      toast({ title: "Deleted", description: "Doctor removed." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Doktor silinemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not delete doctor.", variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -104,19 +104,19 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
 
   return (
     <Card className="p-4 space-y-4">
-      <h3 className="text-lg font-semibold">Doktorlar</h3>
+      <h3 className="text-lg font-semibold">Doctors</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
         <div>
-          <Label>Ünvan</Label>
+          <Label>Title</Label>
           <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
         </div>
         <div>
-          <Label>Ad Soyad</Label>
+          <Label>Full Name</Label>
           <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
         </div>
         <div>
-          <Label>Deneyim (yıl)</Label>
+          <Label>Experience (years)</Label>
           <Input
             type="number"
             min={0}
@@ -126,13 +126,13 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
         </div>
         <div className="flex gap-2">
           <Input type="file" accept="image/*" onChange={(e) => setForm((f) => ({ ...f, image: e.target.files?.[0] || null }))} />
-          <Button onClick={add} disabled={isWorking}>Ekle</Button>
+          <Button onClick={add} disabled={isWorking}>Add</Button>
         </div>
       </div>
 
       <div className="space-y-3">
         {list.length === 0 ? (
-          <div className="text-sm text-muted-foreground">Henüz doktor eklenmemiş.</div>
+          <div className="text-sm text-muted-foreground">No doctors added yet.</div>
         ) : (
           list.map((d, i) => (
             <div key={d.id} className="p-3 border border-border/60 rounded-lg flex items-center gap-3">
@@ -149,8 +149,8 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
                 className="w-28"
               />
               <div className="ml-auto flex gap-2">
-                <Button variant="outline" onClick={() => save(d)} disabled={isWorking}>Kaydet</Button>
-                <Button variant="destructive" onClick={() => remove(d.id)} disabled={isWorking}>Sil</Button>
+                <Button variant="outline" onClick={() => save(d)} disabled={isWorking}>Save</Button>
+                <Button variant="destructive" onClick={() => remove(d.id)} disabled={isWorking}>Delete</Button>
               </div>
             </div>
           ))

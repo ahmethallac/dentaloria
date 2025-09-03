@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { getClinicById, type Clinic } from "@/lib/services";
+import { getClinicByIdPrivate, type Clinic } from "@/lib/services";
 import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 
@@ -18,16 +18,16 @@ const ClinicPanel = () => {
   const loadClinic = async () => {
     if (!id) return;
     try {
-      const data = await getClinicById(id);
+      const data = await getClinicByIdPrivate(id);
       if (!data) {
-        toast({ title: "Bulunamadı", description: "Klinik bulunamadı.", variant: "destructive" });
+        toast({ title: "Not Found", description: "Clinic not found.", variant: "destructive" });
         navigate("/dashboard");
         return;
       }
       setClinic(data);
     } catch (e: any) {
-      console.error("Klinik yüklenemedi:", e);
-      toast({ title: "Hata", description: "Klinik bilgileri yüklenirken bir hata oluştu.", variant: "destructive" });
+      console.error("Could not load clinic:", e);
+      toast({ title: "Error", description: "An error occurred while loading clinic information.", variant: "destructive" });
       navigate("/dashboard");
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ const ClinicPanel = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div>Yükleniyor...</div>
+        <div>Loading...</div>
       </div>
     );
   }
@@ -54,7 +54,7 @@ const ClinicPanel = () => {
   if (!clinic) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div>Klinik bulunamadı.</div>
+        <div>Clinic not found.</div>
       </div>
     );
   }
@@ -65,8 +65,8 @@ const ClinicPanel = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">{clinic.name} - Yönetim Paneli</h1>
-              <p className="text-muted-foreground">Başvurularınızı ve klinik bilgilerinizi yönetin.</p>
+              <h1 className="text-2xl font-bold">{clinic.name} - Management Panel</h1>
+              <p className="text-muted-foreground">Manage your applications and clinic information.</p>
             </div>
           </div>
         </div>
@@ -76,8 +76,8 @@ const ClinicPanel = () => {
         <Card className="p-4">
           <Tabs defaultValue="applications" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="applications">Başvurular</TabsTrigger>
-              <TabsTrigger value="clinic-info">Klinik Bilgileri</TabsTrigger>
+              <TabsTrigger value="applications">Applications</TabsTrigger>
+              <TabsTrigger value="clinic-info">Clinic Information</TabsTrigger>
             </TabsList>
 
             <TabsContent value="applications">

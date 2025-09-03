@@ -47,11 +47,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
         if (error) throw error;
       }
 
-      toast({ title: "Yüklendi", description: "Görseller eklendi." });
+      toast({ title: "Uploaded", description: "Images added." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Görseller yüklenemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not upload images.", variant: "destructive" });
     } finally {
       setIsWorking(false);
       e.currentTarget.value = "";
@@ -65,11 +65,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
       await supabase.from("clinic_images").update({ is_primary: false }).eq("clinic_id", clinicId);
       const { error } = await supabase.from("clinic_images").update({ is_primary: true }).eq("id", imageId);
       if (error) throw error;
-      toast({ title: "Güncellendi", description: "Kapak görseli ayarlandı." });
+      toast({ title: "Updated", description: "Cover image set." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Kapak ayarlanamadı.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not set cover image.", variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -80,11 +80,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
     try {
       const { error } = await supabase.from("clinic_images").delete().eq("id", imageId);
       if (error) throw error;
-      toast({ title: "Silindi", description: "Görsel kaldırıldı." });
+      toast({ title: "Deleted", description: "Image removed." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Görsel silinemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not delete image.", variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -93,24 +93,24 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Görseller</h3>
+        <h3 className="text-lg font-semibold">Images</h3>
         <label className="inline-flex items-center gap-2">
           <Input type="file" multiple accept="image/*" onChange={handleUpload} disabled={isWorking} />
         </label>
       </div>
       {images.length === 0 ? (
-        <div className="text-sm text-muted-foreground">Henüz görsel yok.</div>
+        <div className="text-sm text-muted-foreground">No images yet.</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {images.map((img) => (
             <div key={img.id} className="relative border border-border/60 rounded-lg overflow-hidden">
-              <img src={img.image_url} alt="klinik görseli" className="w-full h-32 object-cover" loading="lazy" />
+              <img src={img.image_url} alt="clinic image" className="w-full h-32 object-cover" loading="lazy" />
               <div className="p-2 flex items-center justify-between gap-2">
                 <Button size="sm" variant="outline" disabled={isWorking || !!img.is_primary} onClick={() => setPrimary(img.id)}>
-                  {img.is_primary ? "Kapak" : "Kapağı Yap"}
+                  {img.is_primary ? "Cover" : "Set as Cover"}
                 </Button>
                 <Button size="sm" variant="destructive" disabled={isWorking} onClick={() => remove(img.id)}>
-                  Sil
+                  Delete
                 </Button>
               </div>
             </div>

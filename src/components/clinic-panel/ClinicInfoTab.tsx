@@ -47,7 +47,7 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
           setCities(_cities);
         }
       } catch (e) {
-        console.error("Lokasyon verileri yüklenemedi:", e);
+        console.error("Could not load location data:", e);
       } finally {
         setLoadingLoc(false);
       }
@@ -75,7 +75,7 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
       const _cities = await getCities(id);
       setCities(_cities);
     } catch (e) {
-      console.error("Şehirler yüklenemedi:", e);
+      console.error("Could not load cities:", e);
     }
   };
 
@@ -107,24 +107,24 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Klinik Bilgileri</CardTitle>
+        <CardTitle>Clinic Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Klinik Adı</label>
+            <label className="text-sm font-medium mb-2 block">Clinic Name</label>
             <Input value={form.name} onChange={(e) => onChange("name", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">E-posta</label>
+            <label className="text-sm font-medium mb-2 block">Email</label>
             <Input value={form.email} onChange={(e) => onChange("email", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Telefon</label>
+            <label className="text-sm font-medium mb-2 block">Phone</label>
             <Input value={form.phone} onChange={(e) => onChange("phone", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Web Sitesi</label>
+            <label className="text-sm font-medium mb-2 block">Website</label>
             <Input value={form.website} onChange={(e) => onChange("website", e.target.value)} />
           </div>
           <div>
@@ -134,20 +134,20 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Adres</label>
+          <label className="text-sm font-medium mb-2 block">Address</label>
           <Textarea value={form.address} onChange={(e) => onChange("address", e.target.value)} />
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Açıklama</label>
+          <label className="text-sm font-medium mb-2 block">Description</label>
           <Textarea rows={4} value={form.description} onChange={(e) => onChange("description", e.target.value)} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Ülke</label>
+            <label className="text-sm font-medium mb-2 block">Country</label>
             {loadingLoc ? (
-              <div className="text-sm text-muted-foreground">Yükleniyor...</div>
+              <div className="text-sm text-muted-foreground">Loading...</div>
             ) : (
               <select
                 className="w-full px-3 py-2 border border-border rounded-md bg-background"
@@ -155,7 +155,7 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
                 onChange={(e) => handleCountryChange(e.target.value)}
               >
                 <option value="" disabled>
-                  Ülke seçin
+                  Select Country
                 </option>
                 {countries.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -166,14 +166,14 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
             )}
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Şehir</label>
+            <label className="text-sm font-medium mb-2 block">City</label>
             <select
               className="w-full px-3 py-2 border border-border rounded-md bg-background"
               value={cityId}
               onChange={(e) => setCityId(e.target.value)}
             >
               <option value="" disabled>
-                Şehir seçin
+                Select City
               </option>
               {cities.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -182,14 +182,14 @@ export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps)
               ))}
             </select>
             <div className="text-xs text-muted-foreground mt-1">
-              Seçili: {selectedCountryName} / {selectedCityName}
+              Selected: {selectedCountryName} / {selectedCityName}
             </div>
           </div>
         </div>
 
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
-            {saving ? "Kaydediliyor..." : "Bilgileri Güncelle"}
+            {saving ? "Saving..." : "Update Information"}
           </Button>
         </div>
 

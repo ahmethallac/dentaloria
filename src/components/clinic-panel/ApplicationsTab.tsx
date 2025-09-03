@@ -14,7 +14,7 @@ interface ApplicationsTabProps {
 }
 
 const statusLabel = (s: string) =>
-  s === "new" ? "Yeni" : s === "contacted" ? "Arandı" : s === "completed" ? "Tamamlandı" : s;
+  s === "new" ? "New" : s === "contacted" ? "Contacted" : s === "completed" ? "Completed" : s;
 
 const statusTone = (s: string) =>
   s === "new" ? "bg-blue-500" : s === "contacted" ? "bg-yellow-500" : s === "completed" ? "bg-green-500" : "bg-gray-500";
@@ -37,10 +37,10 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
       setRequests(res.requests);
       setTotal(res.total);
     } catch (e: any) {
-      console.error("Başvurular yüklenemedi:", e);
+      console.error("Could not load applications:", e);
       toast({
-        title: "Hata",
-        description: "Başvurular yüklenirken bir hata oluştu.",
+        title: "Error",
+        description: "An error occurred while loading applications.",
         variant: "destructive",
       });
     } finally {
@@ -64,12 +64,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
     try {
       const updated = await updateContactRequest(id, updates);
       setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
-      toast({ title: "Güncellendi", description: "Başvuru güncellendi." });
+      toast({ title: "Updated", description: "Application updated." });
     } catch (e: any) {
-      console.error("Başvuru güncellenemedi:", e);
+      console.error("Could not update application:", e);
       toast({
-        title: "Hata",
-        description: "Başvuru güncellenirken bir hata oluştu.",
+        title: "Error",
+        description: "An error occurred while updating the application.",
         variant: "destructive",
       });
     }
@@ -78,7 +78,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Başvurular</CardTitle>
+        <CardTitle>Applications</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
@@ -86,7 +86,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="İsim, telefon veya e-posta ara..."
+                placeholder="Search by name, phone or email..."
                 className="pl-10 w-72"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
@@ -101,27 +101,27 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 setPage(1);
               }}
             >
-              <option value="all">Tüm durumlar</option>
-              <option value="new">Yeni</option>
-              <option value="contacted">Arandı</option>
-              <option value="completed">Tamamlandı</option>
+              <option value="all">All statuses</option>
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="completed">Completed</option>
             </select>
             <Button variant="outline" onClick={handleApplySearch}>
-              Ara
+              Search
             </Button>
             <Button variant="outline" onClick={load}>
-              Yenile
+              Refresh
             </Button>
           </div>
-          <div className="text-sm text-muted-foreground">Toplam: {total}</div>
+          <div className="text-sm text-muted-foreground">Total: {total}</div>
         </div>
 
         <div className="space-y-3">
           {loading ? (
-            <div className="p-6 text-center text-muted-foreground">Yükleniyor...</div>
+            <div className="p-6 text-center text-muted-foreground">Loading...</div>
           ) : requests.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground">
-              Henüz başvuru yok veya filtrelere uygun sonuç bulunamadı.
+              No applications yet or no results found matching the filters.
             </div>
           ) : (
             requests.map((r) => (
@@ -143,14 +143,14 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                       <a href={`tel:${r.phone}`}>
                         <Button size="sm" variant="outline">
                           <Phone className="w-4 h-4 mr-2" />
-                          Ara
+                          Call
                         </Button>
                       </a>
                     )}
                     <a href={`mailto:${r.email}`}>
                       <Button size="sm" variant="outline">
                         <Mail className="w-4 h-4 mr-2" />
-                        Mail
+                        Email
                       </Button>
                     </a>
                     <select
@@ -158,25 +158,25 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                       value={r.status}
                       onChange={(e) => handleUpdate(r.id, { status: e.target.value as any })}
                     >
-                      <option value="new">Yeni</option>
-                      <option value="contacted">Arandı</option>
-                      <option value="completed">Tamamlandı</option>
+                      <option value="new">New</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="completed">Completed</option>
                     </select>
                   </div>
                 </div>
                 <div className="mt-3">
-                  <label className="text-xs text-muted-foreground mb-1 block">İç notlar</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Internal notes</label>
                   <div className="flex gap-2">
                     <Textarea
                       rows={2}
-                      placeholder="Bu başvuru hakkında iç notlar..."
+                      placeholder="Internal notes about this application..."
                       value={r.notes || ""}
                       onChange={(e) =>
                         setRequests((prev) => prev.map((x) => (x.id === r.id ? { ...x, notes: e.target.value } : x)))
                       }
                     />
                     <Button size="sm" onClick={() => handleUpdate(r.id, { notes: requests.find((x) => x.id === r.id)?.notes })}>
-                      Kaydet
+                      Save
                     </Button>
                   </div>
                 </div>
@@ -188,17 +188,17 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-2">
             <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-              Önceki
+              Previous
             </Button>
             <div className="text-sm">
-              Sayfa {page} / {totalPages}
+              Page {page} / {totalPages}
             </div>
             <Button
               variant="outline"
               disabled={page === totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
-              Sonraki
+              Next
             </Button>
           </div>
         )}

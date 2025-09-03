@@ -66,11 +66,11 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
         const { error } = await supabase.from("clinic_treatments").insert(rows);
         if (error) throw error;
       }
-      toast({ title: "Kaydedildi", description: "Tedaviler güncellendi." });
+      toast({ title: "Saved", description: "Treatments updated." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Hata", description: "Tedaviler kaydedilemedi.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not save treatments.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -81,11 +81,11 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
   return (
     <Card className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Tedaviler ve Fiyatlar</h3>
-        <div className="text-sm text-muted-foreground">Seçili: {allSelectedCount}</div>
+        <h3 className="text-lg font-semibold">Treatments and Prices</h3>
+        <div className="text-sm text-muted-foreground">Selected: {allSelectedCount}</div>
       </div>
       {loading ? (
-        <div className="text-sm text-muted-foreground">Yükleniyor...</div>
+        <div className="text-sm text-muted-foreground">Loading...</div>
       ) : (
         <div className="space-y-3">
           {allTreatments.map((t) => {
@@ -98,7 +98,7 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
                 </div>
                 {isChecked && (
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Başlangıç (EUR)</span>
+                    <span className="text-sm text-muted-foreground">Starting Price (EUR)</span>
                     <Input
                       type="number"
                       min={0}
@@ -115,7 +115,7 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
         </div>
       )}
       <div className="flex justify-end">
-        <Button onClick={save} disabled={saving}>{saving ? "Kaydediliyor..." : "Tedavileri Kaydet"}</Button>
+        <Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Save Treatments"}</Button>
       </div>
     </Card>
   );

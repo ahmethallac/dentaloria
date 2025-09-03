@@ -295,6 +295,54 @@ export const getClinics = async (filters?: {
   }
 }
 
+export const getClinicByIdPrivate = async (id: string): Promise<Clinic | null> => {
+  if (!supabase) {
+    throw new Error('Database not available. Please connect Supabase.');
+  }
+
+  const { data, error } = await supabase
+    .from('clinics')
+    .select(`
+      *,
+      cities (
+        name,
+        countries (
+          name
+        )
+      ),
+      clinic_images (
+        id,
+        image_url,
+        is_primary
+      ),
+      clinic_treatments (
+        id,
+        treatment_id,
+        starting_price_euro,
+        treatments (
+          name,
+          description
+        )
+      ),
+      doctors (
+        id,
+        name,
+        title,
+        experience_years,
+        profile_image_url
+      )
+    `)
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching clinic by ID (private):', error);
+    throw error;
+  }
+
+  return data as Clinic;
+};
+
 export const getClinicById = async (id: string): Promise<Clinic | null> => {
   // First try to get basic clinic data from public view
   const { data: clinicData, error } = await supabase
