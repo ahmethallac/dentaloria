@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
-import { getFeaturedClinics, type Clinic } from "@/lib/services";
+import { getFeaturedClinics, getTreatments, getPopularTreatments, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 
 // Helper function to map clinic data for ClinicCard component
@@ -31,33 +31,8 @@ const mapClinicForCard = (clinic: Clinic) => ({
 });
 
 // Treatment and location data
-const TREATMENTS = ["Full Mouth All-on-4", "Full Mouth All-on-6", "Hollywood Smile", "Zirconium Crowns", "Porcelain Crowns", "Lamina Coatings", "E-max Skins", "Implant", "Root Canal", "Open Sinus Lift", "Closed Sinus Lift", "Bone Graft"];
+
 const COUNTRIES = ["Turkey", "USA", "UK"];
-const HOMEPAGE_TREATMENTS = [{
-  name: "All-on-6 Dental Implants",
-  icon: Smile,
-  description: "Complete denture solution"
-}, {
-  name: "All-on-4 Dental Implants",
-  icon: UserCheck,
-  description: "Affordable denture option"
-}, {
-  name: "Porcelain Veneers",
-  icon: Star,
-  description: "Perfect smile makeover"
-}, {
-  name: "Single Tooth Implant",
-  icon: Activity,
-  description: "Permanent tooth solution"
-}, {
-  name: "Dental Crown",
-  icon: Crown,
-  description: "Tooth crowns"
-}, {
-  name: "Teeth Whitening",
-  icon: Stethoscope,
-  description: "Professional whitening treatment"
-}];
 const POPULAR_CITIES = [{
   name: "Istanbul",
   image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
@@ -78,6 +53,8 @@ const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [featuredClinics, setFeaturedClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [popularTreatments, setPopularTreatments] = useState<Treatment[]>([]);
 
   useEffect(() => {
     const loadFeaturedClinics = async () => {
@@ -98,6 +75,22 @@ const Index = () => {
 
     loadFeaturedClinics();
   }, [toast]);
+
+  useEffect(() => {
+    const loadTreatments = async () => {
+      try {
+        const [allTreats, popular] = await Promise.all([
+          getTreatments(),
+          getPopularTreatments(6),
+        ]);
+        setTreatments(allTreats);
+        setPopularTreatments(popular);
+      } catch (e) {
+        console.error('Failed to load treatments', e);
+      }
+    };
+    loadTreatments();
+  }, []);
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedTreatment) params.set('treatment', selectedTreatment);
@@ -144,9 +137,11 @@ const Index = () => {
                     <SelectValue placeholder="Select treatment type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {TREATMENTS.map(treatment => <SelectItem key={treatment} value={treatment}>
-                        {treatment}
-                      </SelectItem>)}
+                    {treatments.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 
@@ -325,17 +320,18 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {HOMEPAGE_TREATMENTS.map((treatment, index) => <Card key={treatment.name} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
+            {popularTreatments.map((treatment, index) => (
+              <Card key={treatment.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
             animationDelay: `${index * 0.1}s`
           }} onClick={() => handleTreatmentClick(treatment.name)}>
                 <CardContent className="p-6 text-center">
                   <div className="bg-gradient-to-br from-primary/10 to-blue-600/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:from-primary/20 group-hover:to-blue-600/20 transition-colors duration-300">
-                    <treatment.icon className="h-8 w-8 text-primary" />
+                    <Stethoscope className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="font-semibold mb-2">{treatment.name}</h3>
-                  <p className="text-sm text-muted-foreground">{treatment.description}</p>
+                  <p className="text-sm text-muted-foreground">{treatment.description || 'Click to explore clinics offering this treatment'}</p>
                 </CardContent>
-              </Card>)}
+              </Card>))}
           </div>
         </div>
       </section>

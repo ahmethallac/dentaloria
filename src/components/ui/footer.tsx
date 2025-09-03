@@ -2,7 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Star, Shield, Award } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getPopularTreatments } from "@/lib/services";
 export const Footer = () => {
+  const [popularTreatments, setPopularTreatments] = useState<any[]>([]);
+  useEffect(() => {
+    getPopularTreatments(7)
+      .then(setPopularTreatments)
+      .catch((e) => console.error('Failed to load popular treatments', e));
+  }, []);
   return <footer className="bg-gradient-to-br from-primary/5 to-primary-light/5 border-t border-border/50">
       <div className="container mx-auto px-4 py-16">
         {/* Main Footer Content */}
@@ -62,11 +70,13 @@ export const Footer = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">Popular Treatments</h3>
             <ul className="space-y-3">
-              {["Implant Treatment", "Teeth Whitening", "Orthodontics", "Veneer Coating", "Tooth Extraction", "Root Canal Treatment", "Dentures"].map(service => <li key={service}>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
-                    {service}
+              {popularTreatments.map((t) => (
+                <li key={t.id}>
+                  <a href={`/clinic-listing?treatment=${encodeURIComponent(t.name)}`} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                    {t.name}
                   </a>
-                </li>)}
+                </li>
+              ))}
             </ul>
           </div>
 
