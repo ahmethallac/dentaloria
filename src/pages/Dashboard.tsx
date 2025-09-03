@@ -197,14 +197,16 @@ const Dashboard = () => {
                           variant="outline" 
                           size="sm"
                           onClick={() => navigate(`/clinic/${clinic.id}`)}
+                          disabled={!clinic.is_published}
+                          title={!clinic.is_published ? "Publish clinic first to view public page" : ""}
                         >
-                          Görüntüle
+                          View
                         </Button>
                         <Button 
                           size="sm"
                           onClick={() => navigate(`/clinic/${clinic.id}/panel`)}
                         >
-                          Yönet
+                          Manage
                         </Button>
                       </div>
                     </CardContent>
