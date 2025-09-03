@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
@@ -8,51 +8,27 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play } from "lucide-react";
+import { getFeaturedClinics, type Clinic } from "@/lib/services";
+import { useToast } from "@/hooks/use-toast";
 
-// Mock data for clinics
-const featuredClinics = [{
-  id: "1",
-  name: "Smile Center Istanbul",
-  location: "Levent",
-  city: "Istanbul",
-  country: "Turkey",
-  rating: 4.9,
-  reviewCount: 1247,
-  image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=300&fit=crop",
-  specialties: ["Implant", "Orthodontics", "Cosmetic Dentistry"],
-  priceRange: "$$$",
-  experience: 15,
-  patientCount: 5000,
-  isVerified: true
-}, {
-  id: "2",
-  name: "Dental Plus Antalya",
-  location: "Lara",
-  city: "Antalya",
-  country: "Turkey",
-  rating: 4.8,
-  reviewCount: 892,
-  image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=300&fit=crop",
-  specialties: ["Veneers", "Whitening", "Implant"],
+// Helper function to map clinic data for ClinicCard component
+const mapClinicForCard = (clinic: Clinic) => ({
+  id: clinic.id,
+  name: clinic.name,
+  location: clinic.address || '',
+  city: clinic.cities?.name || '',
+  country: clinic.cities?.countries?.name || '',
+  rating: clinic.rating || 0,
+  reviewCount: clinic.review_count || 0,
+  image: clinic.clinic_images?.find(img => img.is_primary)?.image_url || 
+         clinic.clinic_images?.[0]?.image_url || 
+         "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=300&fit=crop",
+  specialties: clinic.clinic_treatments?.slice(0, 3).map(ct => ct.treatments?.name).filter(Boolean) || [],
   priceRange: "$$",
-  experience: 12,
-  patientCount: 3500,
-  isVerified: true
-}, {
-  id: "3",
-  name: "Elite Dental Ankara",
-  location: "Çankaya",
-  city: "Ankara",
-  country: "Turkey",
-  rating: 4.6,
-  reviewCount: 523,
-  image: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&h=300&fit=crop",
-  specialties: ["Orthodontics", "Pediatric Dentistry", "Surgery"],
-  priceRange: "$$",
-  experience: 10,
-  patientCount: 2800,
-  isVerified: true
-}];
+  experience: clinic.experience_years || 0,
+  patientCount: clinic.patient_count || 0,
+  isVerified: clinic.is_verified || false
+});
 
 // Treatment and location data
 const TREATMENTS = ["Full Mouth All-on-4", "Full Mouth All-on-6", "Hollywood Smile", "Zirconium Crowns", "Porcelain Crowns", "Lamina Coatings", "E-max Skins", "Implant", "Root Canal", "Open Sinus Lift", "Closed Sinus Lift", "Bone Graft"];
@@ -97,8 +73,31 @@ const POPULAR_CITIES = [{
 }];
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedTreatment, setSelectedTreatment] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [featuredClinics, setFeaturedClinics] = useState<Clinic[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadFeaturedClinics = async () => {
+      try {
+        const clinics = await getFeaturedClinics(6);
+        setFeaturedClinics(clinics);
+      } catch (error) {
+        console.error('Failed to load featured clinics:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load featured clinics",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFeaturedClinics();
+  }, [toast]);
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedTreatment) params.set('treatment', selectedTreatment);
@@ -206,11 +205,43 @@ const Index = () => {
             <div className="absolute right-0 top-0 w-8 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
             
             <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-              {featuredClinics.map((clinic, index) => <div key={clinic.id} className="flex-none w-80 md:w-96 snap-start animate-fade-in" style={{
-              animationDelay: `${index * 0.1}s`
-            }}>
-                  <ClinicCard {...clinic} onClick={() => console.log(`Clicked clinic ${clinic.id}`)} />
-                </div>)}
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="flex-none w-80 md:w-96 snap-start">
+                    <Card className="animate-pulse">
+                      <div className="h-48 bg-muted"></div>
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                        <div className="flex gap-2">
+                          <div className="h-6 bg-muted rounded w-16"></div>
+                          <div className="h-6 bg-muted rounded w-16"></div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))
+              ) : featuredClinics.length > 0 ? (
+                featuredClinics.map((clinic, index) => (
+                  <div key={clinic.id} className="flex-none w-80 md:w-96 snap-start animate-fade-in" style={{
+                    animationDelay: `${index * 0.1}s`
+                  }}>
+                    <ClinicCard 
+                      {...mapClinicForCard(clinic)} 
+                      onClick={() => navigate(`/clinic/${clinic.id}`)} 
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="flex-none w-80 md:w-96 snap-start">
+                  <Card className="h-64 flex items-center justify-center">
+                    <CardContent className="text-center">
+                      <p className="text-muted-foreground">No clinics available yet</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </div>
           </div>
         </div>
