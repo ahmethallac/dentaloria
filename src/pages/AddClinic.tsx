@@ -253,6 +253,17 @@ const AddClinic = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Authentication validation
+    if (!user || !user.id) {
+      toast({
+        title: "Authentication Error",
+        description: "You must be logged in to create a clinic. Please sign in and try again.",
+        variant: "destructive"
+      })
+      navigate('/auth')
+      return
+    }
+
     // Validation
     if (selectedTreatments.length === 0) {
       toast({
