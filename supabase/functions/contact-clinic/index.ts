@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
     const { clinicId, name, email, phone, treatment, message } = await req.json() as ContactRequest
     
     // Get client IP and user agent for rate limiting and abuse prevention
-    const clientIP = req.headers.get('x-forwarded-for') || 
+    const forwardedFor = req.headers.get('x-forwarded-for')
+    const clientIP = forwardedFor ? forwardedFor.split(',')[0].trim() : 
                     req.headers.get('x-real-ip') || 
                     'unknown'
     const userAgent = req.headers.get('user-agent') || 'unknown'
@@ -101,7 +102,6 @@ Deno.serve(async (req) => {
         name: name.slice(0, 100), // Limit field lengths
         email: email.slice(0, 100),
         phone: phone?.slice(0, 50),
-        treatment: treatment?.slice(0, 200),
         message: message?.slice(0, 1000),
         ip_address: clientIP,
         user_agent: userAgent.slice(0, 500)
