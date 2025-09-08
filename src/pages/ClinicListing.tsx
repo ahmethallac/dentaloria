@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { useHeadMeta } from "@/hooks/useHeadMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -370,6 +371,13 @@ export default function ClinicListing() {
     setSelectedCity("all");
     setPage(1);
   };
+
+  useHeadMeta({
+    title: "Dental Clinics | Dentaloria",
+    description: "Browse and compare dental clinics worldwide. Find the perfect clinic for your treatment with verified reviews and transparent pricing.",
+    ogTitle: "Dental Clinics | Dentaloria",
+    ogDescription: "Browse and compare dental clinics worldwide. Find the perfect clinic for your treatment with verified reviews and transparent pricing."
+  });
 
   const getClinicImages = (clinic: any): string[] => {
     if (clinic.clinic_images && clinic.clinic_images.length > 0) {

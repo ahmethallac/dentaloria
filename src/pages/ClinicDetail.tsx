@@ -1,4 +1,5 @@
 import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useHeadMeta } from "@/hooks/useHeadMeta";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -115,6 +116,13 @@ const ClinicDetail = () => {
       }
     })();
   }, [id]);
+
+  useHeadMeta({
+    title: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+    description: clinic ? `${clinic.name} - ${clinic.description?.substring(0, 160) || 'Professional dental clinic with quality treatments and experienced doctors.'}` : "View detailed information about dental clinics including services, doctors, and patient reviews.",
+    ogTitle: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+    ogDescription: clinic ? `${clinic.name} - ${clinic.description?.substring(0, 160) || 'Professional dental clinic with quality treatments and experienced doctors.'}` : "View detailed information about dental clinics including services, doctors, and patient reviews."
+  });
 
   if (loading) {
     return (

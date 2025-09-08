@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useHeadMeta } from "@/hooks/useHeadMeta";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { ClinicCard } from "@/components/ui/clinic-card";
@@ -103,6 +104,15 @@ const Index = () => {
   const handleTreatmentClick = (treatmentName: string) => {
     navigate(`/clinic-listing?treatment=${treatmentName}`);
   };
+
+  useHeadMeta({
+    title: "Dentaloria | Find the Best Dental Clinic for You",
+    description: "Dentaloria helps you compare dental clinics by price, treatment options, location, and patient reviews — making it easy to choose the best clinic abroad with confidence.",
+    ogTitle: "Dentaloria | Find the Best Dental Clinic for You",
+    ogDescription: "Dentaloria helps you compare dental clinics by price, treatment options, location, and patient reviews — making it easy to choose the best clinic abroad with confidence.",
+    twitterTitle: "Dentaloria | Find the Best Dental Clinic for You",
+    twitterDescription: "Dentaloria helps you compare dental clinics by price, treatment options, location, and patient reviews — making it easy to choose the best clinic abroad with confidence."
+  });
   return <div className="min-h-screen bg-background">
       <Navbar />
       
