@@ -388,9 +388,24 @@ export default function ClinicListing() {
 
   const getClinicPrice = (clinic: any): string => {
     if (clinic.clinic_treatments && clinic.clinic_treatments.length > 0) {
-      const treatment = clinic.clinic_treatments[0];
-      if (treatment.starting_price_euro) {
-        return `€${treatment.starting_price_euro}`;
+      // If a specific treatment is selected, show that treatment's price
+      if (selectedTreatment !== "all") {
+        const matchingTreatment = clinic.clinic_treatments.find(
+          (ct: any) => ct.treatment_id === selectedTreatment
+        );
+        if (matchingTreatment?.starting_price_euro) {
+          return `€${matchingTreatment.starting_price_euro}`;
+        }
+      }
+      
+      // Otherwise, show the minimum price across all treatments
+      const prices = clinic.clinic_treatments
+        .map((ct: any) => ct.starting_price_euro)
+        .filter((p: number) => p > 0);
+      
+      if (prices.length > 0) {
+        const minPrice = Math.min(...prices);
+        return `€${minPrice}`;
       }
     }
     return "Contact for pricing";
