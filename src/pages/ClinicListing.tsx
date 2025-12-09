@@ -5,10 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, XCircle, MapPin, Users, ArrowUpDown, Filter, Search, Circle, CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Star, CheckCircle, MapPin, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+import { FilterContent } from "@/components/clinic-listing/FilterContent";
+import { MobileFilterDrawer } from "@/components/clinic-listing/MobileFilterDrawer";
 import { getClinics, getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 // Types will be imported from services file
 
@@ -177,7 +178,7 @@ export default function ClinicListing() {
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [sortBy, setSortBy] = useState("rating");
-  const [showAllTreatments, setShowAllTreatments] = useState(false);
+  
   
   const [page, setPage] = useState(1);
   const [totalClinics, setTotalClinics] = useState(0);
@@ -452,164 +453,38 @@ export default function ClinicListing() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Mobile Filter Button */}
+        <div className="lg:hidden mb-6">
+          <MobileFilterDrawer
+            treatments={treatments}
+            countries={countries}
+            cities={cities}
+            selectedTreatment={selectedTreatment}
+            selectedCountry={selectedCountry}
+            selectedCity={selectedCity}
+            setSelectedTreatment={setSelectedTreatment}
+            setSelectedCountry={setSelectedCountry}
+            setSelectedCity={setSelectedCity}
+            clearFilters={clearFilters}
+          />
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filters */}
-          <div className="lg:w-80">
+          {/* Sidebar Filters - Desktop Only */}
+          <div className="hidden lg:block lg:w-80">
             <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-6 shadow-card border border-white/20 sticky top-8">
-              <div className="flex items-center gap-2 mb-6">
-                <Filter className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
-                  Filters
-                </h3>
-              </div>
-
-
-              <div className="space-y-6">
-                {/* Treatments Filter */}
-                <div>
-                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Treatments</h4>
-                  <div className="space-y-3">
-                    <div
-                      onClick={() => setSelectedTreatment("all")}
-                      className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                    >
-                      <div className="relative">
-                        {selectedTreatment === "all" ? (
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground" />
-                        )}
-                      </div>
-                      <span className={`text-sm ${selectedTreatment === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                        All
-                      </span>
-                    </div>
-                     {treatments.map((treatment) => (
-                       <div
-                         key={treatment.id}
-                         onClick={() => setSelectedTreatment(treatment.id)}
-                         className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                       >
-                         <div className="relative">
-                           {selectedTreatment === treatment.id ? (
-                             <CheckCircle2 className="h-5 w-5 text-primary" />
-                           ) : (
-                             <Circle className="h-5 w-5 text-muted-foreground" />
-                           )}
-                         </div>
-                         <span className={`text-sm ${selectedTreatment === treatment.id ? "text-primary font-medium" : "text-foreground/70"}`}>
-                           {treatment.name}
-                         </span>
-                       </div>
-                     ))}
-                    {treatments.length > 7 && (
-                      <button
-                        onClick={() => setShowAllTreatments(!showAllTreatments)}
-                        className="text-primary text-sm hover:underline ml-8"
-                      >
-                        {showAllTreatments ? "Show Less" : "Show All"}
-                      </button>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Countries Filter */}
-                <div>
-                  <h4 className="text-sm font-semibold mb-4 text-foreground/80">Countries</h4>
-                  <div className="space-y-3">
-                    <div
-                      onClick={() => {
-                        setSelectedCountry("all");
-                        setSelectedCity("all");
-                      }}
-                      className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                    >
-                      <div className="relative">
-                        {selectedCountry === "all" ? (
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground" />
-                        )}
-                      </div>
-                      <span className={`text-sm ${selectedCountry === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                        All
-                      </span>
-                    </div>
-                    {countries.map((country) => (
-                      <div
-                        key={country.id}
-                        onClick={() => {
-                          setSelectedCountry(country.id);
-                          setSelectedCity("all");
-                        }}
-                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                      >
-                        <div className="relative">
-                          {selectedCountry === country.id ? (
-                            <CheckCircle2 className="h-5 w-5 text-primary" />
-                          ) : (
-                            <Circle className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <span className={`text-sm ${selectedCountry === country.id ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          {country.flag_url} {country.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Cities Filter */}
-                {selectedCountry !== "all" && cities.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold mb-4 text-foreground/80">Cities</h4>
-                    <div className="space-y-3">
-                      <div
-                        onClick={() => setSelectedCity("all")}
-                        className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                      >
-                        <div className="relative">
-                          {selectedCity === "all" ? (
-                            <CheckCircle2 className="h-5 w-5 text-primary" />
-                          ) : (
-                            <Circle className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <span className={`text-sm ${selectedCity === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                          All
-                        </span>
-                      </div>
-                      {cities.map((city) => (
-                        <div
-                          key={city.id}
-                          onClick={() => setSelectedCity(city.id)}
-                          className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-                        >
-                          <div className="relative">
-                            {selectedCity === city.id ? (
-                              <CheckCircle2 className="h-5 w-5 text-primary" />
-                            ) : (
-                              <Circle className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </div>
-                          <span className={`text-sm ${selectedCity === city.id ? "text-primary font-medium" : "text-foreground/70"}`}>
-                            {city.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Clear Filters */}
-                <Button 
-                  onClick={clearFilters}
-                  variant="outline"
-                  className="w-full bg-white/50 border-white/30 hover:bg-white/70 rounded-xl"
-                >
-                  Clear Filters
-                </Button>
-              </div>
+              <FilterContent
+                treatments={treatments}
+                countries={countries}
+                cities={cities}
+                selectedTreatment={selectedTreatment}
+                selectedCountry={selectedCountry}
+                selectedCity={selectedCity}
+                setSelectedTreatment={setSelectedTreatment}
+                setSelectedCountry={setSelectedCountry}
+                setSelectedCity={setSelectedCity}
+                clearFilters={clearFilters}
+              />
             </div>
           </div>
 
