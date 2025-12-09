@@ -530,19 +530,20 @@ export default function ClinicListing() {
 
             {/* Clinic Cards */}
             {!loading && (
-              <div className="space-y-6">
+              <div className="space-y-4 lg:space-y-6">
                 {clinics.map((clinic, index) => (
                   <Card 
                     key={clinic.id} 
-                    className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 hover:scale-[1.02] animate-fade-in ${
+                    className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 lg:hover:scale-[1.02] animate-fade-in ${
                       clinic.is_featured ? 'ring-2 ring-primary/20 shadow-colored' : ''
                     }`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <CardContent className="p-0">
-                      <div className="flex flex-col lg:flex-row h-auto lg:h-48 relative">
-                        {/* Image Section */}
-                        <div className="lg:w-64 h-48 lg:h-full relative">
+                      {/* Desktop Layout */}
+                      <div className="hidden lg:flex lg:flex-row h-48 relative">
+                        {/* Image Section - Desktop */}
+                        <div className="w-64 h-full relative">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
                             <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
@@ -555,32 +556,26 @@ export default function ClinicListing() {
                           </div>
                         </div>
 
-                        {/* Content Section */}
-                        <div className="flex-1 p-4 pr-20 lg:pr-28">
+                        {/* Content Section - Desktop */}
+                        <div className="flex-1 p-4 pr-28">
                           <div className="flex flex-col h-full">
-                            {/* Header */}
                             <div className="mb-3">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                                  <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                    <div className="flex items-center gap-1">
-                                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                      <span className="font-semibold">{clinic.rating}</span>
-                                      <span>({clinic.review_count})</span>
-                                    </div>
-                                    {clinic.is_verified && (
-                                      <div className="flex items-center gap-1">
-                                        <CheckCircle className="h-3 w-3 text-green-500" />
-                                        <span>Verified</span>
-                                      </div>
-                                    )}
-                                  </div>
+                              <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
+                              <div className="flex items-center gap-3 text-xs text-foreground/70">
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="font-semibold">{clinic.rating}</span>
+                                  <span>({clinic.review_count})</span>
                                 </div>
+                                {clinic.is_verified && (
+                                  <div className="flex items-center gap-1">
+                                    <CheckCircle className="h-3 w-3 text-green-500" />
+                                    <span>Verified</span>
+                                  </div>
+                                )}
                               </div>
                             </div>
 
-                            {/* Price - Centered */}
                             <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
                               <div className="text-xs text-foreground/70 mb-1">Starting</div>
                               <div className="text-lg font-bold text-primary">
@@ -588,7 +583,6 @@ export default function ClinicListing() {
                               </div>
                             </div>
 
-                            {/* Treatments */}
                             <div className="flex-1">
                               {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                                 <div className="flex flex-wrap gap-1">
@@ -598,9 +592,9 @@ export default function ClinicListing() {
                                       variant="secondary" 
                                       className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
                                     >
-                                       {clinicTreatment.treatments?.name}
-                                       {clinicTreatment.starting_price_euro && ` - €${clinicTreatment.starting_price_euro}`}
-                                     </Badge>
+                                      {clinicTreatment.treatments?.name}
+                                      {clinicTreatment.starting_price_euro && ` - €${clinicTreatment.starting_price_euro}`}
+                                    </Badge>
                                   ))}
                                   {clinic.clinic_treatments.length > 2 && (
                                     <Badge 
@@ -616,7 +610,7 @@ export default function ClinicListing() {
                           </div>
                         </div>
 
-                        {/* Action Button - Right Edge Vertical */}
+                        {/* Action Button - Desktop */}
                         <Link
                           to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
                           className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group"
@@ -629,6 +623,95 @@ export default function ClinicListing() {
                             </div>
                           </div>
                         </Link>
+                      </div>
+
+                      {/* Mobile Layout - Modern Card Design */}
+                      <div className="lg:hidden">
+                        {/* Image with overlay info */}
+                        <div className="relative h-44">
+                          <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
+                          
+                          {/* Top badges */}
+                          <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+                            {clinic.is_featured ? (
+                              <Badge className="bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg">
+                                Featured
+                              </Badge>
+                            ) : <div />}
+                            
+                            {clinic.is_verified && (
+                              <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
+                                <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                                <span className="text-xs font-medium text-foreground/80">Verified</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Bottom gradient overlay with location */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-8 pb-3 px-3">
+                            <div className="flex items-center gap-1.5 text-white">
+                              <MapPin className="h-3.5 w-3.5" />
+                              <span className="text-sm font-medium">{getClinicLocation(clinic)}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div className="p-4 space-y-3">
+                          {/* Header Row: Name + Rating */}
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="text-base font-bold text-foreground leading-tight flex-1">
+                              {clinic.name}
+                            </h3>
+                            <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg shrink-0">
+                              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                              <span className="text-sm font-semibold text-amber-700">{clinic.rating || '0'}</span>
+                              <span className="text-xs text-amber-600/70">({clinic.review_count || 0})</span>
+                            </div>
+                          </div>
+
+                          {/* Treatments */}
+                          {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment) => (
+                                <Badge 
+                                  key={clinicTreatment.id} 
+                                  variant="secondary" 
+                                  className="bg-muted/80 text-foreground/70 border-0 px-2 py-1 rounded-lg text-xs"
+                                >
+                                  {clinicTreatment.treatments?.name}
+                                </Badge>
+                              ))}
+                              {clinic.clinic_treatments.length > 3 && (
+                                <Badge 
+                                  variant="outline" 
+                                  className="border-primary/20 text-primary bg-primary/5 px-2 py-1 rounded-lg text-xs"
+                                >
+                                  +{clinic.clinic_treatments.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Divider */}
+                          <div className="h-px bg-border/50" />
+
+                          {/* Price + CTA Row */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex flex-col">
+                              <span className="text-xs text-muted-foreground">Starting from</span>
+                              <span className="text-xl font-bold text-primary">{getClinicPrice(clinic)}</span>
+                            </div>
+                            
+                            <Link
+                              to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                              className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/90 text-white px-5 py-2.5 rounded-xl font-medium text-sm shadow-lg shadow-primary/25 active:scale-95 transition-transform"
+                            >
+                              View Clinic
+                              <ChevronRight className="h-4 w-4" />
+                            </Link>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
