@@ -264,10 +264,6 @@ const ClinicDetail = () => {
                     <Mail className="w-5 h-5 text-primary" />
                     <span>{clinic.email}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-primary" />
-                    <span>{clinic.workingHours}</span>
-                  </div>
                 </CardContent>
               </Card>
             </div>
