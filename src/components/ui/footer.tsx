@@ -58,11 +58,21 @@ export const Footer = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-3">
-              {["Home", "Clinics", "Treatment Types", "Price Comparison", "Patient Reviews", "Blog", "FAQ"].map(link => <li key={link}>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
-                    {link}
-                  </a>
-                </li>)}
+              <li>
+                <a href="/" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="/clinic-listing" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  Clinics
+                </a>
+              </li>
+              <li>
+                <a href="/clinic" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  Featured Clinic
+                </a>
+              </li>
             </ul>
           </div>
 

@@ -38,8 +38,8 @@ const Dashboard = () => {
       setClinics(userClinics)
     } catch (error: any) {
       toast({
-        title: "Hata",
-        description: "Klinikler yüklenirken hata oluştu.",
+        title: "Error",
+        description: "Failed to load clinics.",
         variant: "destructive"
       })
     } finally {
@@ -87,7 +87,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">Yükleniyor...</div>
+        <div className="text-center">Loading...</div>
       </div>
     )
   }
@@ -96,19 +96,19 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Hoş Geldiniz, {profile?.full_name}</h1>
+          <h1 className="text-3xl font-bold">Welcome, {profile?.full_name}</h1>
           <p className="text-muted-foreground mt-2">
-            {profile?.user_type === 'clinic_admin' ? 'Klinik Yönetim Paneli' : 'Hasta Paneli'}
+            {profile?.user_type === 'clinic_admin' ? 'Clinic Management Panel' : 'Patient Dashboard'}
           </p>
         </div>
 
         {profile?.user_type === 'clinic_admin' ? (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">Kliniklerim</h2>
+              <h2 className="text-2xl font-semibold">My Clinics</h2>
               <Button onClick={() => navigate('/add-clinic')}>
                 <Plus className="w-4 h-4 mr-2" />
-                Yeni Klinik Ekle
+                Add New Clinic
               </Button>
             </div>
 
@@ -116,13 +116,13 @@ const Dashboard = () => {
               <Card>
                 <CardContent className="text-center py-12">
                   <Building2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Henüz klinik eklememişsiniz</h3>
+                  <h3 className="text-lg font-semibold mb-2">You haven't added any clinics yet</h3>
                   <p className="text-muted-foreground mb-4">
-                    İlk kliniğinizi ekleyerek başlayın
+                    Get started by adding your first clinic
                   </p>
                   <Button onClick={() => navigate('/add-clinic')}>
                     <Plus className="w-4 h-4 mr-2" />
-                    İlk Kliniğimi Ekle
+                    Add My First Clinic
                   </Button>
                 </CardContent>
               </Card>
@@ -169,17 +169,17 @@ const Dashboard = () => {
                           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                           <span className="font-semibold">{clinic.rating || 0}</span>
                           <span className="text-muted-foreground">
-                            ({clinic.review_count || 0} değerlendirme)
+                            ({clinic.review_count || 0} reviews)
                           </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4" />
-                          {clinic.patient_count || 0} hasta
+                          {clinic.patient_count || 0} patients
                         </div>
                         <div>
-                          {clinic.experience_years || 0} yıl deneyim
+                          {clinic.experience_years || 0} years experience
                         </div>
                       </div>
                       <div className="flex gap-2 flex-wrap">
@@ -220,36 +220,36 @@ const Dashboard = () => {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <Card>
                 <CardHeader>
-                  <CardTitle>Klinikleri Keşfet</CardTitle>
-                  <CardDescription>En iyi klinikleri bulun</CardDescription>
+                  <CardTitle>Explore Clinics</CardTitle>
+                  <CardDescription>Find the best clinics</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button onClick={() => navigate('/clinic-listing')} className="w-full">
-                    Klinikleri Görüntüle
+                    View Clinics
                   </Button>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Tedaviler</CardTitle>
-                  <CardDescription>Tedavi seçeneklerini inceleyin</CardDescription>
+                  <CardTitle>Treatments</CardTitle>
+                  <CardDescription>Explore treatment options</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full">
-                    Tedavileri Görüntüle
+                    View Treatments
                   </Button>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Randevularım</CardTitle>
-                  <CardDescription>Randevularınızı yönetin</CardDescription>
+                  <CardTitle>My Appointments</CardTitle>
+                  <CardDescription>Manage your appointments</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full">
-                    Randevular
+                    Appointments
                   </Button>
                 </CardContent>
               </Card>
