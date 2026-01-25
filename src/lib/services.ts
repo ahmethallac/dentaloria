@@ -244,41 +244,49 @@ export const getClinics = async (filters?: {
     return { clinics: [], total: count || 0 }
   }
   
-  // Fetch related data separately
+  // Fetch related data in parallel for better performance
   const clinicIds = clinicsData.map(c => c.id)
+  const cityIds = clinicsData.map(c => c.city_id).filter(Boolean)
   
-  // Fetch cities with countries
-  const { data: cities } = await supabase
-    .from('cities')
-    .select(`
-      *,
-      countries (*)
-    `)
-    .in('id', clinicsData.map(c => c.city_id).filter(Boolean))
-  
-  // Fetch clinic images
-  const { data: images } = await supabase
-    .from('clinic_images')
-    .select('*')
-    .in('clinic_id', clinicIds)
-  
-  // Fetch clinic treatments with treatment details
-  const { data: treatments } = await supabase
-    .from('clinic_treatments')
-    .select(`
-      *,
-      treatments (
+  const [citiesResult, imagesResult, treatmentsResult, doctorsResult] = await Promise.all([
+    // Fetch cities with countries
+    supabase
+      .from('cities')
+      .select(`
         *,
-        treatment_categories (*)
-      )
-    `)
-    .in('clinic_id', clinicIds)
+        countries (*)
+      `)
+      .in('id', cityIds),
+    
+    // Fetch clinic images
+    supabase
+      .from('clinic_images')
+      .select('*')
+      .in('clinic_id', clinicIds),
+    
+    // Fetch clinic treatments with treatment details
+    supabase
+      .from('clinic_treatments')
+      .select(`
+        *,
+        treatments (
+          *,
+          treatment_categories (*)
+        )
+      `)
+      .in('clinic_id', clinicIds),
+    
+    // Fetch doctors
+    supabase
+      .from('doctors')
+      .select('*')
+      .in('clinic_id', clinicIds)
+  ])
   
-  // Fetch doctors
-  const { data: doctors } = await supabase
-    .from('doctors')
-    .select('*')
-    .in('clinic_id', clinicIds)
+  const cities = citiesResult.data
+  const images = imagesResult.data
+  const treatments = treatmentsResult.data
+  const doctors = doctorsResult.data
   
   // Combine data
   const enrichedClinics = clinicsData.map(clinic => ({
