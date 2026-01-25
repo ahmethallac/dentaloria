@@ -10,8 +10,9 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { FilterContent } from "@/components/clinic-listing/FilterContent";
 import { MobileFilterDrawer } from "@/components/clinic-listing/MobileFilterDrawer";
-import { getClinics, getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
-// Types will be imported from services file
+import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSkeleton";
+import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
+import { useClinicSearch } from "@/hooks/useClinicSearch";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -164,13 +165,12 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
 export default function ClinicListing() {
   const [searchParams] = useSearchParams();
   
-  // State
-  const [clinics, setClinics] = useState<any[]>([]);
+  // State for filter data
   const [countries, setCountries] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [treatments, setTreatments] = useState<any[]>([]);
   const [treatmentCategories, setTreatmentCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [filterDataLoading, setFilterDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Filters
@@ -178,16 +178,32 @@ export default function ClinicListing() {
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [sortBy, setSortBy] = useState("rating");
-  
-  
   const [page, setPage] = useState(1);
-  const [totalClinics, setTotalClinics] = useState(0);
 
-  // Load initial data
+  // Use React Query for clinic search with caching
+  const { 
+    data: clinicData, 
+    isLoading: clinicsLoading,
+    isFetching: clinicsFetching
+  } = useClinicSearch({
+    treatmentId: selectedTreatment,
+    countryId: selectedCountry,
+    cityId: selectedCity,
+    page,
+    limit: 12,
+  });
+
+  const clinics = clinicData?.clinics || [];
+  const totalClinics = clinicData?.total || 0;
+  
+  // Show skeleton only on initial load, not on filter changes (cached data appears instantly)
+  const showSkeleton = clinicsLoading && !clinicData;
+
+  // Load initial filter data
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
+        setFilterDataLoading(true);
         const [countriesData, treatmentsData, treatmentCategoriesData] = await Promise.all([
           getCountries(),
           getTreatments(),
@@ -201,7 +217,7 @@ export default function ClinicListing() {
         setError('Failed to load data. Please try again.');
         console.error('Error loading data:', err);
       } finally {
-        setLoading(false);
+        setFilterDataLoading(false);
       }
     };
 
@@ -304,68 +320,6 @@ export default function ClinicListing() {
     setSelectedCity(match?.id || 'all');
   }, [cities, searchParams]);
 
-  // Load clinics when filters change
-  useEffect(() => {
-    const loadClinics = async () => {
-      // Guard: avoid fetching with non-UUID filters coming from URL names
-      if (
-        (selectedCountry !== "all" && !isUUID(selectedCountry)) ||
-        (selectedCity !== "all" && !isUUID(selectedCity)) ||
-        (selectedTreatment !== "all" && !isUUID(selectedTreatment))
-      ) {
-        return;
-      }
-      try {
-        setLoading(true);
-        setError(null);
-
-        const filters: any = {
-          page,
-          limit: 12
-        };
-
-        if (selectedCountry !== "all") {
-          filters.countryId = selectedCountry;
-        }
-        
-        if (selectedCity !== "all") {
-          filters.cityId = selectedCity;
-        }
-        
-        if (selectedTreatment !== "all") {
-          filters.treatmentId = selectedTreatment;
-        }
-        
-
-        const { clinics: clinicsData, total } = await getClinics(filters);
-        
-        // Add default images to clinics without images
-        const clinicsWithImages = clinicsData.map((clinic, index) => ({
-          ...clinic,
-          clinic_images: clinic.clinic_images?.length 
-            ? clinic.clinic_images 
-            : [{ 
-                id: `default-${clinic.id}`, 
-                clinic_id: clinic.id, 
-                image_url: defaultImages[index % defaultImages.length], 
-                is_primary: true, 
-                created_at: clinic.created_at 
-              }]
-        }));
-        
-        setClinics(clinicsWithImages);
-        setTotalClinics(total);
-      } catch (err) {
-        setError('Failed to load clinics. Please try again.');
-        console.error('Error loading clinics:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadClinics();
-  }, [selectedTreatment, selectedCountry, selectedCity, sortBy, page]);
-
   const clearFilters = () => {
     setSelectedTreatment("all");
     setSelectedCountry("all");
@@ -382,7 +336,7 @@ export default function ClinicListing() {
 
   const getClinicImages = (clinic: any): string[] => {
     if (clinic.clinic_images && clinic.clinic_images.length > 0) {
-      return clinic.clinic_images.map(img => img.image_url);
+      return clinic.clinic_images.map((img: any) => img.image_url);
     }
     return [defaultImages[0]]; // Return at least one default image
   };
@@ -494,13 +448,18 @@ export default function ClinicListing() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">
-                  {loading ? (
+                  {showSkeleton ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Loading...
                     </div>
                   ) : (
-                    `${totalClinics} Clinics Found`
+                    <span className="flex items-center gap-2">
+                      {`${totalClinics} Clinics Found`}
+                      {clinicsFetching && !showSkeleton && (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      )}
+                    </span>
                   )}
                 </h2>
                 <p className="text-foreground/70">Discover the best medical clinics worldwide</p>
@@ -521,17 +480,17 @@ export default function ClinicListing() {
               </div>
             </div>
 
-            {/* Loading State */}
-            {loading && (
-              <div className="flex justify-center items-center py-16">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            {/* Skeleton Loading State */}
+            {showSkeleton && (
+              <div className="space-y-4 lg:space-y-6">
+                <ClinicCardSkeletonGrid count={6} />
               </div>
             )}
 
             {/* Clinic Cards */}
-            {!loading && (
+            {!showSkeleton && clinics.length > 0 && (
               <div className="space-y-4 lg:space-y-6">
-                {clinics.map((clinic, index) => (
+                {clinics.map((clinic: any, index: number) => (
                   <Card 
                     key={clinic.id} 
                     className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 lg:hover:scale-[1.02] animate-fade-in ${
@@ -586,7 +545,7 @@ export default function ClinicListing() {
                             <div className="flex-1">
                               {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                                 <div className="flex flex-wrap gap-1">
-                                  {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment) => (
+                                  {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment: any) => (
                                     <Badge 
                                       key={clinicTreatment.id} 
                                       variant="secondary" 
@@ -673,7 +632,7 @@ export default function ClinicListing() {
                           {/* Treatments */}
                           {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
-                              {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment) => (
+                              {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
                                 <Badge 
                                   key={clinicTreatment.id} 
                                   variant="secondary" 
@@ -720,7 +679,7 @@ export default function ClinicListing() {
             )}
 
             {/* No Results */}
-            {!loading && clinics.length === 0 && (
+            {!showSkeleton && clinics.length === 0 && (
               <div className="text-center py-16">
                 <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-8 shadow-card border border-white/20 max-w-md mx-auto">
                   <div className="text-6xl mb-4">🔍</div>
