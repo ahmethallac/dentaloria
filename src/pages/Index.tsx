@@ -15,6 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
@@ -76,6 +77,7 @@ const POPULAR_CITIES = [{
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [selectedTreatment, setSelectedTreatment] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [featuredClinics, setFeaturedClinics] = useState<Clinic[]>([]);
@@ -231,7 +233,7 @@ const Index = () => {
           </div>
           
           {/* Carousel with navigation arrows */}
-          <div className="relative px-12 md:px-14">
+          <div className="relative px-10 md:px-14">
             <Carousel
               opts={{
                 align: "start",
@@ -239,44 +241,59 @@ const Index = () => {
               }}
               className="w-full"
             >
-              <CarouselContent className="-ml-4">
+              <CarouselContent className="-ml-3 md:-ml-4">
                 {loading ? (
-                  // Loading skeleton
+                  // Loading skeleton - different for mobile vs desktop
                   Array.from({ length: 5 }).map((_, index) => (
-                    <CarouselItem key={index} className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                      <div className="h-full">
-                        <Card className="animate-pulse h-full">
-                          <div className="h-48 bg-muted"></div>
-                          <CardContent className="p-4">
-                            <div className="h-4 bg-muted rounded mb-2"></div>
-                            <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
-                            <div className="flex gap-2">
-                              <div className="h-6 bg-muted rounded w-16"></div>
-                              <div className="h-6 bg-muted rounded w-16"></div>
+                    <CarouselItem key={index} className="pl-3 md:pl-4 basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                      <Card className="animate-pulse h-full">
+                        {isMobile ? (
+                          // Mobile skeleton - horizontal
+                          <div className="flex h-32">
+                            <div className="w-28 bg-muted shrink-0"></div>
+                            <div className="flex-1 p-3">
+                              <div className="h-3 bg-muted rounded mb-2 w-3/4"></div>
+                              <div className="h-2 bg-muted rounded mb-2 w-1/2"></div>
+                              <div className="h-5 bg-muted rounded w-16 mb-2"></div>
+                              <div className="h-6 bg-muted rounded w-full mt-auto"></div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      </div>
+                          </div>
+                        ) : (
+                          // Desktop skeleton - vertical
+                          <>
+                            <div className="h-40 bg-muted"></div>
+                            <CardContent className="p-4">
+                              <div className="h-4 bg-muted rounded mb-2"></div>
+                              <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                              <div className="flex gap-2">
+                                <div className="h-6 bg-muted rounded w-16"></div>
+                                <div className="h-6 bg-muted rounded w-16"></div>
+                              </div>
+                            </CardContent>
+                          </>
+                        )}
+                      </Card>
                     </CarouselItem>
                   ))
                 ) : featuredClinics.length > 0 ? (
                   featuredClinics.map((clinic, index) => (
                     <CarouselItem 
                       key={clinic.id} 
-                      className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
+                      className="pl-3 md:pl-4 basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="h-full">
                         <ClinicCard 
                           {...mapClinicForCard(clinic)} 
-                          onClick={() => navigate(`/clinic/${clinic.id}`)} 
+                          onClick={() => navigate(`/clinic/${clinic.id}`)}
+                          variant={isMobile ? "compact" : "default"}
                         />
                       </div>
                     </CarouselItem>
                   ))
                 ) : (
-                  <CarouselItem className="pl-4 basis-full">
-                    <Card className="h-64 flex items-center justify-center">
+                  <CarouselItem className="pl-3 md:pl-4 basis-full">
+                    <Card className="h-40 flex items-center justify-center">
                       <CardContent className="text-center">
                         <p className="text-muted-foreground">No clinics available yet</p>
                       </CardContent>
@@ -284,8 +301,8 @@ const Index = () => {
                   </CarouselItem>
                 )}
               </CarouselContent>
-              <CarouselPrevious className="left-0 bg-background border-border shadow-md hover:bg-accent" />
-              <CarouselNext className="right-0 bg-background border-border shadow-md hover:bg-accent" />
+              <CarouselPrevious className="-left-2 md:left-0 h-8 w-8 md:h-10 md:w-10 bg-background border-border shadow-md hover:bg-accent" />
+              <CarouselNext className="-right-2 md:right-0 h-8 w-8 md:h-10 md:w-10 bg-background border-border shadow-md hover:bg-accent" />
             </Carousel>
           </div>
         </div>
