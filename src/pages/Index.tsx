@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
@@ -223,50 +230,59 @@ const Index = () => {
             </p>
           </div>
           
-          {/* Horizontal scrolling clinic cards */}
-          <div className="relative">
-            <div className="absolute left-0 top-0 w-8 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 w-8 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-            
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-              {loading ? (
-                // Loading skeleton
-                Array.from({ length: 3 }).map((_, index) => (
-                  <div key={index} className="flex-none w-80 md:w-96 snap-start">
-                    <Card className="animate-pulse">
-                      <div className="h-48 bg-muted"></div>
-                      <CardContent className="p-4">
-                        <div className="h-4 bg-muted rounded mb-2"></div>
-                        <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
-                        <div className="flex gap-2">
-                          <div className="h-6 bg-muted rounded w-16"></div>
-                          <div className="h-6 bg-muted rounded w-16"></div>
-                        </div>
+          {/* Carousel with navigation arrows */}
+          <div className="relative px-12 md:px-14">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {loading ? (
+                  // Loading skeleton
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <CarouselItem key={index} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                      <Card className="animate-pulse">
+                        <div className="h-48 bg-muted"></div>
+                        <CardContent className="p-4">
+                          <div className="h-4 bg-muted rounded mb-2"></div>
+                          <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                          <div className="flex gap-2">
+                            <div className="h-6 bg-muted rounded w-16"></div>
+                            <div className="h-6 bg-muted rounded w-16"></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))
+                ) : featuredClinics.length > 0 ? (
+                  featuredClinics.map((clinic, index) => (
+                    <CarouselItem 
+                      key={clinic.id} 
+                      className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <ClinicCard 
+                        {...mapClinicForCard(clinic)} 
+                        onClick={() => navigate(`/clinic/${clinic.id}`)} 
+                      />
+                    </CarouselItem>
+                  ))
+                ) : (
+                  <CarouselItem className="pl-4 basis-full">
+                    <Card className="h-64 flex items-center justify-center">
+                      <CardContent className="text-center">
+                        <p className="text-muted-foreground">No clinics available yet</p>
                       </CardContent>
                     </Card>
-                  </div>
-                ))
-              ) : featuredClinics.length > 0 ? (
-                featuredClinics.map((clinic, index) => (
-                  <div key={clinic.id} className="flex-none w-80 md:w-96 snap-start animate-fade-in" style={{
-                    animationDelay: `${index * 0.1}s`
-                  }}>
-                    <ClinicCard 
-                      {...mapClinicForCard(clinic)} 
-                      onClick={() => navigate(`/clinic/${clinic.id}`)} 
-                    />
-                  </div>
-                ))
-              ) : (
-                <div className="flex-none w-80 md:w-96 snap-start">
-                  <Card className="h-64 flex items-center justify-center">
-                    <CardContent className="text-center">
-                      <p className="text-muted-foreground">No clinics available yet</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </div>
+                  </CarouselItem>
+                )}
+              </CarouselContent>
+              <CarouselPrevious className="left-0 bg-background border-border shadow-md hover:bg-accent" />
+              <CarouselNext className="right-0 bg-background border-border shadow-md hover:bg-accent" />
+            </Carousel>
           </div>
         </div>
       </section>
