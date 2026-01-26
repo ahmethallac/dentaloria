@@ -243,31 +243,35 @@ const Index = () => {
                 {loading ? (
                   // Loading skeleton
                   Array.from({ length: 5 }).map((_, index) => (
-                    <CarouselItem key={index} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                      <Card className="animate-pulse">
-                        <div className="h-48 bg-muted"></div>
-                        <CardContent className="p-4">
-                          <div className="h-4 bg-muted rounded mb-2"></div>
-                          <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
-                          <div className="flex gap-2">
-                            <div className="h-6 bg-muted rounded w-16"></div>
-                            <div className="h-6 bg-muted rounded w-16"></div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    <CarouselItem key={index} className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                      <div className="h-full">
+                        <Card className="animate-pulse h-full">
+                          <div className="h-48 bg-muted"></div>
+                          <CardContent className="p-4">
+                            <div className="h-4 bg-muted rounded mb-2"></div>
+                            <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
+                            <div className="flex gap-2">
+                              <div className="h-6 bg-muted rounded w-16"></div>
+                              <div className="h-6 bg-muted rounded w-16"></div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </CarouselItem>
                   ))
                 ) : featuredClinics.length > 0 ? (
                   featuredClinics.map((clinic, index) => (
                     <CarouselItem 
                       key={clinic.id} 
-                      className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
+                      className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <ClinicCard 
-                        {...mapClinicForCard(clinic)} 
-                        onClick={() => navigate(`/clinic/${clinic.id}`)} 
-                      />
+                      <div className="h-full">
+                        <ClinicCard 
+                          {...mapClinicForCard(clinic)} 
+                          onClick={() => navigate(`/clinic/${clinic.id}`)} 
+                        />
+                      </div>
                     </CarouselItem>
                   ))
                 ) : (
