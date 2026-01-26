@@ -38,7 +38,7 @@ export const ClinicCard = ({
   onClick
 }: ClinicCardProps) => {
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-border/50 cursor-pointer" onClick={onClick}>
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-border/50 cursor-pointer h-full flex flex-col" onClick={onClick}>
       {/* Image Section */}
       <div className="relative h-48 overflow-hidden">
         <img 
@@ -73,60 +73,62 @@ export const ClinicCard = ({
         </div>
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-4 md:p-6 flex-1 flex flex-col">
         {/* Clinic Name */}
-        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors duration-300">
+        <h3 className="text-base md:text-xl font-bold mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-1">
           {name}
         </h3>
 
         {/* Location */}
         <div className="flex items-center gap-2 text-muted-foreground mb-3">
-          <MapPin className="w-4 h-4" />
-          <span className="text-sm">{location}, {city}, {country}</span>
+          <MapPin className="w-4 h-4 shrink-0" />
+          <span className="text-xs md:text-sm line-clamp-1">{location}, {city}, {country}</span>
         </div>
 
         {/* Specialties */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {specialties.slice(0, 3).map((specialty, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+        <div className="flex flex-wrap gap-1 md:gap-2 mb-4">
+          {specialties.slice(0, 2).map((specialty, index) => (
+            <Badge key={index} variant="secondary" className="text-[10px] md:text-xs line-clamp-1">
               {specialty}
             </Badge>
           ))}
-          {specialties.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{specialties.length - 3} daha
+          {specialties.length > 2 && (
+            <Badge variant="outline" className="text-[10px] md:text-xs">
+              +{specialties.length - 2}
             </Badge>
           )}
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-primary" />
-            <span className="text-muted-foreground">{experience} yıl deneyim</span>
+        {/* Stats - push to bottom */}
+        <div className="grid grid-cols-2 gap-2 md:gap-4 text-xs md:text-sm mt-auto">
+          <div className="flex items-center gap-1 md:gap-2">
+            <Clock className="w-3 h-3 md:w-4 md:h-4 text-primary shrink-0" />
+            <span className="text-muted-foreground truncate">{experience} yıl</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary" />
-            <span className="text-muted-foreground">{patientCount}+ hasta</span>
+          <div className="flex items-center gap-1 md:gap-2">
+            <Users className="w-3 h-3 md:w-4 md:h-4 text-primary shrink-0" />
+            <span className="text-muted-foreground truncate">{patientCount}+ hasta</span>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="p-6 pt-0 space-x-3">
+      <CardFooter className="p-4 md:p-6 pt-0 space-x-2 md:space-x-3">
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex-1 group-hover:border-primary group-hover:text-primary transition-colors duration-300"
+          className="flex-1 group-hover:border-primary group-hover:text-primary transition-colors duration-300 text-xs md:text-sm"
         >
-          <Phone className="w-4 h-4 mr-2" />
-          İletişim
+          <Phone className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+          <span className="hidden sm:inline">İletişim</span>
+          <span className="sm:hidden">Ara</span>
         </Button>
         <Link to={`/clinic/${id}`} className="flex-1">
           <Button 
             size="sm" 
-            className="w-full bg-gradient-primary hover:opacity-90 transition-all duration-300"
+            className="w-full bg-gradient-primary hover:opacity-90 transition-all duration-300 text-xs md:text-sm"
           >
-            Detayları Gör
+            <span className="hidden sm:inline">Detayları Gör</span>
+            <span className="sm:hidden">Detay</span>
           </Button>
         </Link>
       </CardFooter>
