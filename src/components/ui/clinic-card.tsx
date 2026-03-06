@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, MapPin, Clock, Award, Users, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Star, MapPin, Phone, Clock, Award, Users, ArrowRight } from "lucide-react";
 
 interface ClinicCardProps {
   id: string;
@@ -25,43 +25,82 @@ interface ClinicCardProps {
 export const ClinicCard = ({
   id,
   name,
+  location,
   city,
   country,
   rating,
   reviewCount,
   image,
   specialties,
+  priceRange,
   experience,
   patientCount,
   isVerified = false,
   onClick,
   variant = "default"
 }: ClinicCardProps) => {
+  // Compact variant for mobile carousel - horizontal layout
   if (variant === "compact") {
     return (
       <Card 
-        className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] cursor-pointer h-full border-border/50"
+        className="group overflow-hidden transition-all duration-300 hover:shadow-medium bg-card/80 backdrop-blur-sm border-border/50 cursor-pointer h-full"
         onClick={onClick}
       >
         <div className="flex h-full">
+          {/* Image Section - Left side */}
           <div className="relative w-28 shrink-0">
-            <img src={image} alt={name} className="w-full h-full object-cover" />
-            <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm rounded-md px-1.5 py-0.5 flex items-center gap-0.5">
-              <Star className="w-3 h-3 fill-[hsl(var(--trust-gold))] text-[hsl(var(--trust-gold))]" />
+            <img 
+              src={image} 
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
+            
+            {/* Rating badge */}
+            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded px-1.5 py-0.5 flex items-center gap-0.5">
+              <Star className="w-3 h-3 fill-trust-gold text-trust-gold" />
               <span className="text-xs font-semibold">{rating}</span>
             </div>
           </div>
+
+          {/* Content - Right side */}
           <div className="flex-1 p-3 flex flex-col min-w-0">
-            <h3 className="text-sm font-semibold mb-1 line-clamp-1 group-hover:text-primary transition-colors">{name}</h3>
-            <div className="flex items-center gap-1 text-muted-foreground mb-1.5">
+            {/* Clinic Name */}
+            <h3 className="text-sm font-bold mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+              {name}
+            </h3>
+
+            {/* Location */}
+            <div className="flex items-center gap-1 text-muted-foreground mb-2">
               <MapPin className="w-3 h-3 shrink-0" />
               <span className="text-xs line-clamp-1">{city}, {country}</span>
             </div>
-            {specialties[0] && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 w-fit mb-auto">{specialties[0]}</Badge>
-            )}
-            <Link to={`/clinic/${id}`} className="mt-2" onClick={(e) => e.stopPropagation()}>
-              <Button size="sm" className="w-full h-7 text-xs bg-primary hover:bg-primary/90">
+
+            {/* Specialty */}
+            <div className="mb-2">
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
+                {specialties[0] || "Dental"}
+              </Badge>
+            </div>
+
+            {/* Stats row */}
+            <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-2">
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3 text-primary" />
+                {experience} yrs
+              </span>
+              <span className="flex items-center gap-1">
+                <Users className="w-3 h-3 text-primary" />
+                {patientCount}+
+              </span>
+            </div>
+
+            {/* View button */}
+            <Link to={`/clinic/${id}`} className="mt-auto" onClick={(e) => e.stopPropagation()}>
+              <Button 
+                size="sm" 
+                className="w-full h-7 text-xs bg-gradient-primary hover:opacity-90"
+              >
                 View Details
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Button>
@@ -72,66 +111,101 @@ export const ClinicCard = ({
     );
   }
 
+  // Default variant - vertical card layout
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1 cursor-pointer h-full flex flex-col border-border/50" onClick={onClick}>
-      <div className="relative h-44 overflow-hidden">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-border/50 cursor-pointer h-full flex flex-col" onClick={onClick}>
+      {/* Image Section */}
+      <div className="relative h-40 md:h-48 overflow-hidden">
         <img 
           src={image} 
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         
-        {isVerified && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-[hsl(var(--medical-green))] text-primary-foreground border-0 text-xs">
+        {/* Badges */}
+        <div className="absolute top-2 md:top-3 left-2 md:left-3 flex gap-2">
+          {isVerified && (
+            <Badge variant="secondary" className="bg-medical-green text-white border-0 text-[10px] md:text-xs">
               <Award className="w-3 h-3 mr-1" />
               Verified
             </Badge>
-          </div>
-        )}
-
-        <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-          <Star className="w-3.5 h-3.5 fill-[hsl(var(--trust-gold))] text-[hsl(var(--trust-gold))]" />
-          <span className="text-xs font-semibold">{rating}</span>
-          <span className="text-[10px] text-muted-foreground">({reviewCount})</span>
-        </div>
-      </div>
-
-      <CardContent className="p-4 flex-1 flex flex-col">
-        <h3 className="text-base font-semibold mb-1 group-hover:text-primary transition-colors line-clamp-1">{name}</h3>
-        <div className="flex items-center gap-1.5 text-muted-foreground mb-3">
-          <MapPin className="w-3.5 h-3.5 shrink-0" />
-          <span className="text-xs line-clamp-1">{city}, {country}</span>
-        </div>
-
-        <div className="flex flex-wrap gap-1 mb-3">
-          {specialties.slice(0, 2).map((specialty, index) => (
-            <Badge key={index} variant="secondary" className="text-[10px] px-2 py-0.5 font-normal">{specialty}</Badge>
-          ))}
-          {specialties.length > 2 && (
-            <Badge variant="outline" className="text-[10px] px-2 py-0.5 font-normal">+{specialties.length - 2}</Badge>
           )}
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-auto mb-3">
-          <span className="flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-primary" />
-            {experience} yrs
-          </span>
-          <span className="flex items-center gap-1">
-            <Users className="w-3.5 h-3.5 text-primary" />
-            {patientCount}+
-          </span>
+        {/* Rating */}
+        <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-white/90 backdrop-blur-sm rounded-lg px-1.5 md:px-2 py-0.5 md:py-1 flex items-center gap-1">
+          <Star className="w-3 h-3 md:w-4 md:h-4 fill-trust-gold text-trust-gold" />
+          <span className="text-xs md:text-sm font-semibold">{rating}</span>
+          <span className="text-[10px] md:text-xs text-muted-foreground">({reviewCount})</span>
         </div>
 
-        <Link to={`/clinic/${id}`} className="w-full" onClick={(e) => e.stopPropagation()}>
-          <Button size="sm" className="w-full h-9 text-sm bg-primary hover:bg-primary/90">
+        {/* Price Range */}
+        <div className="absolute bottom-2 md:bottom-3 right-2 md:right-3">
+          <Badge variant="outline" className="bg-white/90 text-primary border-primary/30 text-[10px] md:text-xs">
+            {priceRange}
+          </Badge>
+        </div>
+      </div>
+
+      <CardContent className="p-3 md:p-6 flex-1 flex flex-col">
+        {/* Clinic Name */}
+        <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-1">
+          {name}
+        </h3>
+
+        {/* Location */}
+        <div className="flex items-center gap-1 md:gap-2 text-muted-foreground mb-2 md:mb-3">
+          <MapPin className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
+          <span className="text-[10px] md:text-sm line-clamp-1">{city}, {country}</span>
+        </div>
+
+        {/* Specialties */}
+        <div className="flex flex-wrap gap-1 mb-2 md:mb-4">
+          {specialties.slice(0, 2).map((specialty, index) => (
+            <Badge key={index} variant="secondary" className="text-[9px] md:text-xs px-1.5 md:px-2">
+              {specialty}
+            </Badge>
+          ))}
+          {specialties.length > 2 && (
+            <Badge variant="outline" className="text-[9px] md:text-xs px-1.5">
+              +{specialties.length - 2}
+            </Badge>
+          )}
+        </div>
+
+        {/* Stats - push to bottom */}
+        <div className="flex items-center gap-3 md:gap-4 text-[10px] md:text-sm mt-auto">
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3 md:w-4 md:h-4 text-primary shrink-0" />
+            <span className="text-muted-foreground">{experience} yrs exp</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="w-3 h-3 md:w-4 md:h-4 text-primary shrink-0" />
+            <span className="text-muted-foreground">{patientCount}+ patients</span>
+          </div>
+        </div>
+      </CardContent>
+
+      <CardFooter className="p-3 md:p-6 pt-0 gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex-1 h-8 md:h-9 group-hover:border-primary group-hover:text-primary transition-colors duration-300 text-xs md:text-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Phone className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+          Contact
+        </Button>
+        <Link to={`/clinic/${id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
+          <Button 
+            size="sm" 
+            className="w-full h-8 md:h-9 bg-gradient-primary hover:opacity-90 transition-all duration-300 text-xs md:text-sm"
+          >
             View Details
-            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
           </Button>
         </Link>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 };

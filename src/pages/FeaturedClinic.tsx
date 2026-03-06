@@ -19,7 +19,7 @@ export default function FeaturedClinic() {
         } else {
           navigate('/clinic-listing', { replace: true });
         }
-      } catch {
+      } catch (e) {
         navigate('/clinic-listing', { replace: true });
       }
     })();
@@ -27,12 +27,12 @@ export default function FeaturedClinic() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm">Redirecting...</span>
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Yönlendiriliyor...</span>
         </div>
       </div>
       <Footer />
