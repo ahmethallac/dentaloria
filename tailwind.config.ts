@@ -123,6 +123,7 @@ export default {
 			boxShadow: {
 				'elegant': 'var(--shadow-elegant)',
 				'card': 'var(--shadow-card)',
+				'card-hover': 'var(--shadow-card-hover)',
 				'glow': 'var(--shadow-glow)',
 				'colored': 'var(--shadow-colored)'
 			},
