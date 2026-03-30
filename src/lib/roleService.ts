@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client'
 
-export type AppRole = 'patient' | 'clinic_admin' | 'admin'
+export type AppRole = 'patient' | 'clinic_admin' | 'admin' | 'sub_admin'
 
 export interface UserRole {
   id: string
@@ -47,7 +47,7 @@ export const hasRole = async (userId: string, role: AppRole): Promise<boolean> =
 
   const { data, error } = await supabase.rpc('has_role', {
     _user_id: userId,
-    _role: role
+    _role: role as any
   })
 
   if (error) {
@@ -69,7 +69,7 @@ export const addUserRole = async (userId: string, role: AppRole): Promise<UserRo
     .from('user_roles')
     .insert({
       user_id: userId,
-      role,
+      role: role as any,
       created_by: user?.id
     })
     .select()
@@ -88,7 +88,7 @@ export const removeUserRole = async (userId: string, role: AppRole): Promise<voi
     .from('user_roles')
     .delete()
     .eq('user_id', userId)
-    .eq('role', role)
+    .eq('role', role as any)
 
   if (error) throw error
 }
@@ -104,10 +104,10 @@ export const isAdmin = async (userId: string): Promise<boolean> => {
 
 export const isCurrentUserClinicAdmin = async (): Promise<boolean> => {
   const role = await getCurrentUserRole()
-  return role === 'clinic_admin' || role === 'admin'
+  return role === 'clinic_admin' || role === 'admin' || role === 'sub_admin'
 }
 
 export const isCurrentUserAdmin = async (): Promise<boolean> => {
   const role = await getCurrentUserRole()
-  return role === 'admin'
+  return role === 'admin' || role === 'sub_admin'
 }

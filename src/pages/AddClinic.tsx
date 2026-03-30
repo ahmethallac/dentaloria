@@ -100,7 +100,7 @@ const AddClinic = () => {
       return
     }
 
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'sub_admin') {
       console.log('[AddClinic] Admin detected, redirecting to /admin')
       navigate('/admin', { replace: true })
       return

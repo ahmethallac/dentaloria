@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     console.log('[Dashboard] Role resolved:', userRole)
 
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'sub_admin') {
       navigate('/admin', { replace: true })
       return
     }
