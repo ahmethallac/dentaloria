@@ -74,14 +74,18 @@ const Auth = () => {
       const { data: { user: newUser } } = await supabase.auth.getUser()
       if (!newUser) throw new Error('Registration failed')
 
-      // 4. Create the clinic (pending approval)
+      // 4. Get a default city_id
+      const { data: defaultCity } = await supabase.from('cities').select('id').limit(1).single()
+      const cityId = defaultCity?.id || 'a21f2467-a997-445e-8379-dfada7b12c09'
+
+      // 5. Create the clinic (pending approval)
       const { data: clinicData, error: clinicError } = await supabase
         .from('clinics')
         .insert({
           name: signupForm.clinicName.toUpperCase(),
           email: signupForm.email,
           user_id: newUser.id,
-          city_id: '00000000-0000-0000-0000-000000000000', // placeholder - will be set during clinic setup
+          city_id: cityId,
           is_published: false,
           approval_status: 'pending'
         })
