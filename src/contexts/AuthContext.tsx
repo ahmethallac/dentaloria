@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(user)
       if (user) {
         const role = await getCurrentUserRole()
+        console.log('[AuthContext] Initial role fetched:', role, 'for user:', user.id)
         setUserRole(role)
       }
       setLoading(false)

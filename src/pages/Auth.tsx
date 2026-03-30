@@ -46,7 +46,6 @@ const Auth = () => {
     try {
       await signIn(loginForm.email, loginForm.password)
       toast({ title: "Success!", description: "Logged in successfully." })
-      navigate('/dashboard')
     } catch (error: any) {
       toast({ title: "Login Error", description: error.message || "An error occurred during login.", variant: "destructive" })
     } finally {
