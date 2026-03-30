@@ -69,7 +69,7 @@ export const addUserRole = async (userId: string, role: AppRole): Promise<UserRo
     .from('user_roles')
     .insert({
       user_id: userId,
-      role,
+      role: role as any,
       created_by: user?.id
     })
     .select()
