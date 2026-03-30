@@ -38,10 +38,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     // Get initial user
-    getCurrentUser().then((user) => {
+    getCurrentUser().then(async (user) => {
       setUser(user)
       if (user) {
-        getCurrentUserRole().then(setUserRole)
+        const role = await getCurrentUserRole()
+        setUserRole(role)
       }
       setLoading(false)
     })
@@ -53,15 +54,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Simple state update - fetch profile separately
         setUser(authUser as AuthUser)
         // Fetch profile and role data separately to avoid deadlock
-        setTimeout(() => {
-          getCurrentUser().then(setUser)
-          getCurrentUserRole().then(setUserRole)
+        // Keep loading true until role is fetched
+        setLoading(true)
+        setTimeout(async () => {
+          const [fullUser, role] = await Promise.all([
+            getCurrentUser(),
+            getCurrentUserRole()
+          ])
+          setUser(fullUser)
+          setUserRole(role)
+          setLoading(false)
         }, 0)
       } else {
         setUser(null)
         setUserRole(null)
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
