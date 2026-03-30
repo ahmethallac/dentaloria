@@ -24,21 +24,23 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/add-clinic" element={<AddClinic />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/approve-clinic" element={<AdminApproveClinic />} />
-          <Route path="/clinic" element={<FeaturedClinic />} />
-          <Route path="/clinic/:id" element={<ClinicDetail />} />
-          <Route path="/clinic/:id/panel" element={<ClinicPanel />} />
-          <Route path="/clinic-listing" element={<ClinicListing />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/add-clinic" element={<AddClinic />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/approve-clinic" element={<AdminApproveClinic />} />
+            <Route path="/clinic" element={<FeaturedClinic />} />
+            <Route path="/clinic/:id" element={<ClinicDetail />} />
+            <Route path="/clinic/:id/panel" element={<ClinicPanel />} />
+            <Route path="/clinic-listing" element={<ClinicListing />} />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
