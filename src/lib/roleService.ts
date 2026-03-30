@@ -104,10 +104,10 @@ export const isAdmin = async (userId: string): Promise<boolean> => {
 
 export const isCurrentUserClinicAdmin = async (): Promise<boolean> => {
   const role = await getCurrentUserRole()
-  return role === 'clinic_admin' || role === 'admin'
+  return role === 'clinic_admin' || role === 'admin' || role === 'sub_admin'
 }
 
 export const isCurrentUserAdmin = async (): Promise<boolean> => {
   const role = await getCurrentUserRole()
-  return role === 'admin'
+  return role === 'admin' || role === 'sub_admin'
 }

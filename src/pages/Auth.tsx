@@ -22,8 +22,8 @@ const Auth = () => {
     
     console.log('[Auth] User loaded, role:', userRole)
     
-    if (userRole === 'admin') {
-      console.log('[Auth] Admin detected, redirecting to /admin')
+    if (userRole === 'admin' || userRole === 'sub_admin') {
+      console.log('[Auth] Admin/sub_admin detected, redirecting to /admin')
       navigate('/admin', { replace: true })
     } else {
       navigate('/dashboard', { replace: true })
