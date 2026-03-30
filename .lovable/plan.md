@@ -1,240 +1,92 @@
 
+## What is actually broken
 
-# Complete Business System Overhaul Plan
+This is not mainly a frontend redirect-order bug anymore. The real backend/app boundary issue is:
 
-## Overview
+- some admin users currently have multiple rows in `user_roles`
+- I confirmed examples where the same `user_id` has `{admin, patient}`
+- your app calls `get_current_user_role()`
+- that DB function currently does:
 
-Transform the current basic clinic listing site into a full lead marketplace with patient data collection, clinic verification/approval, paid lead access via Stripe, and an admin panel.
-
----
-
-## Architecture Summary
-
-```text
-                    ┌──────────────┐
-                    │   Visitors   │
-                    │  (Patients)  │
-                    └──────┬───────┘
-                           │ Submit contact form
-                           ▼
-                  ┌─────────────────┐
-                  │  contact_requests │ ← "Patients" pool
-                  │  (leads table)   │
-                  └────────┬────────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-        ┌──────────┐ ┌──────────┐ ┌──────────┐
-        │ Clinic A │ │ Clinic B │ │ Clinic C │
-        │ (Paid)   │ │ (Free)   │ │ (Paid)   │
-        └──────────┘ └──────────┘ └──────────┘
-              │                         │
-              │ Select leads → Pay $25  │
-              │ via Stripe              │
-              ▼                         ▼
-        Contact info revealed     Contact info revealed
-        
-                    ┌──────────────┐
-                    │    Admin     │
-                    │   Panel      │
-                    └──────────────┘
-                    • Approve/reject clinics
-                    • Set Free/Paid status
-                    • Edit any clinic
-                    • View all data
+```sql
+SELECT role
+FROM public.user_roles
+WHERE user_id = auth.uid()
+LIMIT 1;
 ```
 
----
+Because there is no `ORDER BY`, Postgres may return `patient` instead of `admin`.  
+So the app thinks the user is not admin and sends them into the clinic flow.
 
-## Database Changes
+That explains why repeated “check admin before clinic” changes did not solve it: the app is sometimes receiving the wrong role value.
 
-### 1. New table: `clinic_approvals`
-Tracks clinic registration approval status.
+## Fix plan
 
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| clinic_id | uuid | FK → clinics |
-| status | text | 'pending' / 'approved' / 'rejected' |
-| rejection_reason | text | nullable |
-| tax_certificate_url | text | Storage path |
-| health_tourism_doc_url | text | Storage path |
-| reviewed_by | uuid | nullable, admin user_id |
-| reviewed_at | timestamptz | nullable |
-| created_at | timestamptz | default now() |
+### 1) Make role resolution deterministic in the database
+Update `get_current_user_role()` so it always returns the highest-privilege role for the current user.
 
-### 2. New table: `lead_purchases`
-Tracks which leads a clinic has paid for.
+Priority must be:
 
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| clinic_id | uuid | FK → clinics |
-| contact_request_id | uuid | FK → contact_requests |
-| stripe_payment_intent_id | text | Stripe reference |
-| amount_cents | integer | Amount paid (2500 = $25) |
-| purchased_at | timestamptz | default now() |
+```text
+admin > clinic_admin > patient
+```
 
-### 3. New table: `clinic_billing_settings`
-Admin-controlled billing status per clinic.
+Implementation approach:
+- replace the current `LIMIT 1` query with an ordered query or CASE-based priority
+- keep the return type as `app_role`
 
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| clinic_id | uuid | FK → clinics, unique |
-| billing_type | text | 'paid' / 'free' |
-| price_per_lead_cents | integer | default 2500 |
-| updated_by | uuid | admin user_id |
-| updated_at | timestamptz | default now() |
+This is the most important fix.
 
-### 4. Modify `clinics` table
-- Add `approval_status` column (text, default 'pending') — for quick lookups without joining
+### 2) Keep frontend routing strictly role-first
+After the DB function is corrected, tighten routing so every auth entry point follows the same order:
 
-### 5. New storage bucket: `clinic-documents`
-For tax certificates and health tourism authorization documents. Private bucket (not public).
+```text
+wait for auth loading
+if no user -> /auth
+if userRole === admin -> /admin
+if userRole === clinic_admin -> clinic flow
+if userRole === patient -> public flow or non-clinic dashboard behavior
+```
 
-### 6. RLS Policies
-- `clinic_approvals`: Clinic owners can read their own; admins can read/write all
-- `lead_purchases`: Clinic owners can read their own; admins can read all
-- `clinic_billing_settings`: Admins only for write; clinic owners can read their own
-- `clinic-documents` bucket: Authenticated upload; admin read access
+Files to update:
+- `src/contexts/AuthContext.tsx`
+- `src/pages/Auth.tsx`
+- `src/pages/Dashboard.tsx`
 
----
+### 3) Stop admin users from ever entering Add Clinic
+Protect `AddClinic.tsx` itself so even if an admin somehow reaches `/add-clinic` manually, they are redirected away immediately.
 
-## Feature Breakdown
+Behavior:
+- `admin` → `/admin`
+- non-authenticated → `/auth`
+- only clinic accounts may continue
 
-### Feature 1: Patients Data Pool
+This prevents future leakage into the clinic setup path.
 
-**What changes:**
-- Rename "Applications" tab in clinic panel to "Patients"
-- Contact form submissions (already stored in `contact_requests`) become the shared lead pool
-- Contact details (phone, email) are **hidden** by default — shown only after purchase
-- In the clinic panel's Patients tab, show leads with masked contact info (e.g., `j***@***.com`, `+90 5** *** **12`)
+### 4) Remove ambiguous role assumptions in auth state handling
+In `AuthContext`, make the role fetch explicitly authoritative:
+- fetch role after user is known
+- log the resolved role
+- do not allow downstream routing decisions until role resolution completes
 
-**Files:** `src/components/clinic-panel/ApplicationsTab.tsx`, `src/lib/services.ts`
+I do **not** plan to add a second competing role-fetch hook; the cleaner fix is to make the existing context reliable and use that single source of truth everywhere.
 
-### Feature 2: Clinic Registration with Document Upload
+### 5) Add targeted debug logs only where useful
+Add short logs at:
+- `AuthContext` after role resolution
+- `Auth.tsx` before redirect
+- `Dashboard.tsx` before redirect
+- `AddClinic.tsx` if access is denied
 
-**What changes:**
-- Redesign `Auth.tsx` signup form to collect:
-  - Clinic name (used as display name)
-  - Contact email
-  - Password
-  - Tax certificate upload (PDF/image)
-  - Health tourism authorization document upload (PDF/image)
-- After signup, clinic status = `pending` (not `approved`)
-- Clinic cannot add/edit clinic info until approved
-- Files uploaded to `clinic-documents` private storage bucket
+This will make it obvious whether the app receives `admin` or not at runtime.
 
-**Files:** `src/pages/Auth.tsx`, `src/lib/auth.ts`, `src/lib/services.ts`
+## Expected result after fix
 
-### Feature 3: Approval Flow via Email
+- any user with an `admin` row in `user_roles` will always resolve as `admin`
+- admins will always land on `/admin`
+- admins will never see clinic creation
+- clinic routing will only apply to clinic accounts
+- patients will remain outside the admin/clinic flow
 
-**What changes:**
-- New edge function: `clinic-approval-action` — handles approve/reject from email links
-- When a clinic registers, send email to `info@dentalturkey.clinic` with two links:
-  - Approve link: `https://dentaloria.lovable.app/admin/approve-clinic?id=XXX&token=YYY&action=approve`
-  - Reject link: `https://dentaloria.lovable.app/admin/approve-clinic?id=XXX&token=YYY&action=reject`
-- New page: `/admin/approve-clinic` — shows clinic details, approve button, reject button with reason textarea
-- Approval tokens stored in `clinic_approvals` or generated as signed JWTs
-- On approve: update `clinics.approval_status = 'approved'`, send confirmation email to clinic
-- On reject: update status, store reason, notify clinic
-
-**Files:** New edge function, new page `src/pages/AdminApproveClinic.tsx`, `src/lib/services.ts`
-
-### Feature 4: One Clinic Per Account
-
-**What changes:**
-- After registration and approval, the clinic's account is tied to exactly one clinic
-- Remove "Add New Clinic" button from dashboard
-- On login, redirect directly to the clinic's panel (not to a list of clinics)
-- The `AddClinic.tsx` page becomes a one-time setup step post-approval
-
-**Files:** `src/pages/Dashboard.tsx`, `src/pages/AddClinic.tsx`, navbar logic
-
-### Feature 5: Professional Clinic Dashboard
-
-**What changes:**
-- Redesign the clinic panel (`ClinicPanel.tsx`) with a sidebar layout:
-  - Overview/stats cards (total leads, purchased leads, pending leads)
-  - Clinic Information section
-  - Patients section (leads with masked/revealed contacts)
-- More polished UI with proper cards, icons, metrics
-
-**Files:** `src/pages/ClinicPanel.tsx`, new components
-
-### Feature 6: Lead Purchase with Stripe
-
-**What changes:**
-- Enable Stripe integration
-- In the Patients tab, each lead row has a checkbox for selection
-- "Unlock Selected Leads" button at the bottom
-- Clicking it:
-  1. Checks `clinic_billing_settings` for this clinic
-  2. If `free`: mark leads as purchased (100% discount, $0 charge), reveal contacts immediately
-  3. If `paid`: create Stripe checkout session for `$25 × selected_count`
-  4. After successful payment: insert into `lead_purchases`, reveal contact info
-- Already-purchased leads show full contact details
-- New edge function: `create-lead-checkout` — creates Stripe checkout session
-- New edge function: `stripe-lead-webhook` — handles payment confirmation, inserts `lead_purchases`
-
-**Files:** New edge functions, `src/components/clinic-panel/ApplicationsTab.tsx`, `src/lib/services.ts`
-
-### Feature 7: Admin Panel
-
-**What changes:**
-- New route: `/admin` — protected, only accessible by users with `admin` role
-- Create admin account for `info@dentalturkey.clinic` with `admin` role in `user_roles`
-- Admin panel sections:
-  1. **Clinics**: List all registered clinics, edit any field, set billing type (Paid/Free)
-  2. **Pending Approvals**: List clinics awaiting approval, approve/reject with reason
-  3. **Patients**: View all leads across all clinics
-  4. **Billing**: View purchase history, revenue
-
-**Files:** New pages `src/pages/Admin.tsx`, `src/pages/AdminClinics.tsx`, `src/pages/AdminApprovals.tsx`
-
----
-
-## New Routes
-
-| Route | Page | Access |
-|-------|------|--------|
-| `/admin` | Admin Dashboard | admin role only |
-| `/admin/clinics` | Manage all clinics | admin role only |
-| `/admin/approvals` | Pending clinic approvals | admin role only |
-| `/admin/approve-clinic` | Email approval action page | token-based |
-
----
-
-## Edge Functions
-
-| Function | Purpose |
-|----------|---------|
-| `send-approval-request` | Sends approval email to admin on clinic signup |
-| `clinic-approval-action` | Generates/validates approval tokens |
-| `create-lead-checkout` | Creates Stripe checkout for lead purchases |
-| `stripe-lead-webhook` | Handles Stripe payment success, unlocks leads |
-
----
-
-## Implementation Order
-
-Due to the scope, this should be built in this order:
-
-1. **Database migrations** — all new tables, columns, RLS policies, storage bucket
-2. **Clinic registration redesign** — document uploads, approval status
-3. **Approval email flow** — edge function + admin approval page
-4. **Admin panel** — clinic management, billing type toggle
-5. **Lead masking & purchase flow** — hide contacts, Stripe checkout
-6. **Dashboard redesign** — one clinic per account, professional layout
-
----
-
-## Technical Notes
-
-- Stripe will be enabled via the Lovable Stripe integration tool (handles secret key collection automatically)
-- Approval emails will use Lovable's built-in transactional email system (requires email domain setup)
-- Admin role for `info@dentalturkey.clinic` will be inserted via SQL after account creation
-- Lead contact masking is done client-side based on `lead_purchases` join — if no purchase record exists for that clinic+lead combo, contacts are masked
-- The existing `contact_requests` table already captures all needed patient data — no new "patients" table needed, just a UI rename and access control layer
-
+## Technical note
+The key issue is that the current schema allows multiple roles per user, but the app consumes only a single “current role”. That is fine only if the database function enforces a priority. Right now it does not, which is why the behavior is inconsistent.
