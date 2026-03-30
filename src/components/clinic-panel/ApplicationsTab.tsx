@@ -133,6 +133,17 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* 100% Discount Banner for free clinics */}
+        {billingType === 'free' && (
+          <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center gap-3">
+            <span className="text-2xl">🎉</span>
+            <div>
+              <p className="font-semibold text-green-700 dark:text-green-400">100% Discount Applied</p>
+              <p className="text-sm text-muted-foreground">All leads are free for this clinic — no payment required.</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           <div className="flex gap-3 items-center flex-wrap">
             <div className="relative">
@@ -156,12 +167,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
               <Lock className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">
                 {unpurchasedSelected.length} lead{unpurchasedSelected.length > 1 ? 's' : ''} selected
-                {billingType === 'free' ? ' (Free)' : ` ($${(unpurchasedSelected.length * 25).toFixed(2)})`}
+                {billingType === 'free' ? ' — 100% Discount Applied — $0.00' : ` ($${(unpurchasedSelected.length * 25).toFixed(2)})`}
               </span>
             </div>
             <Button size="sm" onClick={handleUnlockLeads} disabled={purchasing}>
               {purchasing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
-              {billingType === 'free' ? 'Unlock for Free' : 'Unlock Leads'}
+              {billingType === 'free' ? 'Unlock Free (100% Discount)' : 'Unlock Leads'}
             </Button>
           </div>
         )}
