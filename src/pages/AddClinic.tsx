@@ -49,7 +49,7 @@ interface Doctor {
 }
 
 const AddClinic = () => {
-  const { user } = useAuth()
+  const { user, userRole, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
