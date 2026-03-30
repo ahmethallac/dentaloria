@@ -47,7 +47,7 @@ export const hasRole = async (userId: string, role: AppRole): Promise<boolean> =
 
   const { data, error } = await supabase.rpc('has_role', {
     _user_id: userId,
-    _role: role
+    _role: role as any
   })
 
   if (error) {
