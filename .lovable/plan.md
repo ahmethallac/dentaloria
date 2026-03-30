@@ -1,92 +1,62 @@
 
-## What is actually broken
 
-This is not mainly a frontend redirect-order bug anymore. The real backend/app boundary issue is:
+# Fix Plan: Sub-Admin Role, Edit Fix, and Free Clinic Discount Display
 
-- some admin users currently have multiple rows in `user_roles`
-- I confirmed examples where the same `user_id` has `{admin, patient}`
-- your app calls `get_current_user_role()`
-- that DB function currently does:
+## Three Issues to Fix
 
-```sql
-SELECT role
-FROM public.user_roles
-WHERE user_id = auth.uid()
-LIMIT 1;
-```
+### 1. Add `sub_admin` role to the system
+- **Database**: Add `'sub_admin'` to the `app_role` enum. Update `get_current_user_role()` priority: admin(1) > sub_admin(2) > clinic_admin(3) > patient(4).
+- **Frontend routing**: Treat `sub_admin` same as `admin` for navigation (redirect to `/admin`). Update `Auth.tsx`, `Dashboard.tsx`, `AddClinic.tsx` guards to include `sub_admin`.
+- **Admin panel restrictions**: In the Admins section, only `admin` role users can add/remove admins. `sub_admin` users see the Admins tab as read-only (or hidden). When granting access from the panel, insert role as `sub_admin` (not `admin`).
+- **`roleService.ts`**: Add `sub_admin` to `AppRole` type.
 
-Because there is no `ORDER BY`, Postgres may return `patient` instead of `admin`.  
-So the app thinks the user is not admin and sends them into the clinic flow.
+### 2. Fix "Edit" (now "Manage") not working in Admin panel
+The current Edit button opens an inline card below the clinic list, but the `handleEditClinic` function only updates 5 basic fields. The real issue is it works but is too limited.
 
-That explains why repeated “check admin before clinic” changes did not solve it: the app is sometimes receiving the wrong role value.
+**Fix**: Rename "Edit" to "Manage". When clicked, navigate to `/clinic/{id}/panel` (the existing ClinicPanel page which already has full clinic editing via `ClinicInfoTab`). But add an admin-only section at the top of that page when accessed by an admin:
+- **Admin Settings section** (only visible to admin/sub_admin): Billing type toggle (Paid/Free), approval status, published toggle, verified toggle, featured toggle.
+- Remove the separate Billing tab from Admin.tsx entirely — billing control moves into the Manage view.
+- Update `ClinicPanel.tsx` to detect admin role and show admin controls.
 
-## Fix plan
+### 3. Free clinic: show "100% discount applied" on payment screen
+The backend edge function already handles free clinics correctly (inserts purchases at $0). The frontend `ApplicationsTab.tsx` already shows "Free" text. But we need to make the discount more prominent.
 
-### 1) Make role resolution deterministic in the database
-Update `get_current_user_role()` so it always returns the highest-privilege role for the current user.
+**Fix in `ApplicationsTab.tsx`**:
+- When `billingType === 'free'`, show a banner at the top: "100% Discount Applied — All leads are free for this clinic"
+- Change the unlock bar text from `(Free)` to `100% Discount Applied — $0.00`
+- Change button text to "Unlock Free (100% Discount)"
 
-Priority must be:
+---
+
+## Files to Change
+
+| File | Changes |
+|------|---------|
+| **Migration SQL** | `ALTER TYPE app_role ADD VALUE 'sub_admin'`; update `get_current_user_role()` priority |
+| `src/lib/roleService.ts` | Add `'sub_admin'` to `AppRole` type; update `isCurrentUserAdmin` to include sub_admin for panel access |
+| `src/contexts/AuthContext.tsx` | No change needed (already fetches role generically) |
+| `src/pages/Auth.tsx` | Add `sub_admin` to admin redirect check |
+| `src/pages/Dashboard.tsx` | Add `sub_admin` to admin redirect check |
+| `src/pages/AddClinic.tsx` | Add `sub_admin` to admin redirect check |
+| `src/pages/Admin.tsx` | 1) Rename "Edit" → "Manage", make it navigate to `/clinic/{id}/panel`. 2) Remove Billing tab. 3) Add Admins tab with add/remove functionality restricted to `admin` role only. 4) Replace tabs with sidebar layout. |
+| `src/pages/ClinicPanel.tsx` | Detect admin/sub_admin role → show admin settings section (billing toggle, approval, published, verified, featured) |
+| `src/components/clinic-panel/ApplicationsTab.tsx` | Show "100% Discount Applied" banner and updated text when `billingType === 'free'` |
+
+---
+
+## Admin Role Management Logic
 
 ```text
-admin > clinic_admin > patient
+Current user role === 'admin':
+  → Can add sub_admin role to any user (by email lookup in profiles)
+  → Can remove sub_admin from any user
+  → Cannot add/remove 'admin' role (hardcoded protection)
+
+Current user role === 'sub_admin':
+  → Can see Admins list (read-only)
+  → Cannot add or remove any admin/sub_admin
+  → Can do everything else (manage clinics, approvals, patients)
 ```
 
-Implementation approach:
-- replace the current `LIMIT 1` query with an ordered query or CASE-based priority
-- keep the return type as `app_role`
+The "Add Admin" flow: input email → find user in profiles → insert into `user_roles` with role `sub_admin`. RLS already allows admins to manage all roles.
 
-This is the most important fix.
-
-### 2) Keep frontend routing strictly role-first
-After the DB function is corrected, tighten routing so every auth entry point follows the same order:
-
-```text
-wait for auth loading
-if no user -> /auth
-if userRole === admin -> /admin
-if userRole === clinic_admin -> clinic flow
-if userRole === patient -> public flow or non-clinic dashboard behavior
-```
-
-Files to update:
-- `src/contexts/AuthContext.tsx`
-- `src/pages/Auth.tsx`
-- `src/pages/Dashboard.tsx`
-
-### 3) Stop admin users from ever entering Add Clinic
-Protect `AddClinic.tsx` itself so even if an admin somehow reaches `/add-clinic` manually, they are redirected away immediately.
-
-Behavior:
-- `admin` → `/admin`
-- non-authenticated → `/auth`
-- only clinic accounts may continue
-
-This prevents future leakage into the clinic setup path.
-
-### 4) Remove ambiguous role assumptions in auth state handling
-In `AuthContext`, make the role fetch explicitly authoritative:
-- fetch role after user is known
-- log the resolved role
-- do not allow downstream routing decisions until role resolution completes
-
-I do **not** plan to add a second competing role-fetch hook; the cleaner fix is to make the existing context reliable and use that single source of truth everywhere.
-
-### 5) Add targeted debug logs only where useful
-Add short logs at:
-- `AuthContext` after role resolution
-- `Auth.tsx` before redirect
-- `Dashboard.tsx` before redirect
-- `AddClinic.tsx` if access is denied
-
-This will make it obvious whether the app receives `admin` or not at runtime.
-
-## Expected result after fix
-
-- any user with an `admin` row in `user_roles` will always resolve as `admin`
-- admins will always land on `/admin`
-- admins will never see clinic creation
-- clinic routing will only apply to clinic accounts
-- patients will remain outside the admin/clinic flow
-
-## Technical note
-The key issue is that the current schema allows multiple roles per user, but the app consumes only a single “current role”. That is fine only if the database function enforces a priority. Right now it does not, which is why the behavior is inconsistent.
