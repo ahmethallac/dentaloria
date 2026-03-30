@@ -88,7 +88,7 @@ export const removeUserRole = async (userId: string, role: AppRole): Promise<voi
     .from('user_roles')
     .delete()
     .eq('user_id', userId)
-    .eq('role', role)
+    .eq('role', role as any)
 
   if (error) throw error
 }
