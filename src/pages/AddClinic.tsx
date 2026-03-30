@@ -93,13 +93,21 @@ const AddClinic = () => {
   }
 
   useEffect(() => {
+    if (authLoading) return
+    
     if (!user) {
       navigate('/auth')
       return
     }
+
+    if (userRole === 'admin') {
+      console.log('[AddClinic] Admin detected, redirecting to /admin')
+      navigate('/admin', { replace: true })
+      return
+    }
     
     fetchInitialData()
-  }, [user, navigate])
+  }, [user, userRole, authLoading, navigate])
 
   const fetchInitialData = async () => {
     try {
