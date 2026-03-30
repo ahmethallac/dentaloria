@@ -19,21 +19,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (authLoading) {
-      console.log('[Dashboard] Still loading auth/role...')
-      return
-    }
-    
-    console.log('[Dashboard] Auth loaded. user:', user?.id, 'role:', userRole)
+    if (authLoading) return
     
     if (!user) {
       navigate('/auth', { replace: true })
       return
     }
 
-    // STRICT: Check role BEFORE anything else
+    console.log('[Dashboard] Role resolved:', userRole)
+
     if (userRole === 'admin') {
-      console.log('[Dashboard] Admin detected, redirecting to /admin')
       navigate('/admin', { replace: true })
       return
     }
