@@ -12,15 +12,23 @@ import { supabase } from '@/integrations/supabase/client'
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const { signIn, signUp, user, loading } = useAuth()
+  const { signIn, signUp, user, userRole, loading } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/dashboard')
+    if (loading) return
+    if (!user) return
+    
+    console.log('[Auth] User loaded, role:', userRole)
+    
+    if (userRole === 'admin') {
+      console.log('[Auth] Admin detected, redirecting to /admin')
+      navigate('/admin', { replace: true })
+    } else {
+      navigate('/dashboard', { replace: true })
     }
-  }, [user, loading, navigate])
+  }, [user, userRole, loading, navigate])
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [signupForm, setSignupForm] = useState({
