@@ -70,11 +70,6 @@ export const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                       {t('dashboard')}
                     </DropdownMenuItem>
-                    {profile?.user_type === 'clinic_admin' && (
-                      <DropdownMenuItem onClick={() => navigate('/add-clinic')}>
-                        {t('addClinic')}
-                      </DropdownMenuItem>
-                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
@@ -148,11 +143,6 @@ export const Navbar = () => {
                     <Button onClick={() => { navigate('/dashboard'); closeMobileMenu(); }} variant="outline" className="w-full">
                       {t('dashboard')}
                     </Button>
-                    {profile?.user_type === 'clinic_admin' && (
-                      <Button onClick={() => { navigate('/add-clinic'); closeMobileMenu(); }} variant="outline" className="w-full">
-                        {t('addClinic')}
-                      </Button>
-                    )}
                     <Button onClick={() => { handleSignOut(); closeMobileMenu(); }} variant="ghost" className="w-full">
                       {t('signOut')}
                     </Button>

@@ -43,6 +43,88 @@ export type Database = {
           },
         ]
       }
+      clinic_approvals: {
+        Row: {
+          approval_token: string | null
+          clinic_id: string
+          created_at: string
+          health_tourism_doc_url: string | null
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          tax_certificate_url: string | null
+        }
+        Insert: {
+          approval_token?: string | null
+          clinic_id: string
+          created_at?: string
+          health_tourism_doc_url?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tax_certificate_url?: string | null
+        }
+        Update: {
+          approval_token?: string | null
+          clinic_id?: string
+          created_at?: string
+          health_tourism_doc_url?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tax_certificate_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_approvals_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_billing_settings: {
+        Row: {
+          billing_type: string
+          clinic_id: string
+          id: string
+          price_per_lead_cents: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          billing_type?: string
+          clinic_id: string
+          id?: string
+          price_per_lead_cents?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          billing_type?: string
+          clinic_id?: string
+          id?: string
+          price_per_lead_cents?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_billing_settings_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_images: {
         Row: {
           clinic_id: string
@@ -120,6 +202,7 @@ export type Database = {
       clinics: {
         Row: {
           address: string | null
+          approval_status: string
           city_id: string
           created_at: string
           description: string | null
@@ -144,6 +227,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approval_status?: string
           city_id: string
           created_at?: string
           description?: string | null
@@ -168,6 +252,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approval_status?: string
           city_id?: string
           created_at?: string
           description?: string | null
@@ -404,6 +489,48 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_purchases: {
+        Row: {
+          amount_cents: number
+          clinic_id: string
+          contact_request_id: string
+          id: string
+          purchased_at: string
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount_cents?: number
+          clinic_id: string
+          contact_request_id: string
+          id?: string
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          clinic_id?: string
+          contact_request_id?: string
+          id?: string
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_purchases_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_purchases_contact_request_id_fkey"
+            columns: ["contact_request_id"]
+            isOneToOne: false
+            referencedRelation: "contact_requests"
             referencedColumns: ["id"]
           },
         ]
