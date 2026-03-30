@@ -143,11 +143,6 @@ export const Navbar = () => {
                     <Button onClick={() => { navigate('/dashboard'); closeMobileMenu(); }} variant="outline" className="w-full">
                       {t('dashboard')}
                     </Button>
-                    {profile?.user_type === 'clinic_admin' && (
-                      <Button onClick={() => { navigate('/add-clinic'); closeMobileMenu(); }} variant="outline" className="w-full">
-                        {t('addClinic')}
-                      </Button>
-                    )}
                     <Button onClick={() => { handleSignOut(); closeMobileMenu(); }} variant="ghost" className="w-full">
                       {t('signOut')}
                     </Button>
