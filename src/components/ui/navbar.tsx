@@ -70,11 +70,6 @@ export const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                       {t('dashboard')}
                     </DropdownMenuItem>
-                    {profile?.user_type === 'clinic_admin' && (
-                      <DropdownMenuItem onClick={() => navigate('/add-clinic')}>
-                        {t('addClinic')}
-                      </DropdownMenuItem>
-                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
