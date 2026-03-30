@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client'
 
-export type AppRole = 'patient' | 'clinic_admin' | 'admin'
+export type AppRole = 'patient' | 'clinic_admin' | 'admin' | 'sub_admin'
 
 export interface UserRole {
   id: string
