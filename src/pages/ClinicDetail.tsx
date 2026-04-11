@@ -180,7 +180,7 @@ const ClinicDetail = () => {
     setCurrentImageIndex(clampedIndex);
   }, [clinic?.images?.length]);
 
-  /* ── gallery drag-scroll ── */
+  /* ── gallery drag-scroll (mouse only) ── */
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
@@ -188,12 +188,15 @@ const ClinicDetail = () => {
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
+    let dragDistance = 0;
 
     const getNearestIndex = () => Math.round(el.scrollLeft / Math.max(el.clientWidth, 1));
 
     const onDown = (e: MouseEvent) => {
       isDown = true;
+      dragDistance = 0;
       el.classList.add("cursor-grabbing");
+      el.classList.remove("scroll-smooth");
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
     };
@@ -202,26 +205,23 @@ const ClinicDetail = () => {
       if (!isDown) return;
       isDown = false;
       el.classList.remove("cursor-grabbing");
+      el.classList.add("scroll-smooth");
       scrollGalleryToIndex(getNearestIndex());
     };
 
     const onMove = (e: MouseEvent) => {
       if (!isDown) return;
       e.preventDefault();
-      el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+      const dx = e.pageX - el.offsetLeft - startX;
+      dragDistance += Math.abs(dx);
+      el.scrollLeft = scrollLeft - dx;
     };
 
     const onKey = (e: KeyboardEvent) => {
       if (!el.matches(":hover") && document.activeElement !== el) return;
-      const currentIndex = getNearestIndex();
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        scrollGalleryToIndex(currentIndex + 1);
-      }
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        scrollGalleryToIndex(currentIndex - 1);
-      }
+      const ci = getNearestIndex();
+      if (e.key === "ArrowRight") { e.preventDefault(); scrollGalleryToIndex(ci + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); scrollGalleryToIndex(ci - 1); }
     };
 
     const onScroll = () => {
@@ -229,6 +229,8 @@ const ClinicDetail = () => {
         const next = getNearestIndex();
         return prev === next ? prev : next;
       });
+      // dismiss tapped overlay on scroll
+      setTappedImageIdx(null);
     };
 
     el.addEventListener("mousedown", onDown);
