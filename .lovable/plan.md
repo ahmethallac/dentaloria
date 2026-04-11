@@ -1,62 +1,62 @@
 
 
-# Fix Plan: Sub-Admin Role, Edit Fix, and Free Clinic Discount Display
+# Analysis: Clinic Registration vs Search/Filter Consistency
 
-## Three Issues to Fix
+## Findings
 
-### 1. Add `sub_admin` role to the system
-- **Database**: Add `'sub_admin'` to the `app_role` enum. Update `get_current_user_role()` priority: admin(1) > sub_admin(2) > clinic_admin(3) > patient(4).
-- **Frontend routing**: Treat `sub_admin` same as `admin` for navigation (redirect to `/admin`). Update `Auth.tsx`, `Dashboard.tsx`, `AddClinic.tsx` guards to include `sub_admin`.
-- **Admin panel restrictions**: In the Admins section, only `admin` role users can add/remove admins. `sub_admin` users see the Admins tab as read-only (or hidden). When granting access from the panel, insert role as `sub_admin` (not `admin`).
-- **`roleService.ts`**: Add `sub_admin` to `AppRole` type.
-
-### 2. Fix "Edit" (now "Manage") not working in Admin panel
-The current Edit button opens an inline card below the clinic list, but the `handleEditClinic` function only updates 5 basic fields. The real issue is it works but is too limited.
-
-**Fix**: Rename "Edit" to "Manage". When clicked, navigate to `/clinic/{id}/panel` (the existing ClinicPanel page which already has full clinic editing via `ClinicInfoTab`). But add an admin-only section at the top of that page when accessed by an admin:
-- **Admin Settings section** (only visible to admin/sub_admin): Billing type toggle (Paid/Free), approval status, published toggle, verified toggle, featured toggle.
-- Remove the separate Billing tab from Admin.tsx entirely — billing control moves into the Manage view.
-- Update `ClinicPanel.tsx` to detect admin role and show admin controls.
-
-### 3. Free clinic: show "100% discount applied" on payment screen
-The backend edge function already handles free clinics correctly (inserts purchases at $0). The frontend `ApplicationsTab.tsx` already shows "Free" text. But we need to make the discount more prominent.
-
-**Fix in `ApplicationsTab.tsx`**:
-- When `billingType === 'free'`, show a banner at the top: "100% Discount Applied — All leads are free for this clinic"
-- Change the unlock bar text from `(Free)` to `100% Discount Applied — $0.00`
-- Change button text to "Unlock Free (100% Discount)"
+### What's Already Correct
+- **Treatments**: Both registration (`AddClinic.tsx`) and filters (`ClinicListing.tsx`) fetch from the same `treatments` table via Supabase. UUIDs are used as foreign keys in `clinic_treatments`. The filter query in `getClinics()` correctly joins `clinic_treatments.treatment_id` to match. No naming or casing mismatch exists in the stored data.
+- **Cities**: Registration stores `city_id` (UUID). Filters query by `city_id`. Fully aligned.
+- **Data source**: Per your earlier consolidation, treatments come from one DB source everywhere.
 
 ---
 
-## Files to Change
+### Issues Found
 
-| File | Changes |
-|------|---------|
-| **Migration SQL** | `ALTER TYPE app_role ADD VALUE 'sub_admin'`; update `get_current_user_role()` priority |
-| `src/lib/roleService.ts` | Add `'sub_admin'` to `AppRole` type; update `isCurrentUserAdmin` to include sub_admin for panel access |
-| `src/contexts/AuthContext.tsx` | No change needed (already fetches role generically) |
-| `src/pages/Auth.tsx` | Add `sub_admin` to admin redirect check |
-| `src/pages/Dashboard.tsx` | Add `sub_admin` to admin redirect check |
-| `src/pages/AddClinic.tsx` | Add `sub_admin` to admin redirect check |
-| `src/pages/Admin.tsx` | 1) Rename "Edit" → "Manage", make it navigate to `/clinic/{id}/panel`. 2) Remove Billing tab. 3) Add Admins tab with add/remove functionality restricted to `admin` role only. 4) Replace tabs with sidebar layout. |
-| `src/pages/ClinicPanel.tsx` | Detect admin/sub_admin role → show admin settings section (billing toggle, approval, published, verified, featured) |
-| `src/components/clinic-panel/ApplicationsTab.tsx` | Show "100% Discount Applied" banner and updated text when `billingType === 'free'` |
-
----
-
-## Admin Role Management Logic
-
-```text
-Current user role === 'admin':
-  → Can add sub_admin role to any user (by email lookup in profiles)
-  → Can remove sub_admin from any user
-  → Cannot add/remove 'admin' role (hardcoded protection)
-
-Current user role === 'sub_admin':
-  → Can see Admins list (read-only)
-  → Cannot add or remove any admin/sub_admin
-  → Can do everything else (manage clinics, approvals, patients)
+#### 1. Hardcoded Countries on Homepage (HIGH RISK)
+**File**: `src/pages/Index.tsx`, line 63
 ```
+const COUNTRIES = ["Turkey", "USA", "UK"];
+```
+The homepage search bar uses a hardcoded list of country **names** instead of fetching from the `countries` table. If a country is added/renamed in the DB, the homepage won't reflect it. When the user selects "Turkey" and searches, the listing page receives `?country=Turkey` (a name string), then must resolve it to a UUID — fragile and error-prone if the DB stores "Türkiye" instead of "Turkey".
 
-The "Add Admin" flow: input email → find user in profiles → insert into `user_roles` with role `sub_admin`. RLS already allows admins to manage all roles.
+**Fix**: Fetch countries from `getCountries()` (already imported) and use `country.id` as the select value, just like treatments already do.
+
+#### 2. Mixed ID vs Name in URL Parameters (MEDIUM RISK)
+**File**: `src/pages/Index.tsx`, lines 123-134
+
+- **Treatment search bar**: Passes `treatment.id` (UUID) ✓
+- **Treatment card click** (`handleTreatmentClick`): Passes treatment **name** as URL param ✗
+- **City card click** (`handleCityClick`): Passes city **name** as URL param ✗
+- **Country search bar**: Passes country **name** as URL param ✗
+
+The listing page (`ClinicListing.tsx`) has complex resolution logic (lines 228-287) to convert names back to UUIDs. This is fragile — partial matching and case-insensitive lookups can fail.
+
+**Fix**: Always pass UUIDs in URL params. For treatment/city card clicks, pass the ID instead of the name.
+
+#### 3. Fragile Treatment Name Mapping (MEDIUM RISK)
+**File**: `src/pages/ClinicListing.tsx`, lines 256-264
+
+A hardcoded `treatmentMappings` object maps informal names like `"hollywood smile"` → `"porcelain veneers"`. This is brittle — if treatment names change in the DB, this mapping silently breaks. Also, `"hollywood smile"` isn't even a treatment in the DB, so this mapping would never match a real filter click.
+
+**Fix**: Remove this mapping entirely. Since all navigation should pass UUIDs, name-to-ID resolution becomes unnecessary. If SEO-friendly URLs are needed later, add a `slug` column to the `treatments` table.
+
+#### 4. `clinics_public` Missing from Sync Trigger (LOW RISK)
+The `sync_clinics_public` trigger copies clinic data to `clinics_public` for public queries. The `clinic_treatments` table is queried separately during search — this is fine. But if a clinic registers treatments and isn't published yet, those treatments exist in `clinic_treatments` while the clinic isn't in `clinics_public`. The filter will never return unpublished clinics. This is correct behavior, just worth noting.
+
+---
+
+### Recommendations
+
+| # | Change | File(s) | Impact |
+|---|--------|---------|--------|
+| 1 | Fetch countries from DB on homepage instead of hardcoded array | `src/pages/Index.tsx` | Eliminates country mismatch risk |
+| 2 | Pass country ID (not name) from homepage search | `src/pages/Index.tsx` | Removes fragile name resolution |
+| 3 | Pass treatment ID from popular treatment cards (already using ID in search bar) | `src/pages/Index.tsx` | Consistent UUID usage |
+| 4 | Pass city ID from city cards instead of name | `src/pages/Index.tsx` | Consistent UUID usage |
+| 5 | Remove `treatmentMappings` object and partial-match fallback in ClinicListing | `src/pages/ClinicListing.tsx` | Cleaner, less error-prone code |
+| 6 | Simplify URL param resolution in ClinicListing to only handle UUIDs | `src/pages/ClinicListing.tsx` | Removes ~40 lines of fragile matching logic |
+
+### Summary
+The database layer is fully consistent — treatments and locations use proper UUID foreign keys throughout registration and filtering. The problem is the **frontend navigation layer**: the homepage passes human-readable names in URL params, forcing the listing page to do unreliable name-to-ID resolution. Switching all navigation to use UUIDs will eliminate all mismatch risks.
 
