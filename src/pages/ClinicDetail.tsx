@@ -396,17 +396,35 @@ const ClinicDetail = () => {
                   {clinic.images.map((src: string, idx: number) => (
                     <div
                       key={idx}
-                      className="w-full shrink-0 snap-start"
-                      onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
+                      className="w-full shrink-0 snap-center relative"
+                      onClick={() => {
+                        if (isMobile) setTappedImageIdx((prev) => (prev === idx ? null : idx));
+                      }}
                     >
                       <div className="aspect-video overflow-hidden rounded-2xl bg-muted/30">
                         <img
                           src={src}
                           alt={`${clinic.name} ${idx + 1}`}
                           draggable={false}
-                          className="h-full w-full object-cover select-none pointer-events-none"
+                          className="h-full w-full object-cover select-none"
                         />
                       </div>
+                      {/* Mobile "Full Screen" button overlay */}
+                      {isMobile && tappedImageIdx === idx && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl">
+                          <Button
+                            variant="secondary"
+                            className="bg-white/90 text-foreground font-semibold shadow-lg"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTappedImageIdx(null);
+                              setFullscreenIdx(idx);
+                            }}
+                          >
+                            Full Screen
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -431,6 +449,18 @@ const ClinicDetail = () => {
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
+
+                    {/* Dot indicators */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {clinic.images.map((_: string, i: number) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            i === currentImageIndex ? "bg-white" : "bg-white/40"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </>
                 )}
               </div>
