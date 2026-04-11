@@ -560,7 +560,7 @@ const AddClinic = () => {
                 <h3 className="text-lg font-semibold">Clinic Images *</h3>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Upload horizontal images for best display. Images will be automatically resized to fit.
+                    Upload images and crop them to a standard 16:9 format. Each image will open a crop tool.
                   </p>
                   <Input
                     type="file"
