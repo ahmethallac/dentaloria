@@ -111,7 +111,15 @@ const ClinicDetail = () => {
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+  const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const initialTreatment = searchParams.get("treatment") || "";
 
