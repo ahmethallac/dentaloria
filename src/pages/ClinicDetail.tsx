@@ -300,7 +300,7 @@ const ClinicDetail = () => {
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
               {/* ── Image Gallery ── */}
-              <div className="rounded-2xl overflow-hidden">
+              <div className="rounded-2xl overflow-hidden lg:max-h-[420px]">
                 {/* Single image or mosaic */}
                 {thumbImages.length > 0 ? (
                   <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-1.5 aspect-video">
