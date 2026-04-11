@@ -15,6 +15,8 @@ import {
   Clock,
   Stethoscope,
   ChevronRight,
+  ChevronLeft,
+  X,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById } from "@/lib/services";
@@ -107,6 +109,8 @@ const ClinicDetail = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
+  const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
   const initialTreatment = searchParams.get("treatment") || "";
 
@@ -327,17 +331,18 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Horizontal Image Gallery ── */}
+              {/* ── Horizontal Image Gallery (single-image slider) ── */}
               <div
                 ref={galleryRef}
                 tabIndex={0}
-                className="flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
+                className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
                 style={{ WebkitOverflowScrolling: "touch" }}
               >
                 {clinic.images.map((src: string, idx: number) => (
                   <div
                     key={idx}
-                    className="shrink-0 snap-start w-[85%] sm:w-[60%] lg:w-[48%] xl:w-[45%]"
+                    className="shrink-0 snap-center w-full"
+                    onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
                   >
                     <div className="aspect-video overflow-hidden rounded-xl bg-muted/30">
                       <img
@@ -589,6 +594,51 @@ const ClinicDetail = () => {
         </DialogContent>
       </Dialog>
 
+      {/* ── Mobile Fullscreen Image Viewer ── */}
+      {fullscreenIdx !== null && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+          <button
+            onClick={() => setFullscreenIdx(null)}
+            className="absolute top-4 right-4 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium z-10">
+            {fullscreenIdx + 1} / {clinic.images.length}
+          </div>
+
+          {/* Prev */}
+          {fullscreenIdx > 0 && (
+            <button
+              onClick={() => setFullscreenIdx((p) => Math.max(0, (p ?? 0) - 1))}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
+          {/* Next */}
+          {fullscreenIdx < clinic.images.length - 1 && (
+            <button
+              onClick={() => setFullscreenIdx((p) => Math.min(clinic.images.length - 1, (p ?? 0) + 1))}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+
+          <img
+            src={clinic.images[fullscreenIdx]}
+            alt={`${clinic.name} ${fullscreenIdx + 1}`}
+            className="max-h-full max-w-full object-contain p-4"
+          />
+        </div>
+      )}
 
       {/* Bottom padding for mobile CTA */}
       <div className="h-20 lg:hidden" />
