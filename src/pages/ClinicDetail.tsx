@@ -112,7 +112,7 @@ const ClinicDetail = () => {
   const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
 
   const initialTreatment = searchParams.get("treatment") || "";
