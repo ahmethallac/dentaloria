@@ -1,90 +1,80 @@
 
 
-# Data Consistency Audit: ID-Based Filtering Migration
+# Clinic Detail Page Redesign — Premium Desktop Experience
 
-## Current State: Almost Fully Migrated
+## Design Analysis
 
-The migration to UUID-based filtering is **95% complete**. The core search flow (homepage → listing page → database query) now correctly uses UUIDs throughout. Here is the audit result:
+**Competitor (Flymedi)**: Clean 2-column layout, sticky quote sidebar with consultant photo, tab navigation (Details / Before-After / Reviews / Staff / Cost), accreditation badges, sticky bottom CTA bar with price.
 
-### What's Correct
+**Current Dentaloria**: Generic card-based layout, everything stacked vertically on the left, plain "Contact Clinic" sidebar, no section navigation, no visual hierarchy differentiation between sections. Feels template-like.
 
-| Area | Status |
-|------|--------|
-| Homepage search bar (treatment select) | Uses `treatment.id` (UUID) |
-| Homepage search bar (country select) | Uses `country.id` (UUID) |
-| Homepage popular city cards | Passes `city.id` + `city.country_id` (UUIDs) |
-| Homepage popular treatment cards | Passes `treatment.id` (UUID) |
-| ClinicListing URL param sync | Reads UUIDs directly from params |
-| ClinicListing → `useClinicSearch` | Passes UUIDs, validates with `isUUID()` |
-| `getClinics()` in services.ts | Filters by UUID on `city_id`, `country_id`, `treatment_id` |
-| `clinics_public` query | Uses UUID joins |
-| Clinic registration (`AddClinic.tsx`) | Stores `city_id`, `treatment_id` as UUIDs |
-| Popular cities metadata | String-matches city names for images only, navigates with UUID |
+## New Design Direction
 
-### Remaining Inconsistencies Found
-
-#### 1. Footer Treatment Links — Still Using Names (BUG)
-**File**: `src/components/ui/footer.tsx`, line 85
+### Layout Structure (Desktop)
+```text
+┌──────────────────────────────────────────────────────────┐
+│ Navbar                                                    │
+├──────────────────────────────────────────────────────────┤
+│ Breadcrumb                                                │
+├──────────────────────────────────────────────────────────┤
+│ Clinic Name + Verified Badge + Location + Rating (inline) │
+├──────────────────────────────────────────────────────────┤
+│ [Tab Nav: Overview | Treatments | Doctors | Contact ]     │
+├────────────────────────────────┬─────────────────────────┤
+│                                │                         │
+│  Hero Image Gallery            │  Sticky Sidebar         │
+│  (main + thumbnails grid)      │  ┌───────────────────┐  │
+│                                │  │ "Get a Free Quote"│  │
+│  ─────────────────────────     │  │ Consultant avatar  │  │
+│  About the Clinic              │  │ Trust bullets      │  │
+│  (expandable description)      │  │ Contact Form       │  │
+│                                │  │ Accreditation icons│  │
+│  ─────────────────────────     │  └───────────────────┘  │
+│  Quick Stats (glass cards)     │                         │
+│  Experience | Patients | Specs │                         │
+│                                │                         │
+│  ─────────────────────────     │                         │
+│  Treatment Prices              │                         │
+│  (clean table with hover)      │                         │
+│                                │                         │
+│  ─────────────────────────     │                         │
+│  Our Doctors                   │                         │
+│  (horizontal cards)            │                         │
+│                                │                         │
+├────────────────────────────────┴─────────────────────────┤
+│ Footer                                                    │
+└──────────────────────────────────────────────────────────┘
 ```
-href={`/clinic-listing?treatment=${encodeURIComponent(t.name)}`}
-```
-The footer passes treatment **names** (e.g., "Dental Implants") instead of UUIDs. Since `ClinicListing` now expects UUIDs and the name-to-ID resolution logic has been removed, clicking these links will **silently fail** — the `isUUID()` check in `useClinicSearch` will reject the string, and no filtering will happen.
 
-**Fix**: Change `t.name` to `t.id`.
+### Key Design Changes
 
-#### 2. Clinic Detail Treatment Param — Name String (ACCEPTABLE)
-**File**: `src/pages/ClinicListing.tsx`, lines 513, 605
-```
-to={`/clinic/${clinic.id}?treatment=${encodeURIComponent(selectedTreatmentName)}`}
-```
-This passes the treatment **name** to the clinic detail page for pre-filling the contact form. This is intentional — the contact form shows the treatment name as display text, not as a filter. **No fix needed.**
+1. **Header area**: Clinic name, verified badge, location, and star rating all in one compact hero strip at the top — no card wrapping. Inline layout, not stacked.
 
-#### 3. `searchQuery` in `getClinics()` — Text Search (ACCEPTABLE)
-**File**: `src/lib/services.ts`, line 226-228
+2. **Sticky tab navigation**: A horizontal tab bar that sticks below the navbar on scroll. Sections: Overview, Treatments, Doctors, Contact. Clicking scrolls to the section smoothly. Active tab highlights based on scroll position.
 
-A `searchQuery` parameter exists that does `ilike` text matching on clinic name/description. This is not currently used by any frontend component (no search input on the listing page), so it's dormant. If a text search feature is added later, it should be clearly separated from the UUID-based structured filters. **No fix needed now**, but worth noting.
+3. **Image gallery upgrade**: Replace single carousel with a mosaic/grid layout — 1 large image + 2-3 smaller thumbnails visible at once. Clicking opens a fullscreen lightbox carousel. More visual, less "slideshow."
 
-#### 4. `POPULAR_CITIES_META` String Matching (LOW RISK)
-**File**: `src/pages/Index.tsx`, line 119
-```
-.filter((c: any) => POPULAR_CITIES_META[c.name])
-```
-This matches city names from the DB against hardcoded keys (`"Istanbul"`, `"Antalya"`, `"Izmir"`) to attach images. If a city is renamed in the DB (e.g., `"İstanbul"`), the card won't show. However, this only affects the UI display of popular cities — navigation still uses UUIDs. **Low risk**, but could be made more resilient by matching on city ID instead of name.
+4. **Sidebar redesign**: "Get a Free Quote" heading instead of "Contact Clinic." Add trust signals: "Free online consultation", "Priority for appointments", "Response within 24h" with checkmark icons. Keep the contact form below. Add verified/accreditation badges at the bottom of the sidebar.
 
----
+5. **Stats as glass-morphism cards**: Replace plain muted boxes with subtle glassmorphism cards in a 3-column row (Experience, Happy Patients, Specialties count). Compact, visual.
 
-## Risk Analysis
+6. **Treatment table redesign**: Clean alternating-row table with hover effect. Each row: treatment name, duration, and price aligned right. "Get Quote" mini-button per treatment row.
 
-| Risk | Severity | Impact |
-|------|----------|--------|
-| Footer treatment links broken | **HIGH** | Users clicking footer links get unfiltered results |
-| Popular cities meta mismatch | LOW | City cards may not appear if DB names change |
-| Dormant `searchQuery` text filter | NONE | Not used by any frontend component |
-| Clinic detail treatment param | NONE | Intentional — display text, not a filter |
+7. **Doctors section**: Horizontal scroll cards with avatar placeholder, name, specialty, years — more compact, less vertical space.
 
-## Recommendations
+8. **Remove**: Heart/favorite button (non-functional), separate Contact Information card (phone/email exposed publicly is unusual for medical tourism — keep it behind the form).
 
-### Must Fix (1 change)
-1. **Footer**: Change `t.name` → `t.id` in footer treatment links
+9. **Add**: Specialty badges moved into the header area (compact). "Why Choose This Clinic" trust section with icon bullets.
 
-### Optional Improvements
-2. **Popular cities meta**: Use city IDs as keys instead of names for resilience
-3. **Remove dormant `searchQuery`**: If text search isn't planned, remove to avoid confusion
-
-## Overall Assessment
-
-Your architectural decisions are **sound and well-structured**:
-- UUID-based filtering is the right approach — eliminates all casing, naming, and localization issues
-- The database schema (treatments, cities, countries with UUID PKs) is clean
-- The `clinics_public` view with trigger sync is a good pattern for public vs private data
-- The `isUUID()` guard in `useClinicSearch` is a smart safety net
-
-The only real bug is the footer link (1 line fix). Everything else is consistent and production-ready.
-
-## Files to Change
+### Files to Modify
 
 | File | Change |
 |------|--------|
-| `src/components/ui/footer.tsx` | Line 85: `t.name` → `t.id` |
-| *(Optional)* `src/pages/Index.tsx` | Use city IDs as keys for `POPULAR_CITIES_META` |
+| `src/pages/ClinicDetail.tsx` | Full rewrite of the JSX layout and section structure |
+| `src/index.css` | Add any new utility classes (glassmorphism, scroll-spy helpers) |
+
+No new components needed — everything stays in ClinicDetail.tsx using existing UI primitives (Badge, Button, Card, Carousel, Dialog). The contact form component stays as-is.
+
+### Mobile Behavior
+Mobile layout stays similar to current (stacked sections, bottom CTA bar). The tab nav becomes horizontally scrollable. The image gallery becomes a single carousel. The redesign focuses on the desktop (lg+) breakpoint.
 
