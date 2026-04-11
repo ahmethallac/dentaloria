@@ -434,19 +434,17 @@ const ClinicDetail = () => {
                   <>
                     <button
                       type="button"
-                      onClick={() => scrollGalleryToIndex(currentImageIndex - 1)}
-                      disabled={currentImageIndex === 0}
+                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex - 1))}
                       aria-label="Previous image"
-                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => scrollGalleryToIndex(currentImageIndex + 1)}
-                      disabled={currentImageIndex === clinic.images.length - 1}
+                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex + 1))}
                       aria-label="Next image"
-                      className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+                      className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
