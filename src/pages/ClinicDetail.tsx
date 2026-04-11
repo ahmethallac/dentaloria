@@ -706,21 +706,32 @@ const ClinicDetail = () => {
       {fullscreenIdx !== null && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+          onMouseDown={(e) => {
+            (e.currentTarget as any)._dragStartX = e.clientX;
+            (e.currentTarget as any)._dragging = true;
+          }}
+          onMouseMove={(e) => {
+            if (!(e.currentTarget as any)._dragging) return;
+            e.preventDefault();
+          }}
+          onMouseUp={(e) => {
+            const el = e.currentTarget as any;
+            if (!el._dragging) return;
+            el._dragging = false;
+            const diff = el._dragStartX - e.clientX;
+            if (Math.abs(diff) > 50) {
+              setFullscreenIdx((p) => wrapIndex((p ?? 0) + (diff > 0 ? 1 : -1)));
+            }
+          }}
           onTouchStart={(e) => {
-            const touch = e.touches[0];
-            (e.currentTarget as any)._swipeStartX = touch.clientX;
+            (e.currentTarget as any)._swipeStartX = e.touches[0].clientX;
           }}
           onTouchEnd={(e) => {
             const startX = (e.currentTarget as any)._swipeStartX;
             if (startX == null) return;
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
+            const diff = startX - e.changedTouches[0].clientX;
             if (Math.abs(diff) > 50) {
-              if (diff > 0 && fullscreenIdx < clinic.images.length - 1) {
-                setFullscreenIdx(fullscreenIdx + 1);
-              } else if (diff < 0 && fullscreenIdx > 0) {
-                setFullscreenIdx(fullscreenIdx - 1);
-              }
+              setFullscreenIdx((p) => wrapIndex((p ?? 0) + (diff > 0 ? 1 : -1)));
             }
             (e.currentTarget as any)._swipeStartX = null;
           }}
@@ -733,40 +744,33 @@ const ClinicDetail = () => {
             <X className="h-6 w-6" />
           </button>
 
-          {/* Counter */}
           <div className="absolute top-5 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium z-10">
             {fullscreenIdx + 1} / {clinic.images.length}
           </div>
 
-          {/* Prev */}
-          {fullscreenIdx > 0 && (
-            <button
-              onClick={() => setFullscreenIdx((p) => Math.max(0, (p ?? 0) - 1))}
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-          )}
+          <button
+            onClick={() => setFullscreenIdx((p) => wrapIndex((p ?? 0) - 1))}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
+            aria-label="Previous image"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
 
-          {/* Next */}
-          {fullscreenIdx < clinic.images.length - 1 && (
-            <button
-              onClick={() => setFullscreenIdx((p) => Math.min(clinic.images.length - 1, (p ?? 0) + 1))}
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-              aria-label="Next image"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          )}
+          <button
+            onClick={() => setFullscreenIdx((p) => wrapIndex((p ?? 0) + 1))}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
+            aria-label="Next image"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
 
-          {/* Fixed-size image container */}
-          <div className="w-full max-w-4xl px-4">
+          <div className="w-full max-w-4xl px-4 select-none">
             <div className="aspect-video w-full overflow-hidden rounded-lg">
               <img
                 src={clinic.images[fullscreenIdx]}
                 alt={`${clinic.name} ${fullscreenIdx + 1}`}
-                className="h-full w-full object-cover"
+                draggable={false}
+                className="h-full w-full object-cover pointer-events-none"
               />
             </div>
           </div>
