@@ -170,15 +170,20 @@ const ClinicDetail = () => {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
+  const wrapIndex = useCallback((index: number) => {
+    const len = clinic?.images?.length ?? 1;
+    return ((index % len) + len) % len;
+  }, [clinic?.images?.length]);
+
   const scrollGalleryToIndex = useCallback((index: number) => {
     const el = galleryRef.current;
     const imageCount = clinic?.images?.length ?? 0;
     if (!el || imageCount === 0) return;
 
-    const clampedIndex = Math.max(0, Math.min(index, imageCount - 1));
-    el.scrollTo({ left: clampedIndex * el.clientWidth, behavior: "smooth" });
-    setCurrentImageIndex(clampedIndex);
-  }, [clinic?.images?.length]);
+    const wrapped = wrapIndex(index);
+    el.scrollTo({ left: wrapped * el.clientWidth, behavior: "smooth" });
+    setCurrentImageIndex(wrapped);
+  }, [clinic?.images?.length, wrapIndex]);
 
   /* ── gallery drag-scroll (mouse only) ── */
   useEffect(() => {
@@ -187,34 +192,31 @@ const ClinicDetail = () => {
 
     let isDown = false;
     let startX = 0;
-    let scrollLeft = 0;
-    let dragDistance = 0;
+    let scrollLeftStart = 0;
 
     const getNearestIndex = () => Math.round(el.scrollLeft / Math.max(el.clientWidth, 1));
 
     const onDown = (e: MouseEvent) => {
       isDown = true;
-      dragDistance = 0;
+      el.style.scrollBehavior = "auto";
       el.classList.add("cursor-grabbing");
-      el.classList.remove("scroll-smooth");
-      startX = e.pageX - el.offsetLeft;
-      scrollLeft = el.scrollLeft;
+      startX = e.pageX;
+      scrollLeftStart = el.scrollLeft;
     };
 
     const onUp = () => {
       if (!isDown) return;
       isDown = false;
       el.classList.remove("cursor-grabbing");
-      el.classList.add("scroll-smooth");
+      el.style.scrollBehavior = "smooth";
       scrollGalleryToIndex(getNearestIndex());
     };
 
     const onMove = (e: MouseEvent) => {
       if (!isDown) return;
       e.preventDefault();
-      const dx = e.pageX - el.offsetLeft - startX;
-      dragDistance += Math.abs(dx);
-      el.scrollLeft = scrollLeft - dx;
+      const dx = e.pageX - startX;
+      el.scrollLeft = scrollLeftStart - dx;
     };
 
     const onKey = (e: KeyboardEvent) => {
@@ -229,21 +231,20 @@ const ClinicDetail = () => {
         const next = getNearestIndex();
         return prev === next ? prev : next;
       });
-      // dismiss tapped overlay on scroll
       setTappedImageIdx(null);
     };
 
     el.addEventListener("mousedown", onDown);
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("mouseup", onUp);
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mousemove", onMove as any);
     window.addEventListener("keydown", onKey);
 
     return () => {
       el.removeEventListener("mousedown", onDown);
       el.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mousemove", onMove as any);
       window.removeEventListener("keydown", onKey);
     };
   }, [scrollGalleryToIndex]);
