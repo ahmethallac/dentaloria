@@ -303,7 +303,7 @@ const ClinicDetail = () => {
               <div className="rounded-2xl overflow-hidden lg:max-h-[420px]">
                 {/* Single image or mosaic */}
                 {thumbImages.length > 0 ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-1.5 aspect-video">
+                  <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-1.5 aspect-video lg:max-h-[420px]">
                     {/* Main image */}
                     <div
                       className="relative cursor-pointer group overflow-hidden"
