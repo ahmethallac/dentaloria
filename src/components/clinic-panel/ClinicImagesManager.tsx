@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { optimizeClinicImages } from "@/lib/imageUtils";
+import ImageCropDialog from "@/components/ui/ImageCropDialog";
 
 interface ClinicImage {
   id: string;
@@ -21,47 +21,64 @@ interface Props {
 export default function ClinicImagesManager({ clinicId, images, onChanged }: Props) {
   const { toast } = useToast();
   const [isWorking, setIsWorking] = useState(false);
+  const [cropQueue, setCropQueue] = useState<File[]>([]);
+  const [currentCropFile, setCurrentCropFile] = useState<File | null>(null);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+    setCropQueue(files.slice(1));
+    setCurrentCropFile(files[0]);
+    e.target.value = "";
+  };
+
+  const uploadCroppedFile = async (file: File) => {
     setIsWorking(true);
     try {
-      const optimized = await optimizeClinicImages(files);
-      const toInsert: { clinic_id: string; image_url: string; is_primary: boolean }[] = [];
+      const path = `${clinicId}/${Date.now()}-${file.name}`;
+      const { error: upErr } = await supabase.storage.from("clinic-images").upload(path, file);
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from("clinic-images").getPublicUrl(path);
 
-      await Promise.all(
-        optimized.map(async (file, i) => {
-          const path = `${clinicId}/${Date.now()}-${i}-${file.name}`;
-          const { error: upErr } = await supabase.storage.from("clinic-images").upload(path, file);
-          if (upErr) throw upErr;
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("clinic-images").getPublicUrl(path);
-          toInsert.push({ clinic_id: clinicId, image_url: publicUrl, is_primary: images.length === 0 && i === 0 });
-        })
-      );
+      const { error } = await supabase.from("clinic_images").insert({
+        clinic_id: clinicId,
+        image_url: publicUrl,
+        is_primary: images.length === 0,
+      });
+      if (error) throw error;
 
-      if (toInsert.length) {
-        const { error } = await supabase.from("clinic_images").insert(toInsert);
-        if (error) throw error;
-      }
-
-      toast({ title: "Uploaded", description: "Images added." });
+      toast({ title: "Uploaded", description: "Image added." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not upload images.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not upload image.", variant: "destructive" });
     } finally {
       setIsWorking(false);
-      e.currentTarget.value = "";
+    }
+  };
+
+  const handleCropConfirm = async (croppedFile: File) => {
+    await uploadCroppedFile(croppedFile);
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0]);
+      setCropQueue((prev) => prev.slice(1));
+    } else {
+      setCurrentCropFile(null);
+    }
+  };
+
+  const handleCropCancel = () => {
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0]);
+      setCropQueue((prev) => prev.slice(1));
+    } else {
+      setCurrentCropFile(null);
     }
   };
 
   const setPrimary = async (imageId: string) => {
     setIsWorking(true);
     try {
-      // set all false then one true
       await supabase.from("clinic_images").update({ is_primary: false }).eq("clinic_id", clinicId);
       const { error } = await supabase.from("clinic_images").update({ is_primary: true }).eq("id", imageId);
       if (error) throw error;
@@ -91,32 +108,39 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
   };
 
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Images</h3>
-        <label className="inline-flex items-center gap-2">
-          <Input type="file" multiple accept="image/*" onChange={handleUpload} disabled={isWorking} />
-        </label>
-      </div>
-      {images.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No images yet.</div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {images.map((img) => (
-            <div key={img.id} className="relative border border-border/60 rounded-lg overflow-hidden">
-              <img src={img.image_url} alt="clinic image" className="w-full h-32 object-cover" loading="lazy" />
-              <div className="p-2 flex items-center justify-between gap-2">
-                <Button size="sm" variant="outline" disabled={isWorking || !!img.is_primary} onClick={() => setPrimary(img.id)}>
-                  {img.is_primary ? "Cover" : "Set as Cover"}
-                </Button>
-                <Button size="sm" variant="destructive" disabled={isWorking} onClick={() => remove(img.id)}>
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
+    <>
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Images</h3>
+          <label className="inline-flex items-center gap-2">
+            <Input type="file" multiple accept="image/*" onChange={handleFileSelect} disabled={isWorking} />
+          </label>
         </div>
-      )}
-    </Card>
+        {images.length === 0 ? (
+          <div className="text-sm text-muted-foreground">No images yet.</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {images.map((img) => (
+              <div key={img.id} className="relative border border-border/60 rounded-lg overflow-hidden">
+                <img src={img.image_url} alt="clinic image" className="w-full h-32 object-cover" loading="lazy" />
+                <div className="p-2 flex items-center justify-between gap-2">
+                  <Button size="sm" variant="outline" disabled={isWorking || !!img.is_primary} onClick={() => setPrimary(img.id)}>
+                    {img.is_primary ? "Cover" : "Set as Cover"}
+                  </Button>
+                  <Button size="sm" variant="destructive" disabled={isWorking} onClick={() => remove(img.id)}>
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+      <ImageCropDialog
+        file={currentCropFile}
+        onCrop={handleCropConfirm}
+        onCancel={handleCropCancel}
+      />
+    </>
   );
 }

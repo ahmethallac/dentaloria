@@ -13,6 +13,7 @@ import { Loader2, Upload, X, Plus, Camera } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { supabase } from '@/integrations/supabase/client'
 import { optimizeClinicImages, optimizeDoctorImages } from '@/lib/imageUtils'
+import ImageCropDialog from '@/components/ui/ImageCropDialog'
 
 interface Country {
   id: string
@@ -78,7 +79,8 @@ const AddClinic = () => {
   const [selectedTreatments, setSelectedTreatments] = useState<SelectedTreatment[]>([])
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [clinicImages, setClinicImages] = useState<File[]>([])
-
+  const [cropQueue, setCropQueue] = useState<File[]>([])
+  const [currentCropFile, setCurrentCropFile] = useState<File | null>(null)
   // Doctor form state
   const [doctorForm, setDoctorForm] = useState<Doctor>({
     title: '',
@@ -167,7 +169,7 @@ const AddClinic = () => {
     )
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length + clinicImages.length > 10) {
       toast({
@@ -177,23 +179,29 @@ const AddClinic = () => {
       })
       return
     }
-    
-    // Optimize images before adding to state
-    try {
-      const optimizedFiles = await optimizeClinicImages(files)
-      setClinicImages(prev => [...prev, ...optimizedFiles])
-      toast({
-        title: "Success",
-        description: `${files.length} image(s) optimized and added`
-      })
-    } catch (error) {
-      console.error('Error optimizing images:', error)
-      toast({
-        title: "Warning",
-        description: "Images added but optimization failed",
-        variant: "destructive"
-      })
-      setClinicImages(prev => [...prev, ...files])
+    // Queue files for cropping one by one
+    setCropQueue(files.slice(1))
+    setCurrentCropFile(files[0] || null)
+    e.target.value = ''
+  }
+
+  const handleCropConfirm = (croppedFile: File) => {
+    setClinicImages(prev => [...prev, croppedFile])
+    // Process next in queue
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0])
+      setCropQueue(prev => prev.slice(1))
+    } else {
+      setCurrentCropFile(null)
+    }
+  }
+
+  const handleCropCancel = () => {
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0])
+      setCropQueue(prev => prev.slice(1))
+    } else {
+      setCurrentCropFile(null)
     }
   }
 
@@ -552,7 +560,7 @@ const AddClinic = () => {
                 <h3 className="text-lg font-semibold">Clinic Images *</h3>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Upload horizontal images for best display. Images will be automatically resized to fit.
+                    Upload images and crop them to a standard 16:9 format. Each image will open a crop tool.
                   </p>
                   <Input
                     type="file"
@@ -737,6 +745,11 @@ const AddClinic = () => {
           </CardContent>
         </Card>
       </div>
+      <ImageCropDialog
+        file={currentCropFile}
+        onCrop={handleCropConfirm}
+        onCancel={handleCropCancel}
+      />
     </div>
   )
 }

@@ -111,7 +111,15 @@ const ClinicDetail = () => {
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+  const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const initialTreatment = searchParams.get("treatment") || "";
 
@@ -172,7 +180,7 @@ const ClinicDetail = () => {
     setCurrentImageIndex(clampedIndex);
   }, [clinic?.images?.length]);
 
-  /* ── gallery drag-scroll ── */
+  /* ── gallery drag-scroll (mouse only) ── */
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
@@ -180,12 +188,15 @@ const ClinicDetail = () => {
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
+    let dragDistance = 0;
 
     const getNearestIndex = () => Math.round(el.scrollLeft / Math.max(el.clientWidth, 1));
 
     const onDown = (e: MouseEvent) => {
       isDown = true;
+      dragDistance = 0;
       el.classList.add("cursor-grabbing");
+      el.classList.remove("scroll-smooth");
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
     };
@@ -194,26 +205,23 @@ const ClinicDetail = () => {
       if (!isDown) return;
       isDown = false;
       el.classList.remove("cursor-grabbing");
+      el.classList.add("scroll-smooth");
       scrollGalleryToIndex(getNearestIndex());
     };
 
     const onMove = (e: MouseEvent) => {
       if (!isDown) return;
       e.preventDefault();
-      el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+      const dx = e.pageX - el.offsetLeft - startX;
+      dragDistance += Math.abs(dx);
+      el.scrollLeft = scrollLeft - dx;
     };
 
     const onKey = (e: KeyboardEvent) => {
       if (!el.matches(":hover") && document.activeElement !== el) return;
-      const currentIndex = getNearestIndex();
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        scrollGalleryToIndex(currentIndex + 1);
-      }
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        scrollGalleryToIndex(currentIndex - 1);
-      }
+      const ci = getNearestIndex();
+      if (e.key === "ArrowRight") { e.preventDefault(); scrollGalleryToIndex(ci + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); scrollGalleryToIndex(ci - 1); }
     };
 
     const onScroll = () => {
@@ -221,6 +229,8 @@ const ClinicDetail = () => {
         const next = getNearestIndex();
         return prev === next ? prev : next;
       });
+      // dismiss tapped overlay on scroll
+      setTappedImageIdx(null);
     };
 
     el.addEventListener("mousedown", onDown);
@@ -386,17 +396,35 @@ const ClinicDetail = () => {
                   {clinic.images.map((src: string, idx: number) => (
                     <div
                       key={idx}
-                      className="w-full shrink-0 snap-start"
-                      onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
+                      className="w-full shrink-0 snap-center relative"
+                      onClick={() => {
+                        if (isMobile) setTappedImageIdx((prev) => (prev === idx ? null : idx));
+                      }}
                     >
                       <div className="aspect-video overflow-hidden rounded-2xl bg-muted/30">
                         <img
                           src={src}
                           alt={`${clinic.name} ${idx + 1}`}
                           draggable={false}
-                          className="h-full w-full object-cover select-none pointer-events-none"
+                          className="h-full w-full object-cover select-none"
                         />
                       </div>
+                      {/* Mobile "Full Screen" button overlay */}
+                      {isMobile && tappedImageIdx === idx && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl">
+                          <Button
+                            variant="secondary"
+                            className="bg-white/90 text-foreground font-semibold shadow-lg"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTappedImageIdx(null);
+                              setFullscreenIdx(idx);
+                            }}
+                          >
+                            Full Screen
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -421,6 +449,18 @@ const ClinicDetail = () => {
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
+
+                    {/* Dot indicators */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {clinic.images.map((_: string, i: number) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            i === currentImageIndex ? "bg-white" : "bg-white/40"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </>
                 )}
               </div>
@@ -663,12 +703,32 @@ const ClinicDetail = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Mobile Fullscreen Image Viewer ── */}
+      {/* ── Fullscreen Image Viewer ── */}
       {fullscreenIdx !== null && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            (e.currentTarget as any)._swipeStartX = touch.clientX;
+          }}
+          onTouchEnd={(e) => {
+            const startX = (e.currentTarget as any)._swipeStartX;
+            if (startX == null) return;
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (Math.abs(diff) > 50) {
+              if (diff > 0 && fullscreenIdx < clinic.images.length - 1) {
+                setFullscreenIdx(fullscreenIdx + 1);
+              } else if (diff < 0 && fullscreenIdx > 0) {
+                setFullscreenIdx(fullscreenIdx - 1);
+              }
+            }
+            (e.currentTarget as any)._swipeStartX = null;
+          }}
+        >
           <button
             onClick={() => setFullscreenIdx(null)}
-            className="absolute top-4 right-4 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+            className="absolute top-4 right-4 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
             aria-label="Close"
           >
             <X className="h-6 w-6" />
@@ -683,7 +743,7 @@ const ClinicDetail = () => {
           {fullscreenIdx > 0 && (
             <button
               onClick={() => setFullscreenIdx((p) => Math.max(0, (p ?? 0) - 1))}
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
               aria-label="Previous image"
             >
               <ChevronLeft className="h-6 w-6" />
@@ -694,18 +754,23 @@ const ClinicDetail = () => {
           {fullscreenIdx < clinic.images.length - 1 && (
             <button
               onClick={() => setFullscreenIdx((p) => Math.min(clinic.images.length - 1, (p ?? 0) + 1))}
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
               aria-label="Next image"
             >
               <ChevronRight className="h-6 w-6" />
             </button>
           )}
 
-          <img
-            src={clinic.images[fullscreenIdx]}
-            alt={`${clinic.name} ${fullscreenIdx + 1}`}
-            className="max-h-full max-w-full object-contain p-4"
-          />
+          {/* Fixed-size image container */}
+          <div className="w-full max-w-4xl px-4">
+            <div className="aspect-video w-full overflow-hidden rounded-lg">
+              <img
+                src={clinic.images[fullscreenIdx]}
+                alt={`${clinic.name} ${fullscreenIdx + 1}`}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
         </div>
       )}
 
