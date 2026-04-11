@@ -745,6 +745,11 @@ const AddClinic = () => {
           </CardContent>
         </Card>
       </div>
+      <ImageCropDialog
+        file={currentCropFile}
+        onCrop={handleCropConfirm}
+        onCancel={handleCropCancel}
+      />
     </div>
   )
 }
