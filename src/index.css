@@ -144,4 +144,23 @@ All colors MUST be HSL.
   .letter-fade {
     animation: letter-fade-in 0.1s ease-out forwards;
   }
+
+  .glass-card {
+    background: hsl(var(--background) / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .glass-sidebar {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.4);
+  }
+
+  .tab-nav-active {
+    color: hsl(var(--primary));
+    border-bottom: 2px solid hsl(var(--primary));
+  }
 }
