@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle } from "lucide-react";
-import { getFeaturedClinics, getTreatments, getPopularTreatments, type Clinic, type Treatment } from "@/lib/services";
+import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 
 // Helper function to map clinic data for ClinicCard component
@@ -60,20 +60,11 @@ const getTreatmentIcon = (treatmentName: string) => {
 
 // Treatment and location data
 
-const COUNTRIES = ["Turkey", "USA", "UK"];
-const POPULAR_CITIES = [{
-  name: "Istanbul",
-  image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
-  description: "Turkey's largest city"
-}, {
-  name: "Antalya",
-  image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png",
-  description: "Pearl of the Mediterranean"
-}, {
-  name: "Izmir",
-  image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png",
-  description: "Shining star of the Aegean"
-}];
+const POPULAR_CITIES_META: Record<string, { image: string; description: string }> = {
+  "Istanbul": { image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80", description: "Turkey's largest city" },
+  "Antalya": { image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png", description: "Pearl of the Mediterranean" },
+  "Izmir": { image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png", description: "Shining star of the Aegean" },
+};
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -84,6 +75,8 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [popularTreatments, setPopularTreatments] = useState<Treatment[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [popularCities, setPopularCities] = useState<any[]>([]);
 
   useEffect(() => {
     const loadFeaturedClinics = async () => {
@@ -106,19 +99,32 @@ const Index = () => {
   }, [toast]);
 
   useEffect(() => {
-    const loadTreatments = async () => {
+    const loadData = async () => {
       try {
-        const [allTreats, popular] = await Promise.all([
+        const [allTreats, popular, countriesData] = await Promise.all([
           getTreatments(),
           getPopularTreatments(6),
+          getCountries(),
         ]);
         setTreatments(allTreats);
         setPopularTreatments(popular);
+        setCountries(countriesData);
+
+        // Load cities for popular city cards (find Turkey's cities)
+        const turkey = countriesData.find((c: any) => c.name?.toLowerCase().includes('turkey') || c.name?.toLowerCase().includes('türkiye'));
+        if (turkey) {
+          const citiesData = await getCities(turkey.id);
+          // Only show cities that have metadata (image/description)
+          const enrichedCities = citiesData
+            .filter((c: any) => POPULAR_CITIES_META[c.name])
+            .map((c: any) => ({ ...c, ...POPULAR_CITIES_META[c.name] }));
+          setPopularCities(enrichedCities);
+        }
       } catch (e) {
-        console.error('Failed to load treatments', e);
+        console.error('Failed to load data', e);
       }
     };
-    loadTreatments();
+    loadData();
   }, []);
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -126,11 +132,11 @@ const Index = () => {
     if (selectedCountry) params.set('country', selectedCountry);
     navigate(`/clinic-listing?${params.toString()}`);
   };
-  const handleCityClick = (cityName: string) => {
-    navigate(`/clinic-listing?city=${cityName}`);
+  const handleCityClick = (cityId: string, countryId: string) => {
+    navigate(`/clinic-listing?city=${cityId}&country=${countryId}`);
   };
-  const handleTreatmentClick = (treatmentName: string) => {
-    navigate(`/clinic-listing?treatment=${treatmentName}`);
+  const handleTreatmentClick = (treatmentId: string) => {
+    navigate(`/clinic-listing?treatment=${treatmentId}`);
   };
 
   useHeadMeta({
@@ -188,9 +194,11 @@ const Index = () => {
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
                   <SelectContent>
-                    {COUNTRIES.map(country => <SelectItem key={country} value={country}>
-                        {country}
-                      </SelectItem>)}
+                    {countries.map((country) => (
+                      <SelectItem key={country.id} value={country.id}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -319,9 +327,9 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {POPULAR_CITIES.map((city, index) => <Card key={city.name} className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in" style={{
+            {popularCities.map((city, index) => <Card key={city.id} className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in" style={{
             animationDelay: `${index * 0.1}s`
-          }} onClick={() => handleCityClick(city.name)}>
+          }} onClick={() => handleCityClick(city.id, city.country_id)}>
                 <div className="relative h-64">
                   <img src={city.image} alt={city.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -389,7 +397,7 @@ const Index = () => {
             {popularTreatments.map((treatment, index) => (
               <Card key={treatment.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
             animationDelay: `${index * 0.1}s`
-          }} onClick={() => handleTreatmentClick(treatment.name)}>
+          }} onClick={() => handleTreatmentClick(treatment.id)}>
                 <CardContent className="p-6 text-center">
                   <div className="bg-gradient-to-br from-primary/10 to-blue-600/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:from-primary/20 group-hover:to-blue-600/20 transition-colors duration-300">
                     {(() => {
