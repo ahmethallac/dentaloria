@@ -1,79 +1,87 @@
 
-Title: Correct the clinic gallery to a single horizontal image rail
 
-What went wrong
-- The current implementation interpreted “single slider” as “one image visible at a time.”
-- In `src/pages/ClinicDetail.tsx`, each slide is `w-full snap-center`, which forces a one-photo-per-view carousel.
-- That is not aligned with your requirement. What you want is:
-  - one gallery component
-  - all images in the same horizontal row
-  - equal-sized cards
-  - sideways scrolling by drag/swipe/keyboard
-  - no desktop click action
-  - mobile tap opens fullscreen viewer
+# Fix Gallery Interactions + Image Crop System
 
-What I will change
-1. Replace the current full-width slide structure
-- Remove the `w-full snap-center` single-image carousel behavior.
-- Render the gallery as a horizontal rail of repeated, same-size image cards.
-- Each card will use a fixed responsive width and a consistent aspect ratio so all images look uniform.
+## Issues to Fix
 
-2. Keep one horizontal slider, not multiple views
-- Structure:
-  - outer scroll container
-  - inner flex row
-  - repeated image cards
-- This makes the gallery read as one clean horizontal strip instead of a carousel showing one image at a time.
+### 1. Desktop drag scroll not working
+The current `mousedown`/`mousemove` handler sets `el.scrollLeft` directly, but the container has `scroll-smooth` which fights the drag. Also, `pointer-events-none` on images blocks mouse events from bubbling properly.
 
-3. Preserve premium, stable image sizing
-- Use a fixed container ratio for every card.
-- Use `object-cover` on all gallery images.
-- Ensure no card changes size based on source image dimensions.
-- Keep the rail visually balanced with the left column and not oversized.
+### 2. Mobile swipe not working in gallery
+The `snap-mandatory` combined with `scroll-smooth` and the drag handler interfere with native touch scrolling. Touch events need to work naturally without the mouse-drag handler intercepting them.
 
-4. Interaction behavior
-- Desktop:
-  - mouse drag to scroll
-  - trackpad / wheel horizontal scroll support remains natural
-  - keyboard left/right arrows scroll the rail
-  - no click interaction on images
-- Mobile:
-  - touch swipe scroll works naturally
-  - tapping an image opens fullscreen
-  - fullscreen keeps arrows + close button + image counter
+### 3. Mobile tap → fullscreen behavior
+Currently tapping directly opens fullscreen. Instead: first tap shows a semi-transparent "Full Screen" button overlay on the image; tapping that button opens fullscreen.
 
-5. Improve scroll behavior
-- Keep smooth horizontal scrolling.
-- Use snap behavior only if it helps polish without making the rail feel rigid; otherwise relax it so scrolling feels more natural.
-- Ensure the container is focusable for keyboard navigation.
+### 4. Mobile fullscreen swipe navigation
+The fullscreen viewer currently only has arrow buttons. Need to add touch-swipe support to navigate between images.
 
-6. Clean up mobile fullscreen trigger logic
-- Desktop clicks will do nothing.
-- Mobile taps will open the fullscreen viewer from the tapped image.
-- Fullscreen viewer will remain consistent and independent from the gallery rail layout.
+### 5. Fullscreen images inconsistent sizes
+Currently using `max-h-full max-w-full object-contain` which makes each image a different size. Fix: use a fixed container with `aspect-video` and `object-cover` (or `object-contain` inside a fixed-dimension wrapper).
 
-Files to update
-- `src/pages/ClinicDetail.tsx`
-  - replace the current “single-image slider” markup with a true horizontal image rail
-  - update the card sizing classes
-  - keep drag-scroll and keyboard behavior, adapted for a multi-image row
-  - keep mobile fullscreen opening only on small screens
-- `src/index.css` only if needed
-  - optional small helper styles for scroll behavior/cursor polish
-  - no broad redesign changes
+### 6. Image crop tool during clinic registration
+Add a Facebook-style crop dialog in AddClinic.tsx and ClinicImagesManager.tsx. When images are selected, each opens in a crop modal with a fixed 16:9 frame. The user drags the image to choose the visible area, then confirms. This ensures all uploaded images have identical dimensions.
 
-Expected final result
-- Multiple photos visible in one horizontally scrollable row
-- All photos same size
-- Clean modern “gallery rail” feel
-- No lightbox on desktop
-- Mobile tap-to-fullscreen still works
-- No layout jumping, no mixed image sizes, no accidental one-photo carousel behavior
+---
 
-Acceptance criteria
-- Desktop shows several images across the rail, not one full-width image
-- Dragging with the mouse scrolls horizontally
-- Arrow keys move the gallery when focused/hovered
-- Mobile swipe scrolls the rail
-- Mobile tap opens fullscreen viewer with arrows and close button
-- All gallery cards stay visually consistent in size and ratio
+## Plan
+
+### File: `src/pages/ClinicDetail.tsx`
+
+**Gallery drag fix (desktop)**
+- Remove `scroll-smooth` from the gallery container during drag (add it back on mouseup) so manual `scrollLeft` assignment works instantly.
+- Remove `pointer-events-none` from images; use `draggable={false}` and `user-select: none` instead.
+- Track drag distance; if minimal movement, treat as a tap (for mobile "Full Screen" button).
+
+**Mobile swipe in gallery**
+- Let native touch scrolling handle swipe (the `snap-mandatory` will snap to each image). Remove any touch interference from the drag handler. The drag handler should only handle mouse events.
+
+**Mobile tap → "Full Screen" button**
+- Add a `tappedImageIdx` state. On mobile tap (not drag), set it to show a semi-transparent overlay with a "Full Screen" button centered on that image.
+- Tapping the button calls `setFullscreenIdx(idx)`.
+- Tapping elsewhere or scrolling dismisses the overlay.
+
+**Fullscreen swipe navigation**
+- Add touch event handlers (`touchstart`, `touchmove`, `touchend`) on the fullscreen container. Track swipe direction and distance. On horizontal swipe > 50px threshold, navigate to next/prev image.
+
+**Fullscreen consistent image sizes**
+- Replace `max-h-full max-w-full object-contain p-4` with a fixed container: `w-full h-[80vh] flex items-center justify-center` containing an `aspect-video` div with `object-contain` or `object-cover`. All images render inside the same fixed box.
+
+### File: `src/components/ui/ImageCropDialog.tsx` (new)
+- A reusable crop dialog component.
+- Props: `file: File`, `aspectRatio: number` (default 16/9), `onCrop: (croppedFile: File) => void`, `onCancel: () => void`.
+- Uses an HTML canvas approach: load image, render it in a container with overflow hidden, let user drag to reposition, then crop to the fixed frame using canvas.
+- No external library needed — pure CSS/JS with mouse/touch drag on the image within a fixed viewport.
+- The crop frame is fixed (16:9); the image can be dragged and scaled within it.
+- On confirm, draw the visible portion onto a canvas, export as JPEG blob, return as File.
+
+### File: `src/pages/AddClinic.tsx`
+- Modify `handleImageUpload`: instead of immediately adding files to state, push them into a queue.
+- Process the queue one at a time: open `ImageCropDialog` for each file.
+- On crop confirm, add the cropped file to `clinicImages` state.
+- On cancel, skip that file.
+- Show cropped previews in the existing grid.
+
+### File: `src/components/clinic-panel/ClinicImagesManager.tsx`
+- Same crop flow: when files are selected via the file input, open `ImageCropDialog` for each before uploading.
+
+### File: `src/lib/imageUtils.ts`
+- Keep existing optimization functions but they become secondary — the crop dialog produces already-sized output. The `optimizeClinicImages` function can still compress after cropping.
+
+---
+
+## Technical Details
+
+**Crop dialog internals:**
+- Load image into an `<img>` element inside a fixed-ratio container (`aspect-video`, max-width ~600px).
+- Image is positioned absolutely, larger than the container. User drags to pan.
+- Optional zoom slider (pinch-to-zoom on mobile).
+- "Confirm" button crops via canvas: draw the visible region, export to blob at 1200×675 (16:9), quality 0.85.
+- Result is a standardized File object with consistent dimensions.
+
+**Gallery drag mechanics fix:**
+- On `mousedown`: record start position, set a flag, temporarily remove `scroll-smooth` class.
+- On `mousemove`: update `scrollLeft` directly (no smooth interpolation).
+- On `mouseup`: re-add `scroll-smooth`, snap to nearest index.
+- Touch events: do nothing custom — let browser handle native scroll + snap.
+
