@@ -1,80 +1,79 @@
 
+Title: Correct the clinic gallery to a single horizontal image rail
 
-# Clinic Detail Page Redesign — Premium Desktop Experience
+What went wrong
+- The current implementation interpreted “single slider” as “one image visible at a time.”
+- In `src/pages/ClinicDetail.tsx`, each slide is `w-full snap-center`, which forces a one-photo-per-view carousel.
+- That is not aligned with your requirement. What you want is:
+  - one gallery component
+  - all images in the same horizontal row
+  - equal-sized cards
+  - sideways scrolling by drag/swipe/keyboard
+  - no desktop click action
+  - mobile tap opens fullscreen viewer
 
-## Design Analysis
+What I will change
+1. Replace the current full-width slide structure
+- Remove the `w-full snap-center` single-image carousel behavior.
+- Render the gallery as a horizontal rail of repeated, same-size image cards.
+- Each card will use a fixed responsive width and a consistent aspect ratio so all images look uniform.
 
-**Competitor (Flymedi)**: Clean 2-column layout, sticky quote sidebar with consultant photo, tab navigation (Details / Before-After / Reviews / Staff / Cost), accreditation badges, sticky bottom CTA bar with price.
+2. Keep one horizontal slider, not multiple views
+- Structure:
+  - outer scroll container
+  - inner flex row
+  - repeated image cards
+- This makes the gallery read as one clean horizontal strip instead of a carousel showing one image at a time.
 
-**Current Dentaloria**: Generic card-based layout, everything stacked vertically on the left, plain "Contact Clinic" sidebar, no section navigation, no visual hierarchy differentiation between sections. Feels template-like.
+3. Preserve premium, stable image sizing
+- Use a fixed container ratio for every card.
+- Use `object-cover` on all gallery images.
+- Ensure no card changes size based on source image dimensions.
+- Keep the rail visually balanced with the left column and not oversized.
 
-## New Design Direction
+4. Interaction behavior
+- Desktop:
+  - mouse drag to scroll
+  - trackpad / wheel horizontal scroll support remains natural
+  - keyboard left/right arrows scroll the rail
+  - no click interaction on images
+- Mobile:
+  - touch swipe scroll works naturally
+  - tapping an image opens fullscreen
+  - fullscreen keeps arrows + close button + image counter
 
-### Layout Structure (Desktop)
-```text
-┌──────────────────────────────────────────────────────────┐
-│ Navbar                                                    │
-├──────────────────────────────────────────────────────────┤
-│ Breadcrumb                                                │
-├──────────────────────────────────────────────────────────┤
-│ Clinic Name + Verified Badge + Location + Rating (inline) │
-├──────────────────────────────────────────────────────────┤
-│ [Tab Nav: Overview | Treatments | Doctors | Contact ]     │
-├────────────────────────────────┬─────────────────────────┤
-│                                │                         │
-│  Hero Image Gallery            │  Sticky Sidebar         │
-│  (main + thumbnails grid)      │  ┌───────────────────┐  │
-│                                │  │ "Get a Free Quote"│  │
-│  ─────────────────────────     │  │ Consultant avatar  │  │
-│  About the Clinic              │  │ Trust bullets      │  │
-│  (expandable description)      │  │ Contact Form       │  │
-│                                │  │ Accreditation icons│  │
-│  ─────────────────────────     │  └───────────────────┘  │
-│  Quick Stats (glass cards)     │                         │
-│  Experience | Patients | Specs │                         │
-│                                │                         │
-│  ─────────────────────────     │                         │
-│  Treatment Prices              │                         │
-│  (clean table with hover)      │                         │
-│                                │                         │
-│  ─────────────────────────     │                         │
-│  Our Doctors                   │                         │
-│  (horizontal cards)            │                         │
-│                                │                         │
-├────────────────────────────────┴─────────────────────────┤
-│ Footer                                                    │
-└──────────────────────────────────────────────────────────┘
-```
+5. Improve scroll behavior
+- Keep smooth horizontal scrolling.
+- Use snap behavior only if it helps polish without making the rail feel rigid; otherwise relax it so scrolling feels more natural.
+- Ensure the container is focusable for keyboard navigation.
 
-### Key Design Changes
+6. Clean up mobile fullscreen trigger logic
+- Desktop clicks will do nothing.
+- Mobile taps will open the fullscreen viewer from the tapped image.
+- Fullscreen viewer will remain consistent and independent from the gallery rail layout.
 
-1. **Header area**: Clinic name, verified badge, location, and star rating all in one compact hero strip at the top — no card wrapping. Inline layout, not stacked.
+Files to update
+- `src/pages/ClinicDetail.tsx`
+  - replace the current “single-image slider” markup with a true horizontal image rail
+  - update the card sizing classes
+  - keep drag-scroll and keyboard behavior, adapted for a multi-image row
+  - keep mobile fullscreen opening only on small screens
+- `src/index.css` only if needed
+  - optional small helper styles for scroll behavior/cursor polish
+  - no broad redesign changes
 
-2. **Sticky tab navigation**: A horizontal tab bar that sticks below the navbar on scroll. Sections: Overview, Treatments, Doctors, Contact. Clicking scrolls to the section smoothly. Active tab highlights based on scroll position.
+Expected final result
+- Multiple photos visible in one horizontally scrollable row
+- All photos same size
+- Clean modern “gallery rail” feel
+- No lightbox on desktop
+- Mobile tap-to-fullscreen still works
+- No layout jumping, no mixed image sizes, no accidental one-photo carousel behavior
 
-3. **Image gallery upgrade**: Replace single carousel with a mosaic/grid layout — 1 large image + 2-3 smaller thumbnails visible at once. Clicking opens a fullscreen lightbox carousel. More visual, less "slideshow."
-
-4. **Sidebar redesign**: "Get a Free Quote" heading instead of "Contact Clinic." Add trust signals: "Free online consultation", "Priority for appointments", "Response within 24h" with checkmark icons. Keep the contact form below. Add verified/accreditation badges at the bottom of the sidebar.
-
-5. **Stats as glass-morphism cards**: Replace plain muted boxes with subtle glassmorphism cards in a 3-column row (Experience, Happy Patients, Specialties count). Compact, visual.
-
-6. **Treatment table redesign**: Clean alternating-row table with hover effect. Each row: treatment name, duration, and price aligned right. "Get Quote" mini-button per treatment row.
-
-7. **Doctors section**: Horizontal scroll cards with avatar placeholder, name, specialty, years — more compact, less vertical space.
-
-8. **Remove**: Heart/favorite button (non-functional), separate Contact Information card (phone/email exposed publicly is unusual for medical tourism — keep it behind the form).
-
-9. **Add**: Specialty badges moved into the header area (compact). "Why Choose This Clinic" trust section with icon bullets.
-
-### Files to Modify
-
-| File | Change |
-|------|--------|
-| `src/pages/ClinicDetail.tsx` | Full rewrite of the JSX layout and section structure |
-| `src/index.css` | Add any new utility classes (glassmorphism, scroll-spy helpers) |
-
-No new components needed — everything stays in ClinicDetail.tsx using existing UI primitives (Badge, Button, Card, Carousel, Dialog). The contact form component stays as-is.
-
-### Mobile Behavior
-Mobile layout stays similar to current (stacked sections, bottom CTA bar). The tab nav becomes horizontally scrollable. The image gallery becomes a single carousel. The redesign focuses on the desktop (lg+) breakpoint.
-
+Acceptance criteria
+- Desktop shows several images across the rail, not one full-width image
+- Dragging with the mouse scrolls horizontally
+- Arrow keys move the gallery when focused/hovered
+- Mobile swipe scrolls the rail
+- Mobile tap opens fullscreen viewer with arrows and close button
+- All gallery cards stay visually consistent in size and ratio
