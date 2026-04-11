@@ -331,17 +331,17 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Horizontal Image Gallery (single-image slider) ── */}
+              {/* ── Horizontal Image Rail ── */}
               <div
                 ref={galleryRef}
                 tabIndex={0}
-                className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
+                className="flex gap-3 overflow-x-auto scroll-smooth snap-x cursor-grab scrollbar-hide rounded-2xl focus:outline-none pb-1"
                 style={{ WebkitOverflowScrolling: "touch" }}
               >
                 {clinic.images.map((src: string, idx: number) => (
                   <div
                     key={idx}
-                    className="shrink-0 snap-center w-full"
+                    className="shrink-0 snap-start w-[75%] sm:w-[55%] lg:w-[48%]"
                     onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
                   >
                     <div className="aspect-video overflow-hidden rounded-xl bg-muted/30">
