@@ -159,6 +159,11 @@ const ClinicDetail = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const scrollTo = useCallback((sectionId: string) => {
+    const el = sectionRefs.current[sectionId];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   /* ── gallery drag-scroll ── */
   useEffect(() => {
     const el = galleryRef.current;
