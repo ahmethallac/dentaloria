@@ -13,6 +13,7 @@ import { Loader2, Upload, X, Plus, Camera } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { supabase } from '@/integrations/supabase/client'
 import { optimizeClinicImages, optimizeDoctorImages } from '@/lib/imageUtils'
+import ImageCropDialog from '@/components/ui/ImageCropDialog'
 
 interface Country {
   id: string
@@ -78,7 +79,8 @@ const AddClinic = () => {
   const [selectedTreatments, setSelectedTreatments] = useState<SelectedTreatment[]>([])
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [clinicImages, setClinicImages] = useState<File[]>([])
-
+  const [cropQueue, setCropQueue] = useState<File[]>([])
+  const [currentCropFile, setCurrentCropFile] = useState<File | null>(null)
   // Doctor form state
   const [doctorForm, setDoctorForm] = useState<Doctor>({
     title: '',
