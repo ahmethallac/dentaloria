@@ -200,8 +200,43 @@ const ClinicDetail = () => {
     );
   }
 
-  const mainImage = clinic.images[0];
-  const thumbImages = clinic.images.slice(1, 4);
+  /* ── gallery drag-scroll ── */
+  useEffect(() => {
+    const el = galleryRef.current;
+    if (!el) return;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    const onDown = (e: MouseEvent) => {
+      isDown = true;
+      el.classList.add("cursor-grabbing");
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+    };
+    const onUp = () => { isDown = false; el.classList.remove("cursor-grabbing"); };
+    const onMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (!el.matches(":hover") && document.activeElement !== el) return;
+      if (e.key === "ArrowRight") el.scrollBy({ left: 320, behavior: "smooth" });
+      if (e.key === "ArrowLeft") el.scrollBy({ left: -320, behavior: "smooth" });
+    };
+
+    el.addEventListener("mousedown", onDown);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      el.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [clinic]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -299,67 +334,28 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Image Gallery ── */}
-              <div className="overflow-hidden rounded-2xl bg-muted/20">
-                {thumbImages.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-1.5 md:aspect-video lg:grid-cols-[minmax(0,1.85fr)_minmax(220px,0.9fr)] lg:h-[400px] lg:aspect-auto xl:h-[430px]">
-                    <div
-                      className="relative min-h-[260px] cursor-pointer overflow-hidden group lg:min-h-0"
-                      onClick={() => setLightboxOpen(true)}
-                    >
-                      <img
-                        src={mainImage}
-                        alt={`${clinic.name} main`}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      {clinic.images.length > 4 && (
-                        <div className="absolute bottom-3 right-3 lg:hidden">
-                          <span className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm">
-                            +{clinic.images.length - 4} photos
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div
-                      className="hidden lg:grid gap-1.5"
-                      style={{ gridTemplateRows: `repeat(${thumbImages.length}, minmax(0, 1fr))` }}
-                    >
-                      {thumbImages.map((src: string, idx: number) => (
-                        <div
-                          key={idx}
-                          className="relative overflow-hidden cursor-pointer group"
-                          onClick={() => setLightboxOpen(true)}
-                        >
-                          <img
-                            src={src}
-                            alt={`${clinic.name} ${idx + 2}`}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                          />
-                          {idx === thumbImages.length - 1 && clinic.images.length > 4 && (
-                            <div className="absolute inset-0 flex items-end justify-end bg-gradient-to-t from-black/55 via-black/10 to-transparent p-3">
-                              <span className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm">
-                                +{clinic.images.length - 4} photos
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
+              {/* ── Horizontal Image Gallery ── */}
+              <div
+                ref={galleryRef}
+                tabIndex={0}
+                className="flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                {clinic.images.map((src: string, idx: number) => (
                   <div
-                    className="relative min-h-[260px] cursor-pointer overflow-hidden group aspect-video lg:h-[400px] lg:aspect-auto xl:h-[430px]"
-                    onClick={() => setLightboxOpen(true)}
+                    key={idx}
+                    className="shrink-0 snap-start w-[85%] sm:w-[60%] lg:w-[48%] xl:w-[45%]"
                   >
-                    <img
-                      src={mainImage}
-                      alt={`${clinic.name} main`}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                    />
+                    <div className="aspect-video overflow-hidden rounded-xl bg-muted/30">
+                      <img
+                        src={src}
+                        alt={`${clinic.name} ${idx + 1}`}
+                        draggable={false}
+                        className="h-full w-full object-cover select-none pointer-events-none"
+                      />
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
 
               {/* ── About ── */}
@@ -600,30 +596,6 @@ const ClinicDetail = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Lightbox */}
-      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-5xl border-0 bg-black/95 p-2 sm:p-3">
-          <Carousel opts={{ loop: true }} className="w-full">
-            <CarouselContent>
-              {clinic.images.map((src: string, idx: number) => (
-                <CarouselItem key={idx}>
-                  <div className="flex items-center justify-center">
-                    <div className="w-full aspect-video max-h-[78vh] overflow-hidden rounded-lg bg-black">
-                      <img
-                        src={src}
-                        alt={`${clinic.name} ${idx + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2 border-0 bg-white/10 text-white hover:bg-white/20" />
-            <CarouselNext className="right-2 border-0 bg-white/10 text-white hover:bg-white/20" />
-          </Carousel>
-        </DialogContent>
-      </Dialog>
 
       {/* Bottom padding for mobile CTA */}
       <div className="h-20 lg:hidden" />
