@@ -110,6 +110,7 @@ const ClinicDetail = () => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
   const initialTreatment = searchParams.get("treatment") || "";
@@ -161,13 +162,26 @@ const ClinicDetail = () => {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
+  const scrollGalleryToIndex = useCallback((index: number) => {
+    const el = galleryRef.current;
+    const imageCount = clinic?.images?.length ?? 0;
+    if (!el || imageCount === 0) return;
+
+    const clampedIndex = Math.max(0, Math.min(index, imageCount - 1));
+    el.scrollTo({ left: clampedIndex * el.clientWidth, behavior: "smooth" });
+    setCurrentImageIndex(clampedIndex);
+  }, [clinic?.images?.length]);
+
   /* ── gallery drag-scroll ── */
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
+
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
+
+    const getNearestIndex = () => Math.round(el.scrollLeft / Math.max(el.clientWidth, 1));
 
     const onDown = (e: MouseEvent) => {
       isDown = true;
@@ -175,29 +189,59 @@ const ClinicDetail = () => {
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
     };
-    const onUp = () => { isDown = false; el.classList.remove("cursor-grabbing"); };
+
+    const onUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      el.classList.remove("cursor-grabbing");
+      scrollGalleryToIndex(getNearestIndex());
+    };
+
     const onMove = (e: MouseEvent) => {
       if (!isDown) return;
       e.preventDefault();
       el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
     };
+
     const onKey = (e: KeyboardEvent) => {
       if (!el.matches(":hover") && document.activeElement !== el) return;
-      if (e.key === "ArrowRight") el.scrollBy({ left: 320, behavior: "smooth" });
-      if (e.key === "ArrowLeft") el.scrollBy({ left: -320, behavior: "smooth" });
+      const currentIndex = getNearestIndex();
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        scrollGalleryToIndex(currentIndex + 1);
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        scrollGalleryToIndex(currentIndex - 1);
+      }
+    };
+
+    const onScroll = () => {
+      setCurrentImageIndex((prev) => {
+        const next = getNearestIndex();
+        return prev === next ? prev : next;
+      });
     };
 
     el.addEventListener("mousedown", onDown);
+    el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("mouseup", onUp);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("keydown", onKey);
+
     return () => {
       el.removeEventListener("mousedown", onDown);
+      el.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseup", onUp);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("keydown", onKey);
     };
-  }, [clinic]);
+  }, [scrollGalleryToIndex]);
+
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    requestAnimationFrame(() => scrollGalleryToIndex(0));
+  }, [clinic?.id, scrollGalleryToIndex]);
 
   useHeadMeta({
     title: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
@@ -331,29 +375,54 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Horizontal Image Rail ── */}
-              <div
-                ref={galleryRef}
-                tabIndex={0}
-                className="flex gap-3 overflow-x-auto scroll-smooth snap-x cursor-grab scrollbar-hide rounded-2xl focus:outline-none pb-1"
-                style={{ WebkitOverflowScrolling: "touch" }}
-              >
-                {clinic.images.map((src: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="shrink-0 snap-start w-[75%] sm:w-[55%] lg:w-[48%]"
-                    onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
-                  >
-                    <div className="aspect-video overflow-hidden rounded-xl bg-muted/30">
-                      <img
-                        src={src}
-                        alt={`${clinic.name} ${idx + 1}`}
-                        draggable={false}
-                        className="h-full w-full object-cover select-none pointer-events-none"
-                      />
+              {/* ── Image Slider ── */}
+              <div className="relative overflow-hidden rounded-2xl">
+                <div
+                  ref={galleryRef}
+                  tabIndex={0}
+                  className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
+                  {clinic.images.map((src: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="w-full shrink-0 snap-start"
+                      onClick={() => { if (isMobile) setFullscreenIdx(idx); }}
+                    >
+                      <div className="aspect-video overflow-hidden rounded-2xl bg-muted/30">
+                        <img
+                          src={src}
+                          alt={`${clinic.name} ${idx + 1}`}
+                          draggable={false}
+                          className="h-full w-full object-cover select-none pointer-events-none"
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                {clinic.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryToIndex(currentImageIndex - 1)}
+                      disabled={currentImageIndex === 0}
+                      aria-label="Previous image"
+                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryToIndex(currentImageIndex + 1)}
+                      disabled={currentImageIndex === clinic.images.length - 1}
+                      aria-label="Next image"
+                      className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* ── About ── */}
