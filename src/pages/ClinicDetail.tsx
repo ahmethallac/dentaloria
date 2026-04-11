@@ -159,47 +159,6 @@ const ClinicDetail = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollTo = useCallback((sectionId: string) => {
-    const el = sectionRefs.current[sectionId];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
-  useHeadMeta({
-    title: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
-    description: clinic
-      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
-      : "View detailed information about dental clinics.",
-    ogTitle: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
-    ogDescription: clinic
-      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
-      : "View detailed information about dental clinics.",
-  });
-
-  /* loading / not‑found states */
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-muted-foreground text-sm">Loading clinic...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!clinic) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Clinic not found</h1>
-          <Link to="/">
-            <Button>Back to Home</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   /* ── gallery drag-scroll ── */
   useEffect(() => {
     const el = galleryRef.current;
@@ -237,6 +196,42 @@ const ClinicDetail = () => {
       window.removeEventListener("keydown", onKey);
     };
   }, [clinic]);
+
+  useHeadMeta({
+    title: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+    description: clinic
+      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
+      : "View detailed information about dental clinics.",
+    ogTitle: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+    ogDescription: clinic
+      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
+      : "View detailed information about dental clinics.",
+  });
+
+  /* loading / not‑found states */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-muted-foreground text-sm">Loading clinic...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!clinic) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Clinic not found</h1>
+          <Link to="/">
+            <Button>Back to Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
