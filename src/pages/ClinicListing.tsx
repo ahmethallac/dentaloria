@@ -224,76 +224,27 @@ export default function ClinicListing() {
     loadData();
   }, []);
 
-  // Map URL query params (names) to IDs once data is loaded
+  // Sync URL params (always UUIDs now) to state
   useEffect(() => {
-    if (!countries.length && !treatments.length) return;
-
     const countryParam = searchParams.get('country');
     const treatmentParam = searchParams.get('treatment');
+    const cityParam = searchParams.get('city');
 
-    if (countryParam && countryParam !== 'all' && !isUUID(countryParam)) {
-      const match = countries.find(
-        (c) =>
-          c.name?.toLowerCase() === countryParam.toLowerCase() ||
-          c.code?.toLowerCase() === countryParam.toLowerCase()
-      );
-      setSelectedCountry(match?.id || 'all');
-    } else if (countryParam && isUUID(countryParam)) {
+    if (countryParam && countryParam !== 'all') {
       setSelectedCountry(countryParam);
     }
-
-    if (treatmentParam && treatmentParam !== 'all' && !isUUID(treatmentParam)) {
-      // Enhanced matching logic for treatment names
-      const normalizedParam = treatmentParam.toLowerCase().trim();
-      
-      const match = treatments.find((t) => {
-        const normalizedName = t.name?.toLowerCase().trim();
-        
-        // Exact match first
-        if (normalizedName === normalizedParam) return true;
-        
-        // Handle common variations and mappings
-        const treatmentMappings: Record<string, string[]> = {
-          "all-on-6": ["all-on-6 dental implants"],
-          "all-on-4": ["all-on-4 dental implants"],
-          "hollywood smile": ["porcelain veneers"],
-          "implants": ["single tooth implant", "multiple tooth implants"],
-          "crowns": ["dental crown"],
-          "root canal": ["root canal treatment"],
-          "veneers": ["porcelain veneers"],
-          "whitening": ["teeth whitening"]
-        };
-        
-        // Check if the parameter matches any mapping
-        for (const [key, values] of Object.entries(treatmentMappings)) {
-          if (normalizedParam === key && values.includes(normalizedName)) {
-            return true;
-          }
-        }
-        
-        // Partial matching as fallback
-        return normalizedName?.includes(normalizedParam) || normalizedParam.includes(normalizedName);
-      });
-      
-      if (match) {
-        setSelectedTreatment(match.id);
-      } else {
-        console.warn(`No treatment found for: ${treatmentParam}`);
-        setSelectedTreatment('all');
-      }
-    } else if (treatmentParam && isUUID(treatmentParam)) {
+    if (treatmentParam && treatmentParam !== 'all') {
       setSelectedTreatment(treatmentParam);
     }
-  }, [countries, treatments, searchParams]);
+    if (cityParam && cityParam !== 'all') {
+      setSelectedCity(cityParam);
+    }
+  }, [searchParams]);
 
   // Load cities when country changes
   useEffect(() => {
     const loadCities = async () => {
-      if (selectedCountry && selectedCountry !== "all") {
-        // Wait until the country value is a proper UUID (URL may contain a name initially)
-        if (!isUUID(selectedCountry)) {
-          return;
-        }
+      if (selectedCountry && selectedCountry !== "all" && isUUID(selectedCountry)) {
         try {
           const citiesData = await getCities(selectedCountry);
           setCities(citiesData);
@@ -307,18 +258,6 @@ export default function ClinicListing() {
 
     loadCities();
   }, [selectedCountry]);
-
-  // Map city param (name) to ID once cities are loaded
-  useEffect(() => {
-    const cityParam = searchParams.get('city');
-    if (!cityParam || cityParam === 'all') return;
-    if (isUUID(cityParam)) {
-      setSelectedCity(cityParam);
-      return;
-    }
-    const match = cities.find((c) => c.name?.toLowerCase() === cityParam.toLowerCase());
-    setSelectedCity(match?.id || 'all');
-  }, [cities, searchParams]);
 
   const clearFilters = () => {
     setSelectedTreatment("all");
