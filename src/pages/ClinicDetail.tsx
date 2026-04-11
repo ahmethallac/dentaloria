@@ -300,40 +300,57 @@ const ClinicDetail = () => {
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
               {/* ── Image Gallery ── */}
-              <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-2 rounded-2xl overflow-hidden">
-                {/* Main image */}
-                <div
-                  className="relative aspect-[16/10] cursor-pointer group"
-                  onClick={() => setLightboxOpen(true)}
-                >
-                  <img
-                    src={mainImage}
-                    alt={`${clinic.name} main`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {clinic.images.length > 4 && (
-                    <button className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-sm">
-                      +{clinic.images.length - 4} photos
-                    </button>
-                  )}
-                </div>
-                {/* Thumbnails (desktop only) */}
-                {thumbImages.length > 0 && (
-                  <div className="hidden lg:grid grid-rows-3 gap-2">
-                    {thumbImages.map((src: string, idx: number) => (
-                      <div
-                        key={idx}
-                        className="relative overflow-hidden cursor-pointer group"
+              <div className="rounded-2xl overflow-hidden">
+                {/* Single image or mosaic */}
+                {thumbImages.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-1.5 aspect-video">
+                    {/* Main image */}
+                    <div
+                      className="relative cursor-pointer group overflow-hidden"
+                      onClick={() => setLightboxOpen(true)}
+                    >
+                      <img
+                        src={mainImage}
+                        alt={`${clinic.name} main`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    {/* Side thumbnails (desktop) */}
+                    <div className="hidden lg:grid gap-1.5" style={{ gridTemplateRows: `repeat(${thumbImages.length}, 1fr)` }}>
+                      {thumbImages.map((src: string, idx: number) => (
+                        <div
+                          key={idx}
+                          className="relative overflow-hidden cursor-pointer group"
+                          onClick={() => setLightboxOpen(true)}
+                        >
+                          <img
+                            src={src}
+                            alt={`${clinic.name} ${idx + 2}`}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {clinic.images.length > 4 && (
+                      <button
+                        className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-sm z-10"
                         onClick={() => setLightboxOpen(true)}
                       >
-                        <img
-                          src={src}
-                          alt={`${clinic.name} ${idx + 2}`}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                        />
-                      </div>
-                    ))}
+                        +{clinic.images.length - 4} photos
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className="relative aspect-video cursor-pointer group"
+                    onClick={() => setLightboxOpen(true)}
+                  >
+                    <img
+                      src={mainImage}
+                      alt={`${clinic.name} main`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    />
                   </div>
                 )}
               </div>
