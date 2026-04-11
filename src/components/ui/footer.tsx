@@ -82,7 +82,7 @@ export const Footer = () => {
             <ul className="space-y-3">
               {popularTreatments.map((t) => (
                 <li key={t.id}>
-                  <a href={`/clinic-listing?treatment=${encodeURIComponent(t.name)}`} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  <a href={`/clinic-listing?treatment=${encodeURIComponent(t.id)}`} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
                     {t.name}
                   </a>
                 </li>
