@@ -169,7 +169,7 @@ const AddClinic = () => {
     )
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length + clinicImages.length > 10) {
       toast({
@@ -179,23 +179,29 @@ const AddClinic = () => {
       })
       return
     }
-    
-    // Optimize images before adding to state
-    try {
-      const optimizedFiles = await optimizeClinicImages(files)
-      setClinicImages(prev => [...prev, ...optimizedFiles])
-      toast({
-        title: "Success",
-        description: `${files.length} image(s) optimized and added`
-      })
-    } catch (error) {
-      console.error('Error optimizing images:', error)
-      toast({
-        title: "Warning",
-        description: "Images added but optimization failed",
-        variant: "destructive"
-      })
-      setClinicImages(prev => [...prev, ...files])
+    // Queue files for cropping one by one
+    setCropQueue(files.slice(1))
+    setCurrentCropFile(files[0] || null)
+    e.target.value = ''
+  }
+
+  const handleCropConfirm = (croppedFile: File) => {
+    setClinicImages(prev => [...prev, croppedFile])
+    // Process next in queue
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0])
+      setCropQueue(prev => prev.slice(1))
+    } else {
+      setCurrentCropFile(null)
+    }
+  }
+
+  const handleCropCancel = () => {
+    if (cropQueue.length > 0) {
+      setCurrentCropFile(cropQueue[0])
+      setCropQueue(prev => prev.slice(1))
+    } else {
+      setCurrentCropFile(null)
     }
   }
 
