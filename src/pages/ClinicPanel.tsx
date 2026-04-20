@@ -12,16 +12,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
-import ClinicImagesManager from "@/components/clinic-panel/ClinicImagesManager";
-import ClinicTreatmentsManager from "@/components/clinic-panel/ClinicTreatmentsManager";
-import ClinicDoctorsManager from "@/components/clinic-panel/ClinicDoctorsManager";
 import {
-  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard,
-  Stethoscope, ImageIcon, ListChecks, Loader2,
+  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 
-type PanelSection = 'overview' | 'patients' | 'info' | 'doctors' | 'treatments' | 'images' | 'settings';
+type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
 
 const ClinicPanel = () => {
   const { id } = useParams();
@@ -41,7 +37,6 @@ const ClinicPanel = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalLeads: 0, purchasedLeads: 0, pendingLeads: 0 });
 
-  // Admin settings state
   const [billingType, setBillingType] = useState<string>('paid');
   const [isPublished, setIsPublished] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -58,6 +53,7 @@ const ClinicPanel = () => {
     } else if (payment === 'cancelled') {
       toast({ title: "Payment Cancelled", description: "No leads were unlocked.", variant: "destructive" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadClinic = async () => {
@@ -96,19 +92,18 @@ const ClinicPanel = () => {
   useEffect(() => {
     if (!id) { navigate("/dashboard"); return; }
     loadClinic();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSaveAdminSettings = async () => {
     if (!id || !clinic) return;
     setSavingAdmin(true);
     try {
-      const { error: clinicError } = await supabase
-        .from('clinics')
+      const { error: clinicError } = await supabase.from('clinics')
         .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus })
         .eq('id', id);
       if (clinicError) throw clinicError;
-      const { error: billingError } = await supabase
-        .from('clinic_billing_settings')
+      const { error: billingError } = await supabase.from('clinic_billing_settings')
         .update({ billing_type: billingType, updated_by: null, updated_at: new Date().toISOString() })
         .eq('clinic_id', id);
       if (billingError) throw billingError;
@@ -129,17 +124,12 @@ const ClinicPanel = () => {
     );
   }
 
-  if (!clinic) {
-    return <div className="min-h-screen flex items-center justify-center">Clinic not found.</div>;
-  }
+  if (!clinic) return <div className="min-h-screen flex items-center justify-center">Clinic not found.</div>;
 
   const sectionLabels: Record<PanelSection, string> = {
     overview: 'Overview',
     patients: 'Patients',
     info: 'Clinic Information',
-    doctors: 'Doctors',
-    treatments: 'Treatments',
-    images: 'Gallery',
     settings: 'Admin Settings',
   };
 
@@ -150,9 +140,6 @@ const ClinicPanel = () => {
         { id: 'overview', label: 'Overview', icon: LayoutDashboard, onClick: () => setSection('overview'), active: section === 'overview' },
         { id: 'patients', label: 'Patients', icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalLeads },
         { id: 'info', label: 'Clinic Information', icon: Building2, onClick: () => setSection('info'), active: section === 'info' },
-        { id: 'doctors', label: 'Doctors', icon: Stethoscope, onClick: () => setSection('doctors'), active: section === 'doctors' },
-        { id: 'treatments', label: 'Treatments', icon: ListChecks, onClick: () => setSection('treatments'), active: section === 'treatments' },
-        { id: 'images', label: 'Gallery', icon: ImageIcon, onClick: () => setSection('images'), active: section === 'images' },
       ],
     },
     {
@@ -164,7 +151,7 @@ const ClinicPanel = () => {
   ];
 
   const breadcrumbs = isAdminUser
-    ? [{ label: 'Admin', to: '/admin' }, { label: 'Clinics', to: '/admin?section=clinics' }, { label: clinic.name }, { label: sectionLabels[section] }]
+    ? [{ label: 'Admin', to: '/admin' }, { label: clinic.name }, { label: sectionLabels[section] }]
     : [{ label: 'Dashboard', to: '/dashboard' }, { label: clinic.name }, { label: sectionLabels[section] }];
 
   return (
@@ -197,8 +184,12 @@ const ClinicPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Welcome to your clinic panel</CardTitle>
-              <CardDescription>Use the sidebar to manage patients, clinic info, doctors, treatments and gallery.</CardDescription>
+              <CardDescription>Use the sidebar to manage patients and clinic information.</CardDescription>
             </CardHeader>
+            <CardContent className="flex gap-2 flex-wrap">
+              <Button onClick={() => setSection('patients')}><Users className="w-4 h-4 mr-1" /> View patients</Button>
+              <Button variant="outline" onClick={() => setSection('info')}><Building2 className="w-4 h-4 mr-1" /> Edit clinic info</Button>
+            </CardContent>
           </Card>
         </div>
       )}
@@ -211,25 +202,13 @@ const ClinicPanel = () => {
         <Card><CardContent className="pt-6"><ClinicInfoTab clinic={clinic} onUpdated={() => loadClinic()} /></CardContent></Card>
       )}
 
-      {section === 'doctors' && (
-        <Card><CardContent className="pt-6"><ClinicDoctorsManager clinicId={clinic.id} /></CardContent></Card>
-      )}
-
-      {section === 'treatments' && (
-        <Card><CardContent className="pt-6"><ClinicTreatmentsManager clinicId={clinic.id} /></CardContent></Card>
-      )}
-
-      {section === 'images' && (
-        <Card><CardContent className="pt-6"><ClinicImagesManager clinicId={clinic.id} /></CardContent></Card>
-      )}
-
       {section === 'settings' && isAdminUser && (
         <Card className="border-primary/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
               <Shield className="w-5 h-5" /> Admin Settings
             </CardTitle>
-            <CardDescription>Platform-level controls for this clinic. Visible to Super Admins and Sub-Admins only.</CardDescription>
+            <CardDescription>Platform-level controls. Visible to Super Admins and Sub-Admins only.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
