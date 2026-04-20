@@ -21,7 +21,8 @@ interface ManagedUser {
   roles: AppRole[]
 }
 
-const ROLE_OPTIONS: AppRole[] = ['admin', 'sub_admin', 'clinic_admin', 'patient']
+const ROLE_OPTIONS: AppRole[] = ['admin', 'clinic_admin']
+const VISIBLE_ROLES: AppRole[] = ['admin', 'clinic_admin']
 
 export default function UsersManager() {
   const { toast } = useToast()
