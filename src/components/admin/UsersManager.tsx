@@ -34,7 +34,7 @@ export default function UsersManager() {
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
   // Create form
-  const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'patient' as AppRole })
+  const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'clinic_admin' as AppRole })
 
   const load = async () => {
     setLoading(true)
