@@ -131,17 +131,15 @@ export default function UsersManager() {
             <Shield className="w-4 h-4" /> Role Reference
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+        <CardContent className="grid sm:grid-cols-2 gap-3 text-sm">
           <div><Badge variant="destructive">Super Admin</Badge><p className="mt-1 text-muted-foreground">Full platform access. Can manage all clinics, users and settings.</p></div>
-          <div><Badge variant="default">Sub-Admin</Badge><p className="mt-1 text-muted-foreground">Operational admin. Manages clinics & approvals; cannot manage other admins.</p></div>
           <div><Badge variant="secondary">Clinic Admin</Badge><p className="mt-1 text-muted-foreground">Owns one clinic. Manages their own clinic info, doctors and leads.</p></div>
-          <div><Badge variant="outline">Patient</Badge><p className="mt-1 text-muted-foreground">Standard end-user account.</p></div>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="all">
         <TabsList>
-          <TabsTrigger value="all">All Users ({users.length})</TabsTrigger>
+          <TabsTrigger value="all">Staff Accounts ({filtered.length})</TabsTrigger>
           <TabsTrigger value="create">Create User</TabsTrigger>
         </TabsList>
 
