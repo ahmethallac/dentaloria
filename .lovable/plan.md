@@ -1,87 +1,58 @@
 
 
-# Fix Gallery Interactions + Image Crop System
+# Add Forgot Password + Reset Password Flow
 
-## Issues to Fix
+## Goal
+Add a working "Forgot password" link on `/auth` and a `/reset-password` page so any user (including the super admin) can recover their account from the site itself.
 
-### 1. Desktop drag scroll not working
-The current `mousedown`/`mousemove` handler sets `el.scrollLeft` directly, but the container has `scroll-smooth` which fights the drag. Also, `pointer-events-none` on images blocks mouse events from bubbling properly.
+## Files to change
 
-### 2. Mobile swipe not working in gallery
-The `snap-mandatory` combined with `scroll-smooth` and the drag handler interfere with native touch scrolling. Touch events need to work naturally without the mouse-drag handler intercepting them.
+### 1. `src/pages/Auth.tsx` (edit)
+- Under the Sign In form's password field, add a small right-aligned **"Forgot password?"** link.
+- Clicking it opens a lightweight inline view (or toggles the tab content) with:
+  - Email input
+  - "Send reset link" button
+- On submit, call:
+  ```ts
+  supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`
+  })
+  ```
+- Show a toast: "If that email exists, a reset link has been sent."
+- Provide a "Back to sign in" link to return to the login form.
 
-### 3. Mobile tap → fullscreen behavior
-Currently tapping directly opens fullscreen. Instead: first tap shows a semi-transparent "Full Screen" button overlay on the image; tapping that button opens fullscreen.
+### 2. `src/pages/ResetPassword.tsx` (new)
+- Public route — no auth guard.
+- On mount, Supabase auto-consumes the recovery token from the URL hash and creates a temporary recovery session. Listen via `supabase.auth.onAuthStateChange` for the `PASSWORD_RECOVERY` event to confirm the user landed via a valid link.
+- Render a form with:
+  - New password
+  - Confirm new password
+  - Min 6 chars, must match (mirror existing signup validation)
+- On submit, call `supabase.auth.updateUser({ password })`.
+- On success: toast + sign the user out + redirect to `/auth` so they log in fresh with the new password.
+- If the page is opened without a recovery session (e.g., direct visit), show a clear message: "This link is invalid or expired. Request a new reset email." with a button back to `/auth`.
 
-### 4. Mobile fullscreen swipe navigation
-The fullscreen viewer currently only has arrow buttons. Need to add touch-swipe support to navigate between images.
+### 3. `src/App.tsx` (edit)
+- Register the new route **above** the catch-all:
+  ```tsx
+  <Route path="/reset-password" element={<ResetPassword />} />
+  ```
 
-### 5. Fullscreen images inconsistent sizes
-Currently using `max-h-full max-w-full object-contain` which makes each image a different size. Fix: use a fixed container with `aspect-video` and `object-cover` (or `object-contain` inside a fixed-dimension wrapper).
+## Behavior summary
+- User clicks "Forgot password?" on `/auth` → enters email → receives Supabase recovery email.
+- Email link points to `https://<site>/reset-password#access_token=...&type=recovery`.
+- Reset page detects the recovery session, lets them set a new password, signs them out, and sends them back to `/auth`.
 
-### 6. Image crop tool during clinic registration
-Add a Facebook-style crop dialog in AddClinic.tsx and ClinicImagesManager.tsx. When images are selected, each opens in a crop modal with a fixed 16:9 frame. The user drags the image to choose the visible area, then confirms. This ensures all uploaded images have identical dimensions.
+## Acceptance criteria
+- "Forgot password?" link is visible on the Sign In tab.
+- Submitting an email shows a confirmation toast and triggers Supabase to send the recovery email.
+- Visiting the email link opens `/reset-password` with the new-password form.
+- Submitting a valid new password updates it, signs the user out, and redirects to `/auth`.
+- Visiting `/reset-password` directly (no token) shows the "invalid or expired" state.
+- Existing Sign In and Register Clinic flows are unchanged.
 
----
-
-## Plan
-
-### File: `src/pages/ClinicDetail.tsx`
-
-**Gallery drag fix (desktop)**
-- Remove `scroll-smooth` from the gallery container during drag (add it back on mouseup) so manual `scrollLeft` assignment works instantly.
-- Remove `pointer-events-none` from images; use `draggable={false}` and `user-select: none` instead.
-- Track drag distance; if minimal movement, treat as a tap (for mobile "Full Screen" button).
-
-**Mobile swipe in gallery**
-- Let native touch scrolling handle swipe (the `snap-mandatory` will snap to each image). Remove any touch interference from the drag handler. The drag handler should only handle mouse events.
-
-**Mobile tap → "Full Screen" button**
-- Add a `tappedImageIdx` state. On mobile tap (not drag), set it to show a semi-transparent overlay with a "Full Screen" button centered on that image.
-- Tapping the button calls `setFullscreenIdx(idx)`.
-- Tapping elsewhere or scrolling dismisses the overlay.
-
-**Fullscreen swipe navigation**
-- Add touch event handlers (`touchstart`, `touchmove`, `touchend`) on the fullscreen container. Track swipe direction and distance. On horizontal swipe > 50px threshold, navigate to next/prev image.
-
-**Fullscreen consistent image sizes**
-- Replace `max-h-full max-w-full object-contain p-4` with a fixed container: `w-full h-[80vh] flex items-center justify-center` containing an `aspect-video` div with `object-contain` or `object-cover`. All images render inside the same fixed box.
-
-### File: `src/components/ui/ImageCropDialog.tsx` (new)
-- A reusable crop dialog component.
-- Props: `file: File`, `aspectRatio: number` (default 16/9), `onCrop: (croppedFile: File) => void`, `onCancel: () => void`.
-- Uses an HTML canvas approach: load image, render it in a container with overflow hidden, let user drag to reposition, then crop to the fixed frame using canvas.
-- No external library needed — pure CSS/JS with mouse/touch drag on the image within a fixed viewport.
-- The crop frame is fixed (16:9); the image can be dragged and scaled within it.
-- On confirm, draw the visible portion onto a canvas, export as JPEG blob, return as File.
-
-### File: `src/pages/AddClinic.tsx`
-- Modify `handleImageUpload`: instead of immediately adding files to state, push them into a queue.
-- Process the queue one at a time: open `ImageCropDialog` for each file.
-- On crop confirm, add the cropped file to `clinicImages` state.
-- On cancel, skip that file.
-- Show cropped previews in the existing grid.
-
-### File: `src/components/clinic-panel/ClinicImagesManager.tsx`
-- Same crop flow: when files are selected via the file input, open `ImageCropDialog` for each before uploading.
-
-### File: `src/lib/imageUtils.ts`
-- Keep existing optimization functions but they become secondary — the crop dialog produces already-sized output. The `optimizeClinicImages` function can still compress after cropping.
-
----
-
-## Technical Details
-
-**Crop dialog internals:**
-- Load image into an `<img>` element inside a fixed-ratio container (`aspect-video`, max-width ~600px).
-- Image is positioned absolutely, larger than the container. User drags to pan.
-- Optional zoom slider (pinch-to-zoom on mobile).
-- "Confirm" button crops via canvas: draw the visible region, export to blob at 1200×675 (16:9), quality 0.85.
-- Result is a standardized File object with consistent dimensions.
-
-**Gallery drag mechanics fix:**
-- On `mousedown`: record start position, set a flag, temporarily remove `scroll-smooth` class.
-- On `mousemove`: update `scrollLeft` directly (no smooth interpolation).
-- On `mouseup`: re-add `scroll-smooth`, snap to nearest index.
-- Touch events: do nothing custom — let browser handle native scroll + snap.
+## Notes
+- No DB migrations needed.
+- No edge functions needed — Supabase sends the recovery email using its built-in (or already-configured) auth email templates for this project.
+- After this is in place, you can use it immediately to recover `info@dentalturkey.clinic` from the live site.
 
