@@ -67,7 +67,7 @@ export default function UsersManager() {
       if (error) throw error
       if (data?.error) throw new Error(data.error)
       toast({ title: 'User created', description: `${form.email} created as ${displayRoleName(form.role)}.` })
-      setForm({ email: '', full_name: '', password: '', role: 'patient' })
+      setForm({ email: '', full_name: '', password: '', role: 'clinic_admin' })
       load()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Failed to create user', variant: 'destructive' })
