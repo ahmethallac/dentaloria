@@ -10,6 +10,7 @@ import ClinicPanel from "./pages/ClinicPanel";
 import ClinicListing from "./pages/ClinicListing";
 import FeaturedClinic from "./pages/FeaturedClinic";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import AddClinic from "./pages/AddClinic";
 import Admin from "./pages/Admin";
@@ -28,6 +29,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/add-clinic" element={<AddClinic />} />
             <Route path="/admin" element={<Admin />} />
