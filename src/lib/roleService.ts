@@ -93,6 +93,26 @@ export const removeUserRole = async (userId: string, role: AppRole): Promise<voi
   if (error) throw error
 }
 
+// Display helpers
+export const displayRoleName = (role: AppRole | null | undefined): string => {
+  switch (role) {
+    case 'admin': return 'Super Admin'
+    case 'sub_admin': return 'Sub-Admin'
+    case 'clinic_admin': return 'Clinic Admin'
+    case 'patient': return 'Patient'
+    default: return 'Guest'
+  }
+}
+
+export const roleBadgeVariant = (role: AppRole | null | undefined): 'default' | 'secondary' | 'outline' | 'destructive' => {
+  switch (role) {
+    case 'admin': return 'destructive'
+    case 'sub_admin': return 'default'
+    case 'clinic_admin': return 'secondary'
+    default: return 'outline'
+  }
+}
+
 // Utility functions for common role checks
 export const isClinicAdmin = async (userId: string): Promise<boolean> => {
   return hasRole(userId, 'clinic_admin')
