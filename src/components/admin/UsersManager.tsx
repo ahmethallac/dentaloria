@@ -21,7 +21,8 @@ interface ManagedUser {
   roles: AppRole[]
 }
 
-const ROLE_OPTIONS: AppRole[] = ['admin', 'sub_admin', 'clinic_admin', 'patient']
+const ROLE_OPTIONS: AppRole[] = ['admin', 'clinic_admin']
+const VISIBLE_ROLES: AppRole[] = ['admin', 'clinic_admin']
 
 export default function UsersManager() {
   const { toast } = useToast()
@@ -33,7 +34,7 @@ export default function UsersManager() {
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
   // Create form
-  const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'patient' as AppRole })
+  const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'clinic_admin' as AppRole })
 
   const load = async () => {
     setLoading(true)
@@ -66,7 +67,7 @@ export default function UsersManager() {
       if (error) throw error
       if (data?.error) throw new Error(data.error)
       toast({ title: 'User created', description: `${form.email} created as ${displayRoleName(form.role)}.` })
-      setForm({ email: '', full_name: '', password: '', role: 'patient' })
+      setForm({ email: '', full_name: '', password: '', role: 'clinic_admin' })
       load()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Failed to create user', variant: 'destructive' })
@@ -110,11 +111,17 @@ export default function UsersManager() {
     }
   }
 
-  const filtered = users.filter(u => {
-    const q = search.toLowerCase().trim()
-    if (!q) return true
-    return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
-  })
+  const filtered = users
+    .filter(u => {
+      // Hide patients and sub-admins from the management UI
+      const primary = (u.roles[0] || 'patient') as AppRole
+      return primary === 'admin' || primary === 'clinic_admin'
+    })
+    .filter(u => {
+      const q = search.toLowerCase().trim()
+      if (!q) return true
+      return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
+    })
 
   return (
     <div className="space-y-6">
@@ -124,17 +131,15 @@ export default function UsersManager() {
             <Shield className="w-4 h-4" /> Role Reference
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+        <CardContent className="grid sm:grid-cols-2 gap-3 text-sm">
           <div><Badge variant="destructive">Super Admin</Badge><p className="mt-1 text-muted-foreground">Full platform access. Can manage all clinics, users and settings.</p></div>
-          <div><Badge variant="default">Sub-Admin</Badge><p className="mt-1 text-muted-foreground">Operational admin. Manages clinics & approvals; cannot manage other admins.</p></div>
           <div><Badge variant="secondary">Clinic Admin</Badge><p className="mt-1 text-muted-foreground">Owns one clinic. Manages their own clinic info, doctors and leads.</p></div>
-          <div><Badge variant="outline">Patient</Badge><p className="mt-1 text-muted-foreground">Standard end-user account.</p></div>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="all">
         <TabsList>
-          <TabsTrigger value="all">All Users ({users.length})</TabsTrigger>
+          <TabsTrigger value="all">Staff Accounts ({filtered.length})</TabsTrigger>
           <TabsTrigger value="create">Create User</TabsTrigger>
         </TabsList>
 
