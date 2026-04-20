@@ -31,11 +31,11 @@ const Admin = () => {
   const isMainAdmin = userRole === 'admin'
 
   useEffect(() => {
-    if (!authLoading && (!user || (userRole !== 'admin' && userRole !== 'sub_admin'))) {
+    if (!authLoading && (!user || userRole !== 'admin')) {
       navigate('/')
       return
     }
-    if (user && (userRole === 'admin' || userRole === 'sub_admin')) {
+    if (user && userRole === 'admin') {
       loadAllData()
     }
   }, [user, userRole, authLoading])
