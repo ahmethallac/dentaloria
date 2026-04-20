@@ -111,11 +111,17 @@ export default function UsersManager() {
     }
   }
 
-  const filtered = users.filter(u => {
-    const q = search.toLowerCase().trim()
-    if (!q) return true
-    return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
-  })
+  const filtered = users
+    .filter(u => {
+      // Hide patients and sub-admins from the management UI
+      const primary = (u.roles[0] || 'patient') as AppRole
+      return primary === 'admin' || primary === 'clinic_admin'
+    })
+    .filter(u => {
+      const q = search.toLowerCase().trim()
+      if (!q) return true
+      return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
+    })
 
   return (
     <div className="space-y-6">
