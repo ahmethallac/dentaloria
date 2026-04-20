@@ -106,7 +106,7 @@ const Admin = () => {
     )
   }
 
-  if (userRole !== 'admin' && userRole !== 'sub_admin') return null
+  if (userRole !== 'admin') return null
 
   const setSection = (s: AdminSection) => setParams({ section: s })
 
