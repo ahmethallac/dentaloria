@@ -9,7 +9,13 @@ import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
+  Trash2, RotateCcw, Trash,
 } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
 
