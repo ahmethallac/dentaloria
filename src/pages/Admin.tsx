@@ -110,6 +110,62 @@ const Admin = () => {
     }
   }
 
+  // ---- Trash actions ----
+  const trashClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id, is_published: false })
+        .in('id', ids)
+      if (error) throw error
+      toast({ title: 'Moved to Trash', description: `${ids.length} clinic(s) trashed.` })
+      setSelectedIds(new Set())
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
+  const restoreClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ deleted_at: null, deleted_by: null })
+        .in('id', ids)
+      if (error) throw error
+      toast({ title: 'Restored', description: `${ids.length} clinic(s) restored.` })
+      setSelectedIds(new Set())
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
+  const hardDeleteClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase.from('clinics').delete().in('id', ids)
+      if (error) throw error
+      toast({ title: 'Permanently deleted', description: `${ids.length} clinic(s) removed forever.` })
+      setSelectedIds(new Set())
+      setConfirmHardDelete(null)
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
