@@ -5,8 +5,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-type AppRole = 'admin' | 'sub_admin' | 'clinic_admin' | 'patient'
-const ALLOWED_ROLES: AppRole[] = ['admin', 'sub_admin', 'clinic_admin', 'patient']
+type AppRole = 'admin'
+// Role management is restricted to Super Admin promotion only.
+const ALLOWED_ROLES: AppRole[] = ['admin']
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })

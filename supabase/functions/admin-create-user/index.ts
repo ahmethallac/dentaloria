@@ -5,8 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-type AppRole = 'admin' | 'sub_admin' | 'clinic_admin' | 'patient'
-const ALLOWED_ROLES: AppRole[] = ['admin', 'sub_admin', 'clinic_admin', 'patient']
+type AppRole = 'admin'
+// Only Super Admin accounts can be created from the Users panel.
+// Clinic admins are created automatically when a clinic is registered.
+const ALLOWED_ROLES: AppRole[] = ['admin']
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -44,13 +46,11 @@ Deno.serve(async (req) => {
     const email = String(body.email || '').trim().toLowerCase()
     const password = String(body.password || '')
     const fullName = String(body.full_name || '').trim()
-    const role = body.role as AppRole
+    // Force role to 'admin' — this endpoint only creates Super Admins.
+    const role: AppRole = 'admin'
 
-    if (!email || !password || !fullName || !role) {
-      return json({ error: 'Missing required fields: email, password, full_name, role' }, 400)
-    }
-    if (!ALLOWED_ROLES.includes(role)) {
-      return json({ error: 'Invalid role' }, 400)
+    if (!email || !password || !fullName) {
+      return json({ error: 'Missing required fields: email, password, full_name' }, 400)
     }
     if (password.length < 6) {
       return json({ error: 'Password must be at least 6 characters' }, 400)
