@@ -205,6 +205,8 @@ export type Database = {
           approval_status: string
           city_id: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           email: string | null
           experience_years: number | null
@@ -230,6 +232,8 @@ export type Database = {
           approval_status?: string
           city_id: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           email?: string | null
           experience_years?: number | null
@@ -255,6 +259,8 @@ export type Database = {
           approval_status?: string
           city_id?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           email?: string | null
           experience_years?: number | null

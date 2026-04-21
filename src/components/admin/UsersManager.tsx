@@ -5,12 +5,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Loader2, UserPlus, Trash2, Search, Shield } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
-import { displayRoleName, roleBadgeVariant, type AppRole } from '@/lib/roleService'
+import { displayRoleName, type AppRole } from '@/lib/roleService'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface ManagedUser {
@@ -21,9 +20,6 @@ interface ManagedUser {
   roles: AppRole[]
 }
 
-const ROLE_OPTIONS: AppRole[] = ['admin', 'clinic_admin']
-const VISIBLE_ROLES: AppRole[] = ['admin', 'clinic_admin']
-
 export default function UsersManager() {
   const { toast } = useToast()
   const { user: currentUser } = useAuth()
@@ -33,8 +29,8 @@ export default function UsersManager() {
   const [creating, setCreating] = useState(false)
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  // Create form
-  const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'clinic_admin' as AppRole })
+  // Create form — always creates Super Admin
+  const [form, setForm] = useState({ email: '', full_name: '', password: '' })
 
   const load = async () => {
     setLoading(true)
@@ -62,34 +58,17 @@ export default function UsersManager() {
     setCreating(true)
     try {
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
-        body: { email: form.email, password: form.password, full_name: form.full_name, role: form.role },
+        body: { email: form.email, password: form.password, full_name: form.full_name },
       })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
-      toast({ title: 'User created', description: `${form.email} created as ${displayRoleName(form.role)}.` })
-      setForm({ email: '', full_name: '', password: '', role: 'clinic_admin' })
+      toast({ title: 'Super Admin created', description: `${form.email} can now sign in.` })
+      setForm({ email: '', full_name: '', password: '' })
       load()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Failed to create user', variant: 'destructive' })
     } finally {
       setCreating(false)
-    }
-  }
-
-  const handleSetRole = async (userId: string, role: AppRole) => {
-    setUpdatingId(userId)
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-update-user-role', {
-        body: { action: 'set_role', user_id: userId, role },
-      })
-      if (error) throw error
-      if (data?.error) throw new Error(data.error)
-      toast({ title: 'Role updated', description: `Now ${displayRoleName(role)}.` })
-      load()
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
-    } finally {
-      setUpdatingId(null)
     }
   }
 
@@ -111,36 +90,38 @@ export default function UsersManager() {
     }
   }
 
-  const filtered = users
-    .filter(u => {
-      // Hide patients and sub-admins from the management UI
-      const primary = (u.roles[0] || 'patient') as AppRole
-      return primary === 'admin' || primary === 'clinic_admin'
-    })
-    .filter(u => {
-      const q = search.toLowerCase().trim()
-      if (!q) return true
-      return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
-    })
+  // Show only Super Admins. Clinic admins, patients, etc. are excluded.
+  const superAdmins = users.filter(u => (u.roles || []).includes('admin'))
+
+  const filtered = superAdmins.filter(u => {
+    const q = search.toLowerCase().trim()
+    if (!q) return true
+    return u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
+  })
 
   return (
     <div className="space-y-6">
       <Card className="border-primary/20 bg-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Shield className="w-4 h-4" /> Role Reference
+            <Shield className="w-4 h-4" /> About Super Admins
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 gap-3 text-sm">
-          <div><Badge variant="destructive">Super Admin</Badge><p className="mt-1 text-muted-foreground">Full platform access. Can manage all clinics, users and settings.</p></div>
-          <div><Badge variant="secondary">Clinic Admin</Badge><p className="mt-1 text-muted-foreground">Owns one clinic. Manages their own clinic info, doctors and leads.</p></div>
+        <CardContent className="text-sm text-muted-foreground space-y-2">
+          <p>
+            <Badge variant="destructive" className="mr-2">Super Admin</Badge>
+            Has full access to the platform: manages all clinics, approvals, billing, and other Super Admins.
+          </p>
+          <p>
+            Clinics are <strong>not</strong> managed here. Each clinic owner registers their own account and is given Clinic Admin access automatically — they manage their own clinic from their own panel.
+          </p>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="all">
         <TabsList>
-          <TabsTrigger value="all">Staff Accounts ({filtered.length})</TabsTrigger>
-          <TabsTrigger value="create">Create User</TabsTrigger>
+          <TabsTrigger value="all">Super Admins ({filtered.length})</TabsTrigger>
+          <TabsTrigger value="create">Create Super Admin</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -165,56 +146,41 @@ export default function UsersManager() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Current role</TableHead>
+                  <TableHead>Role</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead className="w-[280px]">Actions</TableHead>
+                  <TableHead className="w-[120px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow><TableCell colSpan={5} className="text-center py-10"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No users found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No Super Admins found.</TableCell></TableRow>
                 ) : (
                   filtered.map(u => {
-                    const primaryRole = (u.roles[0] || 'patient') as AppRole
                     const isSelf = currentUser?.id === u.id
                     return (
                       <TableRow key={u.id}>
                         <TableCell className="font-medium">{u.full_name || '—'}</TableCell>
                         <TableCell className="text-muted-foreground">{u.email}</TableCell>
                         <TableCell>
-                          <Badge variant={roleBadgeVariant(primaryRole)}>{displayRoleName(primaryRole)}</Badge>
+                          <Badge variant="destructive">{displayRoleName('admin')}</Badge>
                           {isSelf && <Badge variant="outline" className="ml-2 text-[10px]">You</Badge>}
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs">
                           {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Select
-                              value={primaryRole}
-                              onValueChange={(v) => handleSetRole(u.id, v as AppRole)}
-                              disabled={updatingId === u.id}
-                            >
-                              <SelectTrigger className="h-8 w-[140px]"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                {ROLE_OPTIONS.map(r => (
-                                  <SelectItem key={r} value={r}>{displayRoleName(r)}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              disabled={updatingId === u.id || isSelf}
-                              onClick={() => handleDelete(u.id, u.email)}
-                              title={isSelf ? "You can't delete yourself" : 'Delete user'}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
+                        <TableCell className="text-right">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            disabled={updatingId === u.id || isSelf}
+                            onClick={() => handleDelete(u.id, u.email)}
+                            title={isSelf ? "You can't delete yourself" : 'Delete user'}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     )
@@ -228,8 +194,8 @@ export default function UsersManager() {
         <TabsContent value="create">
           <Card>
             <CardHeader>
-              <CardTitle>Create new user</CardTitle>
-              <CardDescription>The account is created and ready to sign in immediately.</CardDescription>
+              <CardTitle>Create new Super Admin</CardTitle>
+              <CardDescription>The account is created and can sign in immediately. Only Super Admin accounts can be created here.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 max-w-xl">
               <div className="grid sm:grid-cols-2 gap-4">
@@ -242,26 +208,13 @@ export default function UsersManager() {
                   <Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jane@example.com" />
                 </div>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Temporary password</Label>
-                  <Input type="text" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as AppRole })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {ROLE_OPTIONS.map(r => (
-                        <SelectItem key={r} value={r}>{displayRoleName(r)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label>Temporary password</Label>
+                <Input type="text" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" />
               </div>
               <Button onClick={handleCreate} disabled={creating}>
                 {creating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
-                Create user
+                Create Super Admin
               </Button>
             </CardContent>
           </Card>

@@ -9,7 +9,13 @@ import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
+  Trash2, RotateCcw, Trash,
 } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
 
@@ -29,6 +35,12 @@ const Admin = () => {
   const [loading, setLoading] = useState(true)
 
   const isMainAdmin = userRole === 'admin'
+
+  // Trash + bulk-delete state
+  const [clinicView, setClinicView] = useState<'active' | 'trash'>('active')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkBusy, setBulkBusy] = useState(false)
+  const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
@@ -95,6 +107,62 @@ const Admin = () => {
       loadAllData()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  // ---- Trash actions ----
+  const trashClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id, is_published: false })
+        .in('id', ids)
+      if (error) throw error
+      toast({ title: 'Moved to Trash', description: `${ids.length} clinic(s) trashed.` })
+      setSelectedIds(new Set())
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
+  const restoreClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ deleted_at: null, deleted_by: null })
+        .in('id', ids)
+      if (error) throw error
+      toast({ title: 'Restored', description: `${ids.length} clinic(s) restored.` })
+      setSelectedIds(new Set())
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
+  const hardDeleteClinics = async (ids: string[]) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase.from('clinics').delete().in('id', ids)
+      if (error) throw error
+      toast({ title: 'Permanently deleted', description: `${ids.length} clinic(s) removed forever.` })
+      setSelectedIds(new Set())
+      setConfirmHardDelete(null)
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
     }
   }
 
@@ -168,34 +236,210 @@ const Admin = () => {
         </div>
       )}
 
-      {section === 'clinics' && (
-        <Card>
-          <CardHeader><CardTitle>All Clinics</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {clinics.map(clinic => (
-                <div key={clinic.id} className="p-4 border rounded-lg flex items-center justify-between hover:bg-muted/50 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold">{clinic.name}</h3>
-                      <Badge variant={clinic.approval_status === 'approved' ? 'default' : clinic.approval_status === 'pending' ? 'secondary' : 'destructive'}>
-                        {clinic.approval_status}
-                      </Badge>
-                      {clinic.is_published && <Badge className="bg-green-600 text-white">Published</Badge>}
-                      <Badge variant="outline">
-                        {clinic.clinic_billing_settings?.[0]?.billing_type === 'free' ? 'Free' : 'Paid'}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">{clinic.email} • {clinic.phone || 'No phone'}</p>
+      {section === 'clinics' && (() => {
+        const activeClinics = clinics.filter(c => !c.deleted_at)
+        const trashedClinics = clinics.filter(c => !!c.deleted_at)
+        const list = clinicView === 'active' ? activeClinics : trashedClinics
+        const allSelected = list.length > 0 && list.every(c => selectedIds.has(c.id))
+        const someSelected = selectedIds.size > 0
+        const toggleAll = () => {
+          if (allSelected) setSelectedIds(new Set())
+          else setSelectedIds(new Set(list.map(c => c.id)))
+        }
+        const toggleOne = (id: string) => {
+          const next = new Set(selectedIds)
+          if (next.has(id)) next.delete(id)
+          else next.add(id)
+          setSelectedIds(next)
+        }
+        const selectedArray = Array.from(selectedIds).filter(id => list.some(c => c.id === id))
+
+        return (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+              <div>
+                <CardTitle>All Clinics</CardTitle>
+                <CardDescription className="mt-1">
+                  {clinicView === 'active'
+                    ? 'Active clinics. Move to Trash to hide them from the public site.'
+                    : 'Trashed clinics. Restore them or delete permanently.'}
+                </CardDescription>
+              </div>
+              <div className="inline-flex rounded-md border p-1 bg-muted">
+                <Button
+                  variant={clinicView === 'active' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => { setClinicView('active'); setSelectedIds(new Set()) }}
+                >
+                  Active ({activeClinics.length})
+                </Button>
+                <Button
+                  variant={clinicView === 'trash' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => { setClinicView('trash'); setSelectedIds(new Set()) }}
+                >
+                  <Trash className="w-3.5 h-3.5 mr-1" /> Trash ({trashedClinics.length})
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Bulk action bar */}
+              {(someSelected || clinicView === 'trash') && (
+                <div className="flex items-center justify-between gap-3 mb-3 p-2 rounded-md border bg-muted/30 flex-wrap">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+                    <span>{selectedArray.length} of {list.length} selected</span>
                   </div>
-                  <Button size="sm" onClick={() => navigate(`/clinic/${clinic.id}/panel`)}>Manage</Button>
+                  <div className="flex items-center gap-2">
+                    {clinicView === 'active' ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        disabled={!selectedArray.length || bulkBusy}
+                        onClick={() => trashClinics(selectedArray)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={!selectedArray.length || bulkBusy}
+                          onClick={() => restoreClinics(selectedArray)}
+                        >
+                          <RotateCcw className="w-4 h-4 mr-1" /> Restore ({selectedArray.length})
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={!selectedArray.length || bulkBusy}
+                          onClick={() => setConfirmHardDelete({ ids: selectedArray })}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Delete Permanently
+                        </Button>
+                        {trashedClinics.length > 0 && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={bulkBusy}
+                            onClick={() => setConfirmHardDelete({ ids: trashedClinics.map(c => c.id), emptyAll: true })}
+                          >
+                            Empty Trash
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              ))}
-              {clinics.length === 0 && <p className="text-center text-muted-foreground py-6">No clinics registered yet.</p>}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              )}
+
+              <div className="space-y-3">
+                {list.map(clinic => (
+                  <div
+                    key={clinic.id}
+                    className={`p-4 border rounded-lg flex items-center justify-between gap-3 hover:bg-muted/50 transition-colors ${
+                      clinic.deleted_at ? 'opacity-70 bg-muted/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <Checkbox
+                        checked={selectedIds.has(clinic.id)}
+                        onCheckedChange={() => toggleOne(clinic.id)}
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-semibold truncate">{clinic.name}</h3>
+                          {clinic.deleted_at ? (
+                            <Badge variant="outline" className="text-destructive border-destructive">In Trash</Badge>
+                          ) : (
+                            <>
+                              <Badge variant={clinic.approval_status === 'approved' ? 'default' : clinic.approval_status === 'pending' ? 'secondary' : 'destructive'}>
+                                {clinic.approval_status}
+                              </Badge>
+                              {clinic.is_published && <Badge className="bg-green-600 text-white">Published</Badge>}
+                              <Badge variant="outline">
+                                {clinic.clinic_billing_settings?.[0]?.billing_type === 'free' ? 'Free' : 'Paid'}
+                              </Badge>
+                            </>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1 truncate">
+                          {clinic.email} • {clinic.phone || 'No phone'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {clinic.deleted_at ? (
+                        <>
+                          <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => restoreClinics([clinic.id])}>
+                            <RotateCcw className="w-4 h-4 mr-1" /> Restore
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-9 w-9 text-destructive hover:text-destructive"
+                            disabled={bulkBusy}
+                            onClick={() => setConfirmHardDelete({ ids: [clinic.id] })}
+                            title="Delete permanently"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button size="sm" onClick={() => navigate(`/clinic/${clinic.id}/panel`)}>Manage</Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-9 w-9 text-destructive hover:text-destructive"
+                            disabled={bulkBusy}
+                            onClick={() => trashClinics([clinic.id])}
+                            title="Move to Trash"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {list.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">
+                    {clinicView === 'active' ? 'No active clinics.' : 'Trash is empty.'}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })()}
+
+      <AlertDialog open={!!confirmHardDelete} onOpenChange={(open) => !open && setConfirmHardDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmHardDelete?.emptyAll ? 'Empty Trash?' : 'Delete permanently?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete {confirmHardDelete?.ids.length ?? 0} clinic(s) and all related data
+              (images, doctors, treatments, leads, billing). This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={bulkBusy}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => confirmHardDelete && hardDeleteClinics(confirmHardDelete.ids)}
+            >
+              {bulkBusy ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Delete forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       {section === 'approvals' && (
         <Card>
