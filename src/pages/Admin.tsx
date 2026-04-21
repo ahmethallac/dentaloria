@@ -36,6 +36,12 @@ const Admin = () => {
 
   const isMainAdmin = userRole === 'admin'
 
+  // Trash + bulk-delete state
+  const [clinicView, setClinicView] = useState<'active' | 'trash'>('active')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkBusy, setBulkBusy] = useState(false)
+  const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
+
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
       navigate('/')
