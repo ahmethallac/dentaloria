@@ -252,68 +252,14 @@ const Auth = () => {
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-clinic">Clinic Name</Label>
-                  <Input id="signup-clinic" placeholder="DENTAL CLINIC NAME" value={signupForm.clinicName} onChange={(e) => setSignupForm(prev => ({ ...prev, clinicName: e.target.value }))} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" type="email" placeholder="clinic@example.com" value={signupForm.email} onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input id="signup-password" type="password" placeholder="••••••••" value={signupForm.password} onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input id="confirm-password" type="password" placeholder="••••••••" value={signupForm.confirmPassword} onChange={(e) => setSignupForm(prev => ({ ...prev, confirmPassword: e.target.value }))} required />
-                </div>
-
-                {/* Document Uploads */}
-                <div className="space-y-3 p-4 bg-muted rounded-lg">
-                  <p className="text-sm font-medium">Required Documents</p>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="tax-cert" className="text-sm flex items-center gap-2">
-                      {signupForm.taxCertificate ? <CheckCircle className="w-4 h-4 text-green-500" /> : <FileText className="w-4 h-4" />}
-                      Tax Certificate
-                    </Label>
-                    <Input 
-                      id="tax-cert" 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png" 
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, taxCertificate: e.target.files?.[0] || null }))} 
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="health-doc" className="text-sm flex items-center gap-2">
-                      {signupForm.healthTourismDoc ? <CheckCircle className="w-4 h-4 text-green-500" /> : <FileText className="w-4 h-4" />}
-                      Health Tourism Authorization
-                    </Label>
-                    <Input 
-                      id="health-doc" 
-                      type="file" 
-                      accept=".pdf,.jpg,.jpeg,.png" 
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, healthTourismDoc: e.target.files?.[0] || null }))} 
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <p className="text-xs text-muted-foreground">
-                    By registering, you confirm that you represent a dental clinic. Your registration will be reviewed before activation.
-                  </p>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Register Clinic
+              <div className="space-y-4 py-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Clinic registration now happens through a dedicated form where you provide your clinic's full details and supporting documents in one step.
+                </p>
+                <Button className="w-full" onClick={() => navigate('/register-clinic')}>
+                  Go to Clinic Registration
                 </Button>
-              </form>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
