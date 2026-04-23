@@ -67,12 +67,16 @@ const Admin = () => {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [clinicsRes, approvalsRes, leadsRes, purchasesRes] = await Promise.all([
-        supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*)').order('created_at', { ascending: false }),
+      const [clinicsRes, approvalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
+        supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
         supabase.from('clinic_approvals').select('*, clinics(name, email)').eq('status', 'pending').order('created_at', { ascending: false }),
         supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
         supabase.from('lead_purchases').select('amount_cents'),
+        supabase.from('countries').select('id, name').order('name'),
+        supabase.from('cities').select('id, name, country_id').order('name'),
       ])
+      setCountries(countriesRes.data || [])
+      setCities(citiesRes.data || [])
 
       const totalRevenue = (purchasesRes.data || []).reduce((sum, p) => sum + (p.amount_cents || 0), 0)
       setClinics(clinicsRes.data || [])
