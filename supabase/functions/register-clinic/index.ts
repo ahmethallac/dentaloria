@@ -1,0 +1,112 @@
+// Atomic clinic registration: creates auth user + clinic + approval + role.
+// Rolls back the auth user if any subsequent step fails so we never leave orphans.
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const admin = createClient(supabaseUrl, serviceKey)
+
+    const body = await req.json().catch(() => ({}))
+    const {
+      email, password,
+      clinicName, cityId, address, phone, website, description,
+      taxCertificateUrl, healthTourismDocUrl,
+    } = body || {}
+
+    // Basic validation
+    const missing: string[] = []
+    if (!email) missing.push('email')
+    if (!password) missing.push('password')
+    if (!clinicName) missing.push('clinicName')
+    if (!cityId) missing.push('cityId')
+    if (!address) missing.push('address')
+    if (!phone) missing.push('phone')
+    if (!taxCertificateUrl) missing.push('taxCertificateUrl')
+    if (!healthTourismDocUrl) missing.push('healthTourismDocUrl')
+    if (missing.length) {
+      return json({ error: `Missing required fields: ${missing.join(', ')}` }, 400)
+    }
+    if (typeof password !== 'string' || password.length < 6) {
+      return json({ error: 'Password must be at least 6 characters' }, 400)
+    }
+
+    // 1) Create auth user
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { user_type: 'clinic_admin', full_name: clinicName, clinic_name: clinicName },
+    })
+    if (createErr || !created?.user) {
+      return json({ error: createErr?.message || 'Failed to create user' }, 400)
+    }
+    const userId = created.user.id
+
+    const rollback = async (reason: string) => {
+      try { await admin.auth.admin.deleteUser(userId) } catch (_) {}
+      return json({ error: reason }, 500)
+    }
+
+    // 2) Insert clinic (pending)
+    const { data: clinicRow, error: clinicErr } = await admin
+      .from('clinics')
+      .insert({
+        name: String(clinicName).toUpperCase(),
+        email,
+        user_id: userId,
+        city_id: cityId,
+        address,
+        phone,
+        website: website || null,
+        description: description || null,
+        is_published: false,
+        approval_status: 'pending',
+      })
+      .select('id')
+      .single()
+    if (clinicErr || !clinicRow) return await rollback(`Failed to create clinic: ${clinicErr?.message}`)
+
+    // 3) Approval row with documents
+    const { error: apprErr } = await admin
+      .from('clinic_approvals')
+      .insert({
+        clinic_id: clinicRow.id,
+        status: 'pending',
+        tax_certificate_url: taxCertificateUrl,
+        health_tourism_doc_url: healthTourismDocUrl,
+      })
+    if (apprErr) return await rollback(`Failed to create approval: ${apprErr.message}`)
+
+    // 4) Ensure user_role = clinic_admin (handle_new_user_role trigger may already do this)
+    await admin.from('user_roles').upsert(
+      { user_id: userId, role: 'clinic_admin' },
+      { onConflict: 'user_id,role', ignoreDuplicates: true } as any
+    )
+
+    // 5) Fire-and-forget approval email
+    try {
+      await admin.functions.invoke('send-approval-request', {
+        body: { clinicId: clinicRow.id, clinicName: String(clinicName).toUpperCase(), clinicEmail: email },
+      })
+    } catch (_) { /* non-fatal */ }
+
+    return json({ success: true, clinicId: clinicRow.id, userId })
+  } catch (e: any) {
+    return json({ error: e?.message || 'Server error' }, 500)
+  }
+})
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
+}
