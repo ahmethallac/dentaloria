@@ -72,17 +72,19 @@ const Dashboard = () => {
 
   const clinic = clinics[0]
 
-  // No clinic yet - redirect to add clinic (only if approved)
+  // No clinic associated — should not normally happen since registration is clinic-first.
   if (!clinic) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center space-y-4">
             <Building2 className="w-16 h-16 mx-auto text-muted-foreground" />
-            <h2 className="text-xl font-bold">Welcome, {profile?.full_name}</h2>
-            <p className="text-muted-foreground">You haven't set up your clinic yet.</p>
-            <Button onClick={() => navigate('/add-clinic')} className="w-full">
-              Set Up My Clinic
+            <h2 className="text-xl font-bold">No clinic on this account</h2>
+            <p className="text-muted-foreground">
+              This account is not linked to a clinic. Please register a new clinic or contact support.
+            </p>
+            <Button onClick={() => navigate('/register-clinic')} className="w-full">
+              Register a Clinic
             </Button>
           </CardContent>
         </Card>
