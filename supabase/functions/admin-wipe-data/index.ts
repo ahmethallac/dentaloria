@@ -33,14 +33,41 @@ Deno.serve(async (req) => {
 
     const report: Record<string, unknown> = {}
 
-    // 1) Collect Super Admin user IDs to preserve
+    // Optional mode: 'orphans' deletes only auth users with no clinic + non-admin
+    let mode = 'full'
+    try {
+      const url = new URL(req.url)
+      const cloned = await req.clone().json().catch(() => ({}))
+      mode = url.searchParams.get('mode') || cloned?.mode || 'full'
+    } catch (_) {}
+
+    // 1) Collect Super/Sub Admin user IDs to preserve
     const { data: adminRoles, error: arErr } = await admin
       .from('user_roles')
-      .select('user_id')
-      .eq('role', 'admin')
+      .select('user_id, role')
+      .in('role', ['admin', 'sub_admin'])
     if (arErr) return json({ error: `Failed to load admins: ${arErr.message}` }, 500)
     const adminIds = (adminRoles || []).map((r: any) => r.user_id as string)
     report.preserved_admin_ids = adminIds
+
+    if (mode === 'orphans') {
+      const { data: ownedRows } = await admin.from('clinics').select('user_id')
+      const ownedIds = new Set((ownedRows || []).map((r: any) => r.user_id).filter(Boolean))
+      let deleted = 0
+      const errors: string[] = []
+      const { data: usersList, error: listErr } = await admin.auth.admin.listUsers({ perPage: 1000 })
+      if (listErr) return json({ error: `listUsers: ${listErr.message}` }, 500)
+      for (const u of usersList?.users || []) {
+        if (adminIds.includes(u.id)) continue
+        if (ownedIds.has(u.id)) continue
+        await admin.from('user_roles').delete().eq('user_id', u.id)
+        await admin.from('profiles').delete().eq('id', u.id)
+        const { error: delErr } = await admin.auth.admin.deleteUser(u.id)
+        if (delErr) errors.push(`${u.email || u.id}: ${delErr.message}`)
+        else deleted++
+      }
+      return json({ success: true, mode: 'orphans', deleted, errors })
+    }
 
     // 2) Delete data rows in dependency order. Use neq on a never-matching uuid to delete all rows.
     const NEVER = '00000000-0000-0000-0000-000000000000'

@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import AddClinic from "./pages/AddClinic";
 import Admin from "./pages/Admin";
 import AdminApproveClinic from "./pages/AdminApproveClinic";
+import RegisterClinic from "./pages/RegisterClinic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,9 +30,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/register-clinic" element={<RegisterClinic />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/add-clinic" element={<AddClinic />} />
+            <Route path="/add-clinic" element={<RegisterClinic />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/approve-clinic" element={<AdminApproveClinic />} />
             <Route path="/clinic" element={<FeaturedClinic />} />
