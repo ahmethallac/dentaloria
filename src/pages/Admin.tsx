@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
-  Trash2, RotateCcw, Trash,
+  Trash2, RotateCcw, Trash, X,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
