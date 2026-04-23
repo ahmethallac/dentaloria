@@ -262,7 +262,23 @@ const Admin = () => {
       {section === 'clinics' && (() => {
         const activeClinics = clinics.filter(c => !c.deleted_at)
         const trashedClinics = clinics.filter(c => !!c.deleted_at)
-        const list = clinicView === 'active' ? activeClinics : trashedClinics
+        const baseList = clinicView === 'active' ? activeClinics : trashedClinics
+
+        // Apply filters
+        const search = filterSearch.trim().toLowerCase()
+        const list = baseList.filter(c => {
+          if (search && !(c.name || '').toLowerCase().includes(search)) return false
+          if (filterCountry !== 'all' && c.cities?.country_id !== filterCountry) return false
+          if (filterCity !== 'all' && c.city_id !== filterCity) return false
+          if (filterStatus !== 'all' && c.approval_status !== filterStatus) return false
+          return true
+        })
+
+        const visibleCities = filterCountry === 'all'
+          ? cities
+          : cities.filter(ci => ci.country_id === filterCountry)
+        const filtersActive = !!search || filterCountry !== 'all' || filterCity !== 'all' || filterStatus !== 'all'
+
         const allSelected = list.length > 0 && list.every(c => selectedIds.has(c.id))
         const someSelected = selectedIds.size > 0
         const toggleAll = () => {
