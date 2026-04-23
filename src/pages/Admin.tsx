@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
-  Trash2, RotateCcw, Trash,
+  Trash2, RotateCcw, Trash, X,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -42,6 +46,14 @@ const Admin = () => {
   const [bulkBusy, setBulkBusy] = useState(false)
   const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
 
+  // Filters
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
+  const [cities, setCities] = useState<{ id: string; name: string; country_id: string }[]>([])
+  const [filterSearch, setFilterSearch] = useState('')
+  const [filterCountry, setFilterCountry] = useState<string>('all')
+  const [filterCity, setFilterCity] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
       navigate('/')
@@ -55,12 +67,16 @@ const Admin = () => {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [clinicsRes, approvalsRes, leadsRes, purchasesRes] = await Promise.all([
-        supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*)').order('created_at', { ascending: false }),
+      const [clinicsRes, approvalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
+        supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
         supabase.from('clinic_approvals').select('*, clinics(name, email)').eq('status', 'pending').order('created_at', { ascending: false }),
         supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
         supabase.from('lead_purchases').select('amount_cents'),
+        supabase.from('countries').select('id, name').order('name'),
+        supabase.from('cities').select('id, name, country_id').order('name'),
       ])
+      setCountries(countriesRes.data || [])
+      setCities(citiesRes.data || [])
 
       const totalRevenue = (purchasesRes.data || []).reduce((sum, p) => sum + (p.amount_cents || 0), 0)
       setClinics(clinicsRes.data || [])
@@ -153,9 +169,16 @@ const Admin = () => {
     if (!ids.length) return
     setBulkBusy(true)
     try {
-      const { error } = await supabase.from('clinics').delete().in('id', ids)
+      const { data, error } = await supabase.functions.invoke('admin-delete-clinics', {
+        body: { clinicIds: ids },
+      })
       if (error) throw error
-      toast({ title: 'Permanently deleted', description: `${ids.length} clinic(s) removed forever.` })
+      if (data?.error) throw new Error(data.error)
+      const errs = (data?.errors as string[] | undefined) || []
+      toast({
+        title: 'Permanently deleted',
+        description: `${data?.deletedClinics ?? ids.length} clinic(s), ${data?.deletedImages ?? 0} image(s), ${data?.deletedDocs ?? 0} doc(s) removed.${errs.length ? ` Warnings: ${errs.join('; ')}` : ''}`,
+      })
       setSelectedIds(new Set())
       setConfirmHardDelete(null)
       loadAllData()
@@ -239,7 +262,23 @@ const Admin = () => {
       {section === 'clinics' && (() => {
         const activeClinics = clinics.filter(c => !c.deleted_at)
         const trashedClinics = clinics.filter(c => !!c.deleted_at)
-        const list = clinicView === 'active' ? activeClinics : trashedClinics
+        const baseList = clinicView === 'active' ? activeClinics : trashedClinics
+
+        // Apply filters
+        const search = filterSearch.trim().toLowerCase()
+        const list = baseList.filter(c => {
+          if (search && !(c.name || '').toLowerCase().includes(search)) return false
+          if (filterCountry !== 'all' && c.cities?.country_id !== filterCountry) return false
+          if (filterCity !== 'all' && c.city_id !== filterCity) return false
+          if (filterStatus !== 'all' && c.approval_status !== filterStatus) return false
+          return true
+        })
+
+        const visibleCities = filterCountry === 'all'
+          ? cities
+          : cities.filter(ci => ci.country_id === filterCountry)
+        const filtersActive = !!search || filterCountry !== 'all' || filterCity !== 'all' || filterStatus !== 'all'
+
         const allSelected = list.length > 0 && list.every(c => selectedIds.has(c.id))
         const someSelected = selectedIds.size > 0
         const toggleAll = () => {
@@ -283,6 +322,51 @@ const Admin = () => {
               </div>
             </CardHeader>
             <CardContent>
+              {/* Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
+                <Input
+                  placeholder="Search by name…"
+                  value={filterSearch}
+                  onChange={(e) => setFilterSearch(e.target.value)}
+                  className="lg:col-span-2"
+                />
+                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterCity('all') }}>
+                  <SelectTrigger><SelectValue placeholder="Country" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All countries</SelectItem>
+                    {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={filterCity} onValueChange={setFilterCity} disabled={filterCountry === 'all'}>
+                  <SelectTrigger><SelectValue placeholder={filterCountry === 'all' ? 'Pick country first' : 'City'} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All cities</SelectItem>
+                    {visibleCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All statuses</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {filtersActive && (
+                <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+                  <span>Showing {list.length} of {baseList.length}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setFilterSearch(''); setFilterCountry('all'); setFilterCity('all'); setFilterStatus('all') }}
+                  >
+                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
+                  </Button>
+                </div>
+              )}
+
               {/* Bulk action bar */}
               {(someSelected || clinicView === 'trash') && (
                 <div className="flex items-center justify-between gap-3 mb-3 p-2 rounded-md border bg-muted/30 flex-wrap">
