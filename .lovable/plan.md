@@ -1,61 +1,70 @@
 
 
-# Admin Clinics: Filters + Bulk Trash + Permanent Delete
+# One Account = One Clinic (Delete Clinic → Delete User)
 
-The trash schema and basic bulk actions already exist from the previous round. This pass adds **country/city filters**, fixes anything missing in the bulk flow, and guarantees that "Delete Permanently" wipes every trace from the database and storage.
+Right now `clinics` and `auth.users` are loosely linked. Deleting a clinic leaves the auth user, profile, and role behind. We're going to make the account and the clinic the same entity end-to-end.
 
-## 1. Filter bar above the clinics table
+## 1. Registration becomes clinic-first (single form)
 
-Add to the **Clinics** section in `src/pages/Admin.tsx` (both Active and Trash tabs):
+Replace the current two-step flow ("sign up" → "add clinic from panel") with a single registration form at `/register-clinic` (and the existing `/auth` "Register" tab redirects there).
 
-- **Search** input — matches clinic name (case-insensitive).
-- **Country** select — populated from `countries` table.
-- **City** select — populated from `cities` table, filtered by selected country. Disabled until a country is chosen.
-- **Approval status** select — All / Pending / Approved / Rejected.
-- **Clear filters** button.
+The form collects in one step:
+- **Account**: email, password, confirm password
+- **Clinic**: name, country, city, address, phone, website (optional), description
+- **Documents**: tax certificate + health tourism authorization (uploaded to `clinic-documents` private bucket)
+- Terms checkbox
 
-Filters apply client-side on top of the already-fetched list, or are pushed into the Supabase query for large lists. Counts on the Active/Trash tab badges reflect the unfiltered totals.
+Submit flow (atomic, server-side via new edge function `register-clinic`):
+1. `supabase.auth.admin.createUser({ email, password, email_confirm: false, user_metadata: { user_type: 'clinic_admin', clinic_name } })`
+2. Insert `clinics` row with `user_id = new auth user id`, `approval_status = 'pending'`, `is_published = false`
+3. Insert `clinic_approvals` row with the uploaded document URLs
+4. Insert `user_roles` row with role `clinic_admin`
+5. If any step fails, roll back by deleting the auth user (so we never leave orphans)
+6. Send the existing approval-request email to admins
 
-## 2. Selection + bulk actions (verify and complete)
+The user is NOT auto-signed-in. They see a "Pending approval" confirmation screen and can only sign in once a Super Admin approves.
 
-Active tab:
-- Header checkbox = select-all (respects current filter — only selects visible rows).
-- Per-row checkbox.
-- Floating action bar appears when ≥1 selected: **Move to Trash (N)** + selection count + Clear selection.
-- Per-row trash icon for single moves.
+## 2. Block sign-in until approved
 
-Trash tab:
-- Same selection model.
-- Bulk actions: **Restore (N)** and **Delete Permanently (N)**.
-- **Empty Trash** button (top-right of Trash tab) — confirms then permanently deletes every trashed clinic.
-- Per-row Restore + Delete Permanently icons.
+Add a check in `AuthContext` after sign-in: if the user has role `clinic_admin` and their clinic's `approval_status !== 'approved'`, immediately sign them out and show "Your clinic registration is awaiting Super Admin approval."
 
-All destructive actions go through an `AlertDialog` with explicit copy: *"Permanently delete N clinics? This removes all images, doctors, treatments, leads, and documents. This cannot be undone."*
+## 3. Delete clinic = delete account (zero trace)
 
-## 3. Permanent deletion = zero trace
+Update `supabase/functions/admin-delete-clinics/index.ts` so permanent deletion also wipes the owner account:
 
-Today, a `DELETE FROM clinics` removes the row and (via the `ON DELETE CASCADE` FKs added previously) clears `clinic_images`, `clinic_treatments`, `doctors`, `clinic_approvals`, `clinic_billing_settings`, `contact_requests`, `lead_purchases`, and `clinics_public`. What's missing: the **storage files** (clinic photos, doctor photos, tax/health-tourism docs).
+After the existing cascade delete of the clinic row, for each clinic's `user_id`:
+- Delete from `user_roles` (the `clinic_admin` row)
+- Delete from `profiles`
+- `supabase.auth.admin.deleteUser(user_id)` — removes them from `auth.users` (this is what's currently missing — that's why your screenshot still shows them)
 
-New edge function: **`admin-delete-clinics`** (service-role).
+Safety guard: never delete a `user_id` that has the `admin` role (in case a Super Admin somehow owns a clinic).
 
-Input: `{ clinicIds: string[] }`. Auth: requires Super Admin JWT.
+The existing trash flow stays the same — only **permanent delete** removes the auth user. Move-to-trash leaves the account intact so it can be restored.
 
-Steps per clinic:
-1. Read `clinic_images.image_url`, `doctors.image_url` / `profile_image_url`, and `clinic_approvals.tax_certificate_url` / `health_tourism_doc_url`.
-2. Parse storage paths from those URLs and call `storage.from(bucket).remove([paths])` for `clinic-images`, `doctor-images`, `clinic-documents`.
-3. `DELETE FROM clinics WHERE id = ANY($1)` — cascades clean every related row.
-4. Return a report: `{ deletedClinics, deletedImages, deletedDocs, errors[] }`.
+## 4. Remove the now-obsolete "Add Clinic from panel" path
 
-Frontend calls this function for both "Delete Permanently" (single + bulk) and "Empty Trash". After success, refetch the trash list and show a toast with the report counts.
+- Remove/redirect `/add-clinic` (creating a clinic post-signup is no longer a thing).
+- Remove the "Add your clinic" CTA from `Dashboard` for clinic_admins (they already have one from registration).
+- Keep `ClinicPanel` for managing the existing clinic (info, doctors, treatments, images, patients).
 
-## 4. Public site safety
+## 5. One-time cleanup of existing orphan auth users
 
-Already handled by the previous migration (`sync_clinics_public` skips trashed rows). No further DB work needed; trashed clinics are invisible to visitors the moment they're trashed and gone forever after permanent delete.
+Extend the existing `admin-wipe-data` edge function with an `orphans-only` mode (or run a one-off SQL + admin API call) that:
+- Finds every `auth.users` row whose `id` is NOT in `user_roles` with role `admin` AND NOT referenced by any non-trashed `clinics.user_id`.
+- Deletes those auth users + their `profiles` + `user_roles` rows.
+
+Run it once after this change ships to clear the leftovers shown in your screenshot.
 
 ## Acceptance
 
-- Admin → Clinics shows search + country + city + status filters that narrow both Active and Trash lists.
-- Select-all and per-row checkboxes work; bulk Move to Trash, Restore, Delete Permanently, and Empty Trash all function.
-- A permanently deleted clinic disappears from: Supabase tables (`clinics`, `clinics_public`, all related), storage buckets (no orphaned images/docs), the public listing, and the admin panel.
-- Confirmation dialog appears before any permanent deletion.
+- New clinic registration is a single form; no separate "create clinic" step exists.
+- A pending clinic cannot sign in until approved.
+- Permanently deleting a clinic in the admin panel also removes the corresponding row from Supabase → Authentication → Users, plus its `profiles` and `user_roles` rows.
+- The orphan auth users currently visible in your screenshot are gone after the one-time cleanup runs.
+- Super Admin accounts are never touched.
+
+## Files touched
+
+- **New**: `supabase/functions/register-clinic/index.ts`, `src/pages/RegisterClinic.tsx`
+- **Edited**: `supabase/functions/admin-delete-clinics/index.ts` (add auth user deletion), `supabase/functions/admin-wipe-data/index.ts` (orphan mode), `src/contexts/AuthContext.tsx` (pending-approval gate), `src/pages/Auth.tsx` (redirect Register tab), `src/App.tsx` (route), `src/pages/Dashboard.tsx` and `src/pages/AddClinic.tsx` (remove obsolete add-clinic CTA/page)
 
