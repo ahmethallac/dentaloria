@@ -322,6 +322,51 @@ const Admin = () => {
               </div>
             </CardHeader>
             <CardContent>
+              {/* Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
+                <Input
+                  placeholder="Search by name…"
+                  value={filterSearch}
+                  onChange={(e) => setFilterSearch(e.target.value)}
+                  className="lg:col-span-2"
+                />
+                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterCity('all') }}>
+                  <SelectTrigger><SelectValue placeholder="Country" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All countries</SelectItem>
+                    {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={filterCity} onValueChange={setFilterCity} disabled={filterCountry === 'all'}>
+                  <SelectTrigger><SelectValue placeholder={filterCountry === 'all' ? 'Pick country first' : 'City'} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All cities</SelectItem>
+                    {visibleCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All statuses</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {filtersActive && (
+                <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+                  <span>Showing {list.length} of {baseList.length}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setFilterSearch(''); setFilterCountry('all'); setFilterCity('all'); setFilterStatus('all') }}
+                  >
+                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
+                  </Button>
+                </div>
+              )}
+
               {/* Bulk action bar */}
               {(someSelected || clinicView === 'trash') && (
                 <div className="flex items-center justify-between gap-3 mb-3 p-2 rounded-md border bg-muted/30 flex-wrap">
