@@ -63,13 +63,19 @@ Deno.serve(async (req) => {
     const errors: string[] = []
     let deletedImages = 0
     let deletedDocs = 0
+    let deletedAuthUsers = 0
 
-    // Collect storage paths
-    const [imagesRes, doctorsRes, approvalsRes] = await Promise.all([
+    // Collect owner user_ids + storage paths
+    const [clinicsRes, imagesRes, doctorsRes, approvalsRes] = await Promise.all([
+      admin.from('clinics').select('user_id').in('id', clinicIds),
       admin.from('clinic_images').select('image_url').in('clinic_id', clinicIds),
       admin.from('doctors').select('image_url, profile_image_url').in('clinic_id', clinicIds),
       admin.from('clinic_approvals').select('tax_certificate_url, health_tourism_doc_url').in('clinic_id', clinicIds),
     ])
+
+    const ownerUserIds = Array.from(new Set(
+      (clinicsRes.data || []).map((r: any) => r.user_id).filter(Boolean)
+    )) as string[]
 
     const clinicImagePaths = (imagesRes.data || [])
       .map(r => pathFromPublicUrl(r.image_url, 'clinic-images')).filter(Boolean) as string[]
