@@ -1,57 +1,61 @@
 
 
-# Wipe All Clinic & Non-Admin User Data
+# Admin Clinics: Filters + Bulk Trash + Permanent Delete
 
-Reset the system to a clean state so real clinics can register from scratch. Keep only Super Admin accounts and reference data (countries, cities, treatments, treatment categories).
+The trash schema and basic bulk actions already exist from the previous round. This pass adds **country/city filters**, fixes anything missing in the bulk flow, and guarantees that "Delete Permanently" wipes every trace from the database and storage.
 
-## What gets deleted
+## 1. Filter bar above the clinics table
 
-**Database rows (in dependency order):**
-1. `lead_purchases` — all rows
-2. `contact_requests` — all rows
-3. `contact_request_tracking` — all rows
-4. `rate_limits` — all rows
-5. `clinic_approvals` — all rows
-6. `clinic_billing_settings` — all rows
-7. `clinic_treatments` — all rows
-8. `clinic_images` — all rows
-9. `doctors` — all rows
-10. `reviews` — all rows
-11. `clinics` — all rows (cascades will also clear `clinics_public` via the sync trigger)
-12. `user_roles` — every row whose role is NOT `admin`
-13. `profiles` — every row whose `id` is NOT in `user_roles` with role `admin`
-14. `auth.users` — every user that is NOT a Super Admin (done via the existing `admin-update-user-role` edge function's `delete_user` action so we don't touch the `auth` schema directly)
+Add to the **Clinics** section in `src/pages/Admin.tsx` (both Active and Trash tabs):
 
-**Storage buckets (orphaned files):**
-- `clinic-images` — empty the bucket
-- `doctor-images` — empty the bucket
-- `clinic-documents` — empty the bucket
+- **Search** input — matches clinic name (case-insensitive).
+- **Country** select — populated from `countries` table.
+- **City** select — populated from `cities` table, filtered by selected country. Disabled until a country is chosen.
+- **Approval status** select — All / Pending / Approved / Rejected.
+- **Clear filters** button.
 
-## What is preserved
+Filters apply client-side on top of the already-fetched list, or are pushed into the Supabase query for large lists. Counts on the Active/Trash tab badges reflect the unfiltered totals.
 
-- All Super Admin accounts (`ahmethallaccom@gmail.com` and any other `admin` role users) — auth user, profile, and role row.
-- Reference tables: `countries`, `cities`, `treatments`, `treatment_categories`.
-- All schema, RLS policies, triggers, functions, and edge functions — untouched.
+## 2. Selection + bulk actions (verify and complete)
 
-## How it runs
+Active tab:
+- Header checkbox = select-all (respects current filter — only selects visible rows).
+- Per-row checkbox.
+- Floating action bar appears when ≥1 selected: **Move to Trash (N)** + selection count + Clear selection.
+- Per-row trash icon for single moves.
 
-Two steps in default mode:
+Trash tab:
+- Same selection model.
+- Bulk actions: **Restore (N)** and **Delete Permanently (N)**.
+- **Empty Trash** button (top-right of Trash tab) — confirms then permanently deletes every trashed clinic.
+- Per-row Restore + Delete Permanently icons.
 
-1. **Data deletion via insert tool** — one SQL script runs all the `DELETE` statements above in dependency order, scoped so Super Admins survive. The `clinics` deletes cascade to anything we missed thanks to the FKs added in the previous trash migration.
+All destructive actions go through an `AlertDialog` with explicit copy: *"Permanently delete N clinics? This removes all images, doctors, treatments, leads, and documents. This cannot be undone."*
 
-2. **Auth user cleanup + storage wipe** — a one-off cleanup script that:
-   - Lists all `auth.users`, filters out those with the `admin` role, and deletes the rest using the service role key.
-   - Empties the three storage buckets.
-   
-   Run as a temporary edge function invocation (or directly via the Supabase admin API from a script), then discarded.
+## 3. Permanent deletion = zero trace
+
+Today, a `DELETE FROM clinics` removes the row and (via the `ON DELETE CASCADE` FKs added previously) clears `clinic_images`, `clinic_treatments`, `doctors`, `clinic_approvals`, `clinic_billing_settings`, `contact_requests`, `lead_purchases`, and `clinics_public`. What's missing: the **storage files** (clinic photos, doctor photos, tax/health-tourism docs).
+
+New edge function: **`admin-delete-clinics`** (service-role).
+
+Input: `{ clinicIds: string[] }`. Auth: requires Super Admin JWT.
+
+Steps per clinic:
+1. Read `clinic_images.image_url`, `doctors.image_url` / `profile_image_url`, and `clinic_approvals.tax_certificate_url` / `health_tourism_doc_url`.
+2. Parse storage paths from those URLs and call `storage.from(bucket).remove([paths])` for `clinic-images`, `doctor-images`, `clinic-documents`.
+3. `DELETE FROM clinics WHERE id = ANY($1)` — cascades clean every related row.
+4. Return a report: `{ deletedClinics, deletedImages, deletedDocs, errors[] }`.
+
+Frontend calls this function for both "Delete Permanently" (single + bulk) and "Empty Trash". After success, refetch the trash list and show a toast with the report counts.
+
+## 4. Public site safety
+
+Already handled by the previous migration (`sync_clinics_public` skips trashed rows). No further DB work needed; trashed clinics are invisible to visitors the moment they're trashed and gone forever after permanent delete.
 
 ## Acceptance
 
-- `/` and `/clinics` show zero clinics.
-- Admin panel → Clinics tab (Active and Trash) is empty.
-- Admin panel → All Patients is empty.
-- Admin panel → Users still shows the Super Admin(s), nothing else.
-- A new clinic registration from a fresh email works end-to-end (sign up → create clinic → pending approval → approve → appears publicly).
-
-⚠️ This is destructive and irreversible. Once approved I will execute it immediately.
+- Admin → Clinics shows search + country + city + status filters that narrow both Active and Trash lists.
+- Select-all and per-row checkboxes work; bulk Move to Trash, Restore, Delete Permanently, and Empty Trash all function.
+- A permanently deleted clinic disappears from: Supabase tables (`clinics`, `clinics_public`, all related), storage buckets (no orphaned images/docs), the public listing, and the admin panel.
+- Confirmation dialog appears before any permanent deletion.
 
