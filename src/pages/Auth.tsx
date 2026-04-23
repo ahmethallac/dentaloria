@@ -57,15 +57,6 @@ const Auth = () => {
       setIsLoading(false)
     }
   }
-  const [signupForm, setSignupForm] = useState({
-    clinicName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    taxCertificate: null as File | null,
-    healthTourismDoc: null as File | null,
-  })
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -74,102 +65,6 @@ const Auth = () => {
       toast({ title: "Success!", description: "Logged in successfully." })
     } catch (error: any) {
       toast({ title: "Login Error", description: error.message || "An error occurred during login.", variant: "destructive" })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (signupForm.password !== signupForm.confirmPassword) {
-      toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" })
-      return
-    }
-    if (signupForm.password.length < 6) {
-      toast({ title: "Error", description: "Password must be at least 6 characters long.", variant: "destructive" })
-      return
-    }
-    if (!signupForm.taxCertificate || !signupForm.healthTourismDoc) {
-      toast({ title: "Error", description: "Please upload both required documents.", variant: "destructive" })
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      // 1. Sign up the user
-      await signUp(signupForm.email, signupForm.password, signupForm.clinicName, 'clinic_admin')
-      
-      // 2. Auto-login
-      await signIn(signupForm.email, signupForm.password)
-
-      // 3. Get user for file uploads
-      const { data: { user: newUser } } = await supabase.auth.getUser()
-      if (!newUser) throw new Error('Registration failed')
-
-      // 4. Get a default city_id
-      const { data: defaultCity } = await supabase.from('cities').select('id').limit(1).single()
-      const cityId = defaultCity?.id || 'a21f2467-a997-445e-8379-dfada7b12c09'
-
-      // 5. Create the clinic (pending approval)
-      const { data: clinicData, error: clinicError } = await supabase
-        .from('clinics')
-        .insert({
-          name: signupForm.clinicName.toUpperCase(),
-          email: signupForm.email,
-          user_id: newUser.id,
-          city_id: cityId,
-          is_published: false,
-          approval_status: 'pending'
-        })
-        .select()
-        .single()
-
-      if (clinicError) throw clinicError
-
-      // 5. Upload documents
-      const uploadDoc = async (file: File, docType: string) => {
-        const filePath = `${newUser.id}/${clinicData.id}/${docType}-${Date.now()}.${file.name.split('.').pop()}`
-        const { error } = await supabase.storage.from('clinic-documents').upload(filePath, file)
-        if (error) throw error
-        return filePath
-      }
-
-      const [taxUrl, healthUrl] = await Promise.all([
-        uploadDoc(signupForm.taxCertificate!, 'tax-certificate'),
-        uploadDoc(signupForm.healthTourismDoc!, 'health-tourism-doc'),
-      ])
-
-      // 6. Create approval record
-      const { error: approvalError } = await supabase
-        .from('clinic_approvals')
-        .insert({
-          clinic_id: clinicData.id,
-          status: 'pending',
-          tax_certificate_url: taxUrl,
-          health_tourism_doc_url: healthUrl,
-        })
-
-      if (approvalError) throw approvalError
-
-      // 7. Send approval request email (via edge function)
-      await supabase.functions.invoke('send-approval-request', {
-        body: {
-          clinicId: clinicData.id,
-          clinicName: signupForm.clinicName.toUpperCase(),
-          clinicEmail: signupForm.email,
-        }
-      })
-
-      toast({
-        title: "Registration Successful!",
-        description: "Your clinic registration is pending approval. You'll be notified once reviewed."
-      })
-
-      navigate('/dashboard')
-    } catch (error: any) {
-      console.error('Signup error:', error)
-      toast({ title: "Registration Error", description: error.message || "An error occurred.", variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
