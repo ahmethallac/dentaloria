@@ -46,6 +46,14 @@ const Admin = () => {
   const [bulkBusy, setBulkBusy] = useState(false)
   const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
 
+  // Filters
+  const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
+  const [cities, setCities] = useState<{ id: string; name: string; country_id: string }[]>([])
+  const [filterSearch, setFilterSearch] = useState('')
+  const [filterCountry, setFilterCountry] = useState<string>('all')
+  const [filterCity, setFilterCity] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
       navigate('/')
