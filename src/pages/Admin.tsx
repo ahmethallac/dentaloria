@@ -169,9 +169,16 @@ const Admin = () => {
     if (!ids.length) return
     setBulkBusy(true)
     try {
-      const { error } = await supabase.from('clinics').delete().in('id', ids)
+      const { data, error } = await supabase.functions.invoke('admin-delete-clinics', {
+        body: { clinicIds: ids },
+      })
       if (error) throw error
-      toast({ title: 'Permanently deleted', description: `${ids.length} clinic(s) removed forever.` })
+      if (data?.error) throw new Error(data.error)
+      const errs = (data?.errors as string[] | undefined) || []
+      toast({
+        title: 'Permanently deleted',
+        description: `${data?.deletedClinics ?? ids.length} clinic(s), ${data?.deletedImages ?? 0} image(s), ${data?.deletedDocs ?? 0} doc(s) removed.${errs.length ? ` Warnings: ${errs.join('; ')}` : ''}`,
+      })
       setSelectedIds(new Set())
       setConfirmHardDelete(null)
       loadAllData()
