@@ -604,6 +604,35 @@ const Admin = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <Dialog open={!!sendBackTarget} onOpenChange={(open) => { if (!open) { setSendBackTarget(null); setSendBackNotes('') } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Back to Clinic</DialogTitle>
+            <DialogDescription>
+              {sendBackTarget ? `Tell ${sendBackTarget.name} what needs to be corrected before their page can go live.` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              rows={6}
+              placeholder="Describe the corrections needed (missing photos, incomplete description, doctors info, etc.)…"
+              value={sendBackNotes}
+              onChange={(e) => setSendBackNotes(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setSendBackTarget(null); setSendBackNotes('') }} disabled={sendBackBusy}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={submitSendBack} disabled={sendBackBusy || !sendBackNotes.trim()}>
+              {sendBackBusy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <XCircle className="w-4 h-4 mr-2" />}
+              Send Back
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       {section === 'approvals' && (
         <Card>
