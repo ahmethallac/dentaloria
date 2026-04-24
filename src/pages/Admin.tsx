@@ -717,13 +717,21 @@ const Admin = () => {
                         <Badge variant="secondary">Pending page approval</Badge>
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
-                        <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel?section=info`)}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(`/clinic/${c.id}`, '_blank', 'noopener,noreferrer')}
+                        >
                           Review Page
                         </Button>
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
                           <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handlePageApproval(c.id, 'reject')}>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => { setSendBackTarget({ id: c.id, name: c.name }); setSendBackNotes('') }}
+                        >
                           <XCircle className="w-4 h-4 mr-1" /> Send Back
                         </Button>
                       </div>
