@@ -268,7 +268,14 @@ const ClinicPanel = () => {
       )}
 
       {section === 'info' && (
-        <Card><CardContent className="pt-6"><ClinicInfoTab clinic={clinic} onUpdated={() => loadClinic()} /></CardContent></Card>
+        <Card><CardContent className="pt-6"><ClinicInfoTab
+          clinic={clinic}
+          onUpdated={() => loadClinic()}
+          pageStatus={pageStatus}
+          isAdminUser={isAdminUser}
+          submittingPage={submittingPage}
+          onSubmitForApproval={handleSubmitForApproval}
+        /></CardContent></Card>
       )}
 
       {section === 'settings' && isAdminUser && (
