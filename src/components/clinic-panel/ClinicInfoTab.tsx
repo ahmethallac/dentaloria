@@ -23,7 +23,12 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const { toast } = useToast();
 
   const [form, setForm] = useState({
+    // `name` here is the official LEGAL company name from registration.
+    // It stays read-only on this page and is never shown on the public site.
     name: clinic.name || "",
+    // `display_name` is the short, commonly-known name. Required before the
+    // page can be submitted for approval. Used everywhere the clinic is shown.
+    display_name: (clinic as any).display_name || "",
     email: clinic.email || "",
     phone: clinic.phone || "",
     website: clinic.website || "",
