@@ -123,11 +123,34 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         <CardTitle>Clinic Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Legal name (read-only) + Display name (required, public-facing) */}
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Clinic Name</label>
-            <Input value={form.name} onChange={(e) => onChange("name", e.target.value)} />
+            <label className="text-sm font-medium mb-2 block">
+              Legal Company Name <span className="text-xs text-muted-foreground font-normal">(from registration — administrative use only, not shown publicly)</span>
+            </label>
+            <Input value={form.name} readOnly disabled className="bg-background/60" />
           </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Display Name <span className="text-destructive">*</span>{" "}
+              <span className="text-xs text-muted-foreground font-normal">(short, commonly-known name shown on the public page)</span>
+            </label>
+            <Input
+              value={form.display_name}
+              onChange={(e) => onChange("display_name", e.target.value)}
+              placeholder="e.g. Dental Group Istanbul"
+              required
+            />
+            {!form.display_name.trim() && (
+              <p className="text-xs text-destructive mt-1">
+                Display name is required before you can submit your page for approval.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="text-sm font-medium mb-2 block">Email</label>
             <Input value={form.email} onChange={(e) => onChange("email", e.target.value)} />
