@@ -226,6 +226,27 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             onChanged={() => onUpdated?.(clinic)}
           />
         </div>
+
+        {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}
+        {!isAdminUser && onSubmitForApproval && pageStatus === "incomplete" && (
+          <div className="border-t mt-6 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold">Ready to go live?</p>
+              <p className="text-sm text-muted-foreground">
+                Once you've added your photos, doctors, treatments and description, submit your page for Super Admin approval.
+              </p>
+            </div>
+            <Button onClick={onSubmitForApproval} disabled={!!submittingPage}>
+              {submittingPage ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+              Submit for Approval
+            </Button>
+          </div>
+        )}
+        {!isAdminUser && pageStatus === "pending_page_approval" && (
+          <div className="border-t mt-6 pt-6 text-sm text-muted-foreground">
+            Your page is awaiting Super Admin approval. You can keep editing — it will go live once approved.
+          </div>
+        )}
       </CardContent>
     </Card>
   );
