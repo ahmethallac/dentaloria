@@ -19,7 +19,8 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { getClinicById } from "@/lib/services";
+import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
