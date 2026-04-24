@@ -103,6 +103,13 @@ const ClinicDetail = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { userRole } = useAuth();
+
+  // Super-admin / sub-admin preview mode: lets the admin review a clinic page
+  // before it goes live. The clinic stays hidden from the public site until it
+  // is approved and page_status === 'live'.
+  const isAdminUser = userRole === 'admin' || userRole === 'sub_admin';
+  const isPreview = searchParams.get('preview') === '1' && isAdminUser;
 
   const [clinic, setClinic] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +140,12 @@ const ClinicDetail = () => {
     (async () => {
       try {
         setLoading(true);
-        const data = await getClinicById(id);
+        // In preview mode admins read directly from the private `clinics` table
+        // (RLS lets them see everything). Otherwise we use the public view that
+        // only contains live, approved clinics.
+        const data = isPreview
+          ? await getClinicByIdPrivate(id)
+          : await getClinicById(id);
         setClinic(data ? mapClinic(data) : null);
       } catch {
         toast({ title: "Error", description: "Failed to load clinic data.", variant: "destructive" });
@@ -141,7 +153,7 @@ const ClinicDetail = () => {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, isPreview]);
 
   /* scroll‑spy */
   useEffect(() => {
