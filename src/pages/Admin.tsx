@@ -20,6 +20,10 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
 
@@ -47,6 +51,11 @@ const Admin = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkBusy, setBulkBusy] = useState(false)
   const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
+
+  // Send-back modal state
+  const [sendBackTarget, setSendBackTarget] = useState<{ id: string; name: string } | null>(null)
+  const [sendBackNotes, setSendBackNotes] = useState('')
+  const [sendBackBusy, setSendBackBusy] = useState(false)
 
   // Filters
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
