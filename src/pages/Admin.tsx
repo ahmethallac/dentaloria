@@ -69,9 +69,15 @@ const Admin = () => {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [clinicsRes, approvalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
+      const [clinicsRes, approvalsRes, pageApprovalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
         supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
-        supabase.from('clinic_approvals').select('*, clinics(name, email)').eq('status', 'pending').order('created_at', { ascending: false }),
+        supabase.from('clinic_approvals').select('*, clinics(name, email, phone, website, created_at, cities(name, countries(name)))').eq('status', 'pending').order('created_at', { ascending: false }),
+        supabase.from('clinics')
+          .select('id, name, email, phone, website, page_status, updated_at, cities(name, countries(name))')
+          .eq('approval_status', 'approved')
+          .eq('page_status', 'pending_page_approval')
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false }),
         supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
         supabase.from('lead_purchases').select('amount_cents'),
         supabase.from('countries').select('id, name').order('name'),
@@ -83,6 +89,7 @@ const Admin = () => {
       const totalRevenue = (purchasesRes.data || []).reduce((sum, p) => sum + (p.amount_cents || 0), 0)
       setClinics(clinicsRes.data || [])
       setPendingApprovals(approvalsRes.data || [])
+      setPendingPageApprovals(pageApprovalsRes.data || [])
 
       const leadsData = leadsRes.data || []
       const patientMap = new Map<string, { name: string; email: string; phone: string | null; count: number; lastDate: string }>()
@@ -99,7 +106,7 @@ const Admin = () => {
 
       setStats({
         totalClinics: clinicsRes.data?.length || 0,
-        pendingApprovals: approvalsRes.data?.length || 0,
+        pendingApprovals: (approvalsRes.data?.length || 0) + (pageApprovalsRes.data?.length || 0),
         totalPatients: patientMap.size,
         totalRevenue: totalRevenue / 100,
       })
@@ -114,17 +121,52 @@ const Admin = () => {
   const handleApproval = async (clinicId: string, action: 'approve' | 'reject', reason?: string) => {
     try {
       const newStatus = action === 'approve' ? 'approved' : 'rejected'
+      // On application approval the clinic becomes approved + published, but the public page only goes live
+      // once page_status is set to 'live' (via the Page Approvals tab).
+      const clinicUpdate: any = { approval_status: newStatus, is_published: action === 'approve' }
+      if (action === 'approve') clinicUpdate.page_status = 'incomplete'
       await Promise.all([
         supabase.from('clinic_approvals').update({
           status: newStatus, rejection_reason: reason,
           reviewed_by: user?.id, reviewed_at: new Date().toISOString(),
         }).eq('clinic_id', clinicId),
-        supabase.from('clinics').update({ approval_status: newStatus, is_published: action === 'approve' }).eq('id', clinicId),
+        supabase.from('clinics').update(clinicUpdate).eq('id', clinicId),
       ])
-      toast({ title: 'Success', description: `Clinic ${newStatus}` })
+      toast({ title: 'Success', description: `Clinic application ${newStatus}` })
       loadAllData()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject') => {
+    try {
+      const next = action === 'approve' ? 'live' : 'incomplete'
+      const { error } = await supabase
+        .from('clinics')
+        .update({ page_status: next })
+        .eq('id', clinicId)
+      if (error) throw error
+      toast({
+        title: action === 'approve' ? 'Page approved' : 'Sent back to clinic',
+        description: action === 'approve' ? 'Clinic is now live on the site.' : 'The clinic can edit and re-submit.',
+      })
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const openDocument = async (path: string | null | undefined) => {
+    if (!path) return
+    try {
+      const { data, error } = await supabase.storage
+        .from('clinic-documents')
+        .createSignedUrl(path, 60 * 10) // 10 minutes
+      if (error || !data?.signedUrl) throw error || new Error('Could not create signed URL')
+      window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Could not open document', variant: 'destructive' })
     }
   }
 
