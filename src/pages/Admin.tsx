@@ -148,12 +148,14 @@ const Admin = () => {
     }
   }
 
-  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject') => {
+  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject', notes?: string) => {
     try {
-      const next = action === 'approve' ? 'live' : 'incomplete'
+      const update: any = action === 'approve'
+        ? { page_status: 'live', page_revision_notes: null }
+        : { page_status: 'incomplete', page_revision_notes: notes || null }
       const { error } = await supabase
         .from('clinics')
-        .update({ page_status: next })
+        .update(update)
         .eq('id', clinicId)
       if (error) throw error
       toast({
@@ -163,6 +165,22 @@ const Admin = () => {
       loadAllData()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const submitSendBack = async () => {
+    if (!sendBackTarget) return
+    if (!sendBackNotes.trim()) {
+      toast({ title: 'Required', description: 'Please write what needs to be corrected.', variant: 'destructive' })
+      return
+    }
+    setSendBackBusy(true)
+    try {
+      await handlePageApproval(sendBackTarget.id, 'reject', sendBackNotes.trim())
+      setSendBackTarget(null)
+      setSendBackNotes('')
+    } finally {
+      setSendBackBusy(false)
     }
   }
 
