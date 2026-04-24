@@ -20,6 +20,10 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
 
@@ -47,6 +51,11 @@ const Admin = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkBusy, setBulkBusy] = useState(false)
   const [confirmHardDelete, setConfirmHardDelete] = useState<{ ids: string[]; emptyAll?: boolean } | null>(null)
+
+  // Send-back modal state
+  const [sendBackTarget, setSendBackTarget] = useState<{ id: string; name: string } | null>(null)
+  const [sendBackNotes, setSendBackNotes] = useState('')
+  const [sendBackBusy, setSendBackBusy] = useState(false)
 
   // Filters
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
@@ -139,12 +148,14 @@ const Admin = () => {
     }
   }
 
-  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject') => {
+  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject', notes?: string) => {
     try {
-      const next = action === 'approve' ? 'live' : 'incomplete'
+      const update: any = action === 'approve'
+        ? { page_status: 'live', page_revision_notes: null }
+        : { page_status: 'incomplete', page_revision_notes: notes || null }
       const { error } = await supabase
         .from('clinics')
-        .update({ page_status: next })
+        .update(update)
         .eq('id', clinicId)
       if (error) throw error
       toast({
@@ -157,15 +168,40 @@ const Admin = () => {
     }
   }
 
+  const submitSendBack = async () => {
+    if (!sendBackTarget) return
+    if (!sendBackNotes.trim()) {
+      toast({ title: 'Required', description: 'Please write what needs to be corrected.', variant: 'destructive' })
+      return
+    }
+    setSendBackBusy(true)
+    try {
+      await handlePageApproval(sendBackTarget.id, 'reject', sendBackNotes.trim())
+      setSendBackTarget(null)
+      setSendBackNotes('')
+    } finally {
+      setSendBackBusy(false)
+    }
+  }
+
   const openDocument = async (path: string | null | undefined) => {
     if (!path) return
+    // Open the tab synchronously so the browser keeps the user-gesture context
+    // (otherwise the second click in a row often gets popup-blocked).
+    const win = window.open('about:blank', '_blank')
     try {
       const { data, error } = await supabase.storage
         .from('clinic-documents')
         .createSignedUrl(path, 60 * 10) // 10 minutes
       if (error || !data?.signedUrl) throw error || new Error('Could not create signed URL')
-      window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
+      if (win) {
+        win.location.href = data.signedUrl
+      } else {
+        // Popup blocked — fall back to same-tab navigation
+        window.location.href = data.signedUrl
+      }
     } catch (e: any) {
+      try { win?.close() } catch (_) { /* noop */ }
       toast({ title: 'Error', description: e.message || 'Could not open document', variant: 'destructive' })
     }
   }
@@ -568,6 +604,35 @@ const Admin = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <Dialog open={!!sendBackTarget} onOpenChange={(open) => { if (!open) { setSendBackTarget(null); setSendBackNotes('') } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Back to Clinic</DialogTitle>
+            <DialogDescription>
+              {sendBackTarget ? `Tell ${sendBackTarget.name} what needs to be corrected before their page can go live.` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Textarea
+              rows={6}
+              placeholder="Describe the corrections needed (missing photos, incomplete description, doctors info, etc.)…"
+              value={sendBackNotes}
+              onChange={(e) => setSendBackNotes(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setSendBackTarget(null); setSendBackNotes('') }} disabled={sendBackBusy}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={submitSendBack} disabled={sendBackBusy || !sendBackNotes.trim()}>
+              {sendBackBusy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <XCircle className="w-4 h-4 mr-2" />}
+              Send Back
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       {section === 'approvals' && (
         <Card>
@@ -681,13 +746,21 @@ const Admin = () => {
                         <Badge variant="secondary">Pending page approval</Badge>
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
-                        <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel?section=info`)}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(`/clinic/${c.id}`, '_blank', 'noopener,noreferrer')}
+                        >
                           Review Page
                         </Button>
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
                           <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handlePageApproval(c.id, 'reject')}>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => { setSendBackTarget({ id: c.id, name: c.name }); setSendBackNotes('') }}
+                        >
                           <XCircle className="w-4 h-4 mr-1" /> Send Back
                         </Button>
                       </div>
