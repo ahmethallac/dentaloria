@@ -159,13 +159,22 @@ const Admin = () => {
 
   const openDocument = async (path: string | null | undefined) => {
     if (!path) return
+    // Open the tab synchronously so the browser keeps the user-gesture context
+    // (otherwise the second click in a row often gets popup-blocked).
+    const win = window.open('about:blank', '_blank')
     try {
       const { data, error } = await supabase.storage
         .from('clinic-documents')
         .createSignedUrl(path, 60 * 10) // 10 minutes
       if (error || !data?.signedUrl) throw error || new Error('Could not create signed URL')
-      window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
+      if (win) {
+        win.location.href = data.signedUrl
+      } else {
+        // Popup blocked — fall back to same-tab navigation
+        window.location.href = data.signedUrl
+      }
     } catch (e: any) {
+      try { win?.close() } catch (_) { /* noop */ }
       toast({ title: 'Error', description: e.message || 'Could not open document', variant: 'destructive' })
     }
   }

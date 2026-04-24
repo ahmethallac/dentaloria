@@ -220,6 +220,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          page_revision_notes: string | null
           page_status: string
           patient_count: number | null
           phone: string | null
@@ -248,6 +249,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          page_revision_notes?: string | null
           page_status?: string
           patient_count?: number | null
           phone?: string | null
@@ -276,6 +278,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          page_revision_notes?: string | null
           page_status?: string
           patient_count?: number | null
           phone?: string | null

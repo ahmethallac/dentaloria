@@ -1,0 +1,1 @@
+ALTER TABLE public.clinics ADD COLUMN IF NOT EXISTS page_revision_notes text;
