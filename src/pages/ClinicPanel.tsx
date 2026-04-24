@@ -283,6 +283,17 @@ const ClinicPanel = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label>Page Status</Label>
+                <Select value={pageStatus} onValueChange={(v: any) => setPageStatus(v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="incomplete">Incomplete</SelectItem>
+                    <SelectItem value="pending_page_approval">Pending Page Approval</SelectItem>
+                    <SelectItem value="live">Live</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="published">Published</Label>
