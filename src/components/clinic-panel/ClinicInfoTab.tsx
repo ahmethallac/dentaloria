@@ -92,8 +92,9 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updates: Partial<Clinic> & { trustpilot_url?: string } = {
-        name: form.name,
+      const updates: Partial<Clinic> & { trustpilot_url?: string; display_name?: string } = {
+        // We intentionally do NOT update `name` (legal name) from this form —
+        // it can only be changed via the registration data.
         email: form.email,
         phone: form.phone,
         website: form.website,
@@ -102,13 +103,15 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         city_id: cityId || clinic.city_id,
         // @ts-ignore
         trustpilot_url: form.trustpilot_url,
+        // @ts-ignore
+        display_name: form.display_name.trim() || null,
       };
       const updated = await updateClinic(clinic.id, updates as any);
-      toast({ title: "Başarılı", description: "Klinik bilgileri güncellendi." });
+      toast({ title: "Success", description: "Clinic information updated." });
       onUpdated?.(updated);
     } catch (e: any) {
-      console.error("Klinik güncellenemedi:", e);
-      toast({ title: "Hata", description: "Klinik bilgileri güncellenirken bir hata oluştu.", variant: "destructive" });
+      console.error("Could not update clinic:", e);
+      toast({ title: "Error", description: "An error occurred while saving the clinic information.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
