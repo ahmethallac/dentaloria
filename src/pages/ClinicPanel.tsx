@@ -43,6 +43,7 @@ const ClinicPanel = () => {
   const [isFeatured, setIsFeatured] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('pending');
   const [pageStatus, setPageStatus] = useState<'incomplete' | 'pending_page_approval' | 'live'>('incomplete');
+  const [pageRevisionNotes, setPageRevisionNotes] = useState<string | null>(null);
   const [savingAdmin, setSavingAdmin] = useState(false);
   const [submittingPage, setSubmittingPage] = useState(false);
 
@@ -73,6 +74,7 @@ const ClinicPanel = () => {
       setIsFeatured((data as any).is_featured || false);
       setApprovalStatus((data as any).approval_status || 'pending');
       setPageStatus(((data as any).page_status as any) || 'incomplete');
+      setPageRevisionNotes(((data as any).page_revision_notes as string | null) ?? null);
 
       const [leadsRes, purchasesRes, billingRes] = await Promise.all([
         supabase.from('contact_requests').select('id', { count: 'exact' }).eq('clinic_id', id),
