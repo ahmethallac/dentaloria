@@ -186,6 +186,35 @@ const ClinicPanel = () => {
         </Badge>
       }
     >
+      {/* Page status banner — visible to clinic owners (not Super Admins on this view) */}
+      {approvalStatus === 'approved' && pageStatus !== 'live' && (
+        <Card className={`mb-6 border ${pageStatus === 'pending_page_approval' ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-primary/40 bg-primary/5'}`}>
+          <CardContent className="pt-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold">
+                {pageStatus === 'pending_page_approval'
+                  ? 'Your page is awaiting Super Admin approval'
+                  : 'Complete your clinic page'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {pageStatus === 'pending_page_approval'
+                  ? 'You can keep editing — your clinic will go live once approved.'
+                  : 'Add photos, doctors, treatments and a description, then submit your page for approval to go live.'}
+              </p>
+            </div>
+            {pageStatus === 'incomplete' && (
+              <Button onClick={handleSubmitForApproval} disabled={submittingPage}>
+                {submittingPage ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+                Submit for Approval
+              </Button>
+            )}
+            {pageStatus === 'pending_page_approval' && (
+              <Badge variant="secondary">Pending page approval</Badge>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {section === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
