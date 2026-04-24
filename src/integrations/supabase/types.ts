@@ -45,6 +45,7 @@ export type Database = {
       }
       clinic_approvals: {
         Row: {
+          applied_as_healthcare_facility: boolean
           approval_token: string | null
           clinic_id: string
           created_at: string
@@ -57,6 +58,7 @@ export type Database = {
           tax_certificate_url: string | null
         }
         Insert: {
+          applied_as_healthcare_facility?: boolean
           approval_token?: string | null
           clinic_id: string
           created_at?: string
@@ -69,6 +71,7 @@ export type Database = {
           tax_certificate_url?: string | null
         }
         Update: {
+          applied_as_healthcare_facility?: boolean
           approval_token?: string | null
           clinic_id?: string
           created_at?: string
@@ -217,6 +220,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          page_status: string
           patient_count: number | null
           phone: string | null
           rating: number | null
@@ -244,6 +248,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          page_status?: string
           patient_count?: number | null
           phone?: string | null
           rating?: number | null
@@ -271,6 +276,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          page_status?: string
           patient_count?: number | null
           phone?: string | null
           rating?: number | null

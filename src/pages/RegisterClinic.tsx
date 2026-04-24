@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, FileText, CheckCircle, Clock } from 'lucide-react'
+import { Loader2, Upload, CheckCircle, Clock, FileText } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 
 interface Country { id: string; name: string; code: string }
@@ -24,18 +23,20 @@ const RegisterClinic = () => {
   const [cities, setCities] = useState<City[]>([])
   const [countryId, setCountryId] = useState('')
 
+  const healthInputRef = useRef<HTMLInputElement>(null)
+  const agencyInputRef = useRef<HTMLInputElement>(null)
+
   const [form, setForm] = useState({
     clinicName: '',
     email: '',
     password: '',
     confirmPassword: '',
     cityId: '',
-    address: '',
     phone: '',
     website: '',
-    description: '',
-    taxCertificate: null as File | null,
     healthTourismDoc: null as File | null,
+    agencyCertificate: null as File | null,
+    isHealthcareFacility: false,
     agree: false,
   })
 
@@ -62,8 +63,11 @@ const RegisterClinic = () => {
     if (form.password.length < 6) {
       toast({ title: 'Error', description: 'Password must be at least 6 characters.', variant: 'destructive' }); return
     }
-    if (!form.taxCertificate || !form.healthTourismDoc) {
-      toast({ title: 'Error', description: 'Please upload both required documents.', variant: 'destructive' }); return
+    if (!form.healthTourismDoc) {
+      toast({ title: 'Error', description: 'Please upload the Health Tourism Authorization Certificate.', variant: 'destructive' }); return
+    }
+    if (!form.isHealthcareFacility && !form.agencyCertificate) {
+      toast({ title: 'Error', description: 'Please upload the Agency Certificate, or check "I am applying as a healthcare facility".', variant: 'destructive' }); return
     }
     if (!form.agree) {
       toast({ title: 'Error', description: 'Please accept the terms.', variant: 'destructive' }); return
@@ -71,7 +75,6 @@ const RegisterClinic = () => {
 
     setSubmitting(true)
     try {
-      // Upload documents to private bucket using a temp folder keyed by email hash + timestamp
       const folder = `pending/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
       const uploadDoc = async (file: File, name: string) => {
         const ext = file.name.split('.').pop()
@@ -81,10 +84,10 @@ const RegisterClinic = () => {
         return path
       }
 
-      const [taxUrl, healthUrl] = await Promise.all([
-        uploadDoc(form.taxCertificate!, 'tax-certificate'),
-        uploadDoc(form.healthTourismDoc!, 'health-tourism-doc'),
-      ])
+      const healthUrl = await uploadDoc(form.healthTourismDoc!, 'health-tourism-doc')
+      const agencyUrl = !form.isHealthcareFacility && form.agencyCertificate
+        ? await uploadDoc(form.agencyCertificate, 'agency-certificate')
+        : null
 
       const { data, error } = await supabase.functions.invoke('register-clinic', {
         body: {
@@ -92,12 +95,11 @@ const RegisterClinic = () => {
           password: form.password,
           clinicName: form.clinicName,
           cityId: form.cityId,
-          address: form.address,
           phone: form.phone,
           website: form.website || null,
-          description: form.description || null,
-          taxCertificateUrl: taxUrl,
           healthTourismDocUrl: healthUrl,
+          agencyCertificateUrl: agencyUrl,
+          appliedAsHealthcareFacility: form.isHealthcareFacility,
         },
       })
 
@@ -125,7 +127,7 @@ const RegisterClinic = () => {
           <CardContent className="space-y-4 text-center">
             <p className="text-sm text-muted-foreground">
               Thank you for registering your clinic. Our team will review your submission and documents.
-              You'll be able to sign in once your clinic is approved.
+              Once your application is approved, you'll be able to sign in and complete your clinic page.
             </p>
             <Button className="w-full" onClick={() => navigate('/')}>Back to Home</Button>
           </CardContent>
@@ -141,7 +143,7 @@ const RegisterClinic = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Register Your Clinic</CardTitle>
             <CardDescription>
-              One account = one clinic. Provide your clinic details to apply for listing.
+              Provide your clinic's official details. After approval you'll be able to complete your public page.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -150,7 +152,7 @@ const RegisterClinic = () => {
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-foreground/80">Account</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email Address</Label>
                   <Input id="email" type="email" value={form.email} onChange={(e) => upd('email', e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -169,7 +171,7 @@ const RegisterClinic = () => {
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-foreground/80">Clinic</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="clinicName">Clinic Name</Label>
+                  <Label htmlFor="clinicName">Official Company Name (Legal Name)</Label>
                   <Input id="clinicName" value={form.clinicName} onChange={(e) => upd('clinicName', e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -192,42 +194,94 @@ const RegisterClinic = () => {
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" value={form.address} onChange={(e) => upd('address', e.target.value)} required />
-                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input id="phone" value={form.phone} onChange={(e) => upd('phone', e.target.value)} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="website">Website (optional)</Label>
-                    <Input id="website" value={form.website} onChange={(e) => upd('website', e.target.value)} />
+                    <Label htmlFor="website">Website</Label>
+                    <Input id="website" placeholder="https://" value={form.website} onChange={(e) => upd('website', e.target.value)} />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description (optional)</Label>
-                  <Textarea id="description" rows={3} value={form.description} onChange={(e) => upd('description', e.target.value)} />
                 </div>
               </div>
 
               {/* Documents */}
-              <div className="space-y-3 p-4 bg-muted rounded-lg">
+              <div className="space-y-4 p-4 bg-muted rounded-lg">
                 <h3 className="text-sm font-semibold">Required Documents</h3>
+
+                {/* Health Tourism Authorization Certificate — always required */}
                 <div className="space-y-2">
-                  <Label htmlFor="tax" className="text-sm flex items-center gap-2">
-                    {form.taxCertificate ? <CheckCircle className="w-4 h-4 text-green-500" /> : <FileText className="w-4 h-4" />}
-                    Tax Certificate
+                  <Label className="text-sm flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Health Tourism Authorization Certificate
+                    <span className="text-destructive">*</span>
                   </Label>
-                  <Input id="tax" type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => upd('taxCertificate', e.target.files?.[0] || null)} required />
+                  <input
+                    ref={healthInputRef}
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => upd('healthTourismDoc', e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Button type="button" variant="outline" size="sm" onClick={() => healthInputRef.current?.click()}>
+                      <Upload className="w-4 h-4 mr-1" /> Upload File
+                    </Button>
+                    {form.healthTourismDoc && (
+                      <span className="text-sm flex items-center gap-1 text-green-600 truncate">
+                        <CheckCircle className="w-4 h-4 shrink-0" />
+                        <span className="truncate max-w-[260px]">{form.healthTourismDoc.name}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
+
+                {/* Agency Certificate — conditionally required */}
                 <div className="space-y-2">
-                  <Label htmlFor="health" className="text-sm flex items-center gap-2">
-                    {form.healthTourismDoc ? <CheckCircle className="w-4 h-4 text-green-500" /> : <FileText className="w-4 h-4" />}
-                    Health Tourism Authorization
+                  <Label className="text-sm flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Agency Certificate
+                    {!form.isHealthcareFacility && <span className="text-destructive">*</span>}
                   </Label>
-                  <Input id="health" type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => upd('healthTourismDoc', e.target.files?.[0] || null)} required />
+                  <input
+                    ref={agencyInputRef}
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => upd('agencyCertificate', e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => agencyInputRef.current?.click()}
+                      disabled={form.isHealthcareFacility}
+                    >
+                      <Upload className="w-4 h-4 mr-1" /> Upload File
+                    </Button>
+                    {form.agencyCertificate && !form.isHealthcareFacility && (
+                      <span className="text-sm flex items-center gap-1 text-green-600 truncate">
+                        <CheckCircle className="w-4 h-4 shrink-0" />
+                        <span className="truncate max-w-[260px]">{form.agencyCertificate.name}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-start gap-2 pt-2">
+                    <Checkbox
+                      id="healthcare"
+                      checked={form.isHealthcareFacility}
+                      onCheckedChange={(v) => {
+                        upd('isHealthcareFacility', !!v)
+                        if (v) upd('agencyCertificate', null)
+                      }}
+                    />
+                    <Label htmlFor="healthcare" className="text-sm text-muted-foreground leading-snug">
+                      I am applying as a healthcare facility
+                    </Label>
+                  </div>
                 </div>
               </div>
 

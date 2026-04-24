@@ -42,7 +42,9 @@ const ClinicPanel = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('pending');
+  const [pageStatus, setPageStatus] = useState<'incomplete' | 'pending_page_approval' | 'live'>('incomplete');
   const [savingAdmin, setSavingAdmin] = useState(false);
+  const [submittingPage, setSubmittingPage] = useState(false);
 
   const isAdminUser = userRole === 'admin' || userRole === 'sub_admin';
 
@@ -70,6 +72,7 @@ const ClinicPanel = () => {
       setIsVerified((data as any).is_verified || false);
       setIsFeatured((data as any).is_featured || false);
       setApprovalStatus((data as any).approval_status || 'pending');
+      setPageStatus(((data as any).page_status as any) || 'incomplete');
 
       const [leadsRes, purchasesRes, billingRes] = await Promise.all([
         supabase.from('contact_requests').select('id', { count: 'exact' }).eq('clinic_id', id),
@@ -100,7 +103,7 @@ const ClinicPanel = () => {
     setSavingAdmin(true);
     try {
       const { error: clinicError } = await supabase.from('clinics')
-        .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus })
+        .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus, page_status: pageStatus })
         .eq('id', id);
       if (clinicError) throw clinicError;
       const { error: billingError } = await supabase.from('clinic_billing_settings')
@@ -113,6 +116,24 @@ const ClinicPanel = () => {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
       setSavingAdmin(false);
+    }
+  };
+
+  const handleSubmitForApproval = async () => {
+    if (!id) return;
+    setSubmittingPage(true);
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ page_status: 'pending_page_approval' })
+        .eq('id', id);
+      if (error) throw error;
+      toast({ title: 'Submitted', description: 'Your page has been submitted for Super Admin approval.' });
+      loadClinic();
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSubmittingPage(false);
     }
   };
 
@@ -165,6 +186,35 @@ const ClinicPanel = () => {
         </Badge>
       }
     >
+      {/* Page status banner — visible to clinic owners (not Super Admins on this view) */}
+      {approvalStatus === 'approved' && pageStatus !== 'live' && (
+        <Card className={`mb-6 border ${pageStatus === 'pending_page_approval' ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-primary/40 bg-primary/5'}`}>
+          <CardContent className="pt-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold">
+                {pageStatus === 'pending_page_approval'
+                  ? 'Your page is awaiting Super Admin approval'
+                  : 'Complete your clinic page'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {pageStatus === 'pending_page_approval'
+                  ? 'You can keep editing — your clinic will go live once approved.'
+                  : 'Add photos, doctors, treatments and a description, then submit your page for approval to go live.'}
+              </p>
+            </div>
+            {pageStatus === 'incomplete' && (
+              <Button onClick={handleSubmitForApproval} disabled={submittingPage}>
+                {submittingPage ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+                Submit for Approval
+              </Button>
+            )}
+            {pageStatus === 'pending_page_approval' && (
+              <Badge variant="secondary">Pending page approval</Badge>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {section === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -230,6 +280,17 @@ const ClinicPanel = () => {
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Page Status</Label>
+                <Select value={pageStatus} onValueChange={(v: any) => setPageStatus(v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="incomplete">Incomplete</SelectItem>
+                    <SelectItem value="pending_page_approval">Pending Page Approval</SelectItem>
+                    <SelectItem value="live">Live</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

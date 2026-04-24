@@ -34,6 +34,8 @@ const Admin = () => {
 
   const [clinics, setClinics] = useState<any[]>([])
   const [pendingApprovals, setPendingApprovals] = useState<any[]>([])
+  const [pendingPageApprovals, setPendingPageApprovals] = useState<any[]>([])
+  const [approvalsTab, setApprovalsTab] = useState<'application' | 'page'>('application')
   const [patients, setPatients] = useState<any[]>([])
   const [stats, setStats] = useState({ totalClinics: 0, pendingApprovals: 0, totalPatients: 0, totalRevenue: 0 })
   const [loading, setLoading] = useState(true)
@@ -67,9 +69,15 @@ const Admin = () => {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [clinicsRes, approvalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
+      const [clinicsRes, approvalsRes, pageApprovalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
         supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
-        supabase.from('clinic_approvals').select('*, clinics(name, email)').eq('status', 'pending').order('created_at', { ascending: false }),
+        supabase.from('clinic_approvals').select('*, clinics(name, email, phone, website, created_at, cities(name, countries(name)))').eq('status', 'pending').order('created_at', { ascending: false }),
+        supabase.from('clinics')
+          .select('id, name, email, phone, website, page_status, updated_at, cities(name, countries(name))')
+          .eq('approval_status', 'approved')
+          .eq('page_status', 'pending_page_approval')
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false }),
         supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
         supabase.from('lead_purchases').select('amount_cents'),
         supabase.from('countries').select('id, name').order('name'),
@@ -81,6 +89,7 @@ const Admin = () => {
       const totalRevenue = (purchasesRes.data || []).reduce((sum, p) => sum + (p.amount_cents || 0), 0)
       setClinics(clinicsRes.data || [])
       setPendingApprovals(approvalsRes.data || [])
+      setPendingPageApprovals(pageApprovalsRes.data || [])
 
       const leadsData = leadsRes.data || []
       const patientMap = new Map<string, { name: string; email: string; phone: string | null; count: number; lastDate: string }>()
@@ -97,7 +106,7 @@ const Admin = () => {
 
       setStats({
         totalClinics: clinicsRes.data?.length || 0,
-        pendingApprovals: approvalsRes.data?.length || 0,
+        pendingApprovals: (approvalsRes.data?.length || 0) + (pageApprovalsRes.data?.length || 0),
         totalPatients: patientMap.size,
         totalRevenue: totalRevenue / 100,
       })
@@ -112,17 +121,52 @@ const Admin = () => {
   const handleApproval = async (clinicId: string, action: 'approve' | 'reject', reason?: string) => {
     try {
       const newStatus = action === 'approve' ? 'approved' : 'rejected'
+      // On application approval the clinic becomes approved + published, but the public page only goes live
+      // once page_status is set to 'live' (via the Page Approvals tab).
+      const clinicUpdate: any = { approval_status: newStatus, is_published: action === 'approve' }
+      if (action === 'approve') clinicUpdate.page_status = 'incomplete'
       await Promise.all([
         supabase.from('clinic_approvals').update({
           status: newStatus, rejection_reason: reason,
           reviewed_by: user?.id, reviewed_at: new Date().toISOString(),
         }).eq('clinic_id', clinicId),
-        supabase.from('clinics').update({ approval_status: newStatus, is_published: action === 'approve' }).eq('id', clinicId),
+        supabase.from('clinics').update(clinicUpdate).eq('id', clinicId),
       ])
-      toast({ title: 'Success', description: `Clinic ${newStatus}` })
+      toast({ title: 'Success', description: `Clinic application ${newStatus}` })
       loadAllData()
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const handlePageApproval = async (clinicId: string, action: 'approve' | 'reject') => {
+    try {
+      const next = action === 'approve' ? 'live' : 'incomplete'
+      const { error } = await supabase
+        .from('clinics')
+        .update({ page_status: next })
+        .eq('id', clinicId)
+      if (error) throw error
+      toast({
+        title: action === 'approve' ? 'Page approved' : 'Sent back to clinic',
+        description: action === 'approve' ? 'Clinic is now live on the site.' : 'The clinic can edit and re-submit.',
+      })
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    }
+  }
+
+  const openDocument = async (path: string | null | undefined) => {
+    if (!path) return
+    try {
+      const { data, error } = await supabase.storage
+        .from('clinic-documents')
+        .createSignedUrl(path, 60 * 10) // 10 minutes
+      if (error || !data?.signedUrl) throw error || new Error('Could not create signed URL')
+      window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Could not open document', variant: 'destructive' })
     }
   }
 
@@ -527,37 +571,134 @@ const Admin = () => {
 
       {section === 'approvals' && (
         <Card>
-          <CardHeader><CardTitle>Pending Approvals</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {pendingApprovals.map(approval => (
-                <div key={approval.id} className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                    <div>
-                      <h3 className="font-semibold">{approval.clinics?.name || 'Unknown'}</h3>
-                      <p className="text-sm text-muted-foreground">{approval.clinics?.email}</p>
-                      <p className="text-xs text-muted-foreground">Applied: {new Date(approval.created_at).toLocaleDateString()}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {approval.tax_certificate_url && <Badge variant="outline"><FileCheck className="w-3 h-3 mr-1" />Tax Cert</Badge>}
-                      {approval.health_tourism_doc_url && <Badge variant="outline"><FileCheck className="w-3 h-3 mr-1" />Health Doc</Badge>}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApproval(approval.clinic_id, 'approve')}>
-                      <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => {
-                      const reason = window.prompt('Rejection reason:')
-                      if (reason) handleApproval(approval.clinic_id, 'reject', reason)
-                    }}>
-                      <XCircle className="w-4 h-4 mr-1" /> Reject
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {pendingApprovals.length === 0 && <p className="text-center text-muted-foreground py-6">No pending approvals.</p>}
+          <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle>Pending Approvals</CardTitle>
+              <CardDescription className="mt-1">
+                Review new clinic applications and finished clinic pages waiting to go live.
+              </CardDescription>
             </div>
+            <div className="inline-flex rounded-md border p-1 bg-muted">
+              <Button
+                variant={approvalsTab === 'application' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setApprovalsTab('application')}
+              >
+                Clinic Application Approvals ({pendingApprovals.length})
+              </Button>
+              <Button
+                variant={approvalsTab === 'page' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setApprovalsTab('page')}
+              >
+                Clinic Page Approvals ({pendingPageApprovals.length})
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {approvalsTab === 'application' && (
+              <div className="space-y-4">
+                {pendingApprovals.map(approval => {
+                  const c = approval.clinics || {}
+                  const country = c.cities?.countries?.name
+                  const city = c.cities?.name
+                  return (
+                    <div key={approval.id} className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold">{c.name || 'Unknown'}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {[country, city].filter(Boolean).join(' • ') || '—'}
+                          </p>
+                          <div className="text-sm mt-1 space-y-0.5">
+                            <p><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
+                            <p><span className="text-muted-foreground">Phone:</span> {c.phone || '—'}</p>
+                            <p>
+                              <span className="text-muted-foreground">Website:</span>{' '}
+                              {c.website ? (
+                                <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                                  {c.website}
+                                </a>
+                              ) : '—'}
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Applied: {new Date(approval.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Button size="sm" variant="outline" onClick={() => openDocument(approval.health_tourism_doc_url)} disabled={!approval.health_tourism_doc_url}>
+                          <FileCheck className="w-4 h-4 mr-1" /> Health Tourism Authorization Certificate
+                        </Button>
+                        {approval.applied_as_healthcare_facility ? (
+                          <Badge variant="secondary" className="self-center">Applied as healthcare facility</Badge>
+                        ) : approval.tax_certificate_url ? (
+                          <Button size="sm" variant="outline" onClick={() => openDocument(approval.tax_certificate_url)}>
+                            <FileCheck className="w-4 h-4 mr-1" /> Agency Certificate
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="self-center">No agency certificate</Badge>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApproval(approval.clinic_id, 'approve')}>
+                          <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => {
+                          const reason = window.prompt('Rejection reason:')
+                          if (reason) handleApproval(approval.clinic_id, 'reject', reason)
+                        }}>
+                          <XCircle className="w-4 h-4 mr-1" /> Reject
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {pendingApprovals.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">No clinic applications waiting.</p>
+                )}
+              </div>
+            )}
+
+            {approvalsTab === 'page' && (
+              <div className="space-y-4">
+                {pendingPageApprovals.map(c => {
+                  const country = c.cities?.countries?.name
+                  const city = c.cities?.name
+                  return (
+                    <div key={c.id} className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold">{c.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {[country, city].filter(Boolean).join(' • ') || '—'}
+                          </p>
+                          <p className="text-sm"><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
+                        </div>
+                        <Badge variant="secondary">Pending page approval</Badge>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel?section=info`)}>
+                          Review Page
+                        </Button>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
+                          <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handlePageApproval(c.id, 'reject')}>
+                          <XCircle className="w-4 h-4 mr-1" /> Send Back
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {pendingPageApprovals.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">No pages waiting for approval.</p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
