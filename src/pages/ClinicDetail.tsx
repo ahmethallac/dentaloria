@@ -307,6 +307,14 @@ const ClinicDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
+      {isPreview && (
+        <div className="bg-yellow-500/15 border-b border-yellow-500/40 text-sm">
+          <div className="container mx-auto px-4 py-2 text-yellow-900 dark:text-yellow-100">
+            <strong>Preview mode</strong> — this page is not live yet. Only Super Admins can see it.
+          </div>
+        </div>
+      )}
+
       {/* ── Breadcrumb ── */}
       <div className="container mx-auto px-4 pt-4 pb-2">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
