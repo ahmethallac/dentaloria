@@ -158,20 +158,31 @@ export default function ImageCropDialog({
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
           >
-            {imgSrc && naturalW > 0 && (
-              <img
-                src={imgSrc}
-                alt="Crop preview"
-                draggable={false}
-                className="absolute select-none"
-                style={{
-                  width: `${naturalW * getBaseScale() * zoom}px`,
-                  height: `${naturalH * getBaseScale() * zoom}px`,
-                  left: `calc(50% - ${(naturalW * getBaseScale() * zoom) / 2 - offset.x}px)`,
-                  top: `calc(50% - ${(naturalH * getBaseScale() * zoom) / 2 - offset.y}px)`,
-                }}
-              />
-            )}
+            {imgSrc && naturalW > 0 && (() => {
+              // Use uniform CSS transform: scale() so both axes are scaled by the
+              // same factor and the image's aspect ratio is *guaranteed* to be
+              // preserved no matter what the slider does.
+              const base = getBaseScale();
+              const baseW = naturalW * base;
+              const baseH = naturalH * base;
+              return (
+                <img
+                  src={imgSrc}
+                  alt="Crop preview"
+                  draggable={false}
+                  className="absolute select-none"
+                  style={{
+                    width: `${baseW}px`,
+                    height: `${baseH}px`,
+                    left: `calc(50% - ${baseW / 2}px)`,
+                    top: `calc(50% - ${baseH / 2}px)`,
+                    transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+                    transformOrigin: 'center center',
+                    willChange: 'transform',
+                  }}
+                />
+              );
+            })()}
             {/* Grid overlay */}
             <div className="absolute inset-0 pointer-events-none">
               <div className="w-full h-full grid grid-cols-3 grid-rows-3">
