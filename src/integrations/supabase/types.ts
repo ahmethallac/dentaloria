@@ -211,6 +211,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          display_name: string | null
           email: string | null
           experience_years: number | null
           id: string
@@ -240,6 +241,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          display_name?: string | null
           email?: string | null
           experience_years?: number | null
           id?: string
@@ -269,6 +271,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          display_name?: string | null
           email?: string | null
           experience_years?: number | null
           id?: string
