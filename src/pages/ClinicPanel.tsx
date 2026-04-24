@@ -42,7 +42,9 @@ const ClinicPanel = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('pending');
+  const [pageStatus, setPageStatus] = useState<'incomplete' | 'pending_page_approval' | 'live'>('incomplete');
   const [savingAdmin, setSavingAdmin] = useState(false);
+  const [submittingPage, setSubmittingPage] = useState(false);
 
   const isAdminUser = userRole === 'admin' || userRole === 'sub_admin';
 
