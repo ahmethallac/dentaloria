@@ -188,30 +188,47 @@ const ClinicPanel = () => {
         </Badge>
       }
     >
-      {/* Page status banner — visible to clinic owners (not Super Admins on this view) */}
+      {/* Page status banner — informational only. The "Submit for Approval"
+          button now lives at the bottom of the Clinic Information editor. */}
       {approvalStatus === 'approved' && pageStatus !== 'live' && (
-        <Card className={`mb-6 border ${pageStatus === 'pending_page_approval' ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-primary/40 bg-primary/5'}`}>
-          <CardContent className="pt-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div>
+        <Card
+          className={`mb-6 border ${
+            pageRevisionNotes
+              ? 'border-destructive/50 bg-destructive/5'
+              : pageStatus === 'pending_page_approval'
+                ? 'border-yellow-500/50 bg-yellow-500/5'
+                : 'border-primary/40 bg-primary/5'
+          }`}
+        >
+          <CardContent className="pt-6 flex flex-col md:flex-row md:items-start justify-between gap-3">
+            <div className="space-y-1">
               <p className="font-semibold">
-                {pageStatus === 'pending_page_approval'
-                  ? 'Your page is awaiting Super Admin approval'
-                  : 'Complete your clinic page'}
+                {pageRevisionNotes
+                  ? 'Your page was sent back for revisions'
+                  : pageStatus === 'pending_page_approval'
+                    ? 'Your page is awaiting Super Admin approval'
+                    : 'Complete your clinic page'}
               </p>
-              <p className="text-sm text-muted-foreground">
-                {pageStatus === 'pending_page_approval'
-                  ? 'You can keep editing — your clinic will go live once approved.'
-                  : 'Add photos, doctors, treatments and a description, then submit your page for approval to go live.'}
-              </p>
+              {pageRevisionNotes ? (
+                <>
+                  <p className="text-sm text-muted-foreground">Please make the following corrections:</p>
+                  <p className="text-sm whitespace-pre-wrap rounded-md border bg-background/60 p-3">
+                    {pageRevisionNotes}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Edit your clinic information and submit it again from the Clinic Information page.
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {pageStatus === 'pending_page_approval'
+                    ? 'You can keep editing — your clinic will go live once approved.'
+                    : 'Add photos, doctors, treatments and a description, then submit your page for approval from the Clinic Information page.'}
+                </p>
+              )}
             </div>
-            {pageStatus === 'incomplete' && (
-              <Button onClick={handleSubmitForApproval} disabled={submittingPage}>
-                {submittingPage ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
-                Submit for Approval
-              </Button>
-            )}
             {pageStatus === 'pending_page_approval' && (
-              <Badge variant="secondary">Pending page approval</Badge>
+              <Badge variant="secondary" className="self-start md:self-center">Pending page approval</Badge>
             )}
           </CardContent>
         </Card>
