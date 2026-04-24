@@ -571,37 +571,134 @@ const Admin = () => {
 
       {section === 'approvals' && (
         <Card>
-          <CardHeader><CardTitle>Pending Approvals</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {pendingApprovals.map(approval => (
-                <div key={approval.id} className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                    <div>
-                      <h3 className="font-semibold">{approval.clinics?.name || 'Unknown'}</h3>
-                      <p className="text-sm text-muted-foreground">{approval.clinics?.email}</p>
-                      <p className="text-xs text-muted-foreground">Applied: {new Date(approval.created_at).toLocaleDateString()}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {approval.tax_certificate_url && <Badge variant="outline"><FileCheck className="w-3 h-3 mr-1" />Tax Cert</Badge>}
-                      {approval.health_tourism_doc_url && <Badge variant="outline"><FileCheck className="w-3 h-3 mr-1" />Health Doc</Badge>}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApproval(approval.clinic_id, 'approve')}>
-                      <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => {
-                      const reason = window.prompt('Rejection reason:')
-                      if (reason) handleApproval(approval.clinic_id, 'reject', reason)
-                    }}>
-                      <XCircle className="w-4 h-4 mr-1" /> Reject
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {pendingApprovals.length === 0 && <p className="text-center text-muted-foreground py-6">No pending approvals.</p>}
+          <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle>Pending Approvals</CardTitle>
+              <CardDescription className="mt-1">
+                Review new clinic applications and finished clinic pages waiting to go live.
+              </CardDescription>
             </div>
+            <div className="inline-flex rounded-md border p-1 bg-muted">
+              <Button
+                variant={approvalsTab === 'application' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setApprovalsTab('application')}
+              >
+                Clinic Application Approvals ({pendingApprovals.length})
+              </Button>
+              <Button
+                variant={approvalsTab === 'page' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setApprovalsTab('page')}
+              >
+                Clinic Page Approvals ({pendingPageApprovals.length})
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {approvalsTab === 'application' && (
+              <div className="space-y-4">
+                {pendingApprovals.map(approval => {
+                  const c = approval.clinics || {}
+                  const country = c.cities?.countries?.name
+                  const city = c.cities?.name
+                  return (
+                    <div key={approval.id} className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold">{c.name || 'Unknown'}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {[country, city].filter(Boolean).join(' • ') || '—'}
+                          </p>
+                          <div className="text-sm mt-1 space-y-0.5">
+                            <p><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
+                            <p><span className="text-muted-foreground">Phone:</span> {c.phone || '—'}</p>
+                            <p>
+                              <span className="text-muted-foreground">Website:</span>{' '}
+                              {c.website ? (
+                                <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                                  {c.website}
+                                </a>
+                              ) : '—'}
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Applied: {new Date(approval.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Button size="sm" variant="outline" onClick={() => openDocument(approval.health_tourism_doc_url)} disabled={!approval.health_tourism_doc_url}>
+                          <FileCheck className="w-4 h-4 mr-1" /> Health Tourism Authorization Certificate
+                        </Button>
+                        {approval.applied_as_healthcare_facility ? (
+                          <Badge variant="secondary" className="self-center">Applied as healthcare facility</Badge>
+                        ) : approval.tax_certificate_url ? (
+                          <Button size="sm" variant="outline" onClick={() => openDocument(approval.tax_certificate_url)}>
+                            <FileCheck className="w-4 h-4 mr-1" /> Agency Certificate
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="self-center">No agency certificate</Badge>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApproval(approval.clinic_id, 'approve')}>
+                          <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => {
+                          const reason = window.prompt('Rejection reason:')
+                          if (reason) handleApproval(approval.clinic_id, 'reject', reason)
+                        }}>
+                          <XCircle className="w-4 h-4 mr-1" /> Reject
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {pendingApprovals.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">No clinic applications waiting.</p>
+                )}
+              </div>
+            )}
+
+            {approvalsTab === 'page' && (
+              <div className="space-y-4">
+                {pendingPageApprovals.map(c => {
+                  const country = c.cities?.countries?.name
+                  const city = c.cities?.name
+                  return (
+                    <div key={c.id} className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold">{c.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {[country, city].filter(Boolean).join(' • ') || '—'}
+                          </p>
+                          <p className="text-sm"><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
+                        </div>
+                        <Badge variant="secondary">Pending page approval</Badge>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel?section=info`)}>
+                          Review Page
+                        </Button>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
+                          <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handlePageApproval(c.id, 'reject')}>
+                          <XCircle className="w-4 h-4 mr-1" /> Send Back
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+                {pendingPageApprovals.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">No pages waiting for approval.</p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
