@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Loader2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { type Clinic, getCountries, getCities, updateClinic, type Country, type City } from "@/lib/services";
 import ClinicImagesManager from "./ClinicImagesManager";
@@ -12,9 +13,13 @@ import ClinicDoctorsManager from "./ClinicDoctorsManager";
 interface ClinicInfoTabProps {
   clinic: Clinic;
   onUpdated?: (updated: Clinic) => void;
+  pageStatus?: "incomplete" | "pending_page_approval" | "live";
+  isAdminUser?: boolean;
+  submittingPage?: boolean;
+  onSubmitForApproval?: () => void;
 }
 
-export default function ClinicInfoTab({ clinic, onUpdated }: ClinicInfoTabProps) {
+export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUser, submittingPage, onSubmitForApproval }: ClinicInfoTabProps) {
   const { toast } = useToast();
 
   const [form, setForm] = useState({
