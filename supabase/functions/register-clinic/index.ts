@@ -18,8 +18,10 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}))
     const {
       email, password,
-      clinicName, cityId, address, phone, website, description,
-      taxCertificateUrl, healthTourismDocUrl,
+      clinicName, cityId, phone, website,
+      healthTourismDocUrl,
+      agencyCertificateUrl,
+      appliedAsHealthcareFacility,
     } = body || {}
 
     // Basic validation
@@ -28,10 +30,10 @@ Deno.serve(async (req) => {
     if (!password) missing.push('password')
     if (!clinicName) missing.push('clinicName')
     if (!cityId) missing.push('cityId')
-    if (!address) missing.push('address')
     if (!phone) missing.push('phone')
-    if (!taxCertificateUrl) missing.push('taxCertificateUrl')
     if (!healthTourismDocUrl) missing.push('healthTourismDocUrl')
+    // agencyCertificateUrl is required only when not applying as a healthcare facility
+    if (!appliedAsHealthcareFacility && !agencyCertificateUrl) missing.push('agencyCertificateUrl')
     if (missing.length) {
       return json({ error: `Missing required fields: ${missing.join(', ')}` }, 400)
     }
@@ -56,7 +58,7 @@ Deno.serve(async (req) => {
       return json({ error: reason }, 500)
     }
 
-    // 2) Insert clinic (pending)
+    // 2) Insert clinic (pending application + incomplete page)
     const { data: clinicRow, error: clinicErr } = await admin
       .from('clinics')
       .insert({
@@ -64,29 +66,31 @@ Deno.serve(async (req) => {
         email,
         user_id: userId,
         city_id: cityId,
-        address,
         phone,
         website: website || null,
-        description: description || null,
         is_published: false,
         approval_status: 'pending',
+        page_status: 'incomplete',
       })
       .select('id')
       .single()
     if (clinicErr || !clinicRow) return await rollback(`Failed to create clinic: ${clinicErr?.message}`)
 
-    // 3) Approval row with documents
+    // 3) Approval row with documents.
+    //    NOTE: existing column tax_certificate_url is reused to store the agency certificate URL
+    //    (kept for backwards compatibility — no schema rename needed).
     const { error: apprErr } = await admin
       .from('clinic_approvals')
       .insert({
         clinic_id: clinicRow.id,
         status: 'pending',
-        tax_certificate_url: taxCertificateUrl,
         health_tourism_doc_url: healthTourismDocUrl,
+        tax_certificate_url: appliedAsHealthcareFacility ? null : agencyCertificateUrl,
+        applied_as_healthcare_facility: !!appliedAsHealthcareFacility,
       })
     if (apprErr) return await rollback(`Failed to create approval: ${apprErr.message}`)
 
-    // 4) Ensure user_role = clinic_admin (handle_new_user_role trigger may already do this)
+    // 4) Ensure user_role = clinic_admin
     await admin.from('user_roles').upsert(
       { user_id: userId, role: 'clinic_admin' },
       { onConflict: 'user_id,role', ignoreDuplicates: true } as any
