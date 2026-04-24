@@ -98,7 +98,7 @@ const Dashboard = () => {
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <Building2 className="w-12 h-12 mx-auto text-primary mb-2" />
-          <CardTitle>{clinic.name}</CardTitle>
+          <CardTitle>{(clinic as any).display_name || clinic.name}</CardTitle>
           <CardDescription>Clinic Registration Status</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

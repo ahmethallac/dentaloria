@@ -23,7 +23,12 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const { toast } = useToast();
 
   const [form, setForm] = useState({
+    // `name` here is the official LEGAL company name from registration.
+    // It stays read-only on this page and is never shown on the public site.
     name: clinic.name || "",
+    // `display_name` is the short, commonly-known name. Required before the
+    // page can be submitted for approval. Used everywhere the clinic is shown.
+    display_name: (clinic as any).display_name || "",
     email: clinic.email || "",
     phone: clinic.phone || "",
     website: clinic.website || "",
@@ -87,8 +92,9 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updates: Partial<Clinic> & { trustpilot_url?: string } = {
-        name: form.name,
+      const updates: Partial<Clinic> & { trustpilot_url?: string; display_name?: string } = {
+        // We intentionally do NOT update `name` (legal name) from this form —
+        // it can only be changed via the registration data.
         email: form.email,
         phone: form.phone,
         website: form.website,
@@ -97,13 +103,15 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         city_id: cityId || clinic.city_id,
         // @ts-ignore
         trustpilot_url: form.trustpilot_url,
+        // @ts-ignore
+        display_name: form.display_name.trim() || null,
       };
       const updated = await updateClinic(clinic.id, updates as any);
-      toast({ title: "Başarılı", description: "Klinik bilgileri güncellendi." });
+      toast({ title: "Success", description: "Clinic information updated." });
       onUpdated?.(updated);
     } catch (e: any) {
-      console.error("Klinik güncellenemedi:", e);
-      toast({ title: "Hata", description: "Klinik bilgileri güncellenirken bir hata oluştu.", variant: "destructive" });
+      console.error("Could not update clinic:", e);
+      toast({ title: "Error", description: "An error occurred while saving the clinic information.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -115,11 +123,34 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         <CardTitle>Clinic Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Legal name (read-only) + Display name (required, public-facing) */}
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Clinic Name</label>
-            <Input value={form.name} onChange={(e) => onChange("name", e.target.value)} />
+            <label className="text-sm font-medium mb-2 block">
+              Legal Company Name <span className="text-xs text-muted-foreground font-normal">(from registration — administrative use only, not shown publicly)</span>
+            </label>
+            <Input value={form.name} readOnly disabled className="bg-background/60" />
           </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Display Name <span className="text-destructive">*</span>{" "}
+              <span className="text-xs text-muted-foreground font-normal">(short, commonly-known name shown on the public page)</span>
+            </label>
+            <Input
+              value={form.display_name}
+              onChange={(e) => onChange("display_name", e.target.value)}
+              placeholder="e.g. Dental Group Istanbul"
+              required
+            />
+            {!form.display_name.trim() && (
+              <p className="text-xs text-destructive mt-1">
+                Display name is required before you can submit your page for approval.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="text-sm font-medium mb-2 block">Email</label>
             <Input value={form.email} onChange={(e) => onChange("email", e.target.value)} />
@@ -228,20 +259,32 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         </div>
 
         {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}
-        {!isAdminUser && onSubmitForApproval && pageStatus === "incomplete" && (
-          <div className="border-t mt-6 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <p className="font-semibold">Ready to go live?</p>
-              <p className="text-sm text-muted-foreground">
-                Once you've added your photos, doctors, treatments and description, submit your page for Super Admin approval.
-              </p>
+        {!isAdminUser && onSubmitForApproval && pageStatus === "incomplete" && (() => {
+          const hasDisplayName = !!form.display_name.trim();
+          const savedDisplayName = !!(clinic as any).display_name;
+          const canSubmit = hasDisplayName && savedDisplayName;
+          return (
+            <div className="border-t mt-6 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="font-semibold">Ready to go live?</p>
+                <p className="text-sm text-muted-foreground">
+                  Once you've added your photos, doctors, treatments and description, submit your page for Super Admin approval.
+                </p>
+                {!canSubmit && (
+                  <p className="text-xs text-destructive mt-2">
+                    {!hasDisplayName
+                      ? "You must set a Display Name above before submitting."
+                      : "Click \"Update Information\" first to save your Display Name, then submit."}
+                  </p>
+                )}
+              </div>
+              <Button onClick={onSubmitForApproval} disabled={!!submittingPage || !canSubmit}>
+                {submittingPage ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                Submit for Approval
+              </Button>
             </div>
-            <Button onClick={onSubmitForApproval} disabled={!!submittingPage}>
-              {submittingPage ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-              Submit for Approval
-            </Button>
-          </div>
-        )}
+          );
+        })()}
         {!isAdminUser && pageStatus === "pending_page_approval" && (
           <div className="border-t mt-6 pt-6 text-sm text-muted-foreground">
             Your page is awaiting Super Admin approval. You can keep editing — it will go live once approved.

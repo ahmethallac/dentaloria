@@ -17,8 +17,13 @@ interface Props {
 export default function ClinicTreatmentsManager({ clinicId, selections, onChanged }: Props) {
   const { toast } = useToast();
   const [allTreatments, setAllTreatments] = useState<Treatment[]>([]);
-  const [selected, setSelected] = useState<Record<string, number>>(Object.fromEntries(
-    selections.map((s) => [s.treatment_id, Number(s.starting_price_euro || 0)])
+  // Store prices as strings so the input can be empty and the user can freely
+  // edit/clear the value without a leading "0" getting stuck in front.
+  const [selected, setSelected] = useState<Record<string, string>>(Object.fromEntries(
+    selections.map((s) => {
+      const v = s.starting_price_euro;
+      return [s.treatment_id, v === null || v === undefined || Number(v) === 0 ? "" : String(v)];
+    })
   ));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,9 +45,9 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
 
   const toggle = (id: string, checked: boolean) => {
     setSelected((prev) => {
-      const next = { ...prev } as Record<string, number>;
+      const next = { ...prev } as Record<string, string>;
       if (checked) {
-        if (!next[id]) next[id] = 0;
+        if (!(id in next)) next[id] = "";
       } else {
         delete next[id];
       }
@@ -50,17 +55,21 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
     });
   };
 
-  const updatePrice = (id: string, value: number) => setSelected((p) => ({ ...p, [id]: value }));
+  const updatePrice = (id: string, value: string) => {
+    // Only digits and a single decimal separator.
+    const cleaned = value.replace(/[^0-9.,]/g, "").replace(",", ".");
+    setSelected((p) => ({ ...p, [id]: cleaned }));
+  };
 
   const save = async () => {
     setSaving(true);
     try {
       // Replace all rows with current selections
       await supabase.from("clinic_treatments").delete().eq("clinic_id", clinicId);
-      const rows = Object.entries(selected).map(([treatment_id, price]) => ({
+      const rows = Object.entries(selected).map(([treatment_id, priceStr]) => ({
         clinic_id: clinicId,
         treatment_id,
-        starting_price_euro: price,
+        starting_price_euro: priceStr === "" ? null : Number(priceStr),
       }));
       if (rows.length) {
         const { error } = await supabase.from("clinic_treatments").insert(rows);
@@ -100,11 +109,13 @@ export default function ClinicTreatmentsManager({ clinicId, selections, onChange
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">Starting Price (EUR)</span>
                     <Input
-                      type="number"
-                      min={0}
-                      step={0.01}
-                      value={selected[t.id] ?? 0}
-                      onChange={(e) => updatePrice(t.id, parseFloat(e.target.value) || 0)}
+                      // text + inputMode=decimal => no native spinner arrows,
+                      // numeric keyboard on mobile, free editing of the value.
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="e.g. 1500"
+                      value={selected[t.id] ?? ""}
+                      onChange={(e) => updatePrice(t.id, e.target.value)}
                       className="w-28"
                     />
                   </div>

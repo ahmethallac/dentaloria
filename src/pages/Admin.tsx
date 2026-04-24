@@ -517,15 +517,13 @@ const Admin = () => {
                           {clinic.deleted_at ? (
                             <Badge variant="outline" className="text-destructive border-destructive">In Trash</Badge>
                           ) : (
-                            <>
-                              <Badge variant={clinic.approval_status === 'approved' ? 'default' : clinic.approval_status === 'pending' ? 'secondary' : 'destructive'}>
-                                {clinic.approval_status}
+                            clinic.page_status === 'live' ? (
+                              <Badge className="bg-green-600 text-white hover:bg-green-700">Live</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
+                                Not Live
                               </Badge>
-                              {clinic.is_published && <Badge className="bg-green-600 text-white">Published</Badge>}
-                              <Badge variant="outline">
-                                {clinic.clinic_billing_settings?.[0]?.billing_type === 'free' ? 'Free' : 'Paid'}
-                              </Badge>
-                            </>
+                            )
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 truncate">
@@ -749,7 +747,7 @@ const Admin = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(`/clinic/${c.id}`, '_blank', 'noopener,noreferrer')}
+                          onClick={() => window.open(`/clinic/${c.id}?preview=1`, '_blank', 'noopener,noreferrer')}
                         >
                           Review Page
                         </Button>

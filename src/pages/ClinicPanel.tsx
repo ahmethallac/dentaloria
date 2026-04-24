@@ -173,14 +173,24 @@ const ClinicPanel = () => {
     },
   ];
 
+  const clinicDisplayName = (clinic as any).display_name || clinic.name;
+  const panelRoot = `/clinic/${clinic.id}/panel?section=overview`;
   const breadcrumbs = isAdminUser
-    ? [{ label: 'Admin', to: '/admin' }, { label: clinic.name }, { label: sectionLabels[section] }]
-    : [{ label: 'Dashboard', to: '/dashboard' }, { label: clinic.name }, { label: sectionLabels[section] }];
+    ? [
+        { label: 'Admin', to: '/admin?section=clinics' },
+        { label: clinicDisplayName, to: panelRoot },
+        { label: sectionLabels[section] },
+      ]
+    : [
+        { label: 'Dashboard', to: '/dashboard' },
+        { label: clinicDisplayName, to: panelRoot },
+        { label: sectionLabels[section] },
+      ];
 
   return (
     <AdminShell
       sections={sections}
-      title={`${clinic.name} — ${sectionLabels[section]}`}
+      title={`${clinicDisplayName} — ${sectionLabels[section]}`}
       breadcrumbs={breadcrumbs}
       headerExtra={
         <Badge variant={(clinic as any).approval_status === 'approved' ? 'default' : 'secondary'}>
