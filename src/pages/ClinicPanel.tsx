@@ -72,6 +72,7 @@ const ClinicPanel = () => {
       setIsVerified((data as any).is_verified || false);
       setIsFeatured((data as any).is_featured || false);
       setApprovalStatus((data as any).approval_status || 'pending');
+      setPageStatus(((data as any).page_status as any) || 'incomplete');
 
       const [leadsRes, purchasesRes, billingRes] = await Promise.all([
         supabase.from('contact_requests').select('id', { count: 'exact' }).eq('clinic_id', id),
