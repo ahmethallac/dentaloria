@@ -71,7 +71,7 @@ const mapClinic = (db: any) => {
 
   return {
     id: db.id,
-    name: db.name,
+    name: db.display_name || db.name,
     location: db.address || "",
     city: db?.cities?.name || "",
     country: db?.cities?.countries?.name || "",
