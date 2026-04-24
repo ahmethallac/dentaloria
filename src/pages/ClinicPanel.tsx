@@ -103,7 +103,7 @@ const ClinicPanel = () => {
     setSavingAdmin(true);
     try {
       const { error: clinicError } = await supabase.from('clinics')
-        .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus })
+        .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus, page_status: pageStatus })
         .eq('id', id);
       if (clinicError) throw clinicError;
       const { error: billingError } = await supabase.from('clinic_billing_settings')
@@ -116,6 +116,24 @@ const ClinicPanel = () => {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
       setSavingAdmin(false);
+    }
+  };
+
+  const handleSubmitForApproval = async () => {
+    if (!id) return;
+    setSubmittingPage(true);
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ page_status: 'pending_page_approval' })
+        .eq('id', id);
+      if (error) throw error;
+      toast({ title: 'Submitted', description: 'Your page has been submitted for Super Admin approval.' });
+      loadClinic();
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSubmittingPage(false);
     }
   };
 
