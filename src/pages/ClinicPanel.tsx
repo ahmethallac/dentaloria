@@ -127,7 +127,7 @@ const ClinicPanel = () => {
     try {
       const { error } = await supabase
         .from('clinics')
-        .update({ page_status: 'pending_page_approval' })
+        .update({ page_status: 'pending_page_approval', page_revision_notes: null })
         .eq('id', id);
       if (error) throw error;
       toast({ title: 'Submitted', description: 'Your page has been submitted for Super Admin approval.' });
