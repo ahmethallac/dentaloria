@@ -103,13 +103,14 @@ const ClinicDetail = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { userRole } = useAuth();
+  const { userRole, loading: authLoading } = useAuth();
 
   // Super-admin / sub-admin preview mode: lets the admin review a clinic page
   // before it goes live. The clinic stays hidden from the public site until it
   // is approved and page_status === 'live'.
   const isAdminUser = userRole === 'admin' || userRole === 'sub_admin';
-  const isPreview = searchParams.get('preview') === '1' && isAdminUser;
+  const previewRequested = searchParams.get('preview') === '1';
+  const isPreview = previewRequested && isAdminUser;
 
   const [clinic, setClinic] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -137,6 +138,11 @@ const ClinicDetail = () => {
   /* fetch clinic */
   useEffect(() => {
     if (!id) return;
+    // If the URL requests preview mode, wait for auth/role to finish loading
+    // before deciding which query to use. Otherwise the page might fall back
+    // to the public query (which excludes pending clinics) and incorrectly
+    // show "Clinic not found".
+    if (previewRequested && authLoading) return;
     (async () => {
       try {
         setLoading(true);
@@ -153,7 +159,7 @@ const ClinicDetail = () => {
         setLoading(false);
       }
     })();
-  }, [id, isPreview]);
+  }, [id, isPreview, previewRequested, authLoading]);
 
   /* scroll‑spy */
   useEffect(() => {
