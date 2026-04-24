@@ -34,6 +34,8 @@ const Admin = () => {
 
   const [clinics, setClinics] = useState<any[]>([])
   const [pendingApprovals, setPendingApprovals] = useState<any[]>([])
+  const [pendingPageApprovals, setPendingPageApprovals] = useState<any[]>([])
+  const [approvalsTab, setApprovalsTab] = useState<'application' | 'page'>('application')
   const [patients, setPatients] = useState<any[]>([])
   const [stats, setStats] = useState({ totalClinics: 0, pendingApprovals: 0, totalPatients: 0, totalRevenue: 0 })
   const [loading, setLoading] = useState(true)
