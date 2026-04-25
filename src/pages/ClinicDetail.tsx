@@ -893,6 +893,13 @@ const ClinicDetail = () => {
         </div>
       )}
 
+      {/* Post-submit recommendations */}
+      <PostFormRecommendationsDialog
+        open={recoOpen}
+        onOpenChange={setRecoOpen}
+        values={recoValues ? { ...recoValues, clinicId: id! } : null}
+      />
+
       {/* Bottom padding for mobile CTA */}
       <div className="h-20 lg:hidden" />
     </div>
