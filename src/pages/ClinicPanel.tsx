@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +13,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
-  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2,
+  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
+import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 
 type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
 
@@ -37,7 +38,7 @@ const ClinicPanel = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalLeads: 0, purchasedLeads: 0, pendingLeads: 0 });
 
-  const [billingType, setBillingType] = useState<string>('paid');
+  const [balanceCents, setBalanceCents] = useState(0);
   const [isPublished, setIsPublished] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
@@ -76,15 +77,15 @@ const ClinicPanel = () => {
       setPageStatus(((data as any).page_status as any) || 'incomplete');
       setPageRevisionNotes(((data as any).page_revision_notes as string | null) ?? null);
 
-      const [leadsRes, purchasesRes, billingRes] = await Promise.all([
+      const [leadsRes, purchasesRes, balanceRes] = await Promise.all([
         supabase.from('contact_requests').select('id', { count: 'exact' }).eq('clinic_id', id),
         supabase.from('lead_purchases').select('id', { count: 'exact' }).eq('clinic_id', id),
-        supabase.from('clinic_billing_settings').select('billing_type').eq('clinic_id', id).single(),
+        supabase.from('clinic_balances').select('balance_cents').eq('clinic_id', id).maybeSingle(),
       ]);
       const totalLeads = leadsRes.count || 0;
       const purchasedLeads = purchasesRes.count || 0;
       setStats({ totalLeads, purchasedLeads, pendingLeads: totalLeads - purchasedLeads });
-      setBillingType(billingRes.data?.billing_type || 'paid');
+      setBalanceCents((balanceRes.data as any)?.balance_cents ?? 0);
     } catch (e: any) {
       console.error("Could not load clinic:", e);
       toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
@@ -108,10 +109,7 @@ const ClinicPanel = () => {
         .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus, page_status: pageStatus })
         .eq('id', id);
       if (clinicError) throw clinicError;
-      const { error: billingError } = await supabase.from('clinic_billing_settings')
-        .update({ billing_type: billingType, updated_by: null, updated_at: new Date().toISOString() })
-        .eq('clinic_id', id);
-      if (billingError) throw billingError;
+      // Billing settings table removed - all clinics use the prepaid balance system at €25/lead.
       toast({ title: "Saved", description: "Admin settings updated successfully." });
       loadClinic();
     } catch (e: any) {
@@ -244,8 +242,39 @@ const ClinicPanel = () => {
         </Card>
       )}
 
+      {/* Balance banners */}
+      {balanceCents === 0 && (
+        <Card className="mb-6 border border-destructive/40 bg-destructive/5">
+          <CardContent className="pt-6 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-destructive">Balance empty</p>
+              <p className="text-sm text-muted-foreground">Incoming leads will be locked until you top up.</p>
+            </div>
+            <Link to={`/clinic/${clinic.id}/panel/balance`}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+      {balanceCents > 0 && balanceCents < 5000 && (
+        <Card className="mb-6 border border-yellow-500/40 bg-yellow-500/5">
+          <CardContent className="pt-6 flex items-start gap-3">
+            <Wallet className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-yellow-700 dark:text-yellow-400">Low balance — top up soon</p>
+              <p className="text-sm text-muted-foreground">You have less than 2 leads remaining (€{(balanceCents/100).toFixed(2)}).</p>
+            </div>
+            <Link to={`/clinic/${clinic.id}/panel/balance`}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
       {section === 'overview' && (
         <div className="space-y-6">
+          <BalanceWidget clinicId={clinic.id} />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card><CardContent className="pt-6 flex items-center gap-3">
               <Users className="w-8 h-8 text-blue-500" />
@@ -299,14 +328,10 @@ const ClinicPanel = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label>Billing Type</Label>
-                <Select value={billingType} onValueChange={setBillingType}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="paid">Paid ($25/lead)</SelectItem>
-                    <SelectItem value="free">Free (100% Discount)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Pricing</Label>
+                <div className="px-3 py-2 rounded-md border border-border bg-muted/40 text-sm">
+                  Fixed €25 per lead (prepaid balance)
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Approval Status</Label>

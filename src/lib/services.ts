@@ -179,10 +179,11 @@ export const getClinics = async (filters?: {
   page?: number
   limit?: number
 }): Promise<{ clinics: Clinic[], total: number }> => {
-  // Use clinics_public view for public access
+  // Default sort: balance-first (clinics with higher balance appear first), then existing tie-breakers.
   let query = supabase
     .from('clinics_public')
     .select('*', { count: 'exact' })
+    .order('balance_cents', { ascending: false, nullsFirst: false })
     .order('is_featured', { ascending: false })
     .order('rating', { ascending: false })
     .order('review_count', { ascending: false })

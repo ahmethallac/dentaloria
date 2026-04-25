@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      balance_transactions: {
+        Row: {
+          amount_cents: number
+          balance_after_cents: number
+          clinic_id: string
+          contact_request_id: string | null
+          created_at: string
+          id: string
+          note: string | null
+          stripe_payment_intent_id: string | null
+          type: string
+        }
+        Insert: {
+          amount_cents: number
+          balance_after_cents: number
+          clinic_id: string
+          contact_request_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          stripe_payment_intent_id?: string | null
+          type: string
+        }
+        Update: {
+          amount_cents?: number
+          balance_after_cents?: number
+          clinic_id?: string
+          contact_request_id?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          stripe_payment_intent_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "balance_transactions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "balance_transactions_contact_request_id_fkey"
+            columns: ["contact_request_id"]
+            isOneToOne: false
+            referencedRelation: "contact_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cities: {
         Row: {
           country_id: string
@@ -93,34 +144,25 @@ export type Database = {
           },
         ]
       }
-      clinic_billing_settings: {
+      clinic_balances: {
         Row: {
-          billing_type: string
+          balance_cents: number
           clinic_id: string
-          id: string
-          price_per_lead_cents: number
           updated_at: string
-          updated_by: string | null
         }
         Insert: {
-          billing_type?: string
+          balance_cents?: number
           clinic_id: string
-          id?: string
-          price_per_lead_cents?: number
           updated_at?: string
-          updated_by?: string | null
         }
         Update: {
-          billing_type?: string
+          balance_cents?: number
           clinic_id?: string
-          id?: string
-          price_per_lead_cents?: number
           updated_at?: string
-          updated_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "clinic_billing_settings_clinic_id_fkey"
+            foreignKeyName: "clinic_balances_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: true
             referencedRelation: "clinics"
@@ -306,6 +348,7 @@ export type Database = {
       clinics_public: {
         Row: {
           address: string | null
+          balance_cents: number
           city_id: string | null
           created_at: string | null
           description: string | null
@@ -324,6 +367,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          balance_cents?: number
           city_id?: string | null
           created_at?: string | null
           description?: string | null
@@ -342,6 +386,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          balance_cents?: number
           city_id?: string | null
           created_at?: string | null
           description?: string | null
@@ -736,6 +781,14 @@ export type Database = {
       check_contact_submission_allowed: {
         Args: { _email: string; _ip_address: unknown }
         Returns: boolean
+      }
+      credit_balance_topup: {
+        Args: { p_amount_cents: number; p_clinic: string; p_intent: string }
+        Returns: Json
+      }
+      debit_balance_for_lead: {
+        Args: { p_clinic: string; p_request: string }
+        Returns: Json
       }
       get_current_user_role: {
         Args: never

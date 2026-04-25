@@ -19,10 +19,19 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+export interface ContactClinicSubmittedValues {
+  clinicId: string;
+  name: string;
+  email: string;
+  phone: string;
+  treatment?: string;
+  message?: string;
+}
+
 export interface ContactClinicFormProps {
   clinicId: string;
   initialTreatment?: string;
-  onSuccess?: () => void;
+  onSuccess?: (values: ContactClinicSubmittedValues) => void;
   submitLabel?: string;
 }
 
@@ -106,8 +115,16 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       } as any);
 
       toast({ title: "Inquiry received", description: "The clinic will contact you soon.", variant: "default" });
+      const submitted: ContactClinicSubmittedValues = {
+        clinicId,
+        name: sanitizedValues.name,
+        email: sanitizedValues.email,
+        phone: sanitizedValues.phone,
+        treatment: sanitizedValues.treatment || undefined,
+        message: sanitizedValues.message || undefined,
+      };
       reset({ name: "", phone: "", email: "", treatment: "", message: "" });
-      onSuccess?.();
+      onSuccess?.(submitted);
     } catch (err: any) {
       console.error("Contact request error", { payload: { clinicId, ...values } }, err);
       
