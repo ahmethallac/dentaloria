@@ -177,10 +177,10 @@ export default function ClinicListing() {
   const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "all");
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
-  const [sortBy, setSortBy] = useState("rating");
+  const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience'>("balance");
   const [page, setPage] = useState(1);
 
-  // Use React Query for clinic search with caching
+  // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
     data: clinicData, 
     isLoading: clinicsLoading,
@@ -191,13 +191,35 @@ export default function ClinicListing() {
     cityId: selectedCity,
     page,
     limit: 12,
+    sortBy,
   });
 
-  const clinics = clinicData?.clinics || [];
+  const rawClinics = clinicData?.clinics || [];
   const totalClinics = clinicData?.total || 0;
-  
+
+  // Client-side price sort (DB view doesn't store min treatment price).
+  const getMinPrice = (clinic: any): number | null => {
+    const cts = clinic?.clinic_treatments || [];
+    const prices = cts
+      .map((ct: any) => Number(ct?.starting_price_euro))
+      .filter((n: number) => Number.isFinite(n) && n > 0);
+    return prices.length ? Math.min(...prices) : null;
+  };
+
+  const clinics = (sortBy === 'price_asc' || sortBy === 'price_desc')
+    ? [...rawClinics].sort((a: any, b: any) => {
+        const pa = getMinPrice(a);
+        const pb = getMinPrice(b);
+        if (pa == null && pb == null) return 0;
+        if (pa == null) return 1;  // nulls last
+        if (pb == null) return -1;
+        return sortBy === 'price_asc' ? pa - pb : pb - pa;
+      })
+    : rawClinics;
+
   // Show skeleton only on initial load, not on filter changes (cached data appears instantly)
   const showSkeleton = clinicsLoading && !clinicData;
+
 
   // Load initial filter data
   useEffect(() => {
