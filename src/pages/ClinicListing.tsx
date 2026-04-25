@@ -428,13 +428,15 @@ export default function ClinicListing() {
               
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4 text-foreground/70" />
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48 bg-white/80 border-white/30 rounded-xl">
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                  <SelectTrigger className="w-56 bg-white/80 border-white/30 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
+                    <SelectItem value="balance">Recommended</SelectItem>
                     <SelectItem value="rating">By Rating</SelectItem>
-                    <SelectItem value="price">By Price</SelectItem>
+                    <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price_desc">Price: High to Low</SelectItem>
                     <SelectItem value="experience">By Experience</SelectItem>
                   </SelectContent>
                 </Select>
