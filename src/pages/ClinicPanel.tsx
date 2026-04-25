@@ -13,9 +13,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
-  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2,
+  Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
+import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 
 type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
 
@@ -37,7 +38,7 @@ const ClinicPanel = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalLeads: 0, purchasedLeads: 0, pendingLeads: 0 });
 
-  const [billingType, setBillingType] = useState<string>('paid');
+  const [balanceCents, setBalanceCents] = useState(0);
   const [isPublished, setIsPublished] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
@@ -76,15 +77,15 @@ const ClinicPanel = () => {
       setPageStatus(((data as any).page_status as any) || 'incomplete');
       setPageRevisionNotes(((data as any).page_revision_notes as string | null) ?? null);
 
-      const [leadsRes, purchasesRes, billingRes] = await Promise.all([
+      const [leadsRes, purchasesRes, balanceRes] = await Promise.all([
         supabase.from('contact_requests').select('id', { count: 'exact' }).eq('clinic_id', id),
         supabase.from('lead_purchases').select('id', { count: 'exact' }).eq('clinic_id', id),
-        supabase.from('clinic_billing_settings').select('billing_type').eq('clinic_id', id).single(),
+        supabase.from('clinic_balances').select('balance_cents').eq('clinic_id', id).maybeSingle(),
       ]);
       const totalLeads = leadsRes.count || 0;
       const purchasedLeads = purchasesRes.count || 0;
       setStats({ totalLeads, purchasedLeads, pendingLeads: totalLeads - purchasedLeads });
-      setBillingType(billingRes.data?.billing_type || 'paid');
+      setBalanceCents((balanceRes.data as any)?.balance_cents ?? 0);
     } catch (e: any) {
       console.error("Could not load clinic:", e);
       toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
