@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUserRole, type AppRole } from "@/lib/roleService";
