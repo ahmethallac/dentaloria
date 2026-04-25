@@ -182,6 +182,8 @@ const ClinicDetail = () => {
     };
   }, [previewRequested, authLoading, user, userRole]);
 
+  const isPreview = previewRequested && previewAccess === 'granted';
+
   /* fetch clinic */
   useEffect(() => {
     if (!id) return;
@@ -383,7 +385,7 @@ const ClinicDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {previewRequested && previewAccess === 'granted' && (
+      {isPreview && (
         <div className="bg-yellow-500/15 border-b border-yellow-500/40 text-sm">
           <div className="container mx-auto px-4 py-2 text-yellow-900 dark:text-yellow-100 flex flex-wrap items-center justify-between gap-3">
             <span>
