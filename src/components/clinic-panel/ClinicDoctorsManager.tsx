@@ -3,9 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { optimizeDoctorImages } from "@/lib/imageUtils";
+import ImageCropDialog from "@/components/ui/ImageCropDialog";
+import { Plus, Trash2, Upload, Loader2 } from "lucide-react";
 
 interface Doctor {
   id: string;
@@ -21,141 +24,230 @@ interface Props {
   onChanged?: () => void;
 }
 
+const EMPTY_FORM = { title: "Dr.", name: "", experience_years: 0 };
+
 export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: Props) {
   const { toast } = useToast();
-  const [isWorking, setIsWorking] = useState(false);
   const [list, setList] = useState<Doctor[]>(doctors);
-  const [form, setForm] = useState<{ title: string; name: string; experience_years: number; image?: File | null }>({
-    title: "Dr.",
-    name: "",
-    experience_years: 0,
-    image: null,
-  });
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
 
-  const onField = (i: number, key: keyof Doctor, val: any) =>
-    setList((prev) => prev.map((d, idx) => (idx === i ? { ...d, [key]: val } : d)));
+  // Image flow: rawFile -> ImageCropDialog -> croppedFile (preview)
+  const [rawFile, setRawFile] = useState<File | null>(null);
+  const [croppedFile, setCroppedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const add = async () => {
-    if (!form.name || !form.image) {
-      toast({ title: "Warning", description: "Name and image are required", variant: "destructive" });
+  const resetModal = () => {
+    setForm(EMPTY_FORM);
+    setRawFile(null);
+    setCroppedFile(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  };
+
+  const handleFilePicked = (f: File | null) => {
+    if (!f) return;
+    setRawFile(f);
+  };
+
+  const handleCropped = (f: File) => {
+    setCroppedFile(f);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(f));
+    setRawFile(null);
+  };
+
+  const handleSave = async () => {
+    if (!form.name.trim()) {
+      toast({ title: "Missing name", description: "Please enter the dentist's full name.", variant: "destructive" });
       return;
     }
-    setIsWorking(true);
+    if (!croppedFile) {
+      toast({ title: "Missing photo", description: "Please upload and crop a profile photo.", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
     try {
-      const [opt] = await optimizeDoctorImages([form.image]);
+      const [opt] = await optimizeDoctorImages([croppedFile]);
       const path = `${clinicId}/doctors/${Date.now()}-${opt.name}`;
       const { error: upErr } = await supabase.storage.from("doctor-images").upload(path, opt);
       if (upErr) throw upErr;
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("doctor-images").getPublicUrl(path);
+      const { data: { publicUrl } } = supabase.storage.from("doctor-images").getPublicUrl(path);
 
       const { data, error } = await supabase
         .from("doctors")
-        .insert({ clinic_id: clinicId, title: form.title, name: form.name, experience_years: form.experience_years, profile_image_url: publicUrl })
+        .insert({
+          clinic_id: clinicId,
+          title: form.title,
+          name: form.name.trim(),
+          experience_years: form.experience_years,
+          profile_image_url: publicUrl,
+        })
         .select("*")
         .single();
       if (error) throw error;
+
       setList((prev) => [...prev, data as Doctor]);
-      setForm({ title: "Dr.", name: "", experience_years: 0, image: null });
-      toast({ title: "Added", description: "Doctor added." });
+      toast({ title: "Added", description: "Dentist added to your clinic." });
       onChanged?.();
+      setOpen(false);
+      resetModal();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not add doctor.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not add dentist.", variant: "destructive" });
     } finally {
-      setIsWorking(false);
+      setSaving(false);
     }
   };
 
-  const save = async (doc: Doctor) => {
-    setIsWorking(true);
-    try {
-      const { error } = await supabase
-        .from("doctors")
-        .update({ title: doc.title, name: doc.name, experience_years: doc.experience_years })
-        .eq("id", doc.id);
-      if (error) throw error;
-      toast({ title: "Saved", description: "Doctor updated." });
-      onChanged?.();
-    } catch (e: any) {
-      console.error(e);
-      toast({ title: "Error", description: "Could not update doctor.", variant: "destructive" });
-    } finally {
-      setIsWorking(false);
-    }
-  };
-
-  const remove = async (id: string) => {
-    setIsWorking(true);
+  const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase.from("doctors").delete().eq("id", id);
       if (error) throw error;
       setList((prev) => prev.filter((d) => d.id !== id));
-      toast({ title: "Deleted", description: "Doctor removed." });
+      toast({ title: "Deleted", description: "Dentist removed." });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not delete doctor.", variant: "destructive" });
-    } finally {
-      setIsWorking(false);
+      toast({ title: "Error", description: "Could not delete dentist.", variant: "destructive" });
     }
   };
 
   return (
     <Card className="p-4 space-y-4">
-      <h3 className="text-lg font-semibold">Doctors</h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-        <div>
-          <Label>Title</Label>
-          <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
-        </div>
-        <div>
-          <Label>Full Name</Label>
-          <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-        </div>
-        <div>
-          <Label>Experience (years)</Label>
-          <Input
-            type="number"
-            min={0}
-            value={form.experience_years}
-            onChange={(e) => setForm((f) => ({ ...f, experience_years: parseInt(e.target.value) || 0 }))}
-          />
-        </div>
-        <div className="flex gap-2">
-          <Input type="file" accept="image/*" onChange={(e) => setForm((f) => ({ ...f, image: e.target.files?.[0] || null }))} />
-          <Button onClick={add} disabled={isWorking}>Add</Button>
-        </div>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Dentists</h3>
+        <Button onClick={() => { resetModal(); setOpen(true); }} size="sm">
+          <Plus className="w-4 h-4 mr-1" /> Add Dentist
+        </Button>
       </div>
 
-      <div className="space-y-3">
-        {list.length === 0 ? (
-          <div className="text-sm text-muted-foreground">No doctors added yet.</div>
-        ) : (
-          list.map((d, i) => (
-            <div key={d.id} className="p-3 border border-border/60 rounded-lg flex items-center gap-3">
-              {d.profile_image_url && (
-                <img src={d.profile_image_url} alt={d.name} className="w-12 h-12 rounded-full object-cover" loading="lazy" />
+      {list.length === 0 ? (
+        <div className="text-sm text-muted-foreground">No dentists added yet.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {list.map((d) => (
+            <div key={d.id} className="flex items-center gap-3 p-3 border border-border/60 rounded-lg">
+              {d.profile_image_url ? (
+                <img
+                  src={d.profile_image_url}
+                  alt={d.name}
+                  loading="lazy"
+                  className="w-14 h-14 rounded-full object-cover shrink-0"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-muted shrink-0" />
               )}
-              <Input value={d.title || ""} onChange={(e) => onField(i, "title", e.target.value)} className="w-24" />
-              <Input value={d.name} onChange={(e) => onField(i, "name", e.target.value)} className="flex-1" />
-              <Input
-                type="number"
-                min={0}
-                value={d.experience_years || 0}
-                onChange={(e) => onField(i, "experience_years", parseInt(e.target.value) || 0)}
-                className="w-28"
-              />
-              <div className="ml-auto flex gap-2">
-                <Button variant="outline" onClick={() => save(d)} disabled={isWorking}>Save</Button>
-                <Button variant="destructive" onClick={() => remove(d.id)} disabled={isWorking}>Delete</Button>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium truncate">{d.title ? `${d.title} ` : ""}{d.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {d.experience_years ? `${d.experience_years} yrs experience` : "—"}
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(d.id)} aria-label="Delete dentist">
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetModal(); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Dentist</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Circular photo preview / uploader */}
+            <div className="flex flex-col items-center gap-2">
+              <label className="cursor-pointer group">
+                <div className="w-32 h-32 rounded-full border-2 border-dashed border-border bg-muted/40 overflow-hidden flex items-center justify-center group-hover:border-primary/60 transition-colors">
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center text-muted-foreground text-xs">
+                      <Upload className="w-6 h-6 mb-1" />
+                      Upload photo
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFilePicked(e.target.files?.[0] || null)}
+                />
+              </label>
+              {previewUrl && (
+                <button
+                  type="button"
+                  className="text-xs text-primary hover:underline"
+                  onClick={() => {
+                    // Re-open crop dialog with last cropped file as source
+                    if (croppedFile) setRawFile(croppedFile);
+                  }}
+                >
+                  Re-adjust photo
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-1">
+                <Label htmlFor="doc-title">Title</Label>
+                <Input
+                  id="doc-title"
+                  value={form.title}
+                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  placeholder="Dr."
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="doc-name">Full Name</Label>
+                <Input
+                  id="doc-name"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="Jane Doe"
+                />
               </div>
             </div>
-          ))
-        )}
-      </div>
+
+            <div>
+              <Label htmlFor="doc-exp">Experience (years)</Label>
+              <Input
+                id="doc-exp"
+                type="number"
+                min={0}
+                value={form.experience_years}
+                onChange={(e) => setForm((f) => ({ ...f, experience_years: parseInt(e.target.value) || 0 }))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Crop dialog: 1:1 for circular avatar */}
+      <ImageCropDialog
+        file={rawFile}
+        aspectRatio={1}
+        outputWidth={512}
+        outputHeight={512}
+        onCrop={handleCropped}
+        onCancel={() => setRawFile(null)}
+      />
     </Card>
   );
 }

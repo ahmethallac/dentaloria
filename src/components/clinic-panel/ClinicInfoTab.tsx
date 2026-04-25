@@ -9,6 +9,8 @@ import { type Clinic, getCountries, getCities, updateClinic, type Country, type 
 import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
+import RichTextEditor from "@/components/ui/RichTextEditor";
+import { sanitizeRichText } from "@/lib/sanitizeHtml";
 
 interface ClinicInfoTabProps {
   clinic: Clinic;
@@ -176,7 +178,14 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
         <div>
           <label className="text-sm font-medium mb-2 block">Description</label>
-          <Textarea rows={4} value={form.description} onChange={(e) => onChange("description", e.target.value)} />
+          <RichTextEditor
+            value={form.description}
+            onChange={(html) => onChange("description", sanitizeRichText(html))}
+            placeholder="Tell patients about your clinic…"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Use <strong>bold</strong>, <em>italic</em> and bullet lists. Pasted formatting is preserved; images and other HTML are removed automatically.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
