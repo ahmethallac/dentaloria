@@ -299,7 +299,7 @@ const ClinicDetail = () => {
   });
 
   /* loading / not‑found states */
-  if (loading || (previewRequested && authLoading)) {
+  if (loading || (previewRequested && (authLoading || userRole === null))) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
