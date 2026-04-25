@@ -572,9 +572,10 @@ const ClinicDetail = () => {
               {clinic.description && (
                 <div>
                   <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
-                  <p className="text-muted-foreground leading-relaxed text-[15px]">
-                    {clinic.description}
-                  </p>
+                  <div
+                    className="prose prose-sm max-w-none text-muted-foreground leading-relaxed text-[15px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2"
+                    dangerouslySetInnerHTML={{ __html: sanitizeRichText(clinic.description) }}
+                  />
                 </div>
               )}
 
