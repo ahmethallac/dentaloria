@@ -747,7 +747,7 @@ const Admin = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(`/clinic/${c.id}?preview=1`, '_blank', 'noopener,noreferrer')}
+                          onClick={() => navigate(`/clinic/${c.id}?preview=1`)}
                         >
                           Review Page
                         </Button>
