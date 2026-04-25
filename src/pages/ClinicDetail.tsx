@@ -138,28 +138,42 @@ const ClinicDetail = () => {
   /* fetch clinic */
   useEffect(() => {
     if (!id) return;
-    // If the URL requests preview mode, wait for auth/role to finish loading
-    // before deciding which query to use. Otherwise the page might fall back
-    // to the public query (which excludes pending clinics) and incorrectly
-    // show "Clinic not found".
-    if (previewRequested && authLoading) return;
+    // Preview mode (?preview=1): only admins/sub_admins are allowed.
+    // Wait for auth to finish AND for a userRole value to be present before
+    // deciding which query to run. This prevents a race where authLoading
+    // briefly flips false while userRole is still null, which would otherwise
+    // fall back to the public query and render "Clinic not found".
+    if (previewRequested) {
+      if (authLoading) return;
+      if (userRole === null) return; // role not resolved yet
+    }
     (async () => {
       try {
         setLoading(true);
-        // In preview mode admins read directly from the private `clinics` table
-        // (RLS lets them see everything). Otherwise we use the public view that
-        // only contains live, approved clinics.
-        const data = isPreview
-          ? await getClinicByIdPrivate(id)
-          : await getClinicById(id);
-        setClinic(data ? mapClinic(data) : null);
-      } catch {
+        if (previewRequested) {
+          // Strictly use the private query in preview mode. Never fall back to
+          // the public view, which excludes non-live clinics.
+          if (!isAdminUser) {
+            console.warn('[ClinicDetail] preview requested but user is not admin/sub_admin', { userRole });
+            setClinic(null);
+            return;
+          }
+          const data = await getClinicByIdPrivate(id);
+          console.log('[ClinicDetail] mode=preview role=', userRole, 'result=', data ? 'found' : 'null');
+          setClinic(data ? mapClinic(data) : null);
+        } else {
+          const data = await getClinicById(id);
+          console.log('[ClinicDetail] mode=public result=', data ? 'found' : 'null');
+          setClinic(data ? mapClinic(data) : null);
+        }
+      } catch (e) {
+        console.error('[ClinicDetail] fetch error', e);
         toast({ title: "Error", description: "Failed to load clinic data.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     })();
-  }, [id, isPreview, previewRequested, authLoading]);
+  }, [id, isPreview, previewRequested, authLoading, userRole, isAdminUser]);
 
   /* scroll‑spy */
   useEffect(() => {
@@ -285,7 +299,7 @@ const ClinicDetail = () => {
   });
 
   /* loading / not‑found states */
-  if (loading || (previewRequested && authLoading)) {
+  if (loading || (previewRequested && (authLoading || userRole === null))) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">

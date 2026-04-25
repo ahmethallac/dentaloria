@@ -1,46 +1,52 @@
-I found the likely cause of the remaining bug and here is the exact fix plan.
+## What I found
 
-## What I will fix
+I checked the actual data for the pending clinic you're reviewing (`DENTAL TURKEY CLINIC ...`):
 
-Update the admin “Review Page” flow so the preview page can reliably load a clinic that is pending page approval instead of falling through to “Clinic not found”.
+- `approval_status = 'approved'`
+- `page_status = 'pending_page_approval'`
+- `is_published = true`
+- City/country joins are intact
+- Your account role is correctly resolved as `admin`
 
-## Why it is still happening
+So the database side is healthy and the admin private query (`getClinicByIdPrivate`) **should** return this clinic.
 
-The current flow opens:
-- `/clinic/{id}?preview=1`
+## Why "Clinic not found" still appears
 
-`ClinicDetail.tsx` only uses the private query when both are true:
-- `preview=1` is present
-- the current session already has `userRole === 'admin' || 'sub_admin'`
+The current `ClinicDetail.tsx` decides which query to run based on `isPreview = previewRequested && (userRole === 'admin' | 'sub_admin')`. The guard waits for `authLoading` to be false, but there is still a subtle hole:
 
-That role value is loaded asynchronously in `AuthContext`. If the clinic detail page renders before the role finishes loading, `isPreview` is false on the first pass and the page can query the public `clinics_public` source instead. Because pending clinics are not live yet, that public query returns nothing, which produces “Clinic not found”.
+`AuthContext` fires `onAuthStateChange` with an `INITIAL_SESSION` event in the new tab. That handler does `setLoading(true)` and then a `setTimeout(..., 0)` to fetch the role. In that brief window `authLoading` can flip false → true → false again. Meanwhile, `getCurrentUser().then` may resolve and set `loading=false` with `userRole=null` for one render before the role fetch completes — so the effect runs once with `isPreview=false`, hits `clinics_public` (which excludes non-live clinics), gets `null`, and renders "Clinic not found". The success of the later private query never overwrites that, because of how the state was set on the failed pass — except in this code it actually would re-fire when `isPreview` flips. So in most cases it self-heals, but if the network round trip orders unluckily, the not-found state shows.
 
-## Implementation plan
+The other realistic cause: in some sessions the new tab opens before the auth session has rehydrated from localStorage at all, so `userRole` is still `null` when `authLoading` first reads `false`.
 
-1. Make preview-mode gating in `ClinicDetail.tsx` wait for auth/role initialization before deciding whether to use the public or private clinic query.
-2. Prevent the page from showing a not-found state while auth is still loading and preview access has not been resolved yet.
-3. Keep the existing security rule intact: only admins/sub-admins can view preview mode; non-admins with `?preview=1` should still be blocked from private access.
-4. Verify the Admin “Review Page” button continues to use the preview URL and matches the fixed loading behavior.
+## Will this affect brand-new clinics registering from now on?
+
+Yes — the same race exists for any clinic in `pending_page_approval` (which every new registration goes through). It is not specific to your old clinic. Old clinic data is fine; the bug is purely in the front-end gating logic for `?preview=1`.
+
+## Recommended fix (front-end only, no DB changes)
+
+1. **Strengthen the gate in `ClinicDetail.tsx`**
+   - When `previewRequested` is true, do not fire any fetch until BOTH `authLoading === false` AND `userRole !== null`. If after auth resolves the role is still `null` or not admin/sub_admin, show a clear "Not authorized for preview" message instead of falling through to the public query.
+   - Keep the loading spinner visible during this resolution so the not-found UI cannot flash.
+
+2. **Make the private fetch the source of truth in preview mode**
+   - In preview mode never call `getClinicById` (the public query). If the private call returns null, show "Clinic not found (preview)" — never fall back to the public query.
+
+3. **Add a one-line diagnostic**
+   - Log `[ClinicDetail] mode=preview role=<x> result=<found|null>` so if it ever happens again we can confirm in console which path ran.
+
+4. **Belt-and-suspenders for the Admin button**
+   - In `Admin.tsx`, before opening the new tab, ensure the URL is exactly `/clinic/{id}?preview=1` (it is) and add `target="_blank"` via an `<a>` so middle-click also works. Minor polish.
 
 ## Files to update
 
-- `src/pages/ClinicDetail.tsx`
-
-## Technical details
-
-Planned logic adjustment:
-
-```text
-If ?preview=1:
-  wait until AuthContext loading === false
-  if userRole is admin/sub_admin -> use getClinicByIdPrivate(id)
-  else -> return not found / fallback safely
-Else:
-  use getClinicById(id)
-```
-
-This is a front-end timing fix only. No database migration should be needed.
+- `src/pages/ClinicDetail.tsx` — tighten preview gating, remove public-fallback in preview mode, add diagnostic log
+- `src/pages/Admin.tsx` — minor link polish (optional)
 
 ## Expected result
 
-From the Super Admin panel, clicking “Review Page” should open the pending clinic preview instead of showing “Clinic not found”.
+- The "Clinic not found" flash disappears for both your existing clinic and any future clinic in `pending_page_approval`.
+- If something still goes wrong, the console log will tell us exactly which branch ran so we can fix it definitively.
+
+## Recommendation on your existing clinic
+
+Keep it — no need to re-register. The bug is purely client-side rendering logic; the underlying clinic record is valid and will work as soon as the gating fix lands.
