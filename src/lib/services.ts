@@ -200,14 +200,13 @@ export const getClinics = async (filters?: {
         .order('rating', { ascending: false });
       break;
     case 'price_asc':
-      query = query
-        .order('min_treatment_price_euro', { ascending: true, nullsFirst: false })
-        .order('rating', { ascending: false });
-      break;
     case 'price_desc':
+      // Price column not stored on clinics_public; use rating as a stable DB-side
+      // ordering and let the caller re-sort by price client-side using
+      // clinic_treatments. We still need a deterministic order for pagination.
       query = query
-        .order('min_treatment_price_euro', { ascending: false, nullsFirst: false })
-        .order('rating', { ascending: false });
+        .order('rating', { ascending: false })
+        .order('review_count', { ascending: false });
       break;
     case 'balance':
     default:
@@ -218,6 +217,7 @@ export const getClinics = async (filters?: {
         .order('review_count', { ascending: false });
       break;
   }
+
 
   
   // Apply filters
