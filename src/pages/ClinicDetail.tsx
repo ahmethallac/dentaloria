@@ -30,7 +30,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ContactClinicForm } from "@/components/forms/ContactClinicForm";
+import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
+import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
@@ -124,6 +125,14 @@ const ClinicDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [recoOpen, setRecoOpen] = useState(false);
+  const [recoValues, setRecoValues] = useState<ContactClinicSubmittedValues | null>(null);
+
+  const handleFormSuccess = (values: ContactClinicSubmittedValues) => {
+    setRecoValues(values);
+    setRecoOpen(true);
+    setMobileOpen(false);
+  };
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -724,7 +733,7 @@ const ClinicDetail = () => {
             >
               <h2 className="text-xl font-bold mb-4">Contact Clinic</h2>
               <div className="rounded-xl border border-border/50 p-6">
-                <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} />
+                <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} onSuccess={handleFormSuccess} />
               </div>
             </div>
           </div>
@@ -762,6 +771,7 @@ const ClinicDetail = () => {
                     clinicId={id!}
                     initialTreatment={initialTreatment}
                     submitLabel="Request Free Quote"
+                    onSuccess={handleFormSuccess}
                   />
                 </div>
 
@@ -802,7 +812,7 @@ const ClinicDetail = () => {
           <ContactClinicForm
             clinicId={id!}
             initialTreatment={initialTreatment}
-            onSuccess={() => setMobileOpen(false)}
+            onSuccess={handleFormSuccess}
             submitLabel="Request Free Quote"
           />
         </DialogContent>
