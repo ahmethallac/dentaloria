@@ -7,12 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
-import { Mail, Phone, Search, Lock, Unlock, CreditCard, Loader2 } from "lucide-react";
+import { Mail, Phone, Search, Lock, Unlock, CreditCard, Loader2, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ApplicationsTabProps {
   clinicId: string;
 }
+
+const PRICE_CENTS = 2500;
+const EXPIRY_HOURS = 48;
+type LeadBucket = 'pending' | 'expired' | 'purchased';
 
 const maskEmail = (email: string) => {
   const [local, domain] = email.split('@')
