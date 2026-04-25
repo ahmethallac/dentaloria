@@ -178,15 +178,47 @@ export const getClinics = async (filters?: {
   searchQuery?: string
   page?: number
   limit?: number
+  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience'
 }): Promise<{ clinics: Clinic[], total: number }> => {
   // Default sort: balance-first (clinics with higher balance appear first), then existing tie-breakers.
+  // Manual sort selections from the UI override the balance sort.
+  const sortBy = filters?.sortBy || 'balance';
+
   let query = supabase
     .from('clinics_public')
-    .select('*', { count: 'exact' })
-    .order('balance_cents', { ascending: false, nullsFirst: false })
-    .order('is_featured', { ascending: false })
-    .order('rating', { ascending: false })
-    .order('review_count', { ascending: false })
+    .select('*', { count: 'exact' });
+
+  switch (sortBy) {
+    case 'rating':
+      query = query
+        .order('rating', { ascending: false })
+        .order('review_count', { ascending: false });
+      break;
+    case 'experience':
+      query = query
+        .order('experience_years', { ascending: false, nullsFirst: false })
+        .order('rating', { ascending: false });
+      break;
+    case 'price_asc':
+    case 'price_desc':
+      // Price column not stored on clinics_public; use rating as a stable DB-side
+      // ordering and let the caller re-sort by price client-side using
+      // clinic_treatments. We still need a deterministic order for pagination.
+      query = query
+        .order('rating', { ascending: false })
+        .order('review_count', { ascending: false });
+      break;
+    case 'balance':
+    default:
+      query = query
+        .order('balance_cents', { ascending: false, nullsFirst: false })
+        .order('is_featured', { ascending: false })
+        .order('rating', { ascending: false })
+        .order('review_count', { ascending: false });
+      break;
+  }
+
+
   
   // Apply filters
   if (filters?.cityId) {

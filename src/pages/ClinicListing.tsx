@@ -177,10 +177,10 @@ export default function ClinicListing() {
   const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "all");
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
-  const [sortBy, setSortBy] = useState("rating");
+  const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience'>("balance");
   const [page, setPage] = useState(1);
 
-  // Use React Query for clinic search with caching
+  // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
     data: clinicData, 
     isLoading: clinicsLoading,
@@ -191,13 +191,35 @@ export default function ClinicListing() {
     cityId: selectedCity,
     page,
     limit: 12,
+    sortBy,
   });
 
-  const clinics = clinicData?.clinics || [];
+  const rawClinics = clinicData?.clinics || [];
   const totalClinics = clinicData?.total || 0;
-  
+
+  // Client-side price sort (DB view doesn't store min treatment price).
+  const getMinPrice = (clinic: any): number | null => {
+    const cts = clinic?.clinic_treatments || [];
+    const prices = cts
+      .map((ct: any) => Number(ct?.starting_price_euro))
+      .filter((n: number) => Number.isFinite(n) && n > 0);
+    return prices.length ? Math.min(...prices) : null;
+  };
+
+  const clinics = (sortBy === 'price_asc' || sortBy === 'price_desc')
+    ? [...rawClinics].sort((a: any, b: any) => {
+        const pa = getMinPrice(a);
+        const pb = getMinPrice(b);
+        if (pa == null && pb == null) return 0;
+        if (pa == null) return 1;  // nulls last
+        if (pb == null) return -1;
+        return sortBy === 'price_asc' ? pa - pb : pb - pa;
+      })
+    : rawClinics;
+
   // Show skeleton only on initial load, not on filter changes (cached data appears instantly)
   const showSkeleton = clinicsLoading && !clinicData;
+
 
   // Load initial filter data
   useEffect(() => {
@@ -406,13 +428,15 @@ export default function ClinicListing() {
               
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4 text-foreground/70" />
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48 bg-white/80 border-white/30 rounded-xl">
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                  <SelectTrigger className="w-56 bg-white/80 border-white/30 rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
+                    <SelectItem value="balance">Recommended</SelectItem>
                     <SelectItem value="rating">By Rating</SelectItem>
-                    <SelectItem value="price">By Price</SelectItem>
+                    <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price_desc">Price: High to Low</SelectItem>
                     <SelectItem value="experience">By Experience</SelectItem>
                   </SelectContent>
                 </Select>

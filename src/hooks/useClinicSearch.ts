@@ -22,6 +22,7 @@ interface UseClinicSearchParams {
   page?: number;
   limit?: number;
   enabled?: boolean;
+  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience';
 }
 
 // Helper to check if a string is a valid UUID
@@ -35,6 +36,7 @@ export function useClinicSearch({
   page = 1,
   limit = 12,
   enabled = true,
+  sortBy = 'balance',
 }: UseClinicSearchParams) {
   // Don't query if we have non-UUID filter values (URL contains names that haven't been resolved yet)
   const hasValidFilters = 
@@ -51,6 +53,7 @@ export function useClinicSearch({
         cityId: cityId === "all" ? undefined : cityId,
         page,
         limit,
+        sortBy,
       },
     ],
     queryFn: async () => {
@@ -60,7 +63,8 @@ export function useClinicSearch({
         cityId?: string;
         page: number;
         limit: number;
-      } = { page, limit };
+        sortBy: typeof sortBy;
+      } = { page, limit, sortBy };
 
       if (treatmentId && treatmentId !== "all") {
         filters.treatmentId = treatmentId;
