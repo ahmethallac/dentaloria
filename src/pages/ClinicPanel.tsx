@@ -242,8 +242,39 @@ const ClinicPanel = () => {
         </Card>
       )}
 
+      {/* Balance banners */}
+      {balanceCents === 0 && (
+        <Card className="mb-6 border border-destructive/40 bg-destructive/5">
+          <CardContent className="pt-6 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-destructive">Balance empty</p>
+              <p className="text-sm text-muted-foreground">Incoming leads will be locked until you top up.</p>
+            </div>
+            <Link to={`/clinic/${clinic.id}/panel/balance`}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+      {balanceCents > 0 && balanceCents < 5000 && (
+        <Card className="mb-6 border border-yellow-500/40 bg-yellow-500/5">
+          <CardContent className="pt-6 flex items-start gap-3">
+            <Wallet className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-yellow-700 dark:text-yellow-400">Low balance — top up soon</p>
+              <p className="text-sm text-muted-foreground">You have less than 2 leads remaining (€{(balanceCents/100).toFixed(2)}).</p>
+            </div>
+            <Link to={`/clinic/${clinic.id}/panel/balance`}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
       {section === 'overview' && (
         <div className="space-y-6">
+          <BalanceWidget clinicId={clinic.id} />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card><CardContent className="pt-6 flex items-center gap-3">
               <Users className="w-8 h-8 text-blue-500" />
