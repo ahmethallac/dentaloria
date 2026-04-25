@@ -109,10 +109,7 @@ const ClinicPanel = () => {
         .update({ is_published: isPublished, is_verified: isVerified, is_featured: isFeatured, approval_status: approvalStatus, page_status: pageStatus })
         .eq('id', id);
       if (clinicError) throw clinicError;
-      const { error: billingError } = await supabase.from('clinic_billing_settings')
-        .update({ billing_type: billingType, updated_by: null, updated_at: new Date().toISOString() })
-        .eq('clinic_id', id);
-      if (billingError) throw billingError;
+      // Billing settings table removed - all clinics use the prepaid balance system at €25/lead.
       toast({ title: "Saved", description: "Admin settings updated successfully." });
       loadClinic();
     } catch (e: any) {
@@ -300,14 +297,10 @@ const ClinicPanel = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label>Billing Type</Label>
-                <Select value={billingType} onValueChange={setBillingType}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="paid">Paid ($25/lead)</SelectItem>
-                    <SelectItem value="free">Free (100% Discount)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Pricing</Label>
+                <div className="px-3 py-2 rounded-md border border-border bg-muted/40 text-sm">
+                  Fixed €25 per lead (prepaid balance)
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Approval Status</Label>
