@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -744,12 +744,8 @@ const Admin = () => {
                         <Badge variant="secondary">Pending page approval</Badge>
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(`/clinic/${c.id}?preview=1`, '_blank', 'noopener,noreferrer')}
-                        >
-                          Review Page
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={`/clinic/${c.id}?preview=1`}>Review Page</Link>
                         </Button>
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
                           <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live

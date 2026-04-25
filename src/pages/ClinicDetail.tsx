@@ -22,6 +22,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { getCurrentUserRole, type AppRole } from "@/lib/roleService";
 import {
   Dialog,
   DialogContent,
@@ -103,17 +104,17 @@ const ClinicDetail = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { userRole, loading: authLoading } = useAuth();
+  const { user, userRole, loading: authLoading } = useAuth();
 
   // Super-admin / sub-admin preview mode: lets the admin review a clinic page
   // before it goes live. The clinic stays hidden from the public site until it
   // is approved and page_status === 'live'.
-  const isAdminUser = userRole === 'admin' || userRole === 'sub_admin';
   const previewRequested = searchParams.get('preview') === '1';
-  const isPreview = previewRequested && isAdminUser;
 
   const [clinic, setClinic] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [previewAccess, setPreviewAccess] = useState<'pending' | 'granted' | 'denied'>(previewRequested ? 'pending' : 'granted');
+  const [resolvedPreviewRole, setResolvedPreviewRole] = useState<AppRole | null>(userRole);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -135,31 +136,72 @@ const ClinicDetail = () => {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const tabBarRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!previewRequested) {
+      setPreviewAccess('granted');
+      setResolvedPreviewRole(userRole);
+      return;
+    }
+
+    if (authLoading) {
+      setPreviewAccess('pending');
+      return;
+    }
+
+    let cancelled = false;
+
+    const resolvePreviewAccess = async () => {
+      if (!user) {
+        if (!cancelled) {
+          setResolvedPreviewRole(null);
+          setPreviewAccess('denied');
+          console.warn('[ClinicDetail] preview denied: no authenticated user');
+        }
+        return;
+      }
+
+      const role = userRole ?? await getCurrentUserRole();
+      if (cancelled) return;
+
+      setResolvedPreviewRole(role);
+
+      const allowed = role === 'admin' || role === 'sub_admin';
+      console.log('[ClinicDetail] preview access resolved', {
+        userId: user.id,
+        role,
+        allowed,
+      });
+
+      setPreviewAccess(allowed ? 'granted' : 'denied');
+    };
+
+    void resolvePreviewAccess();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [previewRequested, authLoading, user, userRole]);
+
+  const isPreview = previewRequested && previewAccess === 'granted';
+
   /* fetch clinic */
   useEffect(() => {
     if (!id) return;
-    // Preview mode (?preview=1): only admins/sub_admins are allowed.
-    // Wait for auth to finish AND for a userRole value to be present before
-    // deciding which query to run. This prevents a race where authLoading
-    // briefly flips false while userRole is still null, which would otherwise
-    // fall back to the public query and render "Clinic not found".
-    if (previewRequested) {
-      if (authLoading) return;
-      if (userRole === null) return; // role not resolved yet
+
+    if (previewRequested && previewAccess !== 'granted') {
+      if (previewAccess === 'denied') {
+        setClinic(null);
+        setLoading(false);
+      }
+      return;
     }
+
     (async () => {
       try {
         setLoading(true);
         if (previewRequested) {
-          // Strictly use the private query in preview mode. Never fall back to
-          // the public view, which excludes non-live clinics.
-          if (!isAdminUser) {
-            console.warn('[ClinicDetail] preview requested but user is not admin/sub_admin', { userRole });
-            setClinic(null);
-            return;
-          }
           const data = await getClinicByIdPrivate(id);
-          console.log('[ClinicDetail] mode=preview role=', userRole, 'result=', data ? 'found' : 'null');
+          console.log('[ClinicDetail] mode=preview role=', resolvedPreviewRole, 'result=', data ? 'found' : 'null');
           setClinic(data ? mapClinic(data) : null);
         } else {
           const data = await getClinicById(id);
@@ -173,7 +215,7 @@ const ClinicDetail = () => {
         setLoading(false);
       }
     })();
-  }, [id, isPreview, previewRequested, authLoading, userRole, isAdminUser]);
+  }, [id, previewRequested, previewAccess, resolvedPreviewRole, toast]);
 
   /* scroll‑spy */
   useEffect(() => {
@@ -299,12 +341,28 @@ const ClinicDetail = () => {
   });
 
   /* loading / not‑found states */
-  if (loading || (previewRequested && (authLoading || userRole === null))) {
+  if (loading || (previewRequested && previewAccess === 'pending')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           <span className="text-muted-foreground text-sm">Loading clinic...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (previewRequested && previewAccess === 'denied') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md space-y-4">
+          <h1 className="text-2xl font-bold">Preview unavailable</h1>
+          <p className="text-muted-foreground">
+            Only Super Admins can open clinic review previews. Please open this page from the admin approvals screen while signed in.
+          </p>
+          <Link to="/admin?section=approvals">
+            <Button>Back to Approvals</Button>
+          </Link>
         </div>
       </div>
     );
@@ -329,8 +387,13 @@ const ClinicDetail = () => {
 
       {isPreview && (
         <div className="bg-yellow-500/15 border-b border-yellow-500/40 text-sm">
-          <div className="container mx-auto px-4 py-2 text-yellow-900 dark:text-yellow-100">
-            <strong>Preview mode</strong> — this page is not live yet. Only Super Admins can see it.
+          <div className="container mx-auto px-4 py-2 text-yellow-900 dark:text-yellow-100 flex flex-wrap items-center justify-between gap-3">
+            <span>
+              <strong>Preview mode</strong> — this page is not live yet. Only Super Admins can see it.
+            </span>
+            <Link to="/admin?section=approvals" className="underline underline-offset-4 font-medium">
+              Back to approvals
+            </Link>
           </div>
         </div>
       )}
