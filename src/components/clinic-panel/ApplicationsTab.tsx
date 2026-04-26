@@ -275,6 +275,8 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
       )}
     </div>
   );
+
+  const renderExpired = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
         <div className="p-6 text-center text-muted-foreground">No expired leads.</div>
