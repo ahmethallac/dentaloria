@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
 import { Mail, Phone, Search, Lock, Unlock, Loader2, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 interface ApplicationsTabProps {
   clinicId: string;
@@ -42,6 +42,8 @@ const isExpired = (createdAt: string) =>
 
 export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [requests, setRequests] = useState<ContactRequest[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const [balanceCents, setBalanceCents] = useState(0);
   const [unlocking, setUnlocking] = useState<string | null>(null);
   const [bulkUnlocking, setBulkUnlocking] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const [q, setQ] = useState('');
   const [bucket, setBucket] = useState<LeadBucket>('pending');
