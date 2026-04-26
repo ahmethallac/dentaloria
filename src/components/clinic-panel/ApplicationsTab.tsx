@@ -404,24 +404,68 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
             {lockedPending.length > 0 && (
               <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle className="w-4 h-4 text-primary" />
-                  <span>
-                    {bulkCount > 0
-                      ? `Unlock all (${bulkCount}) for €${((bulkCount * PRICE_CENTS) / 100).toFixed(2)}`
-                      : 'Top up your balance to unlock pending leads'}
+                  <Checkbox
+                    checked={allVisibleSelected}
+                    onCheckedChange={toggleSelectAllVisible}
+                    aria-label="Select all visible pending leads"
+                  />
+                  <span className="font-medium">
+                    {selectedIds.size > 0
+                      ? `${selectedIds.size} selected · €${((selectedIds.size * PRICE_CENTS) / 100).toFixed(2)}`
+                      : 'Select leads to purchase'}
                   </span>
                 </div>
-                <Button
-                  size="sm"
-                  onClick={unlockAllPending}
-                  disabled={bulkUnlocking || bulkCount === 0}
-                >
-                  {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
-                  Unlock All
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  {selectedIds.size > 0 && balanceCents >= selectedIds.size * PRICE_CENTS && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        setBulkUnlocking(true);
+                        let count = 0;
+                        for (const id of Array.from(selectedIds)) {
+                          const { data, error } = await supabase.rpc('debit_balance_for_lead', {
+                            p_clinic: clinicId,
+                            p_request: id,
+                          });
+                          if (error) break;
+                          count++;
+                          const nb = (data as any)?.balance_cents;
+                          if (typeof nb === 'number') setBalanceCents(nb);
+                          setPurchasedIds((prev) => new Set(prev).add(id));
+                        }
+                        setSelectedIds(new Set());
+                        setBulkUnlocking(false);
+                        toast({ title: 'Done', description: `${count} lead${count === 1 ? '' : 's'} unlocked.` });
+                      }}
+                      disabled={bulkUnlocking}
+                    >
+                      {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
+                      Unlock with balance
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    onClick={() => goToPurchasePage(Array.from(selectedIds))}
+                    disabled={selectedIds.size === 0}
+                  >
+                    Buy selected leads
+                  </Button>
+                  {bulkCount > 0 && selectedIds.size === 0 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={unlockAllPending}
+                      disabled={bulkUnlocking}
+                    >
+                      {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
+                      Unlock all ({bulkCount}) for €{((bulkCount * PRICE_CENTS) / 100).toFixed(2)}
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
-            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPending(filteredQ(buckets.pending))}
+            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPending(visiblePending)}
           </TabsContent>
 
           <TabsContent value="expired" className="mt-4">
