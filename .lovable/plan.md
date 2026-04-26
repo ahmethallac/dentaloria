@@ -1,185 +1,154 @@
-## Goal
+## Overview
 
-Replace the existing per-lead payment flow with a **prepaid balance system** (fixed €25/lead, no exceptions, no "free" billing type), add a **balance-based default sort**, a **balance top-up page**, **panel notifications**, and a **post-form recommendations popup** with Quick Apply.
+Two additions to the lead-purchase flow:
+1. Allow clinics to **select pending leads and pay for them directly** via Stripe (no balance required), through a dedicated intermediate **Purchase Leads page** that mirrors the balance top-up page pattern (summary + discount code + final Pay button).
+2. Add a **discount code system** with `AHMET100` as a 100%-off, unlimited-use code, available on both the lead-purchase page and the balance top-up page.
 
-The existing `ContactClinicForm` keeps its UI/fields/validation; only its `onSuccess` signature is extended to pass the submitted values up to the parent.
-
----
-
-## 1. Remove the old lead payment system
-
-**Code/UI to delete completely**
-- Edge function: `supabase/functions/create-lead-checkout/` (delete entirely).
-- All `clinic_billing_settings` UI in `ClinicPanel.tsx` (Billing Type select).
-- "100% Discount Applied" / `billing_type === 'free'` branches in `ApplicationsTab.tsx`.
-- Free-clinic discount memory + branding (drop the green discount banner).
-- Per-lead Stripe checkout button logic ("Unlock Leads" via Stripe) — replaced by balance debit.
-
-**Database cleanup (migration)**
-- Drop table `clinic_billing_settings` and its trigger `create_default_billing_settings`.
-- Keep `lead_purchases` (used as the "this lead is unlocked for this clinic" record), but `stripe_payment_intent_id` is now always `'balance'` and `amount_cents` is always `2500`.
-- Drop function `create_default_billing_settings`.
+The balance system remains untouched. Direct purchase is an additional path for clinics with no balance (and a convenience for everyone).
 
 ---
 
-## 2. Database changes (new migration)
+## 1. Database changes (migration)
 
+### New table: `discount_codes`
 ```text
-clinic_balances
-  clinic_id uuid PK references clinics(id) on delete cascade
-  balance_cents int not null default 0
-  updated_at timestamptz default now()
+code              text PRIMARY KEY (uppercase, normalized server-side)
+percent_off       integer (0–100)
+is_active         boolean default true
+max_uses          integer NULL          -- NULL = unlimited
+used_count        integer default 0
+expires_at        timestamptz NULL
+created_at        timestamptz default now()
+```
+RLS: no public access. All reads/writes go through SECURITY DEFINER RPCs.
 
-balance_transactions
-  id uuid PK default gen_random_uuid()
-  clinic_id uuid not null references clinics(id) on delete cascade
-  type text not null check (type in ('topup','lead_charge','adjustment','refund'))
-  amount_cents int not null            -- positive = credit, negative = debit
-  balance_after_cents int not null
-  contact_request_id uuid null references contact_requests(id)
-  stripe_payment_intent_id text null
-  note text null
-  created_at timestamptz default now()
+Seed: `('AHMET100', 100, true, NULL, 0, NULL)`.
+
+### New table: `discount_redemptions`
+```text
+id                uuid pk
+code              text
+clinic_id         uuid
+context           text     -- 'direct_lead_purchase' | 'balance_topup'
+amount_off_cents  integer
+stripe_session_id text
+created_at        timestamptz
+```
+Audit trail; webhook inserts a row and bumps `discount_codes.used_count`.
+
+### New RPC: `validate_discount_code(p_code text, p_amount_cents int)`
+Returns JSON `{ valid, percent_off, amount_off_cents, final_cents, reason }`. Checks active, not expired, `used_count < max_uses` when set. `authenticated` callable.
+
+### New RPC: `mark_lead_purchased(p_clinic uuid, p_request uuid, p_intent text, p_amount_cents int)`
+SECURITY DEFINER. Idempotent insert into `lead_purchases` for a single lead. Used by the webhook for direct purchases.
+
+---
+
+## 2. New edge function: `create-direct-lead-purchase`
+
+Body: `{ clinicId, requestIds: string[], discountCode?: string }`
+
+- Auth + verify clinic ownership (mirrors `create-balance-topup`).
+- Validate `requestIds`: belong to `clinicId`, not already purchased, not expired (>48h).
+- `subtotalCents = requestIds.length * 2500`.
+- If `discountCode` set, run `validate_discount_code` server-side → `finalCents`.
+- If `finalCents === 0`: skip Stripe, call `mark_lead_purchased` for each id, insert `discount_redemptions`, return `{ success: true, freeUnlock: true }`.
+- Otherwise create Stripe Checkout session with metadata:
+  ```
+  type=direct_lead_purchase
+  clinic_id, user_id
+  request_ids=<comma-joined>
+  discount_code=<code or "">
+  amount_off_cents=<int>
+  ```
+  - success_url: `/clinic/:id/panel?section=patients&purchase=success`
+  - cancel_url: `/clinic/:id/panel/purchase-leads?ids=<csv>&purchase=cancelled`
+
+## 3. Edge function update: `stripe-balance-webhook`
+
+Extend handler to also process `metadata.type === 'direct_lead_purchase'`:
+- Parse `request_ids`, loop and call `mark_lead_purchased`.
+- If `discount_code` present, insert `discount_redemptions` row and `UPDATE discount_codes SET used_count = used_count + 1 WHERE code = ...`.
+
+(Existing `balance_topup` handling untouched.)
+
+## 4. Edge function update: `create-balance-topup`
+
+Accept optional `discountCode`. Validate, apply discount to the Stripe `unit_amount`, and stamp `metadata.discount_code` + `metadata.amount_off_cents`. The webhook continues to credit balance based on `amount_cents` metadata — for top-ups we credit the **original (pre-discount) lead value**, since the discount is applied to the price the clinic pays, not the balance they receive. (We can flip this if you'd rather credit only the paid amount — current plan: pay €0 with AHMET100 → still receive the package's lead credit.)
+
+If discount yields €0 total: skip Stripe, call `credit_balance_topup` directly, log redemption, return `{ success: true, credited: true }`.
+
+---
+
+## 5. Frontend: `ApplicationsTab.tsx` (Pending bucket)
+
+Add multi-select to the Pending tab — no modal, no purchase UI here, just selection + a CTA that navigates to the new page.
+
+- State: `selectedIds: Set<string>`.
+- Per pending lead row: a **Checkbox** on the left.
+- Sticky action bar above the list when `selectedIds.size > 0`:
+  ```
+  ☐ Select all (visible)        3 selected · €75
+  [Unlock with balance]   [Buy selected leads →]
+  ```
+  - "Unlock with balance" — shown only when `balanceCents >= selected * 2500`. Loops `debit_balance_for_lead` (existing logic).
+  - "Buy selected leads" — always shown when ≥1 selected. Navigates to `/clinic/:id/panel/purchase-leads?ids=<csv>`.
+- Existing per-row "Unlock for €25" (balance) button is preserved.
+- Existing "Unlock All" affordance preserved for users with sufficient balance.
+- Add `useEffect` to detect `?purchase=success` on mount → toast + refetch + clean param.
+
+## 6. New page: `PurchaseLeadsPage.tsx` (route `/clinic/:id/panel/purchase-leads`)
+
+Mirrors `BalanceTopupPage` layout/styling.
+
+URL: `/clinic/:id/panel/purchase-leads?ids=<comma-separated-uuids>`.
+
+On load:
+- Auth gate (redirect to `/auth` if needed).
+- Parse `ids` from query string. If empty → redirect back to panel.
+- Fetch the corresponding `contact_requests` rows (verifying clinic ownership via RLS).
+- Filter out any that are already in `lead_purchases` or expired (>48h); show a notice if some were dropped.
+
+UI:
+- Back link → `/clinic/:id/panel?section=patients`.
+- **Summary card**: list of selected leads (name + masked email + created date), count, subtotal `N × €25 = €X`.
+- **Discount code card**: text input + `Apply` button.
+  - On Apply: call `validate_discount_code` RPC. Show `✓ AHMET100 applied — −€X (100% off)` or an inline error.
+  - Show `Remove` link to clear the code.
+- **Total card**: subtotal, discount line (if any), final total.
+- **Pay button**:
+  - Final > 0: label `Pay €X` → invokes `create-direct-lead-purchase` with `{ clinicId, requestIds, discountCode? }` → redirect to `data.url`.
+  - Final = 0: label `Unlock for free` → same invoke → on `freeUnlock: true`, toast + navigate to `/clinic/:id/panel?section=patients&purchase=success`.
+- Handles `?purchase=cancelled` query param → toast, no charge.
+
+Register the route in `src/App.tsx`:
+```tsx
+<Route path="/clinic/:id/panel/purchase-leads" element={<PurchaseLeadsPage />} />
 ```
 
-**Triggers / functions (all SECURITY DEFINER, search_path=public)**
+## 7. Frontend: `BalanceTopupPage.tsx`
 
-- `ensure_clinic_balance()` — on insert into `clinics`, insert a `clinic_balances` row with 0.
-- `auto_charge_lead_on_insert()` — on insert into `contact_requests`:
-  - `SELECT … FOR UPDATE` the clinic's balance row.
-  - If `balance_cents >= 2500`: insert `lead_purchases` (amount=2500, intent='balance'), update balance, insert `balance_transactions` (type='lead_charge', amount=-2500).
-  - Else: do nothing — lead stays locked.
-- `debit_balance_for_lead(p_clinic uuid, p_request uuid)` — RPC used by the manual "Unlock for €25" button when balance is sufficient. Same locking pattern; raises if insufficient or already purchased.
-- `credit_balance_topup(p_clinic uuid, p_amount_cents int, p_intent text)` — called only by the webhook (service role) to credit a top-up + insert transaction.
-
-**`clinics_public` view extension**
-- Add `balance_cents int default 0` column.
-- Extend `sync_clinics_public` trigger to copy current balance.
-- Add a new trigger on `clinic_balances` after update → updates `clinics_public.balance_cents` for that clinic.
-
-**RLS**
-- `clinic_balances`: clinic owner SELECT own; admin ALL; no client INSERT/UPDATE.
-- `balance_transactions`: clinic owner SELECT own; admin ALL; no client INSERT.
+Add a **discount code section** between the packages grid and the custom-amount card, using the same Apply/Remove pattern as the purchase page. The applied code is passed as `discountCode` to `create-balance-topup` for both package buys and the custom amount. If the function returns `{ credited: true }` (free top-up), show a toast and refresh balance instead of redirecting.
 
 ---
 
-## 3. Edge functions
+## Files
 
-**New: `create-balance-topup`**
-- Auth: requires logged-in clinic owner.
-- Body: `{ clinicId, amountCents }`.
-- Validates `amountCents` is one of `5000, 12000, 23000, 44000` OR a custom integer ≥ `2500`.
-- Verifies user owns clinic.
-- Creates Stripe Checkout `mode: payment`, EUR, single line item, with metadata `{ type: 'balance_topup', clinic_id, amount_cents }`.
-- success_url → `/clinic/:id/panel/balance?topup=success`, cancel_url → `…?topup=cancelled`.
+**New**
+- `supabase/migrations/<ts>_discount_codes_and_direct_purchase.sql`
+- `supabase/functions/create-direct-lead-purchase/index.ts`
+- `src/pages/PurchaseLeadsPage.tsx`
 
-**Replace: `stripe-lead-webhook` → `stripe-balance-webhook`**
-- Handles `checkout.session.completed` for `metadata.type === 'balance_topup'` only.
-- Calls `credit_balance_topup` RPC with service role.
-- Old per-lead branch is removed.
+**Modified**
+- `src/App.tsx` — register `/clinic/:id/panel/purchase-leads` route
+- `supabase/functions/stripe-balance-webhook/index.ts` — handle `direct_lead_purchase` + redemption logging
+- `supabase/functions/create-balance-topup/index.ts` — accept + apply `discountCode`, free-credit shortcut
+- `src/components/clinic-panel/ApplicationsTab.tsx` — checkboxes, selection bar, navigate to purchase page, success-param handling
+- `src/pages/BalanceTopupPage.tsx` — discount code input + pass to function + free-top-up shortcut
 
-**New: `recommend-clinics`** (public, no auth)
-- Returns up to 3 random clinics from `clinics_public` where `balance_cents > 0`, optionally excluding `excludeClinicId`.
-- Includes `id, name, primary image url`.
+## Notes
 
-**New: `quick-apply`** (public, no auth)
-- Body: `{ targetClinicId, name, email, phone, message?, treatment? }`.
-- Same sanitization + `check_contact_submission_allowed` rate-limit as the form.
-- Inserts a `contact_requests` row → trigger handles balance debit automatically.
-
----
-
-## 4. Frontend changes
-
-**Listing sort (balance-first)**
-- `src/lib/services.ts` `getClinics`: order chain becomes
-  `.order('balance_cents', { ascending: false, nullsFirst: false })`
-  `.order('is_featured', { ascending: false })`
-  `.order('rating', { ascending: false })`
-  `.order('review_count', { ascending: false })`.
-- Filtering by city / treatment / country **does not change** the order — balance sort stays active because the order chain is unconditional.
-- `ClinicListing.tsx`: only when the user picks a manual option from the sort dropdown (price asc/desc, rating, etc.) do we pass an explicit `sortBy` that overrides the default. Clearing the dropdown, refreshing, or changing filters returns to balance sort automatically (manual sort lives only in the dropdown state).
-- Balance value is **never rendered** in any public UI.
-
-**Clinic panel — balance widget + Add Balance**
-- New `BalanceWidget` shown at top of Overview and Patients sections:
-  - "Balance: **€X.XX** (Y leads remaining)".
-  - Green **Add Balance** button → `/clinic/:id/panel/balance`.
-- Live updates via `supabase.channel` on `clinic_balances` row.
-
-**New page: Balance top-up** (`/clinic/:id/panel/balance`)
-- Current balance + lead equivalent.
-- 4 package cards: 2 leads → €50, 5 → €120, 10 → €230, 20 → €440.
-- "Custom amount (€)" input, min 25.
-- On click → `create-balance-topup` → redirect to Stripe.
-- On `?topup=success` → success toast and refresh balance.
-
-**Patients tab — three sub-tabs**
-Replace existing single list in `ApplicationsTab.tsx`:
-- **Pending** — created within last 48h, not in `lead_purchases`. Locked rows show masked email/phone + per-row **Unlock for €25** button + bulk **Unlock All** button. Both call the `debit_balance_for_lead` RPC. If balance insufficient, button is disabled and shows "Top up balance to unlock".
-- **Expired** — older than 48h, not in `lead_purchases`. Masked, unlock disabled, "Expired" badge.
-- **Purchased** — in `lead_purchases`. Full details + notes (existing UI, minus discount banner).
-- Auto-charged leads from the trigger appear in Purchased instantly.
-
-**Notifications inside the panel**
-- Banner in `ClinicPanel`:
-  - `balance_cents < 5000` (under 2 leads) → yellow "Low balance — top up soon".
-  - `balance_cents === 0` → red "Balance empty — incoming leads will be locked until you top up".
-- Click-to-dismiss for the session.
-
-**Post-form recommendations popup**
-- New `PostFormRecommendationsDialog` component:
-  - Header: *"We recommend applying to at least 3 clinics to find the best one for you."*
-  - 3 rows from `recommend-clinics` (excluding the just-submitted clinic).
-  - Each row: thumbnail + name, **Visit Clinic Page** → `/clinic/:id`, **Quick Apply** → calls `quick-apply` with the user's submitted values.
-  - Quick-applied rows show a green check + "Sent" and disable the button.
-- Wired wherever `ContactClinicForm` is used (`ClinicDetail` and any contact modals).
-
-**`ContactClinicForm` — minimal change**
-- Change `onSuccess?: () => void` → `onSuccess?: (values: { name: string; email: string; phone: string; treatment?: string; message?: string; clinicId: string }) => void`.
-- Form internals (fields, validation, sanitization, rate-limit, submit animation) are unchanged.
-- Parents pass `onSuccess={(values) => openRecommendationsDialog(values)}`.
-
----
-
-## 5. Files to add / change / delete
-
-**Add**
-- `supabase/migrations/<ts>_balance_system.sql`
-- `supabase/functions/create-balance-topup/index.ts`
-- `supabase/functions/stripe-balance-webhook/index.ts`
-- `supabase/functions/recommend-clinics/index.ts`
-- `supabase/functions/quick-apply/index.ts`
-- `src/components/clinic-panel/BalanceWidget.tsx`
-- `src/pages/BalanceTopupPage.tsx`
-- `src/components/forms/PostFormRecommendationsDialog.tsx`
-
-**Edit**
-- `src/lib/services.ts` (sort change, balance helpers, lead bucketing by 48h, drop billing-settings calls)
-- `src/pages/ClinicListing.tsx` (manual sort overrides; no other UI change)
-- `src/pages/ClinicPanel.tsx` (balance widget, banners, balance route, remove billing-type UI)
-- `src/components/clinic-panel/ApplicationsTab.tsx` (3 sub-tabs, balance-debit unlock, drop free-discount UI)
-- `src/components/forms/ContactClinicForm.tsx` (extend `onSuccess` signature only)
-- `src/pages/ClinicDetail.tsx` and any other place rendering the form (wire popup)
-- `src/integrations/supabase/types.ts` (auto-regenerated)
-
-**Delete**
-- `supabase/functions/create-lead-checkout/` (and call `supabase--delete_edge_functions`)
-- `supabase/functions/stripe-lead-webhook/` (replaced by `stripe-balance-webhook`; delete via tool)
-- All references to `clinic_billing_settings` and `billing_type` across the codebase.
-
----
-
-## 6. Stripe configuration note
-
-Top-up Checkout sessions use EUR and a fixed line item per request. The existing `STRIPE_SECRET_KEY` secret is reused. After deploying `stripe-balance-webhook`, the user must update the Stripe webhook endpoint URL in their Stripe dashboard (or I can confirm the new URL when deployed).
-
----
-
-## 7. What stays untouched
-
-- `ContactClinicForm` UI, fields, validation, sanitization, rate-limit, animation.
-- All admin pages (clinics list, approvals, users, patients).
-- Auth flow, roles, RLS pattern.
-- Clinic detail page layout, gallery, doctors, treatments.
-- Balance is **never** shown to public users — only inside the clinic panel.
+- The existing Stripe webhook URL keeps pointing at `stripe-balance-webhook`; it now branches on `metadata.type` for both top-ups and direct purchases.
+- `AHMET100` is seeded as unlimited (`max_uses = NULL`). Future codes can be added via SQL with limits/expiry.
+- Expired (>48h) leads can't be selected for direct purchase — the same rule as balance unlock.
+- Per-row "Unlock for €25" using balance is unchanged so existing balance-based workflows are unaffected.
