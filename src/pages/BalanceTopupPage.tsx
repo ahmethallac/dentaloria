@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Wallet, Loader2, Check } from "lucide-react";
+import { ArrowLeft, Wallet, Loader2, Check, Tag, X } from "lucide-react";
 
 const PRICE_CENTS = 2500;
 
@@ -36,6 +36,9 @@ export default function BalanceTopupPage() {
   const [loaded, setLoaded] = useState(false);
   const [submitting, setSubmitting] = useState<number | "custom" | null>(null);
   const [customEuros, setCustomEuros] = useState<string>("");
+  const [codeInput, setCodeInput] = useState("");
+  const [applyingCode, setApplyingCode] = useState(false);
+  const [discount, setDiscount] = useState<{ code: string; percentOff: number } | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -90,10 +93,18 @@ export default function BalanceTopupPage() {
     setSubmitting(key);
     try {
       const { data, error } = await supabase.functions.invoke("create-balance-topup", {
-        body: { clinicId: id, amountCents },
+        body: { clinicId: id, amountCents, discountCode: discount?.code },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (data?.credited) {
+        toast({ title: "Balance credited", description: "Your discounted top-up is complete." });
+        const { data: bal } = await supabase
+          .from("clinic_balances").select("balance_cents").eq("clinic_id", id).maybeSingle();
+        setBalanceCents(bal?.balance_cents ?? balanceCents);
+        setSubmitting(null);
+        return;
+      }
       if (data?.url) {
         window.location.href = data.url;
         return;
@@ -104,6 +115,34 @@ export default function BalanceTopupPage() {
       setSubmitting(null);
     }
   };
+
+  const applyCode = async () => {
+    const code = codeInput.trim().toUpperCase();
+    if (!code) return;
+    setApplyingCode(true);
+    try {
+      // Validate against a placeholder amount (€25) — server re-validates against actual amount on purchase
+      const { data, error } = await supabase.rpc("validate_discount_code", {
+        p_code: code,
+        p_amount_cents: 2500,
+      });
+      if (error) throw error;
+      const v = data as any;
+      if (!v?.valid) {
+        toast({ title: "Invalid code", description: v?.reason || "Code cannot be applied.", variant: "destructive" });
+        setDiscount(null);
+        return;
+      }
+      setDiscount({ code: v.code, percentOff: v.percent_off });
+      toast({ title: "Discount ready", description: `${v.code} — ${v.percent_off}% off applies at checkout` });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message || "Could not validate code.", variant: "destructive" });
+    } finally {
+      setApplyingCode(false);
+    }
+  };
+
+  const removeCode = () => { setDiscount(null); setCodeInput(""); };
 
   const handleCustom = () => {
     const euros = parseFloat(customEuros.replace(",", "."));
