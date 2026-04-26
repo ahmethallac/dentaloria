@@ -13,6 +13,7 @@ import { MobileFilterDrawer } from "@/components/clinic-listing/MobileFilterDraw
 import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSkeleton";
 import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 import { useClinicSearch } from "@/hooks/useClinicSearch";
+import { GoogleRating } from "@/components/ui/google-rating";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
