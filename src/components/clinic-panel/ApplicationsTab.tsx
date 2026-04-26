@@ -197,6 +197,35 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
     );
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const visiblePending = filteredQ(buckets.pending);
+  const allVisibleSelected =
+    visiblePending.length > 0 && visiblePending.every((r) => selectedIds.has(r.id));
+  const toggleSelectAllVisible = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleSelected) {
+        for (const r of visiblePending) next.delete(r.id);
+      } else {
+        for (const r of visiblePending) next.add(r.id);
+      }
+      return next;
+    });
+  };
+
+  const goToPurchasePage = (ids: string[]) => {
+    if (ids.length === 0) return;
+    navigate(`/clinic/${clinicId}/panel/purchase-leads?ids=${ids.join(',')}`);
+  };
+
   const renderPending = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
@@ -205,6 +234,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         list.map((r) => (
           <div key={r.id} className="p-4 border border-border/50 rounded-lg">
             <div className="flex items-start gap-3">
+              <Checkbox
+                className="mt-1"
+                checked={selectedIds.has(r.id)}
+                onCheckedChange={() => toggleSelect(r.id)}
+                aria-label={`Select ${r.name}`}
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-medium">{r.name}</span>
@@ -217,7 +252,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   {r.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{maskPhone(r.phone)}</span>}
                 </div>
               </div>
-              <div className="shrink-0">
+              <div className="shrink-0 flex flex-col gap-1 items-stretch">
                 <Button
                   size="sm"
                   onClick={() => unlockOne(r.id)}
@@ -226,9 +261,13 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   {unlocking === r.id ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Unlock className="w-4 h-4 mr-1" />}
                   Unlock for €25
                 </Button>
-                {balanceCents < PRICE_CENTS && (
-                  <div className="text-xs text-destructive mt-1">Top up balance</div>
-                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => goToPurchasePage([r.id])}
+                >
+                  Buy now
+                </Button>
               </div>
             </div>
           </div>
@@ -236,8 +275,6 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
       )}
     </div>
   );
-
-  const renderExpired = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
         <div className="p-6 text-center text-muted-foreground">No expired leads.</div>
