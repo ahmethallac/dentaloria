@@ -80,6 +80,19 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [clinicId, page]);
 
+  // Detect successful direct purchase return
+  useEffect(() => {
+    const p = searchParams.get('purchase');
+    if (p === 'success') {
+      toast({ title: 'Purchase complete', description: 'Your selected leads have been unlocked.' });
+      const next = new URLSearchParams(searchParams);
+      next.delete('purchase');
+      setSearchParams(next, { replace: true });
+      load();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Realtime balance updates
   useEffect(() => {
     const channel = supabase
