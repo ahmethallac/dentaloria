@@ -512,6 +512,66 @@ export type Database = {
         }
         Relationships: []
       }
+      discount_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          is_active: boolean
+          max_uses: number | null
+          percent_off: number
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          is_active?: boolean
+          max_uses?: number | null
+          percent_off: number
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          is_active?: boolean
+          max_uses?: number | null
+          percent_off?: number
+          used_count?: number
+        }
+        Relationships: []
+      }
+      discount_redemptions: {
+        Row: {
+          amount_off_cents: number
+          clinic_id: string
+          code: string
+          context: string
+          created_at: string
+          id: string
+          stripe_session_id: string | null
+        }
+        Insert: {
+          amount_off_cents?: number
+          clinic_id: string
+          code: string
+          context: string
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+        }
+        Update: {
+          amount_off_cents?: number
+          clinic_id?: string
+          code?: string
+          context?: string
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
       doctors: {
         Row: {
           clinic_id: string
@@ -800,6 +860,19 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      mark_lead_purchased: {
+        Args: {
+          p_amount_cents: number
+          p_clinic: string
+          p_intent: string
+          p_request: string
+        }
+        Returns: Json
+      }
+      validate_discount_code: {
+        Args: { p_amount_cents: number; p_code: string }
+        Returns: Json
       }
     }
     Enums: {

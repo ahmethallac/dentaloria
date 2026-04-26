@@ -18,6 +18,7 @@ import AdminApproveClinic from "./pages/AdminApproveClinic";
 import RegisterClinic from "./pages/RegisterClinic";
 import NotFound from "./pages/NotFound";
 import BalanceTopupPage from "./pages/BalanceTopupPage";
+import PurchaseLeadsPage from "./pages/PurchaseLeadsPage";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/clinic/:id" element={<ClinicDetail />} />
             <Route path="/clinic/:id/panel" element={<ClinicPanel />} />
             <Route path="/clinic/:id/panel/balance" element={<BalanceTopupPage />} />
+            <Route path="/clinic/:id/panel/purchase-leads" element={<PurchaseLeadsPage />} />
             <Route path="/clinic-listing" element={<ClinicListing />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

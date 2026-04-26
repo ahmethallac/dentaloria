@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
 import { Mail, Phone, Search, Lock, Unlock, Loader2, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 interface ApplicationsTabProps {
   clinicId: string;
@@ -42,6 +42,8 @@ const isExpired = (createdAt: string) =>
 
 export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [requests, setRequests] = useState<ContactRequest[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const [balanceCents, setBalanceCents] = useState(0);
   const [unlocking, setUnlocking] = useState<string | null>(null);
   const [bulkUnlocking, setBulkUnlocking] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const [q, setQ] = useState('');
   const [bucket, setBucket] = useState<LeadBucket>('pending');
@@ -76,6 +79,19 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [clinicId, page]);
+
+  // Detect successful direct purchase return
+  useEffect(() => {
+    const p = searchParams.get('purchase');
+    if (p === 'success') {
+      toast({ title: 'Purchase complete', description: 'Your selected leads have been unlocked.' });
+      const next = new URLSearchParams(searchParams);
+      next.delete('purchase');
+      setSearchParams(next, { replace: true });
+      load();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Realtime balance updates
   useEffect(() => {
@@ -181,6 +197,35 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
     );
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const visiblePending = filteredQ(buckets.pending);
+  const allVisibleSelected =
+    visiblePending.length > 0 && visiblePending.every((r) => selectedIds.has(r.id));
+  const toggleSelectAllVisible = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleSelected) {
+        for (const r of visiblePending) next.delete(r.id);
+      } else {
+        for (const r of visiblePending) next.add(r.id);
+      }
+      return next;
+    });
+  };
+
+  const goToPurchasePage = (ids: string[]) => {
+    if (ids.length === 0) return;
+    navigate(`/clinic/${clinicId}/panel/purchase-leads?ids=${ids.join(',')}`);
+  };
+
   const renderPending = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
@@ -189,6 +234,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         list.map((r) => (
           <div key={r.id} className="p-4 border border-border/50 rounded-lg">
             <div className="flex items-start gap-3">
+              <Checkbox
+                className="mt-1"
+                checked={selectedIds.has(r.id)}
+                onCheckedChange={() => toggleSelect(r.id)}
+                aria-label={`Select ${r.name}`}
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-medium">{r.name}</span>
@@ -201,7 +252,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   {r.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{maskPhone(r.phone)}</span>}
                 </div>
               </div>
-              <div className="shrink-0">
+              <div className="shrink-0 flex flex-col gap-1 items-stretch">
                 <Button
                   size="sm"
                   onClick={() => unlockOne(r.id)}
@@ -210,9 +261,13 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   {unlocking === r.id ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Unlock className="w-4 h-4 mr-1" />}
                   Unlock for €25
                 </Button>
-                {balanceCents < PRICE_CENTS && (
-                  <div className="text-xs text-destructive mt-1">Top up balance</div>
-                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => goToPurchasePage([r.id])}
+                >
+                  Buy now
+                </Button>
               </div>
             </div>
           </div>
@@ -349,24 +404,68 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
             {lockedPending.length > 0 && (
               <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle className="w-4 h-4 text-primary" />
-                  <span>
-                    {bulkCount > 0
-                      ? `Unlock all (${bulkCount}) for €${((bulkCount * PRICE_CENTS) / 100).toFixed(2)}`
-                      : 'Top up your balance to unlock pending leads'}
+                  <Checkbox
+                    checked={allVisibleSelected}
+                    onCheckedChange={toggleSelectAllVisible}
+                    aria-label="Select all visible pending leads"
+                  />
+                  <span className="font-medium">
+                    {selectedIds.size > 0
+                      ? `${selectedIds.size} selected · €${((selectedIds.size * PRICE_CENTS) / 100).toFixed(2)}`
+                      : 'Select leads to purchase'}
                   </span>
                 </div>
-                <Button
-                  size="sm"
-                  onClick={unlockAllPending}
-                  disabled={bulkUnlocking || bulkCount === 0}
-                >
-                  {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
-                  Unlock All
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  {selectedIds.size > 0 && balanceCents >= selectedIds.size * PRICE_CENTS && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        setBulkUnlocking(true);
+                        let count = 0;
+                        for (const id of Array.from(selectedIds)) {
+                          const { data, error } = await supabase.rpc('debit_balance_for_lead', {
+                            p_clinic: clinicId,
+                            p_request: id,
+                          });
+                          if (error) break;
+                          count++;
+                          const nb = (data as any)?.balance_cents;
+                          if (typeof nb === 'number') setBalanceCents(nb);
+                          setPurchasedIds((prev) => new Set(prev).add(id));
+                        }
+                        setSelectedIds(new Set());
+                        setBulkUnlocking(false);
+                        toast({ title: 'Done', description: `${count} lead${count === 1 ? '' : 's'} unlocked.` });
+                      }}
+                      disabled={bulkUnlocking}
+                    >
+                      {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
+                      Unlock with balance
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    onClick={() => goToPurchasePage(Array.from(selectedIds))}
+                    disabled={selectedIds.size === 0}
+                  >
+                    Buy selected leads
+                  </Button>
+                  {bulkCount > 0 && selectedIds.size === 0 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={unlockAllPending}
+                      disabled={bulkUnlocking}
+                    >
+                      {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
+                      Unlock all ({bulkCount}) for €{((bulkCount * PRICE_CENTS) / 100).toFixed(2)}
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
-            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPending(filteredQ(buckets.pending))}
+            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPending(visiblePending)}
           </TabsContent>
 
           <TabsContent value="expired" className="mt-4">
