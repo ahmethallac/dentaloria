@@ -34,10 +34,19 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
     email: clinic.email || "",
     phone: clinic.phone || "",
     website: clinic.website || "",
-    trustpilot_url: (clinic as any).trustpilot_url || "",
     address: clinic.address || "",
     description: clinic.description || "",
+    google_rating:
+      clinic.rating != null && Number(clinic.rating) >= 3
+        ? Number(clinic.rating).toFixed(1)
+        : "",
   });
+
+  // 3.0 → 5.0 in 0.1 steps (21 values)
+  const ratingOptions = useMemo(
+    () => Array.from({ length: 21 }, (_, i) => (3 + i * 0.1).toFixed(1)),
+    []
+  );
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -94,7 +103,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updates: Partial<Clinic> & { trustpilot_url?: string; display_name?: string } = {
+      const updates: Partial<Clinic> & { display_name?: string } = {
         // We intentionally do NOT update `name` (legal name) from this form —
         // it can only be changed via the registration data.
         email: form.email,
@@ -104,9 +113,8 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         description: form.description,
         city_id: cityId || clinic.city_id,
         // @ts-ignore
-        trustpilot_url: form.trustpilot_url,
-        // @ts-ignore
         display_name: form.display_name.trim() || null,
+        ...(form.google_rating ? { rating: parseFloat(form.google_rating) } : {}),
       };
       const updated = await updateClinic(clinic.id, updates as any);
       toast({ title: "Success", description: "Clinic information updated." });
@@ -166,8 +174,20 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             <Input value={form.website} onChange={(e) => onChange("website", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Trustpilot URL</label>
-            <Input value={form.trustpilot_url} onChange={(e) => onChange("trustpilot_url", e.target.value)} />
+            <label className="text-sm font-medium mb-2 block">Google Rating</label>
+            <select
+              className="w-full px-3 py-2 border border-border rounded-md bg-background"
+              value={form.google_rating}
+              onChange={(e) => onChange("google_rating", e.target.value)}
+            >
+              <option value="" disabled>Select rating</option>
+              {ratingOptions.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            <p className="text-xs text-destructive mt-1">
+              This rating must match your actual rating on Google Maps. Entering an inaccurate rating may result in your listing being removed.
+            </p>
           </div>
         </div>
 
