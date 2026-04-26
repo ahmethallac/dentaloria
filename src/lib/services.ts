@@ -178,7 +178,7 @@ export const getClinics = async (filters?: {
   searchQuery?: string
   page?: number
   limit?: number
-  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience'
+  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc'
 }): Promise<{ clinics: Clinic[], total: number }> => {
   // Default sort: balance-first (clinics with higher balance appear first), then existing tie-breakers.
   // Manual sort selections from the UI override the balance sort.
@@ -190,14 +190,10 @@ export const getClinics = async (filters?: {
 
   switch (sortBy) {
     case 'rating':
+      // Highest Google rating first; tie-break by clinic balance (higher balance first).
       query = query
-        .order('rating', { ascending: false })
-        .order('review_count', { ascending: false });
-      break;
-    case 'experience':
-      query = query
-        .order('experience_years', { ascending: false, nullsFirst: false })
-        .order('rating', { ascending: false });
+        .order('rating', { ascending: false, nullsFirst: false })
+        .order('balance_cents', { ascending: false, nullsFirst: false });
       break;
     case 'price_asc':
     case 'price_desc':
@@ -206,15 +202,14 @@ export const getClinics = async (filters?: {
       // clinic_treatments. We still need a deterministic order for pagination.
       query = query
         .order('rating', { ascending: false })
-        .order('review_count', { ascending: false });
+        .order('balance_cents', { ascending: false, nullsFirst: false });
       break;
     case 'balance':
     default:
       query = query
         .order('balance_cents', { ascending: false, nullsFirst: false })
         .order('is_featured', { ascending: false })
-        .order('rating', { ascending: false })
-        .order('review_count', { ascending: false });
+        .order('rating', { ascending: false });
       break;
   }
 
