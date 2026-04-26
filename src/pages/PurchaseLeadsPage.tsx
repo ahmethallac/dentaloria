@@ -263,7 +263,7 @@ export default function PurchaseLeadsPage() {
                       <Label htmlFor="discount-code">Code</Label>
                       <Input
                         id="discount-code"
-                        placeholder="e.g. AHMET100"
+                        placeholder="Enter code"
                         value={codeInput}
                         onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                         onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}

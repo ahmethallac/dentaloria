@@ -239,7 +239,7 @@ export default function BalanceTopupPage() {
                   <Label htmlFor="topup-code">Code</Label>
                   <Input
                     id="topup-code"
-                    placeholder="e.g. AHMET100"
+                    placeholder="Enter code"
                     value={codeInput}
                     onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                     onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}
