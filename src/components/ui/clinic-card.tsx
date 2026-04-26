@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Star, MapPin, Phone, Clock, Award, Users, ArrowRight } from "lucide-react";
+import { MapPin, Phone, Clock, Award, Users, ArrowRight } from "lucide-react";
+import { GoogleRating } from "@/components/ui/google-rating";
 
 interface ClinicCardProps {
   id: string;
@@ -57,9 +58,8 @@ export const ClinicCard = ({
             <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
             
             {/* Rating badge */}
-            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded px-1.5 py-0.5 flex items-center gap-0.5">
-              <Star className="w-3 h-3 fill-trust-gold text-trust-gold" />
-              <span className="text-xs font-semibold">{rating}</span>
+            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded px-1.5 py-0.5 text-xs">
+              <GoogleRating rating={rating} starClassName="w-3 h-3" />
             </div>
           </div>
 
@@ -134,10 +134,8 @@ export const ClinicCard = ({
         </div>
 
         {/* Rating */}
-        <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-white/90 backdrop-blur-sm rounded-lg px-1.5 md:px-2 py-0.5 md:py-1 flex items-center gap-1">
-          <Star className="w-3 h-3 md:w-4 md:h-4 fill-trust-gold text-trust-gold" />
-          <span className="text-xs md:text-sm font-semibold">{rating}</span>
-          <span className="text-[10px] md:text-xs text-muted-foreground">({reviewCount})</span>
+        <div className="absolute top-2 md:top-3 right-2 md:right-3 bg-white/90 backdrop-blur-sm rounded-lg px-1.5 md:px-2 py-0.5 md:py-1 text-xs md:text-sm">
+          <GoogleRating rating={rating} starClassName="w-3 h-3 md:w-4 md:h-4" />
         </div>
 
         {/* Price Range */}

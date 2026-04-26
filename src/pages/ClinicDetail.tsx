@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
+import { GoogleRating } from "@/components/ui/google-rating";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
@@ -438,20 +439,7 @@ const ClinicDetail = () => {
                 {[clinic.location, clinic.city, clinic.country].filter(Boolean).join(", ")}
               </span>
               <span className="flex items-center gap-1.5 text-sm">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3.5 h-3.5 ${
-                        i < Math.floor(clinic.rating)
-                          ? "fill-amber-400 text-amber-400"
-                          : "text-muted-foreground/30"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="font-semibold">{clinic.rating}</span>
-                <span className="text-muted-foreground">({clinic.reviewCount})</span>
+                <GoogleRating rating={clinic.rating} starClassName="w-3.5 h-3.5" />
               </span>
             </div>
             {clinic.specialties.length > 0 && (

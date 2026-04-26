@@ -13,6 +13,7 @@ import { MobileFilterDrawer } from "@/components/clinic-listing/MobileFilterDraw
 import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSkeleton";
 import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 import { useClinicSearch } from "@/hooks/useClinicSearch";
+import { GoogleRating } from "@/components/ui/google-rating";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -177,7 +178,7 @@ export default function ClinicListing() {
   const [selectedTreatment, setSelectedTreatment] = useState(searchParams.get('treatment') || "all");
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || "all");
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
-  const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience'>("balance");
+  const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc'>("balance");
   const [page, setPage] = useState(1);
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
@@ -434,10 +435,9 @@ export default function ClinicListing() {
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
                     <SelectItem value="balance">Recommended</SelectItem>
-                    <SelectItem value="rating">By Rating</SelectItem>
+                    <SelectItem value="rating">Highest Rated</SelectItem>
                     <SelectItem value="price_asc">Price: Low to High</SelectItem>
                     <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                    <SelectItem value="experience">By Experience</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -484,11 +484,7 @@ export default function ClinicListing() {
                             <div className="mb-3">
                               <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
                               <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                <div className="flex items-center gap-1">
-                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                  <span className="font-semibold">{clinic.rating}</span>
-                                  <span>({clinic.review_count})</span>
-                                </div>
+                                <GoogleRating rating={clinic.rating} starClassName="h-3 w-3" />
                                 {clinic.is_verified && (
                                   <div className="flex items-center gap-1">
                                     <CheckCircle className="h-3 w-3 text-green-500" />
@@ -585,10 +581,8 @@ export default function ClinicListing() {
                             <h3 className="text-base font-bold text-foreground leading-tight flex-1">
                               {clinic.name}
                             </h3>
-                            <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg shrink-0">
-                              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                              <span className="text-sm font-semibold text-amber-700">{clinic.rating || '0'}</span>
-                              <span className="text-xs text-amber-600/70">({clinic.review_count || 0})</span>
+                            <div className="bg-amber-50 px-2 py-1 rounded-lg shrink-0 text-amber-700 text-sm">
+                              <GoogleRating rating={clinic.rating} starClassName="h-3.5 w-3.5" />
                             </div>
                           </div>
 

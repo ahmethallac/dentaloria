@@ -22,7 +22,7 @@ interface UseClinicSearchParams {
   page?: number;
   limit?: number;
   enabled?: boolean;
-  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc' | 'experience';
+  sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc';
 }
 
 // Helper to check if a string is a valid UUID

@@ -65,7 +65,6 @@ const AddClinic = () => {
     phone: '',
     email: '',
     website: '',
-    trustpilot_url: '',
     city_id: ''
   })
 
@@ -482,15 +481,6 @@ const AddClinic = () => {
                       value={formData.website}
                       onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
                       placeholder="https://..."
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="trustpilot">Trustpilot URL</Label>
-                    <Input
-                      id="trustpilot"
-                      value={formData.trustpilot_url}
-                      onChange={(e) => setFormData(prev => ({ ...prev, trustpilot_url: e.target.value }))}
-                      placeholder="https://trustpilot.com/..."
                     />
                   </div>
                 </div>
