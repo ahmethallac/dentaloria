@@ -215,6 +215,45 @@ export default function BalanceTopupPage() {
           ))}
         </div>
 
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Tag className="w-4 h-4 text-primary" /> Discount code
+            </CardTitle>
+            <CardDescription>Apply a code to discount your top-up.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {discount ? (
+              <div className="flex items-center justify-between p-3 rounded-md border border-green-500/30 bg-green-500/5">
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-green-600" />
+                  <span><span className="font-semibold">{discount.code}</span> — {discount.percentOff}% off will apply at checkout</span>
+                </div>
+                <Button size="sm" variant="ghost" onClick={removeCode}>
+                  <X className="w-4 h-4 mr-1" /> Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+                <div className="flex-1">
+                  <Label htmlFor="topup-code">Code</Label>
+                  <Input
+                    id="topup-code"
+                    placeholder="e.g. AHMET100"
+                    value={codeInput}
+                    onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}
+                  />
+                </div>
+                <Button onClick={applyCode} disabled={applyingCode || !codeInput.trim()} variant="outline">
+                  {applyingCode ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Apply
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Custom amount</CardTitle>
