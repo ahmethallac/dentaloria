@@ -125,22 +125,28 @@ serve(async (req) => {
           p_intent: discountCode ? `free:${discountCode}` : "free",
           p_amount_cents: 0,
         });
-        if (e) console.error("mark_lead_purchased error", id, e.message);
+        if (e) {
+          console.error("mark_lead_purchased error", id, e.message);
+          return json({ error: `Failed to unlock lead: ${e.message}` }, 500);
+        }
       }
       if (discountCode) {
-        await supabaseAdmin.from("discount_redemptions").insert({
-          code: discountCode,
-          clinic_id: clinicId,
-          context: "direct_lead_purchase",
-          amount_off_cents: amountOffCents,
-          stripe_session_id: null,
-        });
-        await supabaseAdmin.rpc("__noop__").catch(() => {});
-        // increment used_count
-        await supabaseAdmin
-          .from("discount_codes")
-          .update({ used_count: (await getUsedCount(supabaseAdmin, discountCode)) + 1 })
-          .eq("code", discountCode);
+        try {
+          await supabaseAdmin.from("discount_redemptions").insert({
+            code: discountCode,
+            clinic_id: clinicId,
+            context: "direct_lead_purchase",
+            amount_off_cents: amountOffCents,
+            stripe_session_id: null,
+          });
+          const currentUsed = await getUsedCount(supabaseAdmin, discountCode);
+          await supabaseAdmin
+            .from("discount_codes")
+            .update({ used_count: currentUsed + 1 })
+            .eq("code", discountCode);
+        } catch (logErr) {
+          console.error("discount logging error (non-fatal):", (logErr as Error).message);
+        }
       }
       return json({
         success: true,
