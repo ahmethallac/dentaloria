@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { Loader2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { type Clinic, getCountries, getCities, updateClinic, type Country, type City } from "@/lib/services";
 import ClinicImagesManager from "./ClinicImagesManager";
-import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
+import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
 import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
