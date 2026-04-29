@@ -628,26 +628,63 @@ export default function ClinicListing() {
                             <h3 className="text-base font-bold text-foreground leading-tight flex-1">
                               {clinic.name}
                             </h3>
-                            <div className="bg-amber-50 px-2 py-1 rounded-lg shrink-0 text-amber-700 text-sm">
-                              <GoogleRating rating={clinic.rating} starClassName="h-3.5 w-3.5" />
-                            </div>
+                            <GoogleRating rating={clinic.rating} variant="prominent" showLabel={false} />
                           </div>
+
+                          {/* Languages — single line */}
+                          {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
+                            <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
+                              {clinic.languages.slice(0, 2).map((code: string) => {
+                                const l = getLanguage(code);
+                                if (!l) return null;
+                                return (
+                                  <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                    <span aria-hidden>{l.flag}</span>
+                                    <span>{l.name}</span>
+                                  </span>
+                                );
+                              })}
+                              {clinic.languages.length > 2 && (
+                                <span className="text-primary shrink-0">+{clinic.languages.length - 2}</span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Facilities — single line */}
+                          {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
+                            <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
+                              {sortFacilitiesForCard(clinic.facilities).slice(0, 2).map((key: string) => {
+                                const f = getFacility(key);
+                                if (!f) return null;
+                                const Icon = f.icon;
+                                return (
+                                  <span key={key} className="inline-flex items-center gap-1 shrink-0">
+                                    <Icon className="w-3 h-3 text-primary" />
+                                    <span>{f.label}</span>
+                                  </span>
+                                );
+                              })}
+                              {clinic.facilities.length > 2 && (
+                                <span className="text-primary shrink-0">+{clinic.facilities.length - 2}</span>
+                              )}
+                            </div>
+                          )}
 
                           {/* Treatments */}
                           {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                               {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
-                                <Badge 
-                                  key={clinicTreatment.id} 
-                                  variant="secondary" 
+                                <Badge
+                                  key={clinicTreatment.id}
+                                  variant="secondary"
                                   className="bg-muted/80 text-foreground/70 border-0 px-2 py-1 rounded-lg text-xs"
                                 >
                                   {clinicTreatment.treatments?.name}
                                 </Badge>
                               ))}
                               {clinic.clinic_treatments.length > 3 && (
-                                <Badge 
-                                  variant="outline" 
+                                <Badge
+                                  variant="outline"
                                   className="border-primary/20 text-primary bg-primary/5 px-2 py-1 rounded-lg text-xs"
                                 >
                                   +{clinic.clinic_treatments.length - 3} more
