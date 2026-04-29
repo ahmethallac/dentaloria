@@ -547,23 +547,25 @@ export default function ClinicListing() {
                               </div>
                             )}
 
-                            {/* Treatments */}
+                            {/* Treatments — single line, no wrap */}
                             {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
-                              <div className="flex flex-wrap gap-1.5 mt-1">
+                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0 mt-1">
                                 {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
-                                  <Badge 
-                                    key={clinicTreatment.id} 
-                                    variant="secondary" 
-                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal"
+                                  <Badge
+                                    key={clinicTreatment.id}
+                                    variant="secondary"
+                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal shrink-0 max-w-[180px] truncate"
                                   >
-                                    {clinicTreatment.treatments?.name}
-                                    {clinicTreatment.starting_price_euro ? ` · €${clinicTreatment.starting_price_euro}` : ''}
+                                    <span className="truncate">
+                                      {clinicTreatment.treatments?.name}
+                                      {clinicTreatment.starting_price_euro ? ` · €${clinicTreatment.starting_price_euro}` : ''}
+                                    </span>
                                   </Badge>
                                 ))}
                                 {clinic.clinic_treatments.length > 3 && (
-                                  <Badge 
-                                    variant="outline" 
-                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs"
+                                  <Badge
+                                    variant="outline"
+                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs shrink-0"
                                   >
                                     +{clinic.clinic_treatments.length - 3}
                                   </Badge>
@@ -572,22 +574,23 @@ export default function ClinicListing() {
                             )}
                           </div>
 
-                          {/* Right column: price + stacked buttons */}
-                          <div className="w-44 shrink-0 flex flex-col items-stretch justify-between border-l border-border/40 pl-5">
-                            <div className="text-right">
-                              <div className="text-[11px] text-muted-foreground truncate">
-                                Starting from{selectedTreatmentName ? ` · ${selectedTreatmentName}` : ''}
+                          {/* Right column: price pill + stacked buttons (single unit) */}
+                          <div className="w-44 shrink-0 flex flex-col justify-center border-l border-border/40 pl-5">
+                            <div className="flex flex-col gap-2">
+                              {/* Price pill */}
+                              <div className="rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/15 px-3 py-2 text-center">
+                                <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                                  Starting from
+                                </div>
+                                <div className="text-2xl font-bold text-primary leading-tight">
+                                  {getClinicPrice(clinic)}
+                                </div>
                               </div>
-                              <div className="text-2xl font-bold text-primary leading-tight">
-                                {getClinicPrice(clinic)}
-                              </div>
-                            </div>
-                            <div className="flex flex-col gap-2 mt-3">
                               <Button
                                 onClick={() => setApplyOpenForClinicId(clinic.id)}
                                 className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
                               >
-                                Apply
+                                Quick Apply
                               </Button>
                               <Button
                                 asChild
@@ -680,24 +683,24 @@ export default function ClinicListing() {
                             </div>
                           )}
 
-                          {/* Treatments */}
+                          {/* Treatments — single line, no wrap */}
                           {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0">
                               {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
                                 <Badge
                                   key={clinicTreatment.id}
                                   variant="secondary"
-                                  className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal"
+                                  className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal shrink-0 max-w-[140px] truncate"
                                 >
-                                  {clinicTreatment.treatments?.name}
+                                  <span className="truncate">{clinicTreatment.treatments?.name}</span>
                                 </Badge>
                               ))}
                               {clinic.clinic_treatments.length > 3 && (
                                 <Badge
                                   variant="outline"
-                                  className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs"
+                                  className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs shrink-0"
                                 >
-                                  +{clinic.clinic_treatments.length - 3} more
+                                  +{clinic.clinic_treatments.length - 3}
                                 </Badge>
                               )}
                             </div>
@@ -705,21 +708,21 @@ export default function ClinicListing() {
 
                           <div className="h-px bg-border/50" />
 
-                          {/* Price */}
-                          <div className="flex flex-col">
-                            <span className="text-[11px] text-muted-foreground truncate">
-                              Starting from{selectedTreatmentName ? ` · ${selectedTreatmentName}` : ''}
-                            </span>
-                            <span className="text-2xl font-bold text-primary leading-tight">{getClinicPrice(clinic)}</span>
-                          </div>
-
-                          {/* Stacked CTAs */}
-                          <div className="flex flex-col gap-2 pt-1">
+                          {/* Price pill + stacked CTAs (single unit) */}
+                          <div className="flex flex-col gap-2">
+                            <div className="rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/15 px-4 py-2.5 flex items-baseline justify-between">
+                              <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                                Starting from
+                              </span>
+                              <span className="text-2xl font-bold text-primary leading-tight">
+                                {getClinicPrice(clinic)}
+                              </span>
+                            </div>
                             <Button
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
                               className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
                             >
-                              Apply
+                              Quick Apply
                             </Button>
                             <Button
                               asChild
