@@ -8,6 +8,7 @@ import {
   MapPin,
   Users,
   Award,
+  Shield,
   CheckCircle,
   Clock,
   ChevronRight,
