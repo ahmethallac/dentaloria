@@ -14,6 +14,7 @@ import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSk
 import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
+import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard } from "@/lib/clinicMeta";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
