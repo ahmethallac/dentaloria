@@ -621,15 +621,6 @@ const ClinicDetail = () => {
                 <GoogleRating rating={clinic.rating} starClassName="w-3.5 h-3.5" />
               </span>
             </div>
-            {clinic.specialties.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {clinic.specialties.map((s: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="text-xs font-normal">
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </header>
