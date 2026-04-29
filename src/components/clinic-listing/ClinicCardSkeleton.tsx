@@ -42,10 +42,7 @@ export const ClinicCardSkeleton = () => {
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="h-6 w-24 rounded-full" />
           </div>
-          <div className="space-y-1">
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-7 w-20" />
-          </div>
+          <Skeleton className="h-14 w-full rounded-xl" />
           <Skeleton className="h-11 w-full rounded-xl" />
           <Skeleton className="h-11 w-full rounded-xl" />
         </div>
