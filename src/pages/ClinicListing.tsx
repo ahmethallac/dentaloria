@@ -574,17 +574,17 @@ export default function ClinicListing() {
                             )}
                           </div>
 
-                          {/* Right column: price pill + stacked buttons (single unit) */}
+                          {/* Right column: price badge + stacked buttons */}
                           <div className="w-44 shrink-0 flex flex-col justify-center border-l border-border/40 pl-5">
-                            <div className="flex flex-col gap-2">
-                              {/* Price pill */}
-                              <div className="rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/15 px-3 py-2 text-center">
-                                <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                            <div className="flex flex-col items-stretch gap-2.5">
+                              {/* Price badge — pill above buttons */}
+                              <div className="self-center inline-flex flex-col items-center px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
+                                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
                                   Starting from
-                                </div>
-                                <div className="text-2xl font-bold text-primary leading-tight">
+                                </span>
+                                <span className="text-xl font-extrabold text-primary leading-tight mt-0.5">
                                   {getClinicPrice(clinic)}
-                                </div>
+                                </span>
                               </div>
                               <Button
                                 onClick={() => setApplyOpenForClinicId(clinic.id)}
