@@ -14,6 +14,8 @@ import {
   Stethoscope,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   X,
   Languages as LanguagesIcon,
   Sparkles,
