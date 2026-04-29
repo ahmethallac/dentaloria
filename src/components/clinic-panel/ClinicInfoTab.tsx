@@ -67,6 +67,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const [cityId, setCityId] = useState<string>(clinic.city_id);
 
   const [saving, setSaving] = useState(false);
+  const treatmentsRef = useRef<ClinicTreatmentsHandle>(null);
   const [loadingLoc, setLoadingLoc] = useState(true);
 
   useEffect(() => {
