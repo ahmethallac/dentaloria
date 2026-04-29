@@ -23,6 +23,7 @@ interface UseClinicSearchParams {
   limit?: number;
   enabled?: boolean;
   sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc';
+  languageCodes?: string[];
 }
 
 // Helper to check if a string is a valid UUID
@@ -37,12 +38,15 @@ export function useClinicSearch({
   limit = 12,
   enabled = true,
   sortBy = 'balance',
+  languageCodes = [],
 }: UseClinicSearchParams) {
   // Don't query if we have non-UUID filter values (URL contains names that haven't been resolved yet)
-  const hasValidFilters = 
+  const hasValidFilters =
     (!countryId || countryId === "all" || isUUID(countryId)) &&
     (!cityId || cityId === "all" || isUUID(cityId)) &&
     (!treatmentId || treatmentId === "all" || isUUID(treatmentId));
+
+  const langKey = [...languageCodes].sort().join(',');
 
   return useQuery({
     queryKey: [
@@ -54,6 +58,7 @@ export function useClinicSearch({
         page,
         limit,
         sortBy,
+        langKey,
       },
     ],
     queryFn: async () => {
@@ -64,6 +69,7 @@ export function useClinicSearch({
         page: number;
         limit: number;
         sortBy: typeof sortBy;
+        languageCodes?: string[];
       } = { page, limit, sortBy };
 
       if (treatmentId && treatmentId !== "all") {
@@ -74,6 +80,9 @@ export function useClinicSearch({
       }
       if (cityId && cityId !== "all") {
         filters.cityId = cityId;
+      }
+      if (languageCodes.length > 0) {
+        filters.languageCodes = languageCodes;
       }
 
       const { clinics, total } = await getClinics(filters);
@@ -97,8 +106,8 @@ export function useClinicSearch({
       return { clinics: clinicsWithImages, total };
     },
     enabled: enabled && hasValidFilters,
-    staleTime: 5 * 60 * 1000, // 5 minutes - use cached data without refetching
-    gcTime: 30 * 60 * 1000, // 30 minutes - keep in memory
-    placeholderData: (previousData) => previousData, // Keep showing previous results while loading new ones
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   });
 }
