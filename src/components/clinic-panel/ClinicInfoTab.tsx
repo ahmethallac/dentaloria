@@ -269,6 +269,65 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
           </div>
         </div>
 
+        {/* Supported Languages */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Supported Languages</label>
+          <p className="text-xs text-muted-foreground mb-3">
+            Select every language your team can communicate in with patients.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {LANGUAGES.map((l) => {
+              const active = languages.includes(l.code);
+              return (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLanguages((cur) => toggleInArray(cur, l.code))}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition",
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background border-border hover:border-primary/50"
+                  )}
+                >
+                  <span aria-hidden>{l.flag}</span>
+                  <span>{l.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Facilities & Amenities */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Facilities & Amenities</label>
+          <p className="text-xs text-muted-foreground mb-3">
+            Pick everything you offer your patients during their visit.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {FACILITIES.map((f) => {
+              const Icon = f.icon;
+              const active = facilities.includes(f.key);
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => setFacilities((cur) => toggleInArray(cur, f.key))}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm text-left transition",
+                    active
+                      ? "bg-primary/10 border-primary text-primary"
+                      : "bg-background border-border hover:border-primary/50"
+                  )}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{f.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
             {saving ? "Saving..." : "Update Information"}
