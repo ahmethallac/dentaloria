@@ -181,6 +181,7 @@ export default function ClinicListing() {
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc'>("balance");
   const [page, setPage] = useState(1);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
@@ -194,6 +195,7 @@ export default function ClinicListing() {
     page,
     limit: 12,
     sortBy,
+    languageCodes: selectedLanguages,
   });
 
   const rawClinics = clinicData?.clinics || [];
