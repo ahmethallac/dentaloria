@@ -397,7 +397,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
                   <p className="text-xs text-destructive mt-2">
                     {!hasDisplayName
                       ? "You must set a Display Name above before submitting."
-                      : "Click \"Update Information\" first to save your Display Name, then submit."}
+                      : "Click \"Save All Changes\" first to save your Display Name, then submit."}
                   </p>
                 )}
               </div>
