@@ -31,9 +31,9 @@ export const GoogleRating = ({
       <TooltipTrigger asChild>
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 cursor-help",
+            "inline-flex items-center gap-1 cursor-help",
             isProminent &&
-              "px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-900",
+              "px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-900",
             className
           )}
           onClick={(e) => e.stopPropagation()}
@@ -41,14 +41,14 @@ export const GoogleRating = ({
           <Star
             className={cn(
               "fill-amber-400 text-amber-400",
-              isProminent ? "w-5 h-5" : "w-3.5 h-3.5",
+              isProminent ? "w-4 h-4" : "w-3.5 h-3.5",
               starClassName
             )}
           />
           <span
             className={cn(
               "font-semibold tabular-nums",
-              isProminent ? "text-base" : "text-sm"
+              isProminent ? "text-sm" : "text-sm"
             )}
           >
             {value}
@@ -56,11 +56,10 @@ export const GoogleRating = ({
           {withLabel && (
             <span
               className={cn(
-                "font-medium",
-                isProminent ? "text-xs uppercase tracking-wide" : "text-xs"
+                "font-medium text-[11px]"
               )}
             >
-              Google Business Rating
+              Google Rating
             </span>
           )}
         </span>
