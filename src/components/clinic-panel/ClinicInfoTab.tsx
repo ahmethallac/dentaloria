@@ -361,6 +361,9 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             doctors={(clinic.doctors as any) || []}
             onChanged={() => onUpdated?.(clinic)}
           />
+
+          {/* Before & After Photos */}
+          <ClinicBeforeAfterManager clinicId={clinic.id} />
         </div>
 
         {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}
