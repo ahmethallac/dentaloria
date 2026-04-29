@@ -289,6 +289,7 @@ export default function ClinicListing() {
     setSelectedTreatment("all");
     setSelectedCountry("all");
     setSelectedCity("all");
+    setSelectedLanguages([]);
     setPage(1);
   };
 
