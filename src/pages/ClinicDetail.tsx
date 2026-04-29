@@ -33,6 +33,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 import { GoogleRating } from "@/components/ui/google-rating";
