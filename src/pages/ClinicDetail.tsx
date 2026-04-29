@@ -736,113 +736,91 @@ const ClinicDetail = () => {
                 )}
               </div>
 
-              {/* ── About ── */}
-              {clinic.description && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
-                  <div
-                    className="prose prose-sm max-w-none text-muted-foreground leading-relaxed text-[15px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2"
-                    dangerouslySetInnerHTML={{ __html: sanitizeRichText(clinic.description) }}
-                  />
-                </div>
-              )}
+              {/* ── About cluster (description + languages + facilities) ── */}
+              <div
+                ref={(el) => (sectionRefs.current["about"] = el)}
+                className="scroll-mt-32 space-y-8"
+              >
+                {/* About the Clinic */}
+                {clinic.description && (
+                  <div>
+                    <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
+                    <ExpandableDescription html={sanitizeRichText(clinic.description)} />
+                  </div>
+                )}
 
-              {/* ── Quick Stats ── */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {clinic.experience > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="w-5 h-5 text-primary" />
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  {clinic.experience > 0 && (
+                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
+                        <div className="text-xs text-muted-foreground">Years Experience</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
-                      <div className="text-xs text-muted-foreground">Years Experience</div>
+                  )}
+                  {clinic.patientCount > 0 && (
+                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
+                        <div className="text-xs text-muted-foreground">Happy Patients</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Supported Languages */}
+                {clinic.languages.length > 0 && (
+                  <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
+                    <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {clinic.languages.map((code: string) => {
+                        const l = getLanguage(code);
+                        if (!l) return null;
+                        return (
+                          <span
+                            key={code}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
+                          >
+                            <span aria-hidden>{l.flag}</span>
+                            <span>{l.name}</span>
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
-                {clinic.patientCount > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Users className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
-                      <div className="text-xs text-muted-foreground">Happy Patients</div>
-                    </div>
-                  </div>
-                )}
-                {clinic.specialties.length > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Stethoscope className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.specialties.length}</div>
-                      <div className="text-xs text-muted-foreground">Specialties</div>
+
+                {/* Facilities & Amenities */}
+                {clinic.facilities.length > 0 && (
+                  <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
+                    <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {clinic.facilities.map((key: string) => {
+                        const f = getFacility(key);
+                        if (!f) return null;
+                        const Icon = f.icon;
+                        return (
+                          <div key={key} className="flex items-center gap-2.5">
+                            <Icon className="w-4 h-4 text-primary shrink-0" />
+                            <span className="text-sm">{f.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* ── Facilities & Amenities ── */}
-              {clinic.facilities.length > 0 && (
-                <div
-                  ref={(el) => (sectionRefs.current["facilities"] = el)}
-                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
-                >
-                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {clinic.facilities.map((key: string) => {
-                      const f = getFacility(key);
-                      if (!f) return null;
-                      const Icon = f.icon;
-                      return (
-                        <div key={key} className="flex items-center gap-2.5">
-                          <Icon className="w-4 h-4 text-primary shrink-0" />
-                          <span className="text-sm">{f.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* ── Supported Languages ── */}
-              {clinic.languages.length > 0 && (
-                <div
-                  ref={(el) => (sectionRefs.current["languages"] = el)}
-                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
-                >
-                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {clinic.languages.map((code: string) => {
-                      const l = getLanguage(code);
-                      if (!l) return null;
-                      return (
-                        <span
-                          key={code}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
-                        >
-                          <span aria-hidden>{l.flag}</span>
-                          <span>{l.name}</span>
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* ── Before & After ── */}
-              {clinic.beforeAfter.length > 0 && (
-                <BeforeAfterCarousel
-                  images={clinic.beforeAfter}
-                  sectionRef={(el) => (sectionRefs.current["gallery"] = el)}
-                />
-              )}
             </div>
 
             {/* ── Treatments ── */}
