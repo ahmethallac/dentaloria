@@ -872,7 +872,16 @@ const ClinicDetail = () => {
               </div>
             )}
 
+            {/* ── Before & After (Photos) ── */}
+            {clinic.beforeAfter.length > 0 && (
+              <BeforeAfterCarousel
+                images={clinic.beforeAfter}
+                sectionRef={(el) => (sectionRefs.current["photos"] = el)}
+              />
+            )}
+
             {/* ── Doctors ── */}
+
             {clinic.doctors.length > 0 && (
               <div ref={(el) => (sectionRefs.current["doctors"] = el)} className="scroll-mt-32">
                 <h2 className="text-xl font-bold mb-4">Our Doctors</h2>
