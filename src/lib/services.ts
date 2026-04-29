@@ -401,7 +401,7 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
   if (!clinicData) return null
   
   // Fetch related data separately
-  const [citiesData, imagesData, treatmentsData, doctorsData] = await Promise.all([
+  const [citiesData, imagesData, treatmentsData, doctorsData, beforeAfterData] = await Promise.all([
     // Fetch city with country
     supabase
       .from('cities')
@@ -434,7 +434,14 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
     supabase
       .from('doctors')
       .select('*')
+      .eq('clinic_id', id),
+
+    // Fetch before/after photos
+    supabase
+      .from('clinic_before_after_images')
+      .select('id, image_url, sort_order')
       .eq('clinic_id', id)
+      .order('sort_order', { ascending: true })
   ])
   
   // Combine all data
@@ -443,7 +450,8 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
     cities: citiesData.data,
     clinic_images: imagesData.data || [],
     clinic_treatments: treatmentsData.data || [],
-    doctors: doctorsData.data || []
+    doctors: doctorsData.data || [],
+    clinic_before_after_images: beforeAfterData.data || []
   }
   
   return enrichedClinic
