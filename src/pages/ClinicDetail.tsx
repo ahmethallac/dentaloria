@@ -107,8 +107,68 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "treatments", label: "Treatments" },
   { id: "doctors", label: "Doctors" },
-  { id: "contact", label: "Contact" },
+  { id: "facilities", label: "Facilities" },
+  { id: "languages", label: "Languages" },
+  { id: "gallery", label: "Before & After" },
 ] as const;
+
+/* ───────── before/after carousel ───────── */
+const BeforeAfterCarousel = ({
+  images,
+  sectionRef,
+}: {
+  images: string[];
+  sectionRef: (el: HTMLDivElement | null) => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const scroll = (dir: -1 | 1) => {
+    const el = ref.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
+    el.scrollBy({ left: dir * step * 1, behavior: "smooth" });
+  };
+  return (
+    <div ref={sectionRef} className="scroll-mt-32">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+          Before & After
+        </h3>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => scroll(-1)}
+            aria-label="Scroll left"
+            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll(1)}
+            aria-label="Scroll right"
+            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={ref}
+        className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+      >
+        {images.map((src, i) => (
+          <div
+            key={i}
+            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted"
+          >
+            <img src={src} alt={`Before & after ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 /* ───────── component ───────── */
 const ClinicDetail = () => {
