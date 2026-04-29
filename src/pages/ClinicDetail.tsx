@@ -8,10 +8,8 @@ import {
   MapPin,
   Users,
   Award,
-  Shield,
   CheckCircle,
   Clock,
-  Stethoscope,
   ChevronRight,
   ChevronLeft,
   ChevronDown,
@@ -19,7 +17,6 @@ import {
   X,
   Languages as LanguagesIcon,
   Sparkles,
-  Images as ImagesIcon,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
