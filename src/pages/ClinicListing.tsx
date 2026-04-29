@@ -703,8 +703,16 @@ export default function ClinicListing() {
                             </div>
                           )}
 
-                          {/* Stacked CTAs */}
+                          {/* Price + Stacked CTAs */}
                           <div className="flex flex-col items-stretch gap-2 pt-1">
+                            <div className="flex items-baseline justify-between border-t border-border/50 pt-3">
+                              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                Starting from
+                              </span>
+                              <span className="text-2xl font-extrabold text-primary leading-none">
+                                {getClinicPrice(clinic)}
+                              </span>
+                            </div>
                             <Button
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
                               className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
