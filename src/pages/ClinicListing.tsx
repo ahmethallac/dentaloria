@@ -520,7 +520,7 @@ export default function ClinicListing() {
                             {/* Languages */}
                             {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
                               <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                                {clinic.languages.slice(0, 4).map((code: string) => {
+                                {clinic.languages.slice(0, 3).map((code: string) => {
                                   const l = getLanguage(code);
                                   if (!l) return null;
                                   return (
@@ -530,8 +530,8 @@ export default function ClinicListing() {
                                     </span>
                                   );
                                 })}
-                                {clinic.languages.length > 4 && (
-                                  <span className="text-primary shrink-0">+{clinic.languages.length - 4}</span>
+                                {clinic.languages.length > 3 && (
+                                  <span className="text-primary shrink-0">+{clinic.languages.length - 3}</span>
                                 )}
                               </div>
                             )}
@@ -539,7 +539,7 @@ export default function ClinicListing() {
                             {/* Facilities */}
                             {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
                               <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                                {sortFacilitiesForCard(clinic.facilities).slice(0, 4).map((key: string) => {
+                                {sortFacilitiesForCard(clinic.facilities).slice(0, 3).map((key: string) => {
                                   const f = getFacility(key);
                                   if (!f) return null;
                                   const Icon = f.icon;
@@ -550,20 +550,20 @@ export default function ClinicListing() {
                                     </span>
                                   );
                                 })}
-                                {clinic.facilities.length > 4 && (
-                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 4}</span>
+                                {clinic.facilities.length > 3 && (
+                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 3}</span>
                                 )}
                               </div>
                             )}
 
                             {/* Treatments — single line, no wrap */}
                             {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
-                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0 mt-1">
-                                {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
+                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0 mt-0.5">
+                                {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment: any) => (
                                   <Badge
                                     key={clinicTreatment.id}
                                     variant="secondary"
-                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal shrink-0 max-w-[180px] truncate"
+                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-0.5 rounded-full text-xs font-normal shrink-0 max-w-[180px] truncate"
                                   >
                                     <span className="truncate">
                                       {clinicTreatment.treatments?.name}
@@ -571,49 +571,39 @@ export default function ClinicListing() {
                                     </span>
                                   </Badge>
                                 ))}
-                                {clinic.clinic_treatments.length > 3 && (
+                                {clinic.clinic_treatments.length > 2 && (
                                   <Badge
                                     variant="outline"
-                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs shrink-0"
+                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full text-xs shrink-0"
                                   >
-                                    +{clinic.clinic_treatments.length - 3}
+                                    +{clinic.clinic_treatments.length - 2}
                                   </Badge>
                                 )}
                               </div>
                             )}
                           </div>
 
-                          {/* Right column: price badge + stacked buttons */}
-                          <div className="w-44 shrink-0 flex flex-col justify-center border-l border-border/40 pl-5">
-                            <div className="flex flex-col items-stretch gap-2.5">
-                              {/* Price badge — pill above buttons */}
-                              <div className="self-center inline-flex flex-col items-center px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
-                                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
-                                  Starting from
-                                </span>
-                                <span className="text-xl font-extrabold text-primary leading-tight mt-0.5">
-                                  {getClinicPrice(clinic)}
-                                </span>
-                              </div>
-                              <Button
-                                onClick={() => setApplyOpenForClinicId(clinic.id)}
-                                className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
+                          {/* Right column: stacked buttons only */}
+                          <div className="w-40 shrink-0 flex flex-col justify-center gap-2">
+                            <Button
+                              onClick={() => setApplyOpenForClinicId(clinic.id)}
+                              className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
+                            >
+                              Quick Apply
+                            </Button>
+                            <Button
+                              asChild
+                              className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
+                            >
+                              <Link
+                                to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
                               >
-                                Quick Apply
-                              </Button>
-                              <Button
-                                asChild
-                                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
-                              >
-                                <Link
-                                  to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
-                                >
-                                  View Clinic
-                                </Link>
-                              </Button>
-                            </div>
+                                View Clinic
+                              </Link>
+                            </Button>
                           </div>
                         </div>
+                      </div>
                       </div>
 
                       {/* Mobile Layout */}
