@@ -489,10 +489,10 @@ export default function ClinicListing() {
                         {/* Content Section - Desktop */}
                         <div className="flex-1 p-4 pr-28">
                           <div className="flex flex-col h-full">
-                            <div className="mb-3">
+                            <div className="mb-2">
                               <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                              <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                <GoogleRating rating={clinic.rating} starClassName="h-3 w-3" />
+                              <div className="flex items-center gap-3 text-xs text-foreground/70 flex-wrap">
+                                <GoogleRating rating={clinic.rating} variant="prominent" />
                                 {clinic.is_verified && (
                                   <div className="flex items-center gap-1">
                                     <CheckCircle className="h-3 w-3 text-green-500" />
@@ -501,6 +501,45 @@ export default function ClinicListing() {
                                 )}
                               </div>
                             </div>
+
+                            {/* Languages — single line, no wrap */}
+                            {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
+                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-1 min-w-0">
+                                {clinic.languages.slice(0, 4).map((code: string) => {
+                                  const l = getLanguage(code);
+                                  if (!l) return null;
+                                  return (
+                                    <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                      <span aria-hidden>{l.flag}</span>
+                                      <span>{l.name}</span>
+                                    </span>
+                                  );
+                                })}
+                                {clinic.languages.length > 4 && (
+                                  <span className="text-primary shrink-0">+{clinic.languages.length - 4}</span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Facilities — single line, no wrap */}
+                            {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
+                              <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-2 min-w-0">
+                                {sortFacilitiesForCard(clinic.facilities).slice(0, 4).map((key: string) => {
+                                  const f = getFacility(key);
+                                  if (!f) return null;
+                                  const Icon = f.icon;
+                                  return (
+                                    <span key={key} className="inline-flex items-center gap-1 shrink-0">
+                                      <Icon className="w-3 h-3 text-primary" />
+                                      <span>{f.label}</span>
+                                    </span>
+                                  );
+                                })}
+                                {clinic.facilities.length > 4 && (
+                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 4}</span>
+                                )}
+                              </div>
+                            )}
 
                             <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
                               <div className="text-xs text-foreground/70 mb-1">Starting</div>
