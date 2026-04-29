@@ -1,69 +1,100 @@
-## Clinic page & panel improvements
+# Listing Card Redesign
 
-### 1. Remove the "Specialties" badges block
-In `src/pages/ClinicDetail.tsx` (header area, ~lines 513–521), remove the `clinic.specialties.map(...)` Badge block. Specialties are auto-derived from treatments — the user wants only what the clinic explicitly entered to appear.
-Also remove the "Specialties" Quick Stat card (~lines 672–682) that uses `clinic.specialties.length` (it's not entered by the clinic).
+Reworks the clinic cards on `/clinic-listing` (desktop + mobile) for a cleaner, more modern, conversion-focused layout.
 
-### 2. New section order on clinic detail page
-Reorder the main column in `ClinicDetail.tsx` to:
-1. Clinic images (gallery) — already first
-2. About the Clinic (description)
-3. Supported Languages
-4. Facilities & Amenities
-5. Treatment Prices
-6. Before & After
-7. Doctors
+## 1. Smaller Google rating badge
 
-Move the `Languages` block above `Facilities`, then move `Treatments` above `Before & After`, then `Doctors` last (it currently is). Keep Quick Stats card (Years Experience + Happy Patients only) directly under About.
+In `src/components/ui/google-rating.tsx`:
+- Reduce the "prominent" variant: smaller star (`w-4 h-4`), smaller text (`text-sm`), tighter padding (`px-2 py-0.5`), thinner border.
+- Shorten the label everywhere from "Google Business Rating" to "Google Rating".
+- Make the label show on mobile too (currently hidden in mobile card via `showLabel={false}`) — the label will be small enough to fit beside the score.
 
-### 3. Tabs: Overview · About · Photos · Treatments · Doctors
-Replace `TABS` in `ClinicDetail.tsx`:
-```ts
-const TABS = [
-  { id: "overview",   label: "Overview" },
-  { id: "about",      label: "About" },
-  { id: "photos",     label: "Photos" },     // before/after
-  { id: "treatments", label: "Treatments" },
-  { id: "doctors",    label: "Doctors" },
-];
+## 2. Replace single "View" button with stacked Apply + View Clinic
+
+Remove the animated rotating right-side bar on desktop and the single "View Clinic" pill on mobile. Replace with two stacked buttons (same on desktop and mobile, placed in the card's right action column on desktop and below the price on mobile):
+
+- **Apply** — green (`bg-medical-green text-white`), opens the contact form in a Dialog popup. No navigation.
+- **View Clinic** — blue (`bg-primary text-white`), links to `/clinic/:id?treatment=...` (existing behavior).
+
+Implementation:
+- Add a local `applyOpenForClinicId` state in `ClinicListing.tsx`.
+- Render a single `<Dialog open={applyOpenForClinicId === clinic.id}>` per card containing `<ContactClinicForm clinicId={clinic.id} initialTreatment={selectedTreatmentName} onSuccess={() => setApplyOpenForClinicId(null)} />`.
+- Apply button calls `setApplyOpenForClinicId(clinic.id)`.
+
+## 3. Treatment context next to price
+
+Currently shows:
 ```
-- Bind `sectionRefs.current["about"]` to a wrapper around description + languages + facilities (the About cluster).
-- Bind `sectionRefs.current["photos"]` to the Before & After section (rename internal id from `gallery` to `photos`).
-- Drop the standalone `facilities` and `languages` section refs.
+Starting
+€6000
+```
+Change to:
+```
+Starting from · All-on-6 Dental Implants
+€6000
+```
+- Use `selectedTreatmentName` when a specific treatment filter is active.
+- When no treatment filter (showing min price across treatments), show "Starting from · Lowest treatment price" (or omit the suffix).
+- Small muted text (`text-[11px] text-muted-foreground`), single line, truncated on narrow widths.
 
-### 4. Clinic panel — single Save button
-In `src/components/clinic-panel/ClinicInfoTab.tsx` and the section managers:
-- Remove the per-section "Save Treatments" button in `ClinicTreatmentsManager.tsx` (line 129). Replace internal `save()` with an imperative handle (`useImperativeHandle`) so the parent can trigger save.
-- `ClinicDoctorsManager` and `ClinicBeforeAfterManager` already auto-persist on add/delete/reorder — keep those CRUD modal "Save" buttons since they're for adding individual items, not saving the section. The user's request is about removing redundant whole-section save buttons; modal confirm buttons remain. **Confirmation note:** if the user wants those modal Save buttons gone too, they can clarify after seeing the result.
-- `ClinicImagesManager` has no section save — fine.
-- Keep one global "Save All" button at the bottom of `ClinicInfoTab` (replaces current "Update Information"). On click it:
-  1. Calls `updateClinic(...)` with the form fields, languages, facilities.
-  2. Calls the treatments manager's exposed `save()` via ref.
-  3. Shows one toast covering both.
+## 4. Card visual redesign (desktop + mobile)
 
-### 5. Before & After lightbox with swipe
-In `BeforeAfterCarousel` (`ClinicDetail.tsx` ~lines 116–171):
-- Add click handler on each thumbnail to open a fullscreen `Dialog` (already imported).
-- Inside the dialog use the existing `Carousel` component (`src/components/ui/carousel.tsx`) with `CarouselPrevious` / `CarouselNext`, starting at the clicked index (`opts={{ startIndex: idx, loop: true }}`).
-- Touch swipe works out of the box via embla. Add a close (X) button.
+Goals: modern, consistent, scannable, same component shape for both breakpoints.
 
-### 6. Read more / collapse for long descriptions
-In the "About the Clinic" block in `ClinicDetail.tsx` (~lines 638–646):
-- Wrap description in a div with conditional `max-h-[12rem] overflow-hidden` + bottom fade gradient when collapsed.
-- Below: a `Read more` / `Show less` button toggling state. Only render the button if the rendered HTML's text length exceeds ~400 chars (measured via a ref + `scrollHeight > clientHeight`).
-- Use `ChevronDown` / `ChevronUp` icon next to label.
+### Desktop (`lg:` and up)
+```text
++----------------------------------------------------------+
+| [Image  ] | Clinic Name              ★ 4.8 Google Rating |
+| 240x180  | 📍 Antalya, Turkey   ✓ Verified              |
+| carousel | 🇬🇧 English  🇩🇪 German  🇷🇴 Romanian  +1     |
+| Featured | 🏨 Hotel  ✈ Transfer  🗺 Tours  +2          |
+| badge    |                                               |
+|          | [All-on-4 €5000] [All-on-6 €6000] +3         |
+|          |---------------------------------------------- |
+|          | Starting from · All-on-6        [ Apply  ]   |
+|          | €6000                            [View Clinic]|
++----------------------------------------------------------+
+```
+- Card height auto (no fixed `h-48`), generous padding (`p-5`).
+- Image left column fixed width (`w-60`), rounded only on the left (`rounded-l-2xl`), full image height.
+- Right column is a flex column: header → meta rows → treatments → footer (price + buttons).
+- Buttons stacked vertically on the right of the footer (`w-36`, `h-10` each, `gap-2`).
+- Remove the absolute-positioned price block and the animated right rail.
 
-### Technical notes
-- No DB changes needed.
-- `clinic.specialties` stays in the mapper (still used for SEO meta) but is no longer rendered.
-- Imperative ref pattern for the treatments manager:
-  ```ts
-  export type ClinicTreatmentsHandle = { save: () => Promise<void> };
-  forwardRef<ClinicTreatmentsHandle, Props>(...)
-  ```
-- Lightbox: reuse shadcn `Dialog` + `Carousel` to avoid extra deps.
+### Mobile
+```text
++--------------------------+
+| [   Image carousel    ] |
+| Featured       ✓Verified|
+| 📍 Antalya, Turkey      |
++--------------------------+
+| Clinic Name   ★4.8 Google|
+| 🇬🇧 🇩🇪 🇷🇴             |
+| 🏨 ✈ 🗺 +2              |
+| [All-on-4][All-on-6] +1 |
+|--------------------------|
+| Starting from · All-on-6|
+| €6000                   |
+| [        Apply        ] |
+| [     View Clinic     ] |
++--------------------------+
+```
+- Buttons full-width, stacked, Apply on top.
+- Same green/blue color tokens as desktop for consistency.
+- Slightly tighter rounded radius (`rounded-2xl`), softer shadow, no `hover:scale` on mobile.
 
-### Files to edit
-- `src/pages/ClinicDetail.tsx` — items 1, 2, 3, 5, 6
-- `src/components/clinic-panel/ClinicInfoTab.tsx` — item 4 (single save, ref wiring)
-- `src/components/clinic-panel/ClinicTreatmentsManager.tsx` — item 4 (forwardRef, remove inline save button)
+### Shared visual tweaks
+- Remove `lg:hover:scale-[1.02]` (replaced with subtle `hover:shadow-elegant` only).
+- Featured badge moved to image overlay top-left for both layouts (already there on mobile; add to desktop overlay consistently).
+- Use `medical-green` token (already in `tailwind.config.ts`) for Apply button so colors stay coordinated with the existing palette.
+
+## Technical Details
+
+**Files to edit:**
+- `src/pages/ClinicListing.tsx` — replace lines ~462–718 with the new unified card. Add `Dialog` import + Apply state.
+- `src/components/ui/google-rating.tsx` — shrink prominent variant, rename label to "Google Rating".
+- `src/components/clinic-listing/ClinicCardSkeleton.tsx` — adjust skeleton to match new layout (image left + content right + two stacked buttons).
+
+**No DB / RLS / route changes.** Reuses existing `ContactClinicForm`, `Dialog`, `ImageCarousel`, `getClinicPrice`, `selectedTreatmentName`.
+
+**Mobile detection:** keep using Tailwind `lg:` breakpoint (matches existing pattern). One JSX block per breakpoint to keep desktop's image-left vs mobile's image-top layout, but they share button + price + meta sub-components inlined.
