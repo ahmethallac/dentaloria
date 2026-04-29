@@ -196,6 +196,35 @@ export const FilterContent = ({
         </div>
       )}
 
+      {/* Languages Filter */}
+      <div>
+        <h4 className="text-sm font-semibold mb-4 text-foreground/80">Languages</h4>
+        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+          {LANGUAGES.map((lang) => {
+            const active = selectedLanguages.includes(lang.code);
+            return (
+              <div
+                key={lang.code}
+                onClick={() => toggleLanguage(lang.code)}
+                className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+              >
+                <div className="relative">
+                  {active ? (
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <span className={`text-sm flex items-center gap-2 ${active ? "text-primary font-medium" : "text-foreground/70"}`}>
+                  <span aria-hidden>{lang.flag}</span>
+                  {lang.name}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Action Buttons */}
       <div className="space-y-3 pt-2">
         <Button
