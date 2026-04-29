@@ -49,11 +49,16 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
       const startOrder = items.length;
       let i = 0;
       for (const file of files) {
-        const path = `before-after/${clinicId}/${Date.now()}-${file.name}`;
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const path = `${clinicId}/before-after/${safeName}`;
         const { error: upErr } = await supabase.storage
           .from("clinic-images")
-          .upload(path, file);
-        if (upErr) throw upErr;
+          .upload(path, file, { contentType: file.type || "image/jpeg", upsert: false });
+        if (upErr) {
+          console.error("Storage upload error:", upErr);
+          throw upErr;
+        }
         const {
           data: { publicUrl },
         } = supabase.storage.from("clinic-images").getPublicUrl(path);
@@ -72,8 +77,8 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
     } catch (err: any) {
       console.error(err);
       toast({
-        title: "Error",
-        description: "Could not upload photo.",
+        title: "Could not upload photo",
+        description: err?.message || "Unknown error",
         variant: "destructive",
       });
     } finally {
