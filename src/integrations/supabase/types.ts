@@ -170,6 +170,30 @@ export type Database = {
           },
         ]
       }
+      clinic_before_after_images: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       clinic_images: {
         Row: {
           clinic_id: string
@@ -256,10 +280,12 @@ export type Database = {
           display_name: string | null
           email: string | null
           experience_years: number | null
+          facilities: string[]
           id: string
           is_featured: boolean | null
           is_published: boolean
           is_verified: boolean | null
+          languages: string[]
           latitude: number | null
           longitude: number | null
           name: string
@@ -286,10 +312,12 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           experience_years?: number | null
+          facilities?: string[]
           id?: string
           is_featured?: boolean | null
           is_published?: boolean
           is_verified?: boolean | null
+          languages?: string[]
           latitude?: number | null
           longitude?: number | null
           name: string
@@ -316,10 +344,12 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           experience_years?: number | null
+          facilities?: string[]
           id?: string
           is_featured?: boolean | null
           is_published?: boolean
           is_verified?: boolean | null
+          languages?: string[]
           latitude?: number | null
           longitude?: number | null
           name?: string
@@ -353,9 +383,11 @@ export type Database = {
           created_at: string | null
           description: string | null
           experience_years: number | null
+          facilities: string[]
           id: string
           is_featured: boolean | null
           is_verified: boolean | null
+          languages: string[]
           latitude: number | null
           longitude: number | null
           name: string | null
@@ -372,9 +404,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           experience_years?: number | null
+          facilities?: string[]
           id: string
           is_featured?: boolean | null
           is_verified?: boolean | null
+          languages?: string[]
           latitude?: number | null
           longitude?: number | null
           name?: string | null
@@ -391,9 +425,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           experience_years?: number | null
+          facilities?: string[]
           id?: string
           is_featured?: boolean | null
           is_verified?: boolean | null
+          languages?: string[]
           latitude?: number | null
           longitude?: number | null
           name?: string | null

@@ -14,6 +14,7 @@ import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSk
 import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
+import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard } from "@/lib/clinicMeta";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -180,6 +181,7 @@ export default function ClinicListing() {
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || "all");
   const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc'>("balance");
   const [page, setPage] = useState(1);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
@@ -193,6 +195,7 @@ export default function ClinicListing() {
     page,
     limit: 12,
     sortBy,
+    languageCodes: selectedLanguages,
   });
 
   const rawClinics = clinicData?.clinics || [];
@@ -286,6 +289,7 @@ export default function ClinicListing() {
     setSelectedTreatment("all");
     setSelectedCountry("all");
     setSelectedCity("all");
+    setSelectedLanguages([]);
     setPage(1);
   };
 
@@ -378,9 +382,11 @@ export default function ClinicListing() {
             selectedTreatment={selectedTreatment}
             selectedCountry={selectedCountry}
             selectedCity={selectedCity}
+            selectedLanguages={selectedLanguages}
             setSelectedTreatment={setSelectedTreatment}
             setSelectedCountry={setSelectedCountry}
             setSelectedCity={setSelectedCity}
+            setSelectedLanguages={setSelectedLanguages}
             clearFilters={clearFilters}
           />
         </div>
@@ -396,9 +402,11 @@ export default function ClinicListing() {
                 selectedTreatment={selectedTreatment}
                 selectedCountry={selectedCountry}
                 selectedCity={selectedCity}
+                selectedLanguages={selectedLanguages}
                 setSelectedTreatment={setSelectedTreatment}
                 setSelectedCountry={setSelectedCountry}
                 setSelectedCity={setSelectedCity}
+                setSelectedLanguages={setSelectedLanguages}
                 clearFilters={clearFilters}
               />
             </div>
@@ -481,10 +489,10 @@ export default function ClinicListing() {
                         {/* Content Section - Desktop */}
                         <div className="flex-1 p-4 pr-28">
                           <div className="flex flex-col h-full">
-                            <div className="mb-3">
+                            <div className="mb-2">
                               <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                              <div className="flex items-center gap-3 text-xs text-foreground/70">
-                                <GoogleRating rating={clinic.rating} starClassName="h-3 w-3" />
+                              <div className="flex items-center gap-3 text-xs text-foreground/70 flex-wrap">
+                                <GoogleRating rating={clinic.rating} variant="prominent" />
                                 {clinic.is_verified && (
                                   <div className="flex items-center gap-1">
                                     <CheckCircle className="h-3 w-3 text-green-500" />
@@ -493,6 +501,45 @@ export default function ClinicListing() {
                                 )}
                               </div>
                             </div>
+
+                            {/* Languages — single line, no wrap */}
+                            {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
+                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-1 min-w-0">
+                                {clinic.languages.slice(0, 4).map((code: string) => {
+                                  const l = getLanguage(code);
+                                  if (!l) return null;
+                                  return (
+                                    <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                      <span aria-hidden>{l.flag}</span>
+                                      <span>{l.name}</span>
+                                    </span>
+                                  );
+                                })}
+                                {clinic.languages.length > 4 && (
+                                  <span className="text-primary shrink-0">+{clinic.languages.length - 4}</span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Facilities — single line, no wrap */}
+                            {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
+                              <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-2 min-w-0">
+                                {sortFacilitiesForCard(clinic.facilities).slice(0, 4).map((key: string) => {
+                                  const f = getFacility(key);
+                                  if (!f) return null;
+                                  const Icon = f.icon;
+                                  return (
+                                    <span key={key} className="inline-flex items-center gap-1 shrink-0">
+                                      <Icon className="w-3 h-3 text-primary" />
+                                      <span>{f.label}</span>
+                                    </span>
+                                  );
+                                })}
+                                {clinic.facilities.length > 4 && (
+                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 4}</span>
+                                )}
+                              </div>
+                            )}
 
                             <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
                               <div className="text-xs text-foreground/70 mb-1">Starting</div>
@@ -581,26 +628,63 @@ export default function ClinicListing() {
                             <h3 className="text-base font-bold text-foreground leading-tight flex-1">
                               {clinic.name}
                             </h3>
-                            <div className="bg-amber-50 px-2 py-1 rounded-lg shrink-0 text-amber-700 text-sm">
-                              <GoogleRating rating={clinic.rating} starClassName="h-3.5 w-3.5" />
-                            </div>
+                            <GoogleRating rating={clinic.rating} variant="prominent" showLabel={false} />
                           </div>
+
+                          {/* Languages — single line */}
+                          {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
+                            <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
+                              {clinic.languages.slice(0, 2).map((code: string) => {
+                                const l = getLanguage(code);
+                                if (!l) return null;
+                                return (
+                                  <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                    <span aria-hidden>{l.flag}</span>
+                                    <span>{l.name}</span>
+                                  </span>
+                                );
+                              })}
+                              {clinic.languages.length > 2 && (
+                                <span className="text-primary shrink-0">+{clinic.languages.length - 2}</span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Facilities — single line */}
+                          {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
+                            <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
+                              {sortFacilitiesForCard(clinic.facilities).slice(0, 2).map((key: string) => {
+                                const f = getFacility(key);
+                                if (!f) return null;
+                                const Icon = f.icon;
+                                return (
+                                  <span key={key} className="inline-flex items-center gap-1 shrink-0">
+                                    <Icon className="w-3 h-3 text-primary" />
+                                    <span>{f.label}</span>
+                                  </span>
+                                );
+                              })}
+                              {clinic.facilities.length > 2 && (
+                                <span className="text-primary shrink-0">+{clinic.facilities.length - 2}</span>
+                              )}
+                            </div>
+                          )}
 
                           {/* Treatments */}
                           {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                               {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
-                                <Badge 
-                                  key={clinicTreatment.id} 
-                                  variant="secondary" 
+                                <Badge
+                                  key={clinicTreatment.id}
+                                  variant="secondary"
                                   className="bg-muted/80 text-foreground/70 border-0 px-2 py-1 rounded-lg text-xs"
                                 >
                                   {clinicTreatment.treatments?.name}
                                 </Badge>
                               ))}
                               {clinic.clinic_treatments.length > 3 && (
-                                <Badge 
-                                  variant="outline" 
+                                <Badge
+                                  variant="outline"
                                   className="border-primary/20 text-primary bg-primary/5 px-2 py-1 rounded-lg text-xs"
                                 >
                                   +{clinic.clinic_treatments.length - 3} more

@@ -5,11 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import {
-  Star,
   MapPin,
   Users,
   Award,
-  Calendar,
   Shield,
   CheckCircle,
   Clock,
@@ -17,6 +15,9 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  Languages as LanguagesIcon,
+  Sparkles,
+  Images as ImagesIcon,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
@@ -33,6 +34,7 @@ import {
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 import { GoogleRating } from "@/components/ui/google-rating";
+import { getLanguage, getFacility } from "@/lib/clinicMeta";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
@@ -91,6 +93,12 @@ const mapClinic = (db: any) => {
     email: db.email || "",
     doctors,
     treatments,
+    languages: Array.isArray(db?.languages) ? db.languages : [],
+    facilities: Array.isArray(db?.facilities) ? db.facilities : [],
+    beforeAfter: ((db?.clinic_before_after_images || []) as any[])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((i) => i.image_url),
   };
 };
 
@@ -99,8 +107,68 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "treatments", label: "Treatments" },
   { id: "doctors", label: "Doctors" },
-  { id: "contact", label: "Contact" },
+  { id: "facilities", label: "Facilities" },
+  { id: "languages", label: "Languages" },
+  { id: "gallery", label: "Before & After" },
 ] as const;
+
+/* ───────── before/after carousel ───────── */
+const BeforeAfterCarousel = ({
+  images,
+  sectionRef,
+}: {
+  images: string[];
+  sectionRef: (el: HTMLDivElement | null) => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const scroll = (dir: -1 | 1) => {
+    const el = ref.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
+    el.scrollBy({ left: dir * step * 1, behavior: "smooth" });
+  };
+  return (
+    <div ref={sectionRef} className="scroll-mt-32">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+          Before & After
+        </h3>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => scroll(-1)}
+            aria-label="Scroll left"
+            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll(1)}
+            aria-label="Scroll right"
+            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={ref}
+        className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+      >
+        {images.map((src, i) => (
+          <div
+            key={i}
+            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted"
+          >
+            <img src={src} alt={`Before & after ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 /* ───────── component ───────── */
 const ClinicDetail = () => {
@@ -614,25 +682,65 @@ const ClinicDetail = () => {
                 )}
               </div>
 
-              {/* ── Why Choose ── */}
-              <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
-                <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">
-                  Why Choose This Clinic
-                </h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {[
-                    { icon: Shield, text: "Licensed & Accredited" },
-                    { icon: CheckCircle, text: "Free Online Consultation" },
-                    { icon: Calendar, text: "Priority Appointments" },
-                    { icon: Award, text: clinic.isVerified ? "Dentaloria Verified" : "Quality Guaranteed" },
-                  ].map(({ icon: Icon, text }, i) => (
-                    <div key={i} className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-sm">{text}</span>
-                    </div>
-                  ))}
+              {/* ── Facilities & Amenities ── */}
+              {clinic.facilities.length > 0 && (
+                <div
+                  ref={(el) => (sectionRefs.current["facilities"] = el)}
+                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
+                >
+                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {clinic.facilities.map((key: string) => {
+                      const f = getFacility(key);
+                      if (!f) return null;
+                      const Icon = f.icon;
+                      return (
+                        <div key={key} className="flex items-center gap-2.5">
+                          <Icon className="w-4 h-4 text-primary shrink-0" />
+                          <span className="text-sm">{f.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* ── Supported Languages ── */}
+              {clinic.languages.length > 0 && (
+                <div
+                  ref={(el) => (sectionRefs.current["languages"] = el)}
+                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
+                >
+                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {clinic.languages.map((code: string) => {
+                      const l = getLanguage(code);
+                      if (!l) return null;
+                      return (
+                        <span
+                          key={code}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
+                        >
+                          <span aria-hidden>{l.flag}</span>
+                          <span>{l.name}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Before & After ── */}
+              {clinic.beforeAfter.length > 0 && (
+                <BeforeAfterCarousel
+                  images={clinic.beforeAfter}
+                  sectionRef={(el) => (sectionRefs.current["gallery"] = el)}
+                />
+              )}
             </div>
 
             {/* ── Treatments ── */}

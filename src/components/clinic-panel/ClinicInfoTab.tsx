@@ -9,8 +9,11 @@ import { type Clinic, getCountries, getCities, updateClinic, type Country, type 
 import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
+import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
+import { LANGUAGES, FACILITIES } from "@/lib/clinicMeta";
+import { cn } from "@/lib/utils";
 
 interface ClinicInfoTabProps {
   clinic: Clinic;
@@ -41,6 +44,16 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         ? Number(clinic.rating).toFixed(1)
         : "",
   });
+
+  const [languages, setLanguages] = useState<string[]>(
+    Array.isArray((clinic as any).languages) ? (clinic as any).languages : []
+  );
+  const [facilities, setFacilities] = useState<string[]>(
+    Array.isArray((clinic as any).facilities) ? (clinic as any).facilities : []
+  );
+
+  const toggleInArray = (arr: string[], val: string) =>
+    arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
 
   // 3.0 → 5.0 in 0.1 steps (21 values)
   const ratingOptions = useMemo(
@@ -115,6 +128,10 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         // @ts-ignore
         display_name: form.display_name.trim() || null,
         ...(form.google_rating ? { rating: parseFloat(form.google_rating) } : {}),
+        // @ts-ignore
+        languages,
+        // @ts-ignore
+        facilities,
       };
       const updated = await updateClinic(clinic.id, updates as any);
       toast({ title: "Success", description: "Clinic information updated." });
@@ -252,6 +269,65 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
           </div>
         </div>
 
+        {/* Supported Languages */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Supported Languages</label>
+          <p className="text-xs text-muted-foreground mb-3">
+            Select every language your team can communicate in with patients.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {LANGUAGES.map((l) => {
+              const active = languages.includes(l.code);
+              return (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLanguages((cur) => toggleInArray(cur, l.code))}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition",
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background border-border hover:border-primary/50"
+                  )}
+                >
+                  <span aria-hidden>{l.flag}</span>
+                  <span>{l.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Facilities & Amenities */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Facilities & Amenities</label>
+          <p className="text-xs text-muted-foreground mb-3">
+            Pick everything you offer your patients during their visit.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {FACILITIES.map((f) => {
+              const Icon = f.icon;
+              const active = facilities.includes(f.key);
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => setFacilities((cur) => toggleInArray(cur, f.key))}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm text-left transition",
+                    active
+                      ? "bg-primary/10 border-primary text-primary"
+                      : "bg-background border-border hover:border-primary/50"
+                  )}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{f.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
             {saving ? "Saving..." : "Update Information"}
@@ -285,6 +361,9 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             doctors={(clinic.doctors as any) || []}
             onChanged={() => onUpdated?.(clinic)}
           />
+
+          {/* Before & After Photos */}
+          <ClinicBeforeAfterManager clinicId={clinic.id} />
         </div>
 
         {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}

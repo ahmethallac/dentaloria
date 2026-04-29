@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Filter, Circle, CheckCircle2 } from "lucide-react";
+import { LANGUAGES } from "@/lib/clinicMeta";
 
 interface FilterContentProps {
   treatments: any[];
@@ -8,9 +9,11 @@ interface FilterContentProps {
   selectedTreatment: string;
   selectedCountry: string;
   selectedCity: string;
+  selectedLanguages: string[];
   setSelectedTreatment: (value: string) => void;
   setSelectedCountry: (value: string) => void;
   setSelectedCity: (value: string) => void;
+  setSelectedLanguages: (value: string[]) => void;
   clearFilters: () => void;
   onApply?: () => void;
   showHeader?: boolean;
@@ -23,9 +26,11 @@ export const FilterContent = ({
   selectedTreatment,
   selectedCountry,
   selectedCity,
+  selectedLanguages,
   setSelectedTreatment,
   setSelectedCountry,
   setSelectedCity,
+  setSelectedLanguages,
   clearFilters,
   onApply,
   showHeader = true,
@@ -34,7 +39,16 @@ export const FilterContent = ({
     selectedTreatment !== "all",
     selectedCountry !== "all",
     selectedCity !== "all",
+    selectedLanguages.length > 0,
   ].filter(Boolean).length;
+
+  const toggleLanguage = (code: string) => {
+    if (selectedLanguages.includes(code)) {
+      setSelectedLanguages(selectedLanguages.filter((c) => c !== code));
+    } else {
+      setSelectedLanguages([...selectedLanguages, code]);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -181,6 +195,35 @@ export const FilterContent = ({
           </div>
         </div>
       )}
+
+      {/* Languages Filter */}
+      <div>
+        <h4 className="text-sm font-semibold mb-4 text-foreground/80">Languages</h4>
+        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+          {LANGUAGES.map((lang) => {
+            const active = selectedLanguages.includes(lang.code);
+            return (
+              <div
+                key={lang.code}
+                onClick={() => toggleLanguage(lang.code)}
+                className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+              >
+                <div className="relative">
+                  {active ? (
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <span className={`text-sm flex items-center gap-2 ${active ? "text-primary font-medium" : "text-foreground/70"}`}>
+                  <span aria-hidden>{lang.flag}</span>
+                  {lang.name}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-2">
