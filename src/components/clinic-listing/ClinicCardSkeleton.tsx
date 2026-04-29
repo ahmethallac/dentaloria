@@ -20,8 +20,7 @@ export const ClinicCardSkeleton = () => {
               <Skeleton className="h-6 w-20 rounded-full" />
             </div>
           </div>
-          <div className="w-44 shrink-0 border-l border-border/40 pl-5 flex flex-col justify-center gap-2">
-            <Skeleton className="h-14 w-full rounded-xl" />
+          <div className="w-40 shrink-0 flex flex-col justify-center gap-2">
             <Skeleton className="h-10 w-full rounded-xl" />
             <Skeleton className="h-10 w-full rounded-xl" />
           </div>
