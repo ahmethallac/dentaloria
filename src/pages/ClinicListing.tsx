@@ -606,7 +606,7 @@ export default function ClinicListing() {
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        <div className="relative h-44">
+                        <div className="relative h-56">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           
                           <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
