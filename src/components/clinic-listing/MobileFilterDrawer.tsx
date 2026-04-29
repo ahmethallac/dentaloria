@@ -17,9 +17,11 @@ interface MobileFilterDrawerProps {
   selectedTreatment: string;
   selectedCountry: string;
   selectedCity: string;
+  selectedLanguages: string[];
   setSelectedTreatment: (value: string) => void;
   setSelectedCountry: (value: string) => void;
   setSelectedCity: (value: string) => void;
+  setSelectedLanguages: (value: string[]) => void;
   clearFilters: () => void;
 }
 
@@ -30,9 +32,11 @@ export const MobileFilterDrawer = ({
   selectedTreatment,
   selectedCountry,
   selectedCity,
+  selectedLanguages,
   setSelectedTreatment,
   setSelectedCountry,
   setSelectedCity,
+  setSelectedLanguages,
   clearFilters,
 }: MobileFilterDrawerProps) => {
   const [open, setOpen] = useState(false);
@@ -41,6 +45,7 @@ export const MobileFilterDrawer = ({
     selectedTreatment !== "all",
     selectedCountry !== "all",
     selectedCity !== "all",
+    selectedLanguages.length > 0,
   ].filter(Boolean).length;
 
   return (
@@ -76,9 +81,11 @@ export const MobileFilterDrawer = ({
             selectedTreatment={selectedTreatment}
             selectedCountry={selectedCountry}
             selectedCity={selectedCity}
+            selectedLanguages={selectedLanguages}
             setSelectedTreatment={setSelectedTreatment}
             setSelectedCountry={setSelectedCountry}
             setSelectedCity={setSelectedCity}
+            setSelectedLanguages={setSelectedLanguages}
             clearFilters={() => {
               clearFilters();
             }}
