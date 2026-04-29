@@ -5,11 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import {
-  Star,
   MapPin,
   Users,
   Award,
-  Calendar,
   Shield,
   CheckCircle,
   Clock,
@@ -17,6 +15,9 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  Languages as LanguagesIcon,
+  Sparkles,
+  Images as ImagesIcon,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
@@ -33,6 +34,7 @@ import {
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 import { GoogleRating } from "@/components/ui/google-rating";
+import { getLanguage, getFacility } from "@/lib/clinicMeta";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
