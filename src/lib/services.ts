@@ -255,6 +255,10 @@ export const getClinics = async (filters?: {
   if (filters?.searchQuery) {
     query = query.or(`name.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`)
   }
+
+  if (filters?.languageCodes && filters.languageCodes.length > 0) {
+    query = query.overlaps('languages', filters.languageCodes)
+  }
   
   // Pagination
   const page = filters?.page || 1
