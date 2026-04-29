@@ -708,13 +708,13 @@ export default function ClinicListing() {
 
                           <div className="h-px bg-border/50" />
 
-                          {/* Price pill + stacked CTAs (single unit) */}
-                          <div className="flex flex-col gap-2">
-                            <div className="rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/15 px-4 py-2.5 flex items-baseline justify-between">
-                              <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                          {/* Price badge + stacked CTAs */}
+                          <div className="flex flex-col items-stretch gap-2.5">
+                            <div className="self-center inline-flex items-baseline gap-2 px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
+                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                                 Starting from
                               </span>
-                              <span className="text-2xl font-bold text-primary leading-tight">
+                              <span className="text-xl font-extrabold text-primary leading-tight">
                                 {getClinicPrice(clinic)}
                               </span>
                             </div>
