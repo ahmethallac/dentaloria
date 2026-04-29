@@ -11,13 +11,13 @@ import {
   Shield,
   CheckCircle,
   Clock,
-  Stethoscope,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   X,
   Languages as LanguagesIcon,
   Sparkles,
-  Images as ImagesIcon,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
@@ -31,6 +31,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 import { GoogleRating } from "@/components/ui/google-rating";
@@ -105,14 +112,13 @@ const mapClinic = (db: any) => {
 /* ───────── tabs config ───────── */
 const TABS = [
   { id: "overview", label: "Overview" },
+  { id: "about", label: "About" },
+  { id: "photos", label: "Photos" },
   { id: "treatments", label: "Treatments" },
   { id: "doctors", label: "Doctors" },
-  { id: "facilities", label: "Facilities" },
-  { id: "languages", label: "Languages" },
-  { id: "gallery", label: "Before & After" },
 ] as const;
 
-/* ───────── before/after carousel ───────── */
+/* ───────── before/after carousel + lightbox ───────── */
 const BeforeAfterCarousel = ({
   images,
   sectionRef,
@@ -121,13 +127,16 @@ const BeforeAfterCarousel = ({
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
   const scroll = (dir: -1 | 1) => {
     const el = ref.current;
     if (!el) return;
     const card = el.firstElementChild as HTMLElement | null;
     const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
-    el.scrollBy({ left: dir * step * 1, behavior: "smooth" });
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
+
   return (
     <div ref={sectionRef} className="scroll-mt-32">
       <div className="flex items-center justify-between mb-3">
@@ -158,14 +167,114 @@ const BeforeAfterCarousel = ({
         className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
       >
         {images.map((src, i) => (
-          <div
+          <button
             key={i}
-            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted"
+            type="button"
+            onClick={() => setLightboxIdx(i)}
+            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
+            aria-label={`Open before & after image ${i + 1}`}
           >
-            <img src={src} alt={`Before & after ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-          </div>
+            <img
+              src={src}
+              alt={`Before & after ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          </button>
         ))}
       </div>
+
+      {/* Lightbox */}
+      <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
+        <DialogContent
+          className="max-w-5xl w-[95vw] p-0 bg-background border-border/40 [&>button]:hidden"
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>Before & After photos</DialogTitle>
+          </DialogHeader>
+          {lightboxIdx !== null && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setLightboxIdx(null)}
+                aria-label="Close"
+                className="absolute right-3 top-3 z-20 rounded-full bg-background/90 hover:bg-background p-2 border border-border/60 shadow"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <Carousel
+                opts={{ startIndex: lightboxIdx, loop: true }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {images.map((src, i) => (
+                    <CarouselItem key={i}>
+                      <div className="flex items-center justify-center bg-black/5 dark:bg-black/40 aspect-[4/3] sm:aspect-video">
+                        <img
+                          src={src}
+                          alt={`Before & after ${i + 1}`}
+                          className="max-h-[80vh] max-w-full object-contain select-none"
+                          draggable={false}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-3 sm:-left-12" />
+                <CarouselNext className="right-3 sm:-right-12" />
+              </Carousel>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+/* ───────── expandable description ───────── */
+const ExpandableDescription = ({ html }: { html: string }) => {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const check = () => {
+      // Compare full scrollHeight to the collapsed clientHeight.
+      // 192px ≈ max-h-48 (12rem)
+      setOverflows(el.scrollHeight > 192 + 4);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [html]);
+
+  return (
+    <div>
+      <div className="relative">
+        <div
+          ref={innerRef}
+          className={`prose prose-sm max-w-none text-muted-foreground leading-relaxed text-[15px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 transition-[max-height] duration-300 overflow-hidden ${
+            expanded ? "max-h-none" : "max-h-48"
+          }`}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        {!expanded && overflows && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
+        )}
+      </div>
+      {overflows && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          {expanded ? "Show less" : "Read more"}
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+      )}
     </div>
   );
 };
@@ -510,15 +619,6 @@ const ClinicDetail = () => {
                 <GoogleRating rating={clinic.rating} starClassName="w-3.5 h-3.5" />
               </span>
             </div>
-            {clinic.specialties.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {clinic.specialties.map((s: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="text-xs font-normal">
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -634,113 +734,91 @@ const ClinicDetail = () => {
                 )}
               </div>
 
-              {/* ── About ── */}
-              {clinic.description && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
-                  <div
-                    className="prose prose-sm max-w-none text-muted-foreground leading-relaxed text-[15px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2"
-                    dangerouslySetInnerHTML={{ __html: sanitizeRichText(clinic.description) }}
-                  />
-                </div>
-              )}
+              {/* ── About cluster (description + languages + facilities) ── */}
+              <div
+                ref={(el) => (sectionRefs.current["about"] = el)}
+                className="scroll-mt-32 space-y-8"
+              >
+                {/* About the Clinic */}
+                {clinic.description && (
+                  <div>
+                    <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
+                    <ExpandableDescription html={sanitizeRichText(clinic.description)} />
+                  </div>
+                )}
 
-              {/* ── Quick Stats ── */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {clinic.experience > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="w-5 h-5 text-primary" />
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  {clinic.experience > 0 && (
+                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
+                        <div className="text-xs text-muted-foreground">Years Experience</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
-                      <div className="text-xs text-muted-foreground">Years Experience</div>
+                  )}
+                  {clinic.patientCount > 0 && (
+                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
+                        <div className="text-xs text-muted-foreground">Happy Patients</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Supported Languages */}
+                {clinic.languages.length > 0 && (
+                  <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
+                    <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {clinic.languages.map((code: string) => {
+                        const l = getLanguage(code);
+                        if (!l) return null;
+                        return (
+                          <span
+                            key={code}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
+                          >
+                            <span aria-hidden>{l.flag}</span>
+                            <span>{l.name}</span>
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
-                {clinic.patientCount > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Users className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
-                      <div className="text-xs text-muted-foreground">Happy Patients</div>
-                    </div>
-                  </div>
-                )}
-                {clinic.specialties.length > 0 && (
-                  <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Stethoscope className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold leading-tight">{clinic.specialties.length}</div>
-                      <div className="text-xs text-muted-foreground">Specialties</div>
+
+                {/* Facilities & Amenities */}
+                {clinic.facilities.length > 0 && (
+                  <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
+                    <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {clinic.facilities.map((key: string) => {
+                        const f = getFacility(key);
+                        if (!f) return null;
+                        const Icon = f.icon;
+                        return (
+                          <div key={key} className="flex items-center gap-2.5">
+                            <Icon className="w-4 h-4 text-primary shrink-0" />
+                            <span className="text-sm">{f.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* ── Facilities & Amenities ── */}
-              {clinic.facilities.length > 0 && (
-                <div
-                  ref={(el) => (sectionRefs.current["facilities"] = el)}
-                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
-                >
-                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {clinic.facilities.map((key: string) => {
-                      const f = getFacility(key);
-                      if (!f) return null;
-                      const Icon = f.icon;
-                      return (
-                        <div key={key} className="flex items-center gap-2.5">
-                          <Icon className="w-4 h-4 text-primary shrink-0" />
-                          <span className="text-sm">{f.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* ── Supported Languages ── */}
-              {clinic.languages.length > 0 && (
-                <div
-                  ref={(el) => (sectionRefs.current["languages"] = el)}
-                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
-                >
-                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {clinic.languages.map((code: string) => {
-                      const l = getLanguage(code);
-                      if (!l) return null;
-                      return (
-                        <span
-                          key={code}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
-                        >
-                          <span aria-hidden>{l.flag}</span>
-                          <span>{l.name}</span>
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* ── Before & After ── */}
-              {clinic.beforeAfter.length > 0 && (
-                <BeforeAfterCarousel
-                  images={clinic.beforeAfter}
-                  sectionRef={(el) => (sectionRefs.current["gallery"] = el)}
-                />
-              )}
             </div>
 
             {/* ── Treatments ── */}
@@ -792,7 +870,16 @@ const ClinicDetail = () => {
               </div>
             )}
 
+            {/* ── Before & After (Photos) ── */}
+            {clinic.beforeAfter.length > 0 && (
+              <BeforeAfterCarousel
+                images={clinic.beforeAfter}
+                sectionRef={(el) => (sectionRefs.current["photos"] = el)}
+              />
+            )}
+
             {/* ── Doctors ── */}
+
             {clinic.doctors.length > 0 && (
               <div ref={(el) => (sectionRefs.current["doctors"] = el)} className="scroll-mt-32">
                 <h2 className="text-xl font-bold mb-4">Our Doctors</h2>

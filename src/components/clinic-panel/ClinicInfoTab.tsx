@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,7 @@ import { Loader2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { type Clinic, getCountries, getCities, updateClinic, type Country, type City } from "@/lib/services";
 import ClinicImagesManager from "./ClinicImagesManager";
-import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
+import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
 import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
@@ -67,6 +67,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   const [cityId, setCityId] = useState<string>(clinic.city_id);
 
   const [saving, setSaving] = useState(false);
+  const treatmentsRef = useRef<ClinicTreatmentsHandle>(null);
   const [loadingLoc, setLoadingLoc] = useState(true);
 
   useEffect(() => {
@@ -134,6 +135,12 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         facilities,
       };
       const updated = await updateClinic(clinic.id, updates as any);
+      // Persist treatments alongside the main form
+      try {
+        await treatmentsRef.current?.save();
+      } catch (e) {
+        // toast already handled inside the manager
+      }
       toast({ title: "Success", description: "Clinic information updated." });
       onUpdated?.(updated);
     } catch (e: any) {
@@ -328,13 +335,8 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
-            {saving ? "Saving..." : "Update Information"}
-          </Button>
-        </div>
-
-        {/* Advanced sections */}
+        {/* Advanced sections — order matches public clinic page:
+            Images → Treatments → Before & After → Doctors */}
         <div className="border-t mt-6 pt-6 space-y-6">
           {/* Images */}
           <ClinicImagesManager
@@ -345,6 +347,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
           {/* Treatments */}
           <ClinicTreatmentsManager
+            ref={treatmentsRef}
             clinicId={clinic.id}
             selections={
               ((clinic.clinic_treatments as any) || []).map((ct: any) => ({
@@ -355,15 +358,27 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             onChanged={() => onUpdated?.(clinic)}
           />
 
+          {/* Before & After Photos */}
+          <ClinicBeforeAfterManager clinicId={clinic.id} />
+
           {/* Doctors */}
           <ClinicDoctorsManager
             clinicId={clinic.id}
             doctors={(clinic.doctors as any) || []}
             onChanged={() => onUpdated?.(clinic)}
           />
+        </div>
 
-          {/* Before & After Photos */}
-          <ClinicBeforeAfterManager clinicId={clinic.id} />
+        {/* Single Save button at the bottom — saves all clinic info together */}
+        <div className="border-t mt-6 pt-6 flex justify-end">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            size="lg"
+            className="bg-gradient-primary hover:opacity-90"
+          >
+            {saving ? "Saving..." : "Save All Changes"}
+          </Button>
         </div>
 
         {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}
@@ -382,7 +397,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
                   <p className="text-xs text-destructive mt-2">
                     {!hasDisplayName
                       ? "You must set a Display Name above before submitting."
-                      : "Click \"Update Information\" first to save your Display Name, then submit."}
+                      : "Click \"Save All Changes\" first to save your Display Name, then submit."}
                   </p>
                 )}
               </div>
