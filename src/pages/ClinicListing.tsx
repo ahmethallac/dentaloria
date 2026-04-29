@@ -15,6 +15,8 @@ import { getCountries, getCities, getTreatments, getTreatmentCategories } from "
 import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
 import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard } from "@/lib/clinicMeta";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ContactClinicForm } from "@/components/forms/ContactClinicForm";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
