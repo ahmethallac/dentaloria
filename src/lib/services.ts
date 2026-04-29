@@ -371,6 +371,11 @@ export const getClinicByIdPrivate = async (id: string): Promise<Clinic | null> =
         title,
         experience_years,
         profile_image_url
+      ),
+      clinic_before_after_images (
+        id,
+        image_url,
+        sort_order
       )
     `)
     .eq('id', id)
