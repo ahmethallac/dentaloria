@@ -483,7 +483,16 @@ export default function ClinicListing() {
                               Featured
                             </Badge>
                           )}
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2.5 px-3 z-10">
+                          {/* Price badge — floating on image */}
+                          <div className="absolute top-3 right-3 z-10 inline-flex flex-col items-center px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-sm border border-primary/20 shadow-md">
+                            <span className="text-[8px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
+                              From
+                            </span>
+                            <span className="text-sm font-extrabold text-primary leading-tight mt-0.5">
+                              {getClinicPrice(clinic)}
+                            </span>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2 px-3 z-10">
                             <div className="flex items-center gap-1 text-white">
                               <MapPin className="h-3.5 w-3.5" />
                               <span className="text-xs font-medium">{getClinicLocation(clinic)}</span>
@@ -492,8 +501,8 @@ export default function ClinicListing() {
                         </div>
 
                         {/* Content + Action */}
-                        <div className="flex-1 flex p-5 gap-5 min-w-0">
-                          <div className="flex-1 min-w-0 flex flex-col gap-2">
+                        <div className="flex-1 flex p-4 gap-4 min-w-0">
+                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                             {/* Header */}
                             <div className="flex items-start justify-between gap-3">
                               <h3 className="text-lg font-bold text-foreground leading-tight">{clinic.name}</h3>
