@@ -335,13 +335,8 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={saving} className="bg-gradient-primary hover:opacity-90">
-            {saving ? "Saving..." : "Update Information"}
-          </Button>
-        </div>
-
-        {/* Advanced sections */}
+        {/* Advanced sections — order matches public clinic page:
+            Images → Treatments → Before & After → Doctors */}
         <div className="border-t mt-6 pt-6 space-y-6">
           {/* Images */}
           <ClinicImagesManager
@@ -352,6 +347,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
           {/* Treatments */}
           <ClinicTreatmentsManager
+            ref={treatmentsRef}
             clinicId={clinic.id}
             selections={
               ((clinic.clinic_treatments as any) || []).map((ct: any) => ({
@@ -362,15 +358,27 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             onChanged={() => onUpdated?.(clinic)}
           />
 
+          {/* Before & After Photos */}
+          <ClinicBeforeAfterManager clinicId={clinic.id} />
+
           {/* Doctors */}
           <ClinicDoctorsManager
             clinicId={clinic.id}
             doctors={(clinic.doctors as any) || []}
             onChanged={() => onUpdated?.(clinic)}
           />
+        </div>
 
-          {/* Before & After Photos */}
-          <ClinicBeforeAfterManager clinicId={clinic.id} />
+        {/* Single Save button at the bottom — saves all clinic info together */}
+        <div className="border-t mt-6 pt-6 flex justify-end">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            size="lg"
+            className="bg-gradient-primary hover:opacity-90"
+          >
+            {saving ? "Saving..." : "Save All Changes"}
+          </Button>
         </div>
 
         {/* Submit for Approval — only for clinic owners (not Super Admins) and only when the page can still be submitted */}
