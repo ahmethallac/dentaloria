@@ -622,25 +622,65 @@ const ClinicDetail = () => {
                 )}
               </div>
 
-              {/* ── Why Choose ── */}
-              <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
-                <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">
-                  Why Choose This Clinic
-                </h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {[
-                    { icon: Shield, text: "Licensed & Accredited" },
-                    { icon: CheckCircle, text: "Free Online Consultation" },
-                    { icon: Calendar, text: "Priority Appointments" },
-                    { icon: Award, text: clinic.isVerified ? "Dentaloria Verified" : "Quality Guaranteed" },
-                  ].map(({ icon: Icon, text }, i) => (
-                    <div key={i} className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-sm">{text}</span>
-                    </div>
-                  ))}
+              {/* ── Facilities & Amenities ── */}
+              {clinic.facilities.length > 0 && (
+                <div
+                  ref={(el) => (sectionRefs.current["facilities"] = el)}
+                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
+                >
+                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {clinic.facilities.map((key: string) => {
+                      const f = getFacility(key);
+                      if (!f) return null;
+                      const Icon = f.icon;
+                      return (
+                        <div key={key} className="flex items-center gap-2.5">
+                          <Icon className="w-4 h-4 text-primary shrink-0" />
+                          <span className="text-sm">{f.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* ── Supported Languages ── */}
+              {clinic.languages.length > 0 && (
+                <div
+                  ref={(el) => (sectionRefs.current["languages"] = el)}
+                  className="scroll-mt-32 rounded-xl border border-border/50 p-6 bg-muted/20"
+                >
+                  <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {clinic.languages.map((code: string) => {
+                      const l = getLanguage(code);
+                      if (!l) return null;
+                      return (
+                        <span
+                          key={code}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
+                        >
+                          <span aria-hidden>{l.flag}</span>
+                          <span>{l.name}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Before & After ── */}
+              {clinic.beforeAfter.length > 0 && (
+                <BeforeAfterCarousel
+                  images={clinic.beforeAfter}
+                  sectionRef={(el) => (sectionRefs.current["gallery"] = el)}
+                />
+              )}
             </div>
 
             {/* ── Treatments ── */}
