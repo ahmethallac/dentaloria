@@ -476,7 +476,7 @@ export default function ClinicListing() {
                       {/* Desktop Layout */}
                       <div className="hidden lg:flex lg:flex-row">
                         {/* Image Section */}
-                        <div className="w-60 shrink-0 relative">
+                        <div className="w-52 shrink-0 relative">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
                             <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg z-10">
@@ -492,8 +492,8 @@ export default function ClinicListing() {
                         </div>
 
                         {/* Content + Action */}
-                        <div className="flex-1 flex p-5 gap-5 min-w-0">
-                          <div className="flex-1 min-w-0 flex flex-col gap-2">
+                        <div className="flex-1 flex p-4 gap-4 min-w-0">
+                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                             {/* Header */}
                             <div className="flex items-start justify-between gap-3">
                               <h3 className="text-lg font-bold text-foreground leading-tight">{clinic.name}</h3>
@@ -511,7 +511,7 @@ export default function ClinicListing() {
                             {/* Languages */}
                             {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
                               <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                                {clinic.languages.slice(0, 4).map((code: string) => {
+                                {clinic.languages.slice(0, 3).map((code: string) => {
                                   const l = getLanguage(code);
                                   if (!l) return null;
                                   return (
@@ -521,8 +521,8 @@ export default function ClinicListing() {
                                     </span>
                                   );
                                 })}
-                                {clinic.languages.length > 4 && (
-                                  <span className="text-primary shrink-0">+{clinic.languages.length - 4}</span>
+                                {clinic.languages.length > 3 && (
+                                  <span className="text-primary shrink-0">+{clinic.languages.length - 3}</span>
                                 )}
                               </div>
                             )}
@@ -530,7 +530,7 @@ export default function ClinicListing() {
                             {/* Facilities */}
                             {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
                               <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                                {sortFacilitiesForCard(clinic.facilities).slice(0, 4).map((key: string) => {
+                                {sortFacilitiesForCard(clinic.facilities).slice(0, 3).map((key: string) => {
                                   const f = getFacility(key);
                                   if (!f) return null;
                                   const Icon = f.icon;
@@ -541,20 +541,20 @@ export default function ClinicListing() {
                                     </span>
                                   );
                                 })}
-                                {clinic.facilities.length > 4 && (
-                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 4}</span>
+                                {clinic.facilities.length > 3 && (
+                                  <span className="text-primary shrink-0">+{clinic.facilities.length - 3}</span>
                                 )}
                               </div>
                             )}
 
                             {/* Treatments — single line, no wrap */}
                             {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
-                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0 mt-1">
-                                {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
+                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0 mt-0.5">
+                                {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment: any) => (
                                   <Badge
                                     key={clinicTreatment.id}
                                     variant="secondary"
-                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal shrink-0 max-w-[180px] truncate"
+                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-0.5 rounded-full text-xs font-normal shrink-0 max-w-[160px] truncate"
                                   >
                                     <span className="truncate">
                                       {clinicTreatment.treatments?.name}
@@ -562,12 +562,12 @@ export default function ClinicListing() {
                                     </span>
                                   </Badge>
                                 ))}
-                                {clinic.clinic_treatments.length > 3 && (
+                                {clinic.clinic_treatments.length > 2 && (
                                   <Badge
                                     variant="outline"
-                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs shrink-0"
+                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full text-xs shrink-0"
                                   >
-                                    +{clinic.clinic_treatments.length - 3}
+                                    +{clinic.clinic_treatments.length - 2}
                                   </Badge>
                                 )}
                               </div>
@@ -575,7 +575,7 @@ export default function ClinicListing() {
                           </div>
 
                           {/* Right column: price badge + stacked buttons */}
-                          <div className="w-44 shrink-0 flex flex-col justify-center border-l border-border/40 pl-5">
+                          <div className="w-40 shrink-0 flex flex-col justify-center border-l border-border/40 pl-4">
                             <div className="flex flex-col items-stretch gap-2.5">
                               {/* Price badge — pill above buttons */}
                               <div className="self-center inline-flex flex-col items-center px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
