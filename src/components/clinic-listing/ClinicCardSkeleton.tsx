@@ -4,9 +4,9 @@ export const ClinicCardSkeleton = () => {
   return (
     <div className="bg-white/90 backdrop-blur-glass rounded-2xl overflow-hidden shadow-card border border-white/40">
       {/* Desktop layout */}
-      <div className="hidden lg:flex lg:min-h-[220px]">
-        <Skeleton className="w-64 h-full shrink-0 rounded-none" />
-        <div className="flex-1 flex p-4 gap-4">
+      <div className="hidden lg:flex">
+        <Skeleton className="w-60 h-44 shrink-0 rounded-none" />
+        <div className="flex-1 flex p-5 gap-5">
           <div className="flex-1 space-y-3">
             <div className="flex justify-between items-start">
               <Skeleton className="h-5 w-2/5" />
@@ -17,10 +17,11 @@ export const ClinicCardSkeleton = () => {
             <div className="flex gap-2">
               <Skeleton className="h-6 w-24 rounded-full" />
               <Skeleton className="h-6 w-28 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
             </div>
           </div>
-          <div className="w-44 shrink-0 border-l border-border/40 pl-4 flex flex-col justify-center gap-2">
-            <Skeleton className="h-8 w-full" />
+          <div className="w-44 shrink-0 border-l border-border/40 pl-5 flex flex-col justify-center gap-2">
+            <Skeleton className="h-14 w-full rounded-xl" />
             <Skeleton className="h-10 w-full rounded-xl" />
             <Skeleton className="h-10 w-full rounded-xl" />
           </div>
