@@ -474,24 +474,15 @@ export default function ClinicListing() {
                   >
                     <CardContent className="p-0">
                       {/* Desktop Layout */}
-                      <div className="hidden lg:flex lg:flex-row">
+                      <div className="hidden lg:flex lg:flex-row lg:min-h-[220px]">
                         {/* Image Section */}
-                        <div className="w-60 shrink-0 relative">
+                        <div className="w-64 shrink-0 relative">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
                             <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg z-10">
                               Featured
                             </Badge>
                           )}
-                          {/* Price badge — floating on image */}
-                          <div className="absolute top-3 right-3 z-10 inline-flex flex-col items-center px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-sm border border-primary/20 shadow-md">
-                            <span className="text-[8px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
-                              From
-                            </span>
-                            <span className="text-sm font-extrabold text-primary leading-tight mt-0.5">
-                              {getClinicPrice(clinic)}
-                            </span>
-                          </div>
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2 px-3 z-10">
                             <div className="flex items-center gap-1 text-white">
                               <MapPin className="h-3.5 w-3.5" />
