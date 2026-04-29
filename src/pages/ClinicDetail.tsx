@@ -114,11 +114,10 @@ const mapClinic = (db: any) => {
 /* ───────── tabs config ───────── */
 const TABS = [
   { id: "overview", label: "Overview" },
+  { id: "about", label: "About" },
+  { id: "photos", label: "Photos" },
   { id: "treatments", label: "Treatments" },
   { id: "doctors", label: "Doctors" },
-  { id: "facilities", label: "Facilities" },
-  { id: "languages", label: "Languages" },
-  { id: "gallery", label: "Before & After" },
 ] as const;
 
 /* ───────── before/after carousel ───────── */
