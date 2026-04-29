@@ -128,6 +128,10 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         // @ts-ignore
         display_name: form.display_name.trim() || null,
         ...(form.google_rating ? { rating: parseFloat(form.google_rating) } : {}),
+        // @ts-ignore
+        languages,
+        // @ts-ignore
+        facilities,
       };
       const updated = await updateClinic(clinic.id, updates as any);
       toast({ title: "Success", description: "Clinic information updated." });
