@@ -120,7 +120,7 @@ const TABS = [
   { id: "doctors", label: "Doctors" },
 ] as const;
 
-/* ───────── before/after carousel ───────── */
+/* ───────── before/after carousel + lightbox ───────── */
 const BeforeAfterCarousel = ({
   images,
   sectionRef,
@@ -129,13 +129,16 @@ const BeforeAfterCarousel = ({
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
   const scroll = (dir: -1 | 1) => {
     const el = ref.current;
     if (!el) return;
     const card = el.firstElementChild as HTMLElement | null;
     const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
-    el.scrollBy({ left: dir * step * 1, behavior: "smooth" });
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
+
   return (
     <div ref={sectionRef} className="scroll-mt-32">
       <div className="flex items-center justify-between mb-3">
@@ -166,14 +169,114 @@ const BeforeAfterCarousel = ({
         className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
       >
         {images.map((src, i) => (
-          <div
+          <button
             key={i}
-            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted"
+            type="button"
+            onClick={() => setLightboxIdx(i)}
+            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
+            aria-label={`Open before & after image ${i + 1}`}
           >
-            <img src={src} alt={`Before & after ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-          </div>
+            <img
+              src={src}
+              alt={`Before & after ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          </button>
         ))}
       </div>
+
+      {/* Lightbox */}
+      <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
+        <DialogContent
+          className="max-w-5xl w-[95vw] p-0 bg-background border-border/40 [&>button]:hidden"
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>Before & After photos</DialogTitle>
+          </DialogHeader>
+          {lightboxIdx !== null && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setLightboxIdx(null)}
+                aria-label="Close"
+                className="absolute right-3 top-3 z-20 rounded-full bg-background/90 hover:bg-background p-2 border border-border/60 shadow"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <Carousel
+                opts={{ startIndex: lightboxIdx, loop: true }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {images.map((src, i) => (
+                    <CarouselItem key={i}>
+                      <div className="flex items-center justify-center bg-black/5 dark:bg-black/40 aspect-[4/3] sm:aspect-video">
+                        <img
+                          src={src}
+                          alt={`Before & after ${i + 1}`}
+                          className="max-h-[80vh] max-w-full object-contain select-none"
+                          draggable={false}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-3 sm:-left-12" />
+                <CarouselNext className="right-3 sm:-right-12" />
+              </Carousel>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+/* ───────── expandable description ───────── */
+const ExpandableDescription = ({ html }: { html: string }) => {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const check = () => {
+      // Compare full scrollHeight to the collapsed clientHeight.
+      // 192px ≈ max-h-48 (12rem)
+      setOverflows(el.scrollHeight > 192 + 4);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [html]);
+
+  return (
+    <div>
+      <div className="relative">
+        <div
+          ref={innerRef}
+          className={`prose prose-sm max-w-none text-muted-foreground leading-relaxed text-[15px] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 transition-[max-height] duration-300 overflow-hidden ${
+            expanded ? "max-h-none" : "max-h-48"
+          }`}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        {!expanded && overflows && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
+        )}
+      </div>
+      {overflows && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          {expanded ? "Show less" : "Read more"}
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+      )}
     </div>
   );
 };
