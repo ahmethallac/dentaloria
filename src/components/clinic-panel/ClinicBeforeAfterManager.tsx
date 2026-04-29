@@ -77,8 +77,8 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
     } catch (err: any) {
       console.error(err);
       toast({
-        title: "Error",
-        description: "Could not upload photo.",
+        title: "Could not upload photo",
+        description: err?.message || "Unknown error",
         variant: "destructive",
       });
     } finally {
