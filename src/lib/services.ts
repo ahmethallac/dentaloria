@@ -179,6 +179,7 @@ export const getClinics = async (filters?: {
   page?: number
   limit?: number
   sortBy?: 'balance' | 'rating' | 'price_asc' | 'price_desc'
+  languageCodes?: string[]
 }): Promise<{ clinics: Clinic[], total: number }> => {
   // Default sort: balance-first (clinics with higher balance appear first), then existing tie-breakers.
   // Manual sort selections from the UI override the balance sort.
