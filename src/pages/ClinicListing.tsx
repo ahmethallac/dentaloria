@@ -604,7 +604,6 @@ export default function ClinicListing() {
                           </div>
                         </div>
                       </div>
-                      </div>
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
