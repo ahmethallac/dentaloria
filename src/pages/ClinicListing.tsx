@@ -15,6 +15,8 @@ import { getCountries, getCities, getTreatments, getTreatmentCategories } from "
 import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
 import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard } from "@/lib/clinicMeta";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ContactClinicForm } from "@/components/forms/ContactClinicForm";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -182,6 +184,7 @@ export default function ClinicListing() {
   const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc'>("balance");
   const [page, setPage] = useState(1);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [applyOpenForClinicId, setApplyOpenForClinicId] = useState<string | null>(null);
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
@@ -464,47 +467,50 @@ export default function ClinicListing() {
                 {clinics.map((clinic: any, index: number) => (
                   <Card 
                     key={clinic.id} 
-                    className={`overflow-hidden bg-white/80 backdrop-blur-glass border-white/30 rounded-2xl shadow-card hover:shadow-elegant transition-all duration-500 lg:hover:scale-[1.02] animate-fade-in ${
+                    className={`overflow-hidden bg-white/90 backdrop-blur-glass border border-white/40 rounded-2xl shadow-card hover:shadow-elegant transition-shadow duration-300 animate-fade-in ${
                       clinic.is_featured ? 'ring-2 ring-primary/20 shadow-colored' : ''
                     }`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <CardContent className="p-0">
                       {/* Desktop Layout */}
-                      <div className="hidden lg:flex lg:flex-row h-48 relative">
-                        {/* Image Section - Desktop */}
-                        <div className="w-64 h-full relative">
+                      <div className="hidden lg:flex lg:flex-row">
+                        {/* Image Section */}
+                        <div className="w-60 shrink-0 relative">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
-                            <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2 py-1 rounded-full text-xs z-10">
+                            <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg z-10">
                               Featured
                             </Badge>
                           )}
-                          <div className="absolute bottom-3 left-3 flex items-center gap-1 text-white z-10">
-                            <MapPin className="h-3 w-3" />
-                            <span className="text-xs font-medium">{getClinicLocation(clinic)}</span>
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2.5 px-3 z-10">
+                            <div className="flex items-center gap-1 text-white">
+                              <MapPin className="h-3.5 w-3.5" />
+                              <span className="text-xs font-medium">{getClinicLocation(clinic)}</span>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Content Section - Desktop */}
-                        <div className="flex-1 p-4 pr-28">
-                          <div className="flex flex-col h-full">
-                            <div className="mb-2">
-                              <h3 className="text-lg font-bold text-foreground mb-1">{clinic.name}</h3>
-                              <div className="flex items-center gap-3 text-xs text-foreground/70 flex-wrap">
+                        {/* Content + Action */}
+                        <div className="flex-1 flex p-5 gap-5 min-w-0">
+                          <div className="flex-1 min-w-0 flex flex-col gap-2">
+                            {/* Header */}
+                            <div className="flex items-start justify-between gap-3">
+                              <h3 className="text-lg font-bold text-foreground leading-tight">{clinic.name}</h3>
+                              <div className="flex items-center gap-2 shrink-0">
                                 <GoogleRating rating={clinic.rating} variant="prominent" />
                                 {clinic.is_verified && (
-                                  <div className="flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3 text-green-500" />
-                                    <span>Verified</span>
-                                  </div>
+                                  <span className="inline-flex items-center gap-1 text-xs text-foreground/70">
+                                    <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
+                                    Verified
+                                  </span>
                                 )}
                               </div>
                             </div>
 
-                            {/* Languages — single line, no wrap */}
+                            {/* Languages */}
                             {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
-                              <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-1 min-w-0">
+                              <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
                                 {clinic.languages.slice(0, 4).map((code: string) => {
                                   const l = getLanguage(code);
                                   if (!l) return null;
@@ -521,16 +527,16 @@ export default function ClinicListing() {
                               </div>
                             )}
 
-                            {/* Facilities — single line, no wrap */}
+                            {/* Facilities */}
                             {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
-                              <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 mb-2 min-w-0">
+                              <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
                                 {sortFacilitiesForCard(clinic.facilities).slice(0, 4).map((key: string) => {
                                   const f = getFacility(key);
                                   if (!f) return null;
                                   const Icon = f.icon;
                                   return (
                                     <span key={key} className="inline-flex items-center gap-1 shrink-0">
-                                      <Icon className="w-3 h-3 text-primary" />
+                                      <Icon className="w-3.5 h-3.5 text-primary" />
                                       <span>{f.label}</span>
                                     </span>
                                   );
@@ -541,62 +547,68 @@ export default function ClinicListing() {
                               </div>
                             )}
 
-                            <div className="absolute right-20 top-1/2 transform -translate-y-1/2 text-right">
-                              <div className="text-xs text-foreground/70 mb-1">Starting</div>
-                              <div className="text-lg font-bold text-primary">
+                            {/* Treatments */}
+                            {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mt-1">
+                                {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
+                                  <Badge 
+                                    key={clinicTreatment.id} 
+                                    variant="secondary" 
+                                    className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal"
+                                  >
+                                    {clinicTreatment.treatments?.name}
+                                    {clinicTreatment.starting_price_euro ? ` · €${clinicTreatment.starting_price_euro}` : ''}
+                                  </Badge>
+                                ))}
+                                {clinic.clinic_treatments.length > 3 && (
+                                  <Badge 
+                                    variant="outline" 
+                                    className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs"
+                                  >
+                                    +{clinic.clinic_treatments.length - 3}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right column: price + stacked buttons */}
+                          <div className="w-44 shrink-0 flex flex-col items-stretch justify-between border-l border-border/40 pl-5">
+                            <div className="text-right">
+                              <div className="text-[11px] text-muted-foreground truncate">
+                                Starting from{selectedTreatmentName ? ` · ${selectedTreatmentName}` : ''}
+                              </div>
+                              <div className="text-2xl font-bold text-primary leading-tight">
                                 {getClinicPrice(clinic)}
                               </div>
                             </div>
-
-                            <div className="flex-1">
-                              {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment: any) => (
-                                    <Badge 
-                                      key={clinicTreatment.id} 
-                                      variant="secondary" 
-                                      className="bg-muted text-foreground/80 border-0 px-2 py-1 rounded-full text-xs"
-                                    >
-                                      {clinicTreatment.treatments?.name}
-                                      {clinicTreatment.starting_price_euro && ` - €${clinicTreatment.starting_price_euro}`}
-                                    </Badge>
-                                  ))}
-                                  {clinic.clinic_treatments.length > 2 && (
-                                    <Badge 
-                                      variant="outline" 
-                                      className="border-primary/20 text-primary bg-white/50 px-2 py-1 rounded-full text-xs"
-                                    >
-                                      +{clinic.clinic_treatments.length - 2}
-                                    </Badge>
-                                  )}
-                                </div>
-                              )}
+                            <div className="flex flex-col gap-2 mt-3">
+                              <Button
+                                onClick={() => setApplyOpenForClinicId(clinic.id)}
+                                className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
+                              >
+                                Apply
+                              </Button>
+                              <Button
+                                asChild
+                                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
+                              >
+                                <Link
+                                  to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                                >
+                                  View Clinic
+                                </Link>
+                              </Button>
                             </div>
                           </div>
                         </div>
-
-                        {/* Action Button - Desktop */}
-                        <Link
-                          to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
-                          className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary rounded-r-2xl flex items-center justify-center transition-all duration-300 hover:w-16 group"
-                        >
-                          <div className="text-white text-xs font-medium transform -rotate-90 whitespace-nowrap group-hover:rotate-0 transition-transform duration-300">
-                            <span className="group-hover:hidden">View</span>
-                            <div className="hidden group-hover:block text-center leading-tight">
-                              <div>View</div>
-                              <div>Clinic</div>
-                            </div>
-                          </div>
-                        </Link>
                       </div>
 
-                      {/* Mobile Layout - Modern Card Design */}
+                      {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        {/* Image with overlay info */}
                         <div className="relative h-44">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           
-                          {/* Top badges */}
                           <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
                             {clinic.is_featured ? (
                               <Badge className="bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg">
@@ -606,13 +618,12 @@ export default function ClinicListing() {
                             
                             {clinic.is_verified && (
                               <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
-                                <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                                <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
                                 <span className="text-xs font-medium text-foreground/80">Verified</span>
                               </div>
                             )}
                           </div>
 
-                          {/* Bottom gradient overlay with location */}
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-8 pb-3 px-3">
                             <div className="flex items-center gap-1.5 text-white">
                               <MapPin className="h-3.5 w-3.5" />
@@ -621,20 +632,19 @@ export default function ClinicListing() {
                           </div>
                         </div>
 
-                        {/* Card Content */}
                         <div className="p-4 space-y-3">
-                          {/* Header Row: Name + Rating */}
+                          {/* Name + Rating */}
                           <div className="flex items-start justify-between gap-3">
                             <h3 className="text-base font-bold text-foreground leading-tight flex-1">
                               {clinic.name}
                             </h3>
-                            <GoogleRating rating={clinic.rating} variant="prominent" showLabel={false} />
+                            <GoogleRating rating={clinic.rating} variant="prominent" showLabel={true} />
                           </div>
 
-                          {/* Languages — single line */}
+                          {/* Languages */}
                           {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
                             <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                              {clinic.languages.slice(0, 2).map((code: string) => {
+                              {clinic.languages.slice(0, 3).map((code: string) => {
                                 const l = getLanguage(code);
                                 if (!l) return null;
                                 return (
@@ -644,16 +654,16 @@ export default function ClinicListing() {
                                   </span>
                                 );
                               })}
-                              {clinic.languages.length > 2 && (
-                                <span className="text-primary shrink-0">+{clinic.languages.length - 2}</span>
+                              {clinic.languages.length > 3 && (
+                                <span className="text-primary shrink-0">+{clinic.languages.length - 3}</span>
                               )}
                             </div>
                           )}
 
-                          {/* Facilities — single line */}
+                          {/* Facilities */}
                           {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
                             <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                              {sortFacilitiesForCard(clinic.facilities).slice(0, 2).map((key: string) => {
+                              {sortFacilitiesForCard(clinic.facilities).slice(0, 3).map((key: string) => {
                                 const f = getFacility(key);
                                 if (!f) return null;
                                 const Icon = f.icon;
@@ -664,8 +674,8 @@ export default function ClinicListing() {
                                   </span>
                                 );
                               })}
-                              {clinic.facilities.length > 2 && (
-                                <span className="text-primary shrink-0">+{clinic.facilities.length - 2}</span>
+                              {clinic.facilities.length > 3 && (
+                                <span className="text-primary shrink-0">+{clinic.facilities.length - 3}</span>
                               )}
                             </div>
                           )}
@@ -677,7 +687,7 @@ export default function ClinicListing() {
                                 <Badge
                                   key={clinicTreatment.id}
                                   variant="secondary"
-                                  className="bg-muted/80 text-foreground/70 border-0 px-2 py-1 rounded-lg text-xs"
+                                  className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal"
                                 >
                                   {clinicTreatment.treatments?.name}
                                 </Badge>
@@ -685,7 +695,7 @@ export default function ClinicListing() {
                               {clinic.clinic_treatments.length > 3 && (
                                 <Badge
                                   variant="outline"
-                                  className="border-primary/20 text-primary bg-primary/5 px-2 py-1 rounded-lg text-xs"
+                                  className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs"
                                 >
                                   +{clinic.clinic_treatments.length - 3} more
                                 </Badge>
@@ -693,26 +703,55 @@ export default function ClinicListing() {
                             </div>
                           )}
 
-                          {/* Divider */}
                           <div className="h-px bg-border/50" />
 
-                          {/* Price + CTA Row */}
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex flex-col">
-                              <span className="text-xs text-muted-foreground">Starting from</span>
-                              <span className="text-xl font-bold text-primary">{getClinicPrice(clinic)}</span>
-                            </div>
-                            
-                            <Link
-                              to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
-                              className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/90 text-white px-5 py-2.5 rounded-xl font-medium text-sm shadow-lg shadow-primary/25 active:scale-95 transition-transform"
+                          {/* Price */}
+                          <div className="flex flex-col">
+                            <span className="text-[11px] text-muted-foreground truncate">
+                              Starting from{selectedTreatmentName ? ` · ${selectedTreatmentName}` : ''}
+                            </span>
+                            <span className="text-2xl font-bold text-primary leading-tight">{getClinicPrice(clinic)}</span>
+                          </div>
+
+                          {/* Stacked CTAs */}
+                          <div className="flex flex-col gap-2 pt-1">
+                            <Button
+                              onClick={() => setApplyOpenForClinicId(clinic.id)}
+                              className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
                             >
-                              View Clinic
-                              <ChevronRight className="h-4 w-4" />
-                            </Link>
+                              Apply
+                            </Button>
+                            <Button
+                              asChild
+                              className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
+                            >
+                              <Link
+                                to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                              >
+                                View Clinic
+                              </Link>
+                            </Button>
                           </div>
                         </div>
                       </div>
+
+                      {/* Apply dialog */}
+                      <Dialog
+                        open={applyOpenForClinicId === clinic.id}
+                        onOpenChange={(open) => !open && setApplyOpenForClinicId(null)}
+                      >
+                        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Apply to {clinic.name}</DialogTitle>
+                          </DialogHeader>
+                          <ContactClinicForm
+                            clinicId={clinic.id}
+                            initialTreatment={selectedTreatmentName || ""}
+                            onSuccess={() => setApplyOpenForClinicId(null)}
+                            submitLabel="Send Application"
+                          />
+                        </DialogContent>
+                      </Dialog>
                     </CardContent>
                   </Card>
                 ))}
