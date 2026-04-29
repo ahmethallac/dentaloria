@@ -135,6 +135,12 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         facilities,
       };
       const updated = await updateClinic(clinic.id, updates as any);
+      // Persist treatments alongside the main form
+      try {
+        await treatmentsRef.current?.save();
+      } catch (e) {
+        // toast already handled inside the manager
+      }
       toast({ title: "Success", description: "Clinic information updated." });
       onUpdated?.(updated);
     } catch (e: any) {
