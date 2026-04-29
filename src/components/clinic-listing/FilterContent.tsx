@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Filter, Circle, CheckCircle2 } from "lucide-react";
+import { LANGUAGES } from "@/lib/clinicMeta";
 
 interface FilterContentProps {
   treatments: any[];
@@ -8,9 +9,11 @@ interface FilterContentProps {
   selectedTreatment: string;
   selectedCountry: string;
   selectedCity: string;
+  selectedLanguages: string[];
   setSelectedTreatment: (value: string) => void;
   setSelectedCountry: (value: string) => void;
   setSelectedCity: (value: string) => void;
+  setSelectedLanguages: (value: string[]) => void;
   clearFilters: () => void;
   onApply?: () => void;
   showHeader?: boolean;
