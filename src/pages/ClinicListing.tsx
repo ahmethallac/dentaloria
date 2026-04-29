@@ -616,22 +616,12 @@ export default function ClinicListing() {
                               </Badge>
                             ) : <div />}
                             
-                            <div className="flex items-center gap-2">
-                              {clinic.is_verified && (
-                                <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
-                                  <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
-                                  <span className="text-xs font-medium text-foreground/80">Verified</span>
-                                </div>
-                              )}
-                              <div className="inline-flex flex-col items-center px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-sm border border-primary/20 shadow-md">
-                                <span className="text-[8px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
-                                  From
-                                </span>
-                                <span className="text-sm font-extrabold text-primary leading-tight mt-0.5">
-                                  {getClinicPrice(clinic)}
-                                </span>
+                            {clinic.is_verified && (
+                              <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
+                                <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
+                                <span className="text-xs font-medium text-foreground/80">Verified</span>
                               </div>
-                            </div>
+                            )}
                           </div>
 
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-8 pb-3 px-3">
