@@ -382,9 +382,11 @@ export default function ClinicListing() {
             selectedTreatment={selectedTreatment}
             selectedCountry={selectedCountry}
             selectedCity={selectedCity}
+            selectedLanguages={selectedLanguages}
             setSelectedTreatment={setSelectedTreatment}
             setSelectedCountry={setSelectedCountry}
             setSelectedCity={setSelectedCity}
+            setSelectedLanguages={setSelectedLanguages}
             clearFilters={clearFilters}
           />
         </div>
@@ -400,9 +402,11 @@ export default function ClinicListing() {
                 selectedTreatment={selectedTreatment}
                 selectedCountry={selectedCountry}
                 selectedCity={selectedCity}
+                selectedLanguages={selectedLanguages}
                 setSelectedTreatment={setSelectedTreatment}
                 setSelectedCountry={setSelectedCountry}
                 setSelectedCity={setSelectedCity}
+                setSelectedLanguages={setSelectedLanguages}
                 clearFilters={clearFilters}
               />
             </div>
