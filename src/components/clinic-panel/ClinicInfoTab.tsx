@@ -9,8 +9,11 @@ import { type Clinic, getCountries, getCities, updateClinic, type Country, type 
 import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
+import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
+import { LANGUAGES, FACILITIES } from "@/lib/clinicMeta";
+import { cn } from "@/lib/utils";
 
 interface ClinicInfoTabProps {
   clinic: Clinic;
