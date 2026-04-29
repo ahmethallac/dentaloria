@@ -29,6 +29,10 @@ All colors MUST be HSL.
     --ring: 220 91% 56%;
     --radius: 1rem;
 
+    /* Medical accent colors */
+    --medical-green: 152 68% 38%;
+    --medical-green-light: 152 60% 92%;
+
     /* Modern gradient color palette */
     --primary-blue: 220 91% 56%;
     --primary-purple: 280 91% 65%;
