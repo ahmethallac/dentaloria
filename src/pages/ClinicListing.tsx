@@ -694,38 +694,28 @@ export default function ClinicListing() {
                           {/* Treatments — single line, no wrap */}
                           {clinic.clinic_treatments && clinic.clinic_treatments.length > 0 && (
                             <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0">
-                              {clinic.clinic_treatments.slice(0, 3).map((clinicTreatment: any) => (
+                              {clinic.clinic_treatments.slice(0, 2).map((clinicTreatment: any) => (
                                 <Badge
                                   key={clinicTreatment.id}
                                   variant="secondary"
-                                  className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-1 rounded-full text-xs font-normal shrink-0 max-w-[140px] truncate"
+                                  className="bg-muted/70 text-foreground/80 border-0 px-2.5 py-0.5 rounded-full text-xs font-normal shrink-0 max-w-[140px] truncate"
                                 >
                                   <span className="truncate">{clinicTreatment.treatments?.name}</span>
                                 </Badge>
                               ))}
-                              {clinic.clinic_treatments.length > 3 && (
+                              {clinic.clinic_treatments.length > 2 && (
                                 <Badge
                                   variant="outline"
-                                  className="border-primary/30 text-primary bg-primary/5 px-2.5 py-1 rounded-full text-xs shrink-0"
+                                  className="border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full text-xs shrink-0"
                                 >
-                                  +{clinic.clinic_treatments.length - 3}
+                                  +{clinic.clinic_treatments.length - 2}
                                 </Badge>
                               )}
                             </div>
                           )}
 
-                          <div className="h-px bg-border/50" />
-
-                          {/* Price badge + stacked CTAs */}
-                          <div className="flex flex-col items-stretch gap-2.5">
-                            <div className="self-center inline-flex items-baseline gap-2 px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
-                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                                Starting from
-                              </span>
-                              <span className="text-xl font-extrabold text-primary leading-tight">
-                                {getClinicPrice(clinic)}
-                              </span>
-                            </div>
+                          {/* Stacked CTAs */}
+                          <div className="flex flex-col items-stretch gap-2 pt-1">
                             <Button
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
                               className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
