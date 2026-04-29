@@ -184,6 +184,7 @@ export default function ClinicListing() {
   const [sortBy, setSortBy] = useState<'balance' | 'rating' | 'price_asc' | 'price_desc'>("balance");
   const [page, setPage] = useState(1);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [applyOpenForClinicId, setApplyOpenForClinicId] = useState<string | null>(null);
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
