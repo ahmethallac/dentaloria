@@ -26,9 +26,11 @@ export const FilterContent = ({
   selectedTreatment,
   selectedCountry,
   selectedCity,
+  selectedLanguages,
   setSelectedTreatment,
   setSelectedCountry,
   setSelectedCity,
+  setSelectedLanguages,
   clearFilters,
   onApply,
   showHeader = true,
@@ -37,7 +39,16 @@ export const FilterContent = ({
     selectedTreatment !== "all",
     selectedCountry !== "all",
     selectedCity !== "all",
+    selectedLanguages.length > 0,
   ].filter(Boolean).length;
+
+  const toggleLanguage = (code: string) => {
+    if (selectedLanguages.includes(code)) {
+      setSelectedLanguages(selectedLanguages.filter((c) => c !== code));
+    } else {
+      setSelectedLanguages([...selectedLanguages, code]);
+    }
+  };
 
   return (
     <div className="space-y-6">
