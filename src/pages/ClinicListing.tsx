@@ -574,8 +574,16 @@ export default function ClinicListing() {
                             )}
                           </div>
 
-                          {/* Right column: stacked buttons only */}
-                          <div className="w-40 shrink-0 flex flex-col justify-center gap-2">
+                          {/* Right column: price + stacked buttons */}
+                          <div className="w-44 shrink-0 flex flex-col justify-center gap-2 border-l border-border/40 pl-4">
+                            <div className="text-right leading-tight">
+                              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                Starting from
+                              </div>
+                              <div className="text-2xl font-extrabold text-primary">
+                                {getClinicPrice(clinic)}
+                              </div>
+                            </div>
                             <Button
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
                               className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
