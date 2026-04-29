@@ -93,6 +93,12 @@ const mapClinic = (db: any) => {
     email: db.email || "",
     doctors,
     treatments,
+    languages: Array.isArray(db?.languages) ? db.languages : [],
+    facilities: Array.isArray(db?.facilities) ? db.facilities : [],
+    beforeAfter: ((db?.clinic_before_after_images || []) as any[])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((i) => i.image_url),
   };
 };
 
