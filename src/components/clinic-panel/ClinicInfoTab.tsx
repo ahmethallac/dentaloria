@@ -45,6 +45,16 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         : "",
   });
 
+  const [languages, setLanguages] = useState<string[]>(
+    Array.isArray((clinic as any).languages) ? (clinic as any).languages : []
+  );
+  const [facilities, setFacilities] = useState<string[]>(
+    Array.isArray((clinic as any).facilities) ? (clinic as any).facilities : []
+  );
+
+  const toggleInArray = (arr: string[], val: string) =>
+    arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
+
   // 3.0 → 5.0 in 0.1 steps (21 values)
   const ratingOptions = useMemo(
     () => Array.from({ length: 21 }, (_, i) => (3 + i * 0.1).toFixed(1)),
