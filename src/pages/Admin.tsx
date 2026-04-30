@@ -128,6 +128,7 @@ const Admin = () => {
       // so we can filter patients by city/country/language of the clinics they applied to.
       const patientMap = new Map<string, {
         name: string; email: string; phone: string | null; count: number; lastDate: string;
+        dates: string[];
         clinicNames: Set<string>;
         cityIds: Set<string>;
         countryIds: Set<string>;
@@ -146,6 +147,7 @@ const Admin = () => {
         const existing = patientMap.get(l.email)
         if (existing) {
           existing.count++
+          existing.dates.push(l.created_at)
           if (l.created_at > existing.lastDate) { existing.lastDate = l.created_at; existing.name = l.name }
           if (clinicLabel) existing.clinicNames.add(clinicLabel)
           if (cityId) existing.cityIds.add(cityId)
@@ -156,6 +158,7 @@ const Admin = () => {
         } else {
           patientMap.set(l.email, {
             name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at,
+            dates: [l.created_at],
             clinicNames: new Set(clinicLabel ? [clinicLabel] : []),
             cityIds: new Set(cityId ? [cityId] : []),
             cityNames: new Set(cityName ? [cityName] : []),
