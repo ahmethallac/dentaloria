@@ -81,6 +81,10 @@ const Admin = () => {
   const [patientFilterCity, setPatientFilterCity] = useState<string>('all')
   const [patientFilterLanguage, setPatientFilterLanguage] = useState<string>('all')
   const [patientSearch, setPatientSearch] = useState('')
+  type DatePreset = 'today' | 'yesterday' | 'last2weeks' | 'lastMonth' | 'thisYear' | 'lastYear' | 'all' | 'custom'
+  const [patientDateRange, setPatientDateRange] = useState<DatePreset>('all')
+  const [patientCustomRange, setPatientCustomRange] = useState<DateRange | undefined>(undefined)
+  const [selectedPatients, setSelectedPatients] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
