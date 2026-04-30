@@ -870,41 +870,182 @@ const Admin = () => {
         </Card>
       )}
 
-      {section === 'patients' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>All Patients</CardTitle>
-            <CardDescription>Patients grouped by email with submission count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b">
-                  <tr>
-                    <th className="text-left py-2 px-3">Name</th>
-                    <th className="text-left py-2 px-3">Email</th>
-                    <th className="text-left py-2 px-3">Phone</th>
-                    <th className="text-left py-2 px-3">Submissions</th>
-                    <th className="text-left py-2 px-3">Last submission</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {patients.map((p, i) => (
-                    <tr key={i} className="border-b hover:bg-muted/50">
-                      <td className="py-2 px-3 font-medium">{p.name}</td>
-                      <td className="py-2 px-3">{p.email}</td>
-                      <td className="py-2 px-3">{p.phone || '-'}</td>
-                      <td className="py-2 px-3"><Badge variant="secondary">{p.count}</Badge></td>
-                      <td className="py-2 px-3 text-muted-foreground">{new Date(p.lastDate).toLocaleDateString()}</td>
+      {section === 'patients' && (() => {
+        // Build language options from all clinics
+        const languageSet = new Set<string>()
+        clinics.forEach(c => (c.languages || []).forEach((l: string) => l && languageSet.add(l)))
+        const allLanguages = Array.from(languageSet).sort()
+
+        const search = patientSearch.trim().toLowerCase()
+        const filtered = patients.filter(p => {
+          if (search) {
+            const hay = `${p.name || ''} ${p.email || ''} ${p.phone || ''}`.toLowerCase()
+            if (!hay.includes(search)) return false
+          }
+          if (patientFilterCountry !== 'all' && !p.countryIds.has(patientFilterCountry)) return false
+          if (patientFilterCity !== 'all' && !p.cityIds.has(patientFilterCity)) return false
+          if (patientFilterLanguage !== 'all' && !p.languages.has(patientFilterLanguage)) return false
+          return true
+        })
+
+        const visiblePatientCities = patientFilterCountry === 'all'
+          ? cities
+          : cities.filter(ci => ci.country_id === patientFilterCountry)
+
+        const filtersActive = !!search
+          || patientFilterCountry !== 'all'
+          || patientFilterCity !== 'all'
+          || patientFilterLanguage !== 'all'
+
+        const buildExportRows = () => filtered.map(p => ({
+          Name: p.name,
+          Email: p.email,
+          Phone: p.phone || '',
+          Submissions: p.count,
+          'Last Submission': new Date(p.lastDate).toISOString().slice(0, 10),
+          'Clinics Applied To': Array.from(p.clinicNames).join('; '),
+          Cities: Array.from(p.cityNames).join('; '),
+          Countries: Array.from(p.countryNames).join('; '),
+          Languages: Array.from(p.languages).join('; '),
+        }))
+
+        const downloadCsv = () => {
+          const rows = buildExportRows()
+          const ws = XLSX.utils.json_to_sheet(rows)
+          const csv = XLSX.utils.sheet_to_csv(ws)
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `patients-${new Date().toISOString().slice(0, 10)}.csv`
+          a.click()
+          URL.revokeObjectURL(url)
+        }
+
+        const downloadXlsx = () => {
+          const rows = buildExportRows()
+          const ws = XLSX.utils.json_to_sheet(rows)
+          const wb = XLSX.utils.book_new()
+          XLSX.utils.book_append_sheet(wb, ws, 'Patients')
+          XLSX.writeFile(wb, `patients-${new Date().toISOString().slice(0, 10)}.xlsx`)
+        }
+
+        return (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+              <div>
+                <CardTitle>All Patients</CardTitle>
+                <CardDescription className="mt-1">
+                  Patients grouped by email. Filter by the city, country, or language of the clinic they applied to.
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={downloadCsv} disabled={!filtered.length}>
+                  <Download className="w-4 h-4 mr-1" /> CSV
+                </Button>
+                <Button size="sm" variant="outline" onClick={downloadXlsx} disabled={!filtered.length}>
+                  <FileSpreadsheet className="w-4 h-4 mr-1" /> XLSX
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+                <Input
+                  placeholder="Search name / email / phone…"
+                  value={patientSearch}
+                  onChange={(e) => setPatientSearch(e.target.value)}
+                />
+                <Select
+                  value={patientFilterCountry}
+                  onValueChange={(v) => { setPatientFilterCountry(v); setPatientFilterCity('all') }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Clinic country" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All countries</SelectItem>
+                    {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={patientFilterCity}
+                  onValueChange={setPatientFilterCity}
+                  disabled={patientFilterCountry === 'all'}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={patientFilterCountry === 'all' ? 'Pick country first' : 'Clinic city'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All cities</SelectItem>
+                    {visiblePatientCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={patientFilterLanguage} onValueChange={setPatientFilterLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Clinic language" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All languages</SelectItem>
+                    {allLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {filtersActive && (
+                <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+                  <span>Showing {filtered.length} of {patients.length}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setPatientSearch('')
+                      setPatientFilterCountry('all')
+                      setPatientFilterCity('all')
+                      setPatientFilterLanguage('all')
+                    }}
+                  >
+                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
+                  </Button>
+                </div>
+              )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="text-left py-2 px-3">Name</th>
+                      <th className="text-left py-2 px-3">Email</th>
+                      <th className="text-left py-2 px-3">Phone</th>
+                      <th className="text-left py-2 px-3">Submissions</th>
+                      <th className="text-left py-2 px-3">Clinics</th>
+                      <th className="text-left py-2 px-3">Cities</th>
+                      <th className="text-left py-2 px-3">Countries</th>
+                      <th className="text-left py-2 px-3">Languages</th>
+                      <th className="text-left py-2 px-3">Last submission</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {patients.length === 0 && <p className="text-center text-muted-foreground py-6">No patients yet.</p>}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  </thead>
+                  <tbody>
+                    {filtered.map((p, i) => (
+                      <tr key={i} className="border-b hover:bg-muted/50 align-top">
+                        <td className="py-2 px-3 font-medium">{p.name}</td>
+                        <td className="py-2 px-3">{p.email}</td>
+                        <td className="py-2 px-3">{p.phone || '-'}</td>
+                        <td className="py-2 px-3"><Badge variant="secondary">{p.count}</Badge></td>
+                        <td className="py-2 px-3 text-muted-foreground max-w-[200px] truncate" title={Array.from(p.clinicNames).join(', ')}>
+                          {Array.from(p.clinicNames).join(', ') || '-'}
+                        </td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.cityNames).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.countryNames).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.languages).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{new Date(p.lastDate).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filtered.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">
+                    {patients.length === 0 ? 'No patients yet.' : 'No patients match the filters.'}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })()}
 
       {section === 'users' && isMainAdmin && <UsersManager />}
       {section === 'users' && !isMainAdmin && (
