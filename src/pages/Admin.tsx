@@ -310,6 +310,30 @@ const Admin = () => {
     }
   }
 
+  // Bulk activate / deactivate. "Active" maps to is_published = true.
+  const setClinicsActive = async (ids: string[], active: boolean) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ is_published: active })
+        .in('id', ids)
+      if (error) throw error
+      toast({
+        title: active ? 'Activated' : 'Deactivated',
+        description: `${ids.length} clinic(s) marked as ${active ? 'Active' : 'Inactive'}.`,
+      })
+      setSelectedIds(new Set())
+      setBulkStatus('')
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
