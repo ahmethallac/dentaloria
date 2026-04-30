@@ -14,7 +14,16 @@ import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
   Trash2, RotateCcw, Trash, X, Power, PowerOff, Download, FileSpreadsheet,
+  ChevronDown, CalendarIcon,
 } from 'lucide-react'
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import type { DateRange } from 'react-day-picker'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -72,6 +81,10 @@ const Admin = () => {
   const [patientFilterCity, setPatientFilterCity] = useState<string>('all')
   const [patientFilterLanguage, setPatientFilterLanguage] = useState<string>('all')
   const [patientSearch, setPatientSearch] = useState('')
+  type DatePreset = 'today' | 'yesterday' | 'last2weeks' | 'lastMonth' | 'thisYear' | 'lastYear' | 'all' | 'custom'
+  const [patientDateRange, setPatientDateRange] = useState<DatePreset>('all')
+  const [patientCustomRange, setPatientCustomRange] = useState<DateRange | undefined>(undefined)
+  const [selectedPatients, setSelectedPatients] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
@@ -115,6 +128,7 @@ const Admin = () => {
       // so we can filter patients by city/country/language of the clinics they applied to.
       const patientMap = new Map<string, {
         name: string; email: string; phone: string | null; count: number; lastDate: string;
+        dates: string[];
         clinicNames: Set<string>;
         cityIds: Set<string>;
         countryIds: Set<string>;
@@ -133,6 +147,7 @@ const Admin = () => {
         const existing = patientMap.get(l.email)
         if (existing) {
           existing.count++
+          existing.dates.push(l.created_at)
           if (l.created_at > existing.lastDate) { existing.lastDate = l.created_at; existing.name = l.name }
           if (clinicLabel) existing.clinicNames.add(clinicLabel)
           if (cityId) existing.cityIds.add(cityId)
@@ -143,6 +158,7 @@ const Admin = () => {
         } else {
           patientMap.set(l.email, {
             name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at,
+            dates: [l.created_at],
             clinicNames: new Set(clinicLabel ? [clinicLabel] : []),
             cityIds: new Set(cityId ? [cityId] : []),
             cityNames: new Set(cityName ? [cityName] : []),
@@ -876,6 +892,40 @@ const Admin = () => {
         clinics.forEach(c => (c.languages || []).forEach((l: string) => l && languageSet.add(l)))
         const allLanguages = Array.from(languageSet).sort()
 
+        // Date bounds
+        const getDateBounds = (): { from: Date; to: Date } | null => {
+          const now = new Date()
+          const startOfDay = (d: Date) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x }
+          const endOfDay = (d: Date) => { const x = new Date(d); x.setHours(23, 59, 59, 999); return x }
+          switch (patientDateRange) {
+            case 'today': return { from: startOfDay(now), to: endOfDay(now) }
+            case 'yesterday': {
+              const y = new Date(now); y.setDate(y.getDate() - 1)
+              return { from: startOfDay(y), to: endOfDay(y) }
+            }
+            case 'last2weeks': {
+              const f = new Date(now); f.setDate(f.getDate() - 14)
+              return { from: startOfDay(f), to: endOfDay(now) }
+            }
+            case 'lastMonth': {
+              const f = new Date(now); f.setMonth(f.getMonth() - 1)
+              return { from: startOfDay(f), to: endOfDay(now) }
+            }
+            case 'thisYear': return { from: new Date(now.getFullYear(), 0, 1), to: endOfDay(now) }
+            case 'lastYear': {
+              const y = now.getFullYear() - 1
+              return { from: new Date(y, 0, 1), to: new Date(y, 11, 31, 23, 59, 59, 999) }
+            }
+            case 'custom': {
+              if (!patientCustomRange?.from) return null
+              const to = patientCustomRange.to ?? patientCustomRange.from
+              return { from: startOfDay(patientCustomRange.from), to: endOfDay(to) }
+            }
+            default: return null
+          }
+        }
+        const dateBounds = getDateBounds()
+
         const search = patientSearch.trim().toLowerCase()
         const filtered = patients.filter(p => {
           if (search) {
@@ -885,6 +935,15 @@ const Admin = () => {
           if (patientFilterCountry !== 'all' && !p.countryIds.has(patientFilterCountry)) return false
           if (patientFilterCity !== 'all' && !p.cityIds.has(patientFilterCity)) return false
           if (patientFilterLanguage !== 'all' && !p.languages.has(patientFilterLanguage)) return false
+          if (dateBounds) {
+            const fromMs = dateBounds.from.getTime()
+            const toMs = dateBounds.to.getTime()
+            const hasMatch = (p.dates as string[]).some(d => {
+              const t = new Date(d).getTime()
+              return t >= fromMs && t <= toMs
+            })
+            if (!hasMatch) return false
+          }
           return true
         })
 
@@ -896,8 +955,33 @@ const Admin = () => {
           || patientFilterCountry !== 'all'
           || patientFilterCity !== 'all'
           || patientFilterLanguage !== 'all'
+          || patientDateRange !== 'all'
 
-        const buildExportRows = () => filtered.map(p => ({
+        // Selection helpers — selection is keyed by email
+        const filteredEmails = filtered.map(p => p.email)
+        const exportTargets = selectedPatients.size > 0
+          ? filtered.filter(p => selectedPatients.has(p.email))
+          : filtered
+        const selectedVisibleCount = filteredEmails.filter(e => selectedPatients.has(e)).length
+        const allFilteredSelected = filtered.length > 0 && selectedVisibleCount === filtered.length
+        const someFilteredSelected = selectedVisibleCount > 0 && !allFilteredSelected
+
+        const toggleSelectAll = () => {
+          const next = new Set(selectedPatients)
+          if (allFilteredSelected) {
+            filteredEmails.forEach(e => next.delete(e))
+          } else {
+            filteredEmails.forEach(e => next.add(e))
+          }
+          setSelectedPatients(next)
+        }
+        const toggleOne = (email: string) => {
+          const next = new Set(selectedPatients)
+          if (next.has(email)) next.delete(email); else next.add(email)
+          setSelectedPatients(next)
+        }
+
+        const buildExportRows = () => exportTargets.map(p => ({
           Name: p.name,
           Email: p.email,
           Phone: p.phone || '',
@@ -930,26 +1014,65 @@ const Admin = () => {
           XLSX.writeFile(wb, `patients-${new Date().toISOString().slice(0, 10)}.xlsx`)
         }
 
+        const clearAll = () => {
+          setPatientSearch('')
+          setPatientFilterCountry('all')
+          setPatientFilterCity('all')
+          setPatientFilterLanguage('all')
+          setPatientDateRange('all')
+          setPatientCustomRange(undefined)
+          setSelectedPatients(new Set())
+        }
+
+        const dateLabel: Record<DatePreset, string> = {
+          today: 'Today',
+          yesterday: 'Yesterday',
+          last2weeks: 'Last 2 weeks',
+          lastMonth: 'Last 1 month',
+          thisYear: 'This year',
+          lastYear: 'Last year',
+          all: 'All time',
+          custom: 'Custom range',
+        }
+
+        const selectionLabel = (() => {
+          if (selectedPatients.size === 0) return '0 selected'
+          if (allFilteredSelected) {
+            return filtersActive
+              ? `All ${filtered.length} filtered selected`
+              : `All ${patients.length} patients selected`
+          }
+          return `${selectedVisibleCount} of ${filtered.length} selected`
+        })()
+
         return (
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+            <CardHeader className="flex flex-row items-start justify-between gap-3 flex-wrap">
               <div>
                 <CardTitle>All Patients</CardTitle>
                 <CardDescription className="mt-1">
-                  Patients grouped by email. Filter by the city, country, or language of the clinic they applied to.
+                  Patients grouped by email. Filter by the city, country, language, or submission date.
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" onClick={downloadCsv} disabled={!filtered.length}>
-                  <Download className="w-4 h-4 mr-1" /> CSV
-                </Button>
-                <Button size="sm" variant="outline" onClick={downloadXlsx} disabled={!filtered.length}>
-                  <FileSpreadsheet className="w-4 h-4 mr-1" /> XLSX
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" disabled={!exportTargets.length}>
+                    <Download className="w-4 h-4 mr-1" /> Export
+                    <ChevronDown className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={downloadCsv}>
+                    <Download className="w-4 h-4 mr-2" /> Download as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={downloadXlsx}>
+                    <FileSpreadsheet className="w-4 h-4 mr-2" /> Download as XLSX
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
                 <Input
                   placeholder="Search name / email / phone…"
                   value={patientSearch}
@@ -985,28 +1108,84 @@ const Admin = () => {
                     {allLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                   </SelectContent>
                 </Select>
+                <Select
+                  value={patientDateRange}
+                  onValueChange={(v) => {
+                    setPatientDateRange(v as DatePreset)
+                    if (v !== 'custom') setPatientCustomRange(undefined)
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Date range" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="yesterday">Yesterday</SelectItem>
+                    <SelectItem value="last2weeks">Last 2 weeks</SelectItem>
+                    <SelectItem value="lastMonth">Last 1 month</SelectItem>
+                    <SelectItem value="thisYear">This year</SelectItem>
+                    <SelectItem value="lastYear">Last year</SelectItem>
+                    <SelectItem value="all">All time</SelectItem>
+                    <SelectItem value="custom">Custom range</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              {filtersActive && (
-                <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
-                  <span>Showing {filtered.length} of {patients.length}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setPatientSearch('')
-                      setPatientFilterCountry('all')
-                      setPatientFilterCity('all')
-                      setPatientFilterLanguage('all')
-                    }}
-                  >
-                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
-                  </Button>
+
+              {patientDateRange === 'custom' && (
+                <div className="mb-4">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn('justify-start text-left font-normal', !patientCustomRange?.from && 'text-muted-foreground')}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {patientCustomRange?.from ? (
+                          patientCustomRange.to ? (
+                            <>{format(patientCustomRange.from, 'LLL d, yyyy')} – {format(patientCustomRange.to, 'LLL d, yyyy')}</>
+                          ) : (
+                            format(patientCustomRange.from, 'LLL d, yyyy')
+                          )
+                        ) : (
+                          <span>Pick a date range</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        defaultMonth={patientCustomRange?.from}
+                        selected={patientCustomRange}
+                        onSelect={setPatientCustomRange}
+                        numberOfMonths={2}
+                        className={cn('p-3 pointer-events-auto')}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               )}
+
+              <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground gap-2 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <span>Showing {filtered.length} of {patients.length}</span>
+                  <span className="font-medium text-foreground">{selectionLabel}</span>
+                  <Badge variant="outline" className="font-normal">{dateLabel[patientDateRange]}</Badge>
+                </div>
+                <Button variant="ghost" size="sm" onClick={clearAll}>
+                  <X className="w-3.5 h-3.5 mr-1" /> Clear
+                </Button>
+              </div>
+
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="border-b">
                     <tr>
+                      <th className="py-2 px-3 w-8">
+                        <Checkbox
+                          checked={allFilteredSelected ? true : someFilteredSelected ? 'indeterminate' : false}
+                          onCheckedChange={toggleSelectAll}
+                          aria-label="Select all"
+                        />
+                      </th>
                       <th className="text-left py-2 px-3">Name</th>
                       <th className="text-left py-2 px-3">Email</th>
                       <th className="text-left py-2 px-3">Phone</th>
@@ -1021,6 +1200,13 @@ const Admin = () => {
                   <tbody>
                     {filtered.map((p, i) => (
                       <tr key={i} className="border-b hover:bg-muted/50 align-top">
+                        <td className="py-2 px-3">
+                          <Checkbox
+                            checked={selectedPatients.has(p.email)}
+                            onCheckedChange={() => toggleOne(p.email)}
+                            aria-label={`Select ${p.email}`}
+                          />
+                        </td>
                         <td className="py-2 px-3 font-medium">{p.name}</td>
                         <td className="py-2 px-3">{p.email}</td>
                         <td className="py-2 px-3">{p.phone || '-'}</td>
