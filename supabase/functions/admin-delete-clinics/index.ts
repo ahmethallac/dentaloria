@@ -107,7 +107,6 @@ Deno.serve(async (req) => {
     await admin.from('doctors').delete().in('clinic_id', clinicIds)
     await admin.from('clinic_treatments').delete().in('clinic_id', clinicIds)
     await admin.from('clinic_approvals').delete().in('clinic_id', clinicIds)
-    await admin.from('clinic_billing_settings').delete().in('clinic_id', clinicIds)
     await admin.from('lead_purchases').delete().in('clinic_id', clinicIds)
     await admin.from('contact_requests').delete().in('clinic_id', clinicIds)
     await admin.from('reviews').delete().in('clinic_id', clinicIds)
