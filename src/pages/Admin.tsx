@@ -79,7 +79,7 @@ const Admin = () => {
     setLoading(true)
     try {
       const [clinicsRes, approvalsRes, pageApprovalsRes, leadsRes, purchasesRes, countriesRes, citiesRes] = await Promise.all([
-        supabase.from('clinics').select('*, clinic_approvals(*), clinic_billing_settings(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
+        supabase.from('clinics').select('*, clinic_approvals(*), cities(id, name, country_id, countries(id, name))').order('created_at', { ascending: false }),
         supabase.from('clinic_approvals').select('*, clinics(name, email, phone, website, created_at, cities(name, countries(name)))').eq('status', 'pending').order('created_at', { ascending: false }),
         supabase.from('clinics')
           .select('id, name, email, phone, website, page_status, updated_at, cities(name, countries(name))')
