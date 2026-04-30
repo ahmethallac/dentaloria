@@ -412,7 +412,10 @@ const Admin = () => {
         // Apply filters
         const search = filterSearch.trim().toLowerCase()
         const list = baseList.filter(c => {
-          if (search && !(c.name || '').toLowerCase().includes(search)) return false
+          if (search) {
+            const haystack = `${c.display_name || ''} ${c.name || ''} ${c.email || ''}`.toLowerCase()
+            if (!haystack.includes(search)) return false
+          }
           if (filterCountry !== 'all' && c.cities?.country_id !== filterCountry) return false
           if (filterCity !== 'all' && c.city_id !== filterCity) return false
           if (filterStatus !== 'all' && c.approval_status !== filterStatus) return false
