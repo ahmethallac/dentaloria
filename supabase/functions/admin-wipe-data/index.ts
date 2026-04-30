@@ -77,7 +77,6 @@ Deno.serve(async (req) => {
       'contact_request_tracking',
       'rate_limits',
       'clinic_approvals',
-      'clinic_billing_settings',
       'clinic_treatments',
       'clinic_images',
       'doctors',
