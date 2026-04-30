@@ -524,14 +524,37 @@ const Admin = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     {clinicView === 'active' ? (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        disabled={!selectedArray.length || bulkBusy}
-                        onClick={() => trashClinics(selectedArray)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
-                      </Button>
+                      <>
+                        <Select
+                          value={bulkStatus}
+                          onValueChange={(v) => {
+                            setBulkStatus(v)
+                            if (!selectedArray.length) return
+                            setClinicsActive(selectedArray, v === 'active')
+                          }}
+                          disabled={!selectedArray.length || bulkBusy}
+                        >
+                          <SelectTrigger className="h-9 w-[180px]">
+                            <SelectValue placeholder="Set status…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">
+                              <span className="inline-flex items-center gap-2"><Power className="w-3.5 h-3.5 text-green-600" /> Active</span>
+                            </SelectItem>
+                            <SelectItem value="inactive">
+                              <span className="inline-flex items-center gap-2"><PowerOff className="w-3.5 h-3.5 text-muted-foreground" /> Inactive</span>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={!selectedArray.length || bulkBusy}
+                          onClick={() => trashClinics(selectedArray)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
+                        </Button>
+                      </>
                     ) : (
                       <>
                         <Button
