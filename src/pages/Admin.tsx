@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
-  Trash2, RotateCcw, Trash, X,
+  Trash2, RotateCcw, Trash, X, Power, PowerOff, Download, FileSpreadsheet,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -26,6 +26,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
+import * as XLSX from 'xlsx'
 
 type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users'
 
@@ -57,13 +58,20 @@ const Admin = () => {
   const [sendBackNotes, setSendBackNotes] = useState('')
   const [sendBackBusy, setSendBackBusy] = useState(false)
 
-  // Filters
+  // Filters (clinics)
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
   const [cities, setCities] = useState<{ id: string; name: string; country_id: string }[]>([])
   const [filterSearch, setFilterSearch] = useState('')
   const [filterCountry, setFilterCountry] = useState<string>('all')
   const [filterCity, setFilterCity] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [bulkStatus, setBulkStatus] = useState<string>('')
+
+  // Filters (patients)
+  const [patientFilterCountry, setPatientFilterCountry] = useState<string>('all')
+  const [patientFilterCity, setPatientFilterCity] = useState<string>('all')
+  const [patientFilterLanguage, setPatientFilterLanguage] = useState<string>('all')
+  const [patientSearch, setPatientSearch] = useState('')
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
@@ -87,7 +95,9 @@ const Admin = () => {
           .eq('page_status', 'pending_page_approval')
           .is('deleted_at', null)
           .order('updated_at', { ascending: false }),
-        supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
+        supabase.from('contact_requests')
+          .select('*, clinics(id, name, display_name, languages, cities(id, name, countries(id, name)))', { count: 'exact' })
+          .order('created_at', { ascending: false }).limit(2000),
         supabase.from('lead_purchases').select('amount_cents'),
         supabase.from('countries').select('id, name').order('name'),
         supabase.from('cities').select('id, name, country_id').order('name'),
@@ -101,14 +111,45 @@ const Admin = () => {
       setPendingPageApprovals(pageApprovalsRes.data || [])
 
       const leadsData = leadsRes.data || []
-      const patientMap = new Map<string, { name: string; email: string; phone: string | null; count: number; lastDate: string }>()
-      leadsData.forEach(l => {
+      // Group submissions by patient email and keep the per-clinic context
+      // so we can filter patients by city/country/language of the clinics they applied to.
+      const patientMap = new Map<string, {
+        name: string; email: string; phone: string | null; count: number; lastDate: string;
+        clinicNames: Set<string>;
+        cityIds: Set<string>;
+        countryIds: Set<string>;
+        languages: Set<string>;
+        cityNames: Set<string>;
+        countryNames: Set<string>;
+      }>()
+      leadsData.forEach((l: any) => {
+        const c = l.clinics || {}
+        const cityId = c.cities?.id
+        const cityName = c.cities?.name
+        const countryId = c.cities?.countries?.id
+        const countryName = c.cities?.countries?.name
+        const langs: string[] = Array.isArray(c.languages) ? c.languages : []
+        const clinicLabel = c.display_name || c.name
         const existing = patientMap.get(l.email)
         if (existing) {
           existing.count++
           if (l.created_at > existing.lastDate) { existing.lastDate = l.created_at; existing.name = l.name }
+          if (clinicLabel) existing.clinicNames.add(clinicLabel)
+          if (cityId) existing.cityIds.add(cityId)
+          if (cityName) existing.cityNames.add(cityName)
+          if (countryId) existing.countryIds.add(countryId)
+          if (countryName) existing.countryNames.add(countryName)
+          langs.forEach(x => existing.languages.add(x))
         } else {
-          patientMap.set(l.email, { name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at })
+          patientMap.set(l.email, {
+            name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at,
+            clinicNames: new Set(clinicLabel ? [clinicLabel] : []),
+            cityIds: new Set(cityId ? [cityId] : []),
+            cityNames: new Set(cityName ? [cityName] : []),
+            countryIds: new Set(countryId ? [countryId] : []),
+            countryNames: new Set(countryName ? [countryName] : []),
+            languages: new Set(langs),
+          })
         }
       })
       setPatients(Array.from(patientMap.values()).sort((a, b) => b.count - a.count))
@@ -269,6 +310,30 @@ const Admin = () => {
     }
   }
 
+  // Bulk activate / deactivate. "Active" maps to is_published = true.
+  const setClinicsActive = async (ids: string[], active: boolean) => {
+    if (!ids.length) return
+    setBulkBusy(true)
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ is_published: active })
+        .in('id', ids)
+      if (error) throw error
+      toast({
+        title: active ? 'Activated' : 'Deactivated',
+        description: `${ids.length} clinic(s) marked as ${active ? 'Active' : 'Inactive'}.`,
+      })
+      setSelectedIds(new Set())
+      setBulkStatus('')
+      loadAllData()
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    } finally {
+      setBulkBusy(false)
+    }
+  }
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -327,7 +392,7 @@ const Admin = () => {
               {clinics.slice(0, 5).map(c => (
                 <div key={c.id} className="flex items-center justify-between py-2 border-b last:border-0">
                   <div>
-                    <div className="font-medium">{c.name}</div>
+                    <div className="font-medium">{c.display_name || c.name}</div>
                     <div className="text-xs text-muted-foreground">{c.email}</div>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel`)}>Manage</Button>
@@ -347,7 +412,10 @@ const Admin = () => {
         // Apply filters
         const search = filterSearch.trim().toLowerCase()
         const list = baseList.filter(c => {
-          if (search && !(c.name || '').toLowerCase().includes(search)) return false
+          if (search) {
+            const haystack = `${c.display_name || ''} ${c.name || ''} ${c.email || ''}`.toLowerCase()
+            if (!haystack.includes(search)) return false
+          }
           if (filterCountry !== 'all' && c.cities?.country_id !== filterCountry) return false
           if (filterCity !== 'all' && c.city_id !== filterCity) return false
           if (filterStatus !== 'all' && c.approval_status !== filterStatus) return false
@@ -456,14 +524,37 @@ const Admin = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     {clinicView === 'active' ? (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        disabled={!selectedArray.length || bulkBusy}
-                        onClick={() => trashClinics(selectedArray)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
-                      </Button>
+                      <>
+                        <Select
+                          value={bulkStatus}
+                          onValueChange={(v) => {
+                            setBulkStatus(v)
+                            if (!selectedArray.length) return
+                            setClinicsActive(selectedArray, v === 'active')
+                          }}
+                          disabled={!selectedArray.length || bulkBusy}
+                        >
+                          <SelectTrigger className="h-9 w-[180px]">
+                            <SelectValue placeholder="Set status…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">
+                              <span className="inline-flex items-center gap-2"><Power className="w-3.5 h-3.5 text-green-600" /> Active</span>
+                            </SelectItem>
+                            <SelectItem value="inactive">
+                              <span className="inline-flex items-center gap-2"><PowerOff className="w-3.5 h-3.5 text-muted-foreground" /> Inactive</span>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={!selectedArray.length || bulkBusy}
+                          onClick={() => trashClinics(selectedArray)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
+                        </Button>
+                      </>
                     ) : (
                       <>
                         <Button
@@ -513,17 +604,26 @@ const Admin = () => {
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold truncate">{clinic.name}</h3>
+                          <h3 className="font-semibold truncate">{clinic.display_name || clinic.name}</h3>
                           {clinic.deleted_at ? (
                             <Badge variant="outline" className="text-destructive border-destructive">In Trash</Badge>
                           ) : (
-                            clinic.page_status === 'live' ? (
-                              <Badge className="bg-green-600 text-white hover:bg-green-700">Live</Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
-                                Not Live
-                              </Badge>
-                            )
+                            <>
+                              {clinic.is_published ? (
+                                <Badge className="bg-green-600 text-white hover:bg-green-700">Active</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
+                                  Inactive
+                                </Badge>
+                              )}
+                              {clinic.page_status === 'live' ? (
+                                <Badge variant="secondary">Live</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
+                                  Not Live
+                                </Badge>
+                              )}
+                            </>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 truncate">
@@ -770,41 +870,182 @@ const Admin = () => {
         </Card>
       )}
 
-      {section === 'patients' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>All Patients</CardTitle>
-            <CardDescription>Patients grouped by email with submission count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b">
-                  <tr>
-                    <th className="text-left py-2 px-3">Name</th>
-                    <th className="text-left py-2 px-3">Email</th>
-                    <th className="text-left py-2 px-3">Phone</th>
-                    <th className="text-left py-2 px-3">Submissions</th>
-                    <th className="text-left py-2 px-3">Last submission</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {patients.map((p, i) => (
-                    <tr key={i} className="border-b hover:bg-muted/50">
-                      <td className="py-2 px-3 font-medium">{p.name}</td>
-                      <td className="py-2 px-3">{p.email}</td>
-                      <td className="py-2 px-3">{p.phone || '-'}</td>
-                      <td className="py-2 px-3"><Badge variant="secondary">{p.count}</Badge></td>
-                      <td className="py-2 px-3 text-muted-foreground">{new Date(p.lastDate).toLocaleDateString()}</td>
+      {section === 'patients' && (() => {
+        // Build language options from all clinics
+        const languageSet = new Set<string>()
+        clinics.forEach(c => (c.languages || []).forEach((l: string) => l && languageSet.add(l)))
+        const allLanguages = Array.from(languageSet).sort()
+
+        const search = patientSearch.trim().toLowerCase()
+        const filtered = patients.filter(p => {
+          if (search) {
+            const hay = `${p.name || ''} ${p.email || ''} ${p.phone || ''}`.toLowerCase()
+            if (!hay.includes(search)) return false
+          }
+          if (patientFilterCountry !== 'all' && !p.countryIds.has(patientFilterCountry)) return false
+          if (patientFilterCity !== 'all' && !p.cityIds.has(patientFilterCity)) return false
+          if (patientFilterLanguage !== 'all' && !p.languages.has(patientFilterLanguage)) return false
+          return true
+        })
+
+        const visiblePatientCities = patientFilterCountry === 'all'
+          ? cities
+          : cities.filter(ci => ci.country_id === patientFilterCountry)
+
+        const filtersActive = !!search
+          || patientFilterCountry !== 'all'
+          || patientFilterCity !== 'all'
+          || patientFilterLanguage !== 'all'
+
+        const buildExportRows = () => filtered.map(p => ({
+          Name: p.name,
+          Email: p.email,
+          Phone: p.phone || '',
+          Submissions: p.count,
+          'Last Submission': new Date(p.lastDate).toISOString().slice(0, 10),
+          'Clinics Applied To': Array.from(p.clinicNames).join('; '),
+          Cities: Array.from(p.cityNames).join('; '),
+          Countries: Array.from(p.countryNames).join('; '),
+          Languages: Array.from(p.languages).join('; '),
+        }))
+
+        const downloadCsv = () => {
+          const rows = buildExportRows()
+          const ws = XLSX.utils.json_to_sheet(rows)
+          const csv = XLSX.utils.sheet_to_csv(ws)
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `patients-${new Date().toISOString().slice(0, 10)}.csv`
+          a.click()
+          URL.revokeObjectURL(url)
+        }
+
+        const downloadXlsx = () => {
+          const rows = buildExportRows()
+          const ws = XLSX.utils.json_to_sheet(rows)
+          const wb = XLSX.utils.book_new()
+          XLSX.utils.book_append_sheet(wb, ws, 'Patients')
+          XLSX.writeFile(wb, `patients-${new Date().toISOString().slice(0, 10)}.xlsx`)
+        }
+
+        return (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
+              <div>
+                <CardTitle>All Patients</CardTitle>
+                <CardDescription className="mt-1">
+                  Patients grouped by email. Filter by the city, country, or language of the clinic they applied to.
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={downloadCsv} disabled={!filtered.length}>
+                  <Download className="w-4 h-4 mr-1" /> CSV
+                </Button>
+                <Button size="sm" variant="outline" onClick={downloadXlsx} disabled={!filtered.length}>
+                  <FileSpreadsheet className="w-4 h-4 mr-1" /> XLSX
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+                <Input
+                  placeholder="Search name / email / phone…"
+                  value={patientSearch}
+                  onChange={(e) => setPatientSearch(e.target.value)}
+                />
+                <Select
+                  value={patientFilterCountry}
+                  onValueChange={(v) => { setPatientFilterCountry(v); setPatientFilterCity('all') }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Clinic country" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All countries</SelectItem>
+                    {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={patientFilterCity}
+                  onValueChange={setPatientFilterCity}
+                  disabled={patientFilterCountry === 'all'}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={patientFilterCountry === 'all' ? 'Pick country first' : 'Clinic city'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All cities</SelectItem>
+                    {visiblePatientCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={patientFilterLanguage} onValueChange={setPatientFilterLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Clinic language" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All languages</SelectItem>
+                    {allLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {filtersActive && (
+                <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+                  <span>Showing {filtered.length} of {patients.length}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setPatientSearch('')
+                      setPatientFilterCountry('all')
+                      setPatientFilterCity('all')
+                      setPatientFilterLanguage('all')
+                    }}
+                  >
+                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
+                  </Button>
+                </div>
+              )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="text-left py-2 px-3">Name</th>
+                      <th className="text-left py-2 px-3">Email</th>
+                      <th className="text-left py-2 px-3">Phone</th>
+                      <th className="text-left py-2 px-3">Submissions</th>
+                      <th className="text-left py-2 px-3">Clinics</th>
+                      <th className="text-left py-2 px-3">Cities</th>
+                      <th className="text-left py-2 px-3">Countries</th>
+                      <th className="text-left py-2 px-3">Languages</th>
+                      <th className="text-left py-2 px-3">Last submission</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {patients.length === 0 && <p className="text-center text-muted-foreground py-6">No patients yet.</p>}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  </thead>
+                  <tbody>
+                    {filtered.map((p, i) => (
+                      <tr key={i} className="border-b hover:bg-muted/50 align-top">
+                        <td className="py-2 px-3 font-medium">{p.name}</td>
+                        <td className="py-2 px-3">{p.email}</td>
+                        <td className="py-2 px-3">{p.phone || '-'}</td>
+                        <td className="py-2 px-3"><Badge variant="secondary">{p.count}</Badge></td>
+                        <td className="py-2 px-3 text-muted-foreground max-w-[200px] truncate" title={Array.from(p.clinicNames).join(', ')}>
+                          {Array.from(p.clinicNames).join(', ') || '-'}
+                        </td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.cityNames).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.countryNames).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{Array.from(p.languages).join(', ') || '-'}</td>
+                        <td className="py-2 px-3 text-muted-foreground">{new Date(p.lastDate).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filtered.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">
+                    {patients.length === 0 ? 'No patients yet.' : 'No patients match the filters.'}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })()}
 
       {section === 'users' && isMainAdmin && <UsersManager />}
       {section === 'users' && !isMainAdmin && (

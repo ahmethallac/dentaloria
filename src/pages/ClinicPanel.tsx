@@ -14,9 +14,11 @@ import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
   Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
+  Clock, UserCog, ArrowLeft,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
 
@@ -154,7 +156,7 @@ const ClinicPanel = () => {
     settings: 'Admin Settings',
   };
 
-  const sections: ShellSection[] = [
+  const clinicSections: ShellSection[] = [
     {
       label: 'Clinic',
       items: [
@@ -171,11 +173,34 @@ const ClinicPanel = () => {
     },
   ];
 
+  // For super admin / sub admin: keep the admin sidebar visible at all times
+  // and render the clinic management as a sub-page with in-content tabs.
+  const adminSections: ShellSection[] = [
+    {
+      label: 'Workspace',
+      items: [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, onClick: () => navigate('/admin?section=dashboard') },
+        { id: 'clinics', label: 'Clinics', icon: Building2, onClick: () => navigate('/admin?section=clinics'), active: true },
+        { id: 'approvals', label: 'Pending Approvals', icon: Clock, onClick: () => navigate('/admin?section=approvals') },
+        { id: 'patients', label: 'All Patients', icon: Users, onClick: () => navigate('/admin?section=patients') },
+      ],
+    },
+    {
+      label: 'Administration',
+      items: [
+        { id: 'users', label: 'Users', icon: UserCog, onClick: () => navigate('/admin?section=users'), hidden: userRole !== 'admin' },
+      ],
+    },
+  ];
+
+  const sections = isAdminUser ? adminSections : clinicSections;
+
   const clinicDisplayName = (clinic as any).display_name || clinic.name;
   const panelRoot = `/clinic/${clinic.id}/panel?section=overview`;
   const breadcrumbs = isAdminUser
     ? [
         { label: 'Admin', to: '/admin?section=clinics' },
+        { label: 'Clinics', to: '/admin?section=clinics' },
         { label: clinicDisplayName, to: panelRoot },
         { label: sectionLabels[section] },
       ]
@@ -196,6 +221,22 @@ const ClinicPanel = () => {
         </Badge>
       }
     >
+      {isAdminUser && (
+        <div className="mb-4 flex items-center justify-between gap-3 flex-wrap">
+          <Button variant="outline" size="sm" onClick={() => navigate('/admin?section=clinics')}>
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back to all clinics
+          </Button>
+          <Tabs value={section} onValueChange={(v) => setSection(v as PanelSection)}>
+            <TabsList>
+              <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1" />Overview</TabsTrigger>
+              <TabsTrigger value="patients"><Users className="w-4 h-4 mr-1" />Patients</TabsTrigger>
+              <TabsTrigger value="info"><Building2 className="w-4 h-4 mr-1" />Clinic Info</TabsTrigger>
+              <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" />Admin Settings</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
+
       {/* Page status banner — informational only. The "Submit for Approval"
           button now lives at the bottom of the Clinic Information editor. */}
       {approvalStatus === 'approved' && pageStatus !== 'live' && (
