@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client'
 import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
-  Trash2, RotateCcw, Trash, X,
+  Trash2, RotateCcw, Trash, X, Power, PowerOff, Download, FileSpreadsheet,
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -26,6 +26,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
+import * as XLSX from 'xlsx'
 
 type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users'
 
