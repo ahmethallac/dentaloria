@@ -392,7 +392,7 @@ const Admin = () => {
               {clinics.slice(0, 5).map(c => (
                 <div key={c.id} className="flex items-center justify-between py-2 border-b last:border-0">
                   <div>
-                    <div className="font-medium">{c.name}</div>
+                    <div className="font-medium">{c.display_name || c.name}</div>
                     <div className="text-xs text-muted-foreground">{c.email}</div>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel`)}>Manage</Button>
