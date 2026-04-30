@@ -88,7 +88,9 @@ const Admin = () => {
           .eq('page_status', 'pending_page_approval')
           .is('deleted_at', null)
           .order('updated_at', { ascending: false }),
-        supabase.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(500),
+        supabase.from('contact_requests')
+          .select('*, clinics(id, name, display_name, languages, cities(id, name, countries(id, name)))', { count: 'exact' })
+          .order('created_at', { ascending: false }).limit(2000),
         supabase.from('lead_purchases').select('amount_cents'),
         supabase.from('countries').select('id, name').order('name'),
         supabase.from('cities').select('id, name, country_id').order('name'),
@@ -102,14 +104,45 @@ const Admin = () => {
       setPendingPageApprovals(pageApprovalsRes.data || [])
 
       const leadsData = leadsRes.data || []
-      const patientMap = new Map<string, { name: string; email: string; phone: string | null; count: number; lastDate: string }>()
-      leadsData.forEach(l => {
+      // Group submissions by patient email and keep the per-clinic context
+      // so we can filter patients by city/country/language of the clinics they applied to.
+      const patientMap = new Map<string, {
+        name: string; email: string; phone: string | null; count: number; lastDate: string;
+        clinicNames: Set<string>;
+        cityIds: Set<string>;
+        countryIds: Set<string>;
+        languages: Set<string>;
+        cityNames: Set<string>;
+        countryNames: Set<string>;
+      }>()
+      leadsData.forEach((l: any) => {
+        const c = l.clinics || {}
+        const cityId = c.cities?.id
+        const cityName = c.cities?.name
+        const countryId = c.cities?.countries?.id
+        const countryName = c.cities?.countries?.name
+        const langs: string[] = Array.isArray(c.languages) ? c.languages : []
+        const clinicLabel = c.display_name || c.name
         const existing = patientMap.get(l.email)
         if (existing) {
           existing.count++
           if (l.created_at > existing.lastDate) { existing.lastDate = l.created_at; existing.name = l.name }
+          if (clinicLabel) existing.clinicNames.add(clinicLabel)
+          if (cityId) existing.cityIds.add(cityId)
+          if (cityName) existing.cityNames.add(cityName)
+          if (countryId) existing.countryIds.add(countryId)
+          if (countryName) existing.countryNames.add(countryName)
+          langs.forEach(x => existing.languages.add(x))
         } else {
-          patientMap.set(l.email, { name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at })
+          patientMap.set(l.email, {
+            name: l.name, email: l.email, phone: l.phone, count: 1, lastDate: l.created_at,
+            clinicNames: new Set(clinicLabel ? [clinicLabel] : []),
+            cityIds: new Set(cityId ? [cityId] : []),
+            cityNames: new Set(cityName ? [cityName] : []),
+            countryIds: new Set(countryId ? [countryId] : []),
+            countryNames: new Set(countryName ? [countryName] : []),
+            languages: new Set(langs),
+          })
         }
       })
       setPatients(Array.from(patientMap.values()).sort((a, b) => b.count - a.count))
