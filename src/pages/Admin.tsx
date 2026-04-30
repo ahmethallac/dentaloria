@@ -58,13 +58,20 @@ const Admin = () => {
   const [sendBackNotes, setSendBackNotes] = useState('')
   const [sendBackBusy, setSendBackBusy] = useState(false)
 
-  // Filters
+  // Filters (clinics)
   const [countries, setCountries] = useState<{ id: string; name: string }[]>([])
   const [cities, setCities] = useState<{ id: string; name: string; country_id: string }[]>([])
   const [filterSearch, setFilterSearch] = useState('')
   const [filterCountry, setFilterCountry] = useState<string>('all')
   const [filterCity, setFilterCity] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [bulkStatus, setBulkStatus] = useState<string>('')
+
+  // Filters (patients)
+  const [patientFilterCountry, setPatientFilterCountry] = useState<string>('all')
+  const [patientFilterCity, setPatientFilterCity] = useState<string>('all')
+  const [patientFilterLanguage, setPatientFilterLanguage] = useState<string>('all')
+  const [patientSearch, setPatientSearch] = useState('')
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
