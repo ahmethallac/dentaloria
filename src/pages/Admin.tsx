@@ -604,17 +604,26 @@ const Admin = () => {
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold truncate">{clinic.name}</h3>
+                          <h3 className="font-semibold truncate">{clinic.display_name || clinic.name}</h3>
                           {clinic.deleted_at ? (
                             <Badge variant="outline" className="text-destructive border-destructive">In Trash</Badge>
                           ) : (
-                            clinic.page_status === 'live' ? (
-                              <Badge className="bg-green-600 text-white hover:bg-green-700">Live</Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
-                                Not Live
-                              </Badge>
-                            )
+                            <>
+                              {clinic.is_published ? (
+                                <Badge className="bg-green-600 text-white hover:bg-green-700">Active</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
+                                  Inactive
+                                </Badge>
+                              )}
+                              {clinic.page_status === 'live' ? (
+                                <Badge variant="secondary">Live</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
+                                  Not Live
+                                </Badge>
+                              )}
+                            </>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 truncate">
