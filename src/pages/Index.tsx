@@ -231,7 +231,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Clinics */}
+      {/* Admin-curated Featured Clinics (Homepage Showcase) */}
+      <FeaturedClinicsSection />
+
+      {/* Popular Clinics */}
       <section className="py-16 bg-gradient-to-br from-medical-light/50 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
