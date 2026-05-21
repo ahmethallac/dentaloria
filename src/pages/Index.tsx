@@ -19,6 +19,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
+import FeaturedClinicsSection from "@/components/home/FeaturedClinicsSection";
 
 // Helper function to map clinic data for ClinicCard component
 const mapClinicForCard = (clinic: Clinic) => ({
