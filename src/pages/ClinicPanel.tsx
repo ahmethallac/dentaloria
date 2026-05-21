@@ -155,6 +155,7 @@ const ClinicPanel = () => {
     overview: 'Overview',
     patients: 'Patients',
     info: 'Clinic Information',
+    sponsored: 'Sponsored',
     settings: 'Admin Settings',
   };
 
