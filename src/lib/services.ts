@@ -526,6 +526,40 @@ export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> =
   return enrichedClinics
 }
 
+// Admin-curated homepage showcase clinics. Only clinics flagged via the admin
+// "Homepage Showcase" toggle appear here — there is no fallback.
+export const getHomepageShowcaseClinics = async (limit: number = 8): Promise<Clinic[]> => {
+  const { data: clinicsData, error } = await supabase
+    .from('clinics_public')
+    .select('*')
+    .eq('homepage_showcase', true)
+    .order('rating', { ascending: false, nullsFirst: false })
+    .order('review_count', { ascending: false, nullsFirst: false })
+    .limit(limit);
+
+  if (error) throw error;
+  if (!clinicsData || clinicsData.length === 0) return [];
+
+  const clinicIds = clinicsData.map(c => c.id);
+  const cityIds = clinicsData.map(c => c.city_id).filter(Boolean);
+
+  const [citiesData, imagesData, treatmentsData] = await Promise.all([
+    supabase.from('cities').select(`*, countries (*)`).in('id', cityIds),
+    supabase.from('clinic_images').select('*').in('clinic_id', clinicIds),
+    supabase
+      .from('clinic_treatments')
+      .select(`*, treatments ( *, treatment_categories (*) )`)
+      .in('clinic_id', clinicIds),
+  ]);
+
+  return clinicsData.map(clinic => ({
+    ...clinic,
+    cities: citiesData.data?.find(c => c.id === clinic.city_id),
+    clinic_images: imagesData.data?.filter(img => img.clinic_id === clinic.id) || [],
+    clinic_treatments: treatmentsData.data?.filter(t => t.clinic_id === clinic.id) || [],
+  })) as any;
+}
+
 // Trustpilot integration helper
 export const fetchTrustpilotRating = async (trustpilotUrl: string): Promise<number | null> => {
   try {
