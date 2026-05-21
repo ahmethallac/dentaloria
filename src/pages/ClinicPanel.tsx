@@ -388,6 +388,38 @@ const ClinicPanel = () => {
         /></CardContent></Card>
       )}
 
+      {section === 'sponsored' && isAdminUser && (
+        <Card className="border-primary/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Megaphone className="w-5 h-5" /> Sponsored Placements
+            </CardTitle>
+            <CardDescription>
+              Manually feature this clinic in promotional areas of the platform. Visible to Super Admins only.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border border-border bg-card p-4 flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="homepage_showcase" className="text-base font-semibold">
+                  Homepage Showcase
+                </Label>
+                <p className="text-sm text-muted-foreground max-w-xl">
+                  Feature this clinic in the “Featured Clinics” section on the homepage. Up to 8 showcased clinics are displayed in a 2×4 grid. No payment is taken — this is a manual editorial placement.
+                </p>
+              </div>
+              <Switch
+                id="homepage_showcase"
+                checked={homepageShowcase}
+                onCheckedChange={handleToggleHomepageShowcase}
+                disabled={savingShowcase}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
       {section === 'settings' && isAdminUser && (
         <Card className="border-primary/30">
           <CardHeader>
