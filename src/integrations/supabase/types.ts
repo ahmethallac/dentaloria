@@ -289,6 +289,7 @@ export type Database = {
           email: string | null
           experience_years: number | null
           facilities: string[]
+          homepage_showcase: boolean
           id: string
           is_featured: boolean | null
           is_published: boolean
@@ -321,6 +322,7 @@ export type Database = {
           email?: string | null
           experience_years?: number | null
           facilities?: string[]
+          homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
           is_published?: boolean
@@ -353,6 +355,7 @@ export type Database = {
           email?: string | null
           experience_years?: number | null
           facilities?: string[]
+          homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
           is_published?: boolean
@@ -392,6 +395,7 @@ export type Database = {
           description: string | null
           experience_years: number | null
           facilities: string[]
+          homepage_showcase: boolean
           id: string
           is_featured: boolean | null
           is_verified: boolean | null
@@ -413,6 +417,7 @@ export type Database = {
           description?: string | null
           experience_years?: number | null
           facilities?: string[]
+          homepage_showcase?: boolean
           id: string
           is_featured?: boolean | null
           is_verified?: boolean | null
@@ -434,6 +439,7 @@ export type Database = {
           description?: string | null
           experience_years?: number | null
           facilities?: string[]
+          homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
           is_verified?: boolean | null
