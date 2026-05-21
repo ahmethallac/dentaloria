@@ -14,13 +14,13 @@ import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
   Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
-  Clock, UserCog, ArrowLeft,
+  Clock, UserCog, ArrowLeft, Megaphone,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
+type PanelSection = 'overview' | 'patients' | 'info' | 'sponsored' | 'settings';
 
 const ClinicPanel = () => {
   const { id } = useParams();
@@ -44,6 +44,8 @@ const ClinicPanel = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [homepageShowcase, setHomepageShowcase] = useState(false);
+  const [savingShowcase, setSavingShowcase] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('pending');
   const [pageStatus, setPageStatus] = useState<'incomplete' | 'pending_page_approval' | 'live'>('incomplete');
   const [pageRevisionNotes, setPageRevisionNotes] = useState<string | null>(null);
@@ -75,6 +77,7 @@ const ClinicPanel = () => {
       setIsPublished((data as any).is_published || false);
       setIsVerified((data as any).is_verified || false);
       setIsFeatured((data as any).is_featured || false);
+      setHomepageShowcase((data as any).homepage_showcase || false);
       setApprovalStatus((data as any).approval_status || 'pending');
       setPageStatus(((data as any).page_status as any) || 'incomplete');
       setPageRevisionNotes(((data as any).page_revision_notes as string | null) ?? null);
@@ -121,6 +124,31 @@ const ClinicPanel = () => {
     }
   };
 
+  const handleToggleHomepageShowcase = async (value: boolean) => {
+    if (!id) return;
+    setSavingShowcase(true);
+    const previous = homepageShowcase;
+    setHomepageShowcase(value);
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ homepage_showcase: value } as any)
+        .eq('id', id);
+      if (error) throw error;
+      toast({
+        title: value ? 'Added to Homepage Showcase' : 'Removed from Homepage Showcase',
+        description: value
+          ? 'This clinic will now appear in the Featured Clinics section on the homepage.'
+          : 'This clinic will no longer appear on the homepage.',
+      });
+    } catch (e: any) {
+      setHomepageShowcase(previous);
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSavingShowcase(false);
+    }
+  };
+
   const handleSubmitForApproval = async () => {
     if (!id) return;
     setSubmittingPage(true);
@@ -153,6 +181,7 @@ const ClinicPanel = () => {
     overview: 'Overview',
     patients: 'Patients',
     info: 'Clinic Information',
+    sponsored: 'Sponsored',
     settings: 'Admin Settings',
   };
 
@@ -231,6 +260,7 @@ const ClinicPanel = () => {
               <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1" />Overview</TabsTrigger>
               <TabsTrigger value="patients"><Users className="w-4 h-4 mr-1" />Patients</TabsTrigger>
               <TabsTrigger value="info"><Building2 className="w-4 h-4 mr-1" />Clinic Info</TabsTrigger>
+              <TabsTrigger value="sponsored"><Megaphone className="w-4 h-4 mr-1" />Sponsored</TabsTrigger>
               <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" />Admin Settings</TabsTrigger>
             </TabsList>
           </Tabs>
@@ -357,6 +387,38 @@ const ClinicPanel = () => {
           onSubmitForApproval={handleSubmitForApproval}
         /></CardContent></Card>
       )}
+
+      {section === 'sponsored' && isAdminUser && (
+        <Card className="border-primary/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Megaphone className="w-5 h-5" /> Sponsored Placements
+            </CardTitle>
+            <CardDescription>
+              Manually feature this clinic in promotional areas of the platform. Visible to Super Admins only.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border border-border bg-card p-4 flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="homepage_showcase" className="text-base font-semibold">
+                  Homepage Showcase
+                </Label>
+                <p className="text-sm text-muted-foreground max-w-xl">
+                  Feature this clinic in the “Featured Clinics” section on the homepage. Up to 8 showcased clinics are displayed in a 2×4 grid. No payment is taken — this is a manual editorial placement.
+                </p>
+              </div>
+              <Switch
+                id="homepage_showcase"
+                checked={homepageShowcase}
+                onCheckedChange={handleToggleHomepageShowcase}
+                disabled={savingShowcase}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
 
       {section === 'settings' && isAdminUser && (
         <Card className="border-primary/30">
