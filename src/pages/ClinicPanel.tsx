@@ -44,6 +44,8 @@ const ClinicPanel = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [homepageShowcase, setHomepageShowcase] = useState(false);
+  const [savingShowcase, setSavingShowcase] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('pending');
   const [pageStatus, setPageStatus] = useState<'incomplete' | 'pending_page_approval' | 'live'>('incomplete');
   const [pageRevisionNotes, setPageRevisionNotes] = useState<string | null>(null);
