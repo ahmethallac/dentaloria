@@ -235,6 +235,7 @@ const ClinicPanel = () => {
               <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1" />Overview</TabsTrigger>
               <TabsTrigger value="patients"><Users className="w-4 h-4 mr-1" />Patients</TabsTrigger>
               <TabsTrigger value="info"><Building2 className="w-4 h-4 mr-1" />Clinic Info</TabsTrigger>
+              <TabsTrigger value="sponsored"><Megaphone className="w-4 h-4 mr-1" />Sponsored</TabsTrigger>
               <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" />Admin Settings</TabsTrigger>
             </TabsList>
           </Tabs>
