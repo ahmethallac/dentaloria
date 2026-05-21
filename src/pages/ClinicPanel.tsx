@@ -124,6 +124,31 @@ const ClinicPanel = () => {
     }
   };
 
+  const handleToggleHomepageShowcase = async (value: boolean) => {
+    if (!id) return;
+    setSavingShowcase(true);
+    const previous = homepageShowcase;
+    setHomepageShowcase(value);
+    try {
+      const { error } = await supabase
+        .from('clinics')
+        .update({ homepage_showcase: value } as any)
+        .eq('id', id);
+      if (error) throw error;
+      toast({
+        title: value ? 'Added to Homepage Showcase' : 'Removed from Homepage Showcase',
+        description: value
+          ? 'This clinic will now appear in the Featured Clinics section on the homepage.'
+          : 'This clinic will no longer appear on the homepage.',
+      });
+    } catch (e: any) {
+      setHomepageShowcase(previous);
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSavingShowcase(false);
+    }
+  };
+
   const handleSubmitForApproval = async () => {
     if (!id) return;
     setSubmittingPage(true);
