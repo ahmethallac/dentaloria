@@ -20,7 +20,7 @@ import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type PanelSection = 'overview' | 'patients' | 'info' | 'settings';
+type PanelSection = 'overview' | 'patients' | 'info' | 'sponsored' | 'settings';
 
 const ClinicPanel = () => {
   const { id } = useParams();
