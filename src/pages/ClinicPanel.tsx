@@ -77,6 +77,7 @@ const ClinicPanel = () => {
       setIsPublished((data as any).is_published || false);
       setIsVerified((data as any).is_verified || false);
       setIsFeatured((data as any).is_featured || false);
+      setHomepageShowcase((data as any).homepage_showcase || false);
       setApprovalStatus((data as any).approval_status || 'pending');
       setPageStatus(((data as any).page_status as any) || 'incomplete');
       setPageRevisionNotes(((data as any).page_revision_notes as string | null) ?? null);
