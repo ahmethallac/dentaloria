@@ -14,7 +14,7 @@ import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
   Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
-  Clock, UserCog, ArrowLeft,
+  Clock, UserCog, ArrowLeft, Megaphone,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
