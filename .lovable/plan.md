@@ -1,67 +1,74 @@
 ## Goal
 
-Enhance the All Patients section in `/admin?section=patients` with: a single Export dropdown (CSV / XLSX), a date range selector with presets and custom range, a Clear button that resets all filters and dates, and row selection (individual + select-all) with a count badge.
+Add an admin-controlled "Homepage Showcase" feature so only manually-flagged clinics appear in a new Featured Clinics section on the homepage (2 rows × 4 clinics, no pricing).
 
-## Changes (single file: `src/pages/Admin.tsx`)
+## 1. Database
 
-### 1. Track per-patient submission dates
-In the `patientMap` aggregation (lines ~116–155), add a `dates: Date[]` set per patient so we can date-filter without re-querying. Currently we keep only `lastDate`; we'll also push every submission's `created_at`.
+Add a new column to drive sponsored placement, separate from the existing `is_featured` flag (which is used elsewhere for ordering/badges).
 
-### 2. Date range state + preset enum
-Add state:
-- `patientDateRange: 'today' | 'yesterday' | 'last2weeks' | 'lastMonth' | 'thisYear' | 'lastYear' | 'all' | 'custom'` (default `'all'`)
-- `patientCustomRange: { from?: Date; to?: Date }`
+```sql
+ALTER TABLE public.clinics
+  ADD COLUMN homepage_showcase boolean NOT NULL DEFAULT false;
 
-Helper `getDateBounds(preset, custom)` returns `{ from, to }` or `null` for 'all'.
+ALTER TABLE public.clinics_public
+  ADD COLUMN homepage_showcase boolean NOT NULL DEFAULT false;
+```
 
-### 3. Date range UI
-Add to the filter row (alongside country/city/language) a `Select` with the preset options. When `custom` is chosen, render a `Popover` containing the shadcn `Calendar` in `mode="range"` (with `pointer-events-auto`) so the user can click a start and end day. Selected range displayed as a small chip ("Mar 1 – Mar 14").
+Update `sync_clinics_public()` to copy `homepage_showcase` into `clinics_public` so the public/anon read path can filter on it without exposing the private `clinics` table.
 
-### 4. Apply date filter
-In the `filtered` computation, after existing checks, keep the patient only if at least one of their submission dates falls within the selected `[from, to]` range (matches "any clinic the patient applied to" semantics already used).
+No new RLS needed — admins already have full update access on `clinics`.
 
-### 5. Export dropdown (single button, smaller, right-aligned)
-Replace the two buttons in `CardHeader` with one `DropdownMenu`:
-- Trigger: small outline `Button size="sm"` labeled "Export" with a Download icon and chevron.
-- Menu items: "Download as CSV" (calls `downloadCsv`) and "Download as XLSX" (calls `downloadXlsx`).
-- Both actions already use `filtered`, which will now also reflect the date range — so exports automatically respect filters + dates.
+## 2. Backend service
 
-### 6. Clear button
-Always visible (not only when filters active) next to the row count. Resets:
-- `patientSearch`, `patientFilterCountry`, `patientFilterCity`, `patientFilterLanguage` to `'all'`/empty
-- `patientDateRange` to `'all'`, `patientCustomRange` to `{}`
-- `selectedPatients` to empty set
+In `src/lib/services.ts`, add a new function (and keep `getFeaturedClinics` untouched for any other callers):
 
-### 7. Row selection with count
-- Add `selectedPatients: Set<string>` state keyed by patient email.
-- New leftmost table column with a `Checkbox` per row.
-- Header has a master `Checkbox` with three states (none / some / all of currently filtered).
-  - Click toggles select-all for the currently filtered list.
-- Above the table, show a small selection summary:
-  - none selected: "0 selected"
-  - some: "N of {filtered.length} selected"
-  - all filtered selected and filters active: "All N filtered selected"
-  - all filtered selected and no filters active: "All {patients.length} patients selected"
-- Selection persists across filter changes but the visible counter is based on the current filtered list.
+```ts
+export const getHomepageShowcaseClinics = async (limit = 8) => {
+  // query clinics_public where homepage_showcase = true
+  // join cities/countries, clinic_images, clinic_treatments, languages
+  // order by created_at desc, limit 8
+};
+```
 
-## Technical Notes
+Returned shape matches what `mapClinicForCard` expects, plus `languages` and treatment names so the card can render the same chips as the listing page.
 
-- shadcn already exports `DropdownMenu`, `Popover`, `Calendar`, `Checkbox` — no new deps.
-- `Calendar` must use `mode="range"` with `selected={patientCustomRange}` and `onSelect={setPatientCustomRange}`, and `className="p-3 pointer-events-auto"` so it works inside the popover.
-- `getDateBounds` (local to the patients render block):
-  - today: start of today → end of today
-  - yesterday: start of yesterday → end of yesterday
-  - last2weeks: now-14d → now
-  - lastMonth: now-1month → now
-  - thisYear: Jan 1 of current year → now
-  - lastYear: Jan 1 → Dec 31 of previous year
-  - all: null (skip filter)
-  - custom: `patientCustomRange.from` → `patientCustomRange.to ?? from`
-- All dates compared against each `dates[]` entry; patient included if any date falls within bounds.
-- Export functions (`downloadCsv`, `downloadXlsx`) are unchanged — they already build rows from `filtered`, which will now incorporate date filtering automatically. If any patients are selected, exports use only the selected subset; otherwise they use the full filtered list.
-- No DB or schema changes required.
-- No edge function changes required.
+## 3. Homepage section (`src/pages/Index.tsx`)
 
-## Files Touched
+Replace the data source of the existing "Popular Clinics" carousel area with a new "Featured Clinics" section:
 
-- `src/pages/Admin.tsx` (only)
+- Title: "Featured Clinics"
+- Layout: CSS grid, `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`, exactly **2 rows × 4 = up to 8 clinics**. Limit query to 8.
+- Card: reuse the same visual the listing page uses (Google rating, languages, services/specialties, Quick Apply + View Clinic buttons). **No price block.**
+- Hide the whole section when there are 0 showcase clinics (don't show empty state to public).
+- Mobile: stack to 1–2 columns, still capped at 8.
+
+Implementation detail: extract the listing-page card markup (lines ~470–610 in `ClinicListing.tsx`) into a shared `<ClinicListingCard>` component with a `showPrice` prop, and use it in both places. This avoids drift and matches the user's "same information" requirement.
+
+## 4. Admin panel — "Sponsored" controls
+
+In the Super Admin clinic management area (`src/pages/Admin.tsx` and the per-clinic management view in `src/pages/ClinicPanel.tsx` admin tabs):
+
+- Add a new **Sponsored** tab/section in the Manage Clinic view, alongside Overview / Patients / Clinic Info / Admin Settings.
+- Inside Sponsored, render a single toggle row for now:
+  - Label: **Homepage Showcase**
+  - Description: "Feature this clinic in the Homepage Showcase section."
+  - `Switch` bound to `clinics.homepage_showcase`, saves immediately via `supabase.from('clinics').update({ homepage_showcase }).eq('id', clinicId)`.
+- Leave room for additional sponsored placements later (the section is a list; only one item now).
+
+Also in the clinics list table (`Admin.tsx`):
+- Add a small "Showcase" badge next to the Active/Inactive badge when `homepage_showcase = true`, so admins can see at a glance which clinics are showcased.
+
+## 5. Out of scope (per user)
+
+- No pricing, billing, or Stripe wiring.
+- No clinic-owner-facing UI; this is admin-only.
+- Other sponsored placements (sidebar, search top, etc.) — schema leaves room but UI only ships Homepage Showcase.
+
+## Files touched
+
+- `supabase/migrations/...` (new column + sync function update)
+- `src/lib/services.ts` (new `getHomepageShowcaseClinics`)
+- `src/pages/Index.tsx` (new Featured Clinics grid)
+- `src/components/ClinicListingCard.tsx` (new, extracted from listing)
+- `src/pages/ClinicListing.tsx` (use shared card)
+- `src/pages/Admin.tsx` (Sponsored tab + showcase badge in list)
