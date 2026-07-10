@@ -1,65 +1,90 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
-import { getLanguage } from "@/lib/clinicMeta";
+import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getHomepageShowcaseClinics, type Clinic } from "@/lib/services";
 import clinic1 from "@/assets/clinic-1.jpg";
 
 const fallbackImage = clinic1;
 
-const getClinicImage = (c: any): string =>
-  c.clinic_images?.find((i: any) => i.is_primary)?.image_url ||
-  c.clinic_images?.[0]?.image_url ||
-  fallbackImage;
+const getClinicImages = (c: any): string[] => {
+  const imgs = (c.clinic_images || [])
+    .slice()
+    .sort((a: any, b: any) => Number(!!b.is_primary) - Number(!!a.is_primary))
+    .map((i: any) => i.image_url)
+    .filter(Boolean);
+  return imgs.length > 0 ? imgs : [fallbackImage];
+};
 
 const ShowcaseCard = ({ clinic }: { clinic: any }) => {
   const city = clinic.cities?.name || "";
+  const country = clinic.cities?.countries?.name || "";
+  const location = [city, country].filter(Boolean).join(", ");
+  const images = getClinicImages(clinic);
+  const rating =
+    typeof clinic.rating === "number" && clinic.rating > 0 ? clinic.rating : null;
 
   return (
-    <Link
-      to={`/clinic/${clinic.id}`}
-      className="group block bg-white rounded-2xl overflow-hidden border border-border/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-    >
-      <div className="aspect-[4/3] overflow-hidden bg-muted">
-        <img
-          src={getClinicImage(clinic)}
-          alt={clinic.name}
-          loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+    <div className="group bg-white rounded-2xl overflow-hidden border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+      {/* Image carousel */}
+      <div className="relative">
+        <Carousel opts={{ loop: images.length > 1, dragFree: false }} className="w-full">
+          <CarouselContent>
+            {images.map((src, idx) => (
+              <CarouselItem key={idx}>
+                <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  <img
+                    src={src}
+                    alt={`${clinic.name} ${idx + 1}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover cursor-grab active:cursor-grabbing"
+                    draggable={false}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+
+          {images.length > 1 && (
+            <>
+              <CarouselPrevious className="left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8" />
+              <CarouselNext className="right-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8" />
+            </>
+          )}
+        </Carousel>
+
+        {rating && (
+          <div className="absolute top-2 right-2 z-10 bg-white/95 backdrop-blur px-2 py-1 rounded-full shadow-sm text-xs font-semibold flex items-center gap-1 pointer-events-none">
+            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+            <span>{Number(rating).toFixed(1)}</span>
+          </div>
+        )}
       </div>
 
-      <div className="p-3 lg:p-4 space-y-2">
+      {/* Body */}
+      <div className="p-3 lg:p-4 flex flex-col gap-1 flex-1">
         <h3 className="font-semibold text-sm lg:text-base text-foreground line-clamp-1 leading-tight">
           {clinic.name}
         </h3>
-
-        {city && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{city}</span>
-          </div>
+        {location && (
+          <p className="text-xs text-muted-foreground line-clamp-1">{location}</p>
         )}
 
-        {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
-          <div className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-xs text-foreground/70 pt-0.5">
-            {clinic.languages.slice(0, 3).map((code: string) => {
-              const l = getLanguage(code);
-              if (!l) return null;
-              return (
-                <span key={code} className="inline-flex items-center gap-1 shrink-0">
-                  <span aria-hidden>{l.flag}</span>
-                  <span className="hidden sm:inline">{l.name}</span>
-                </span>
-              );
-            })}
-            {clinic.languages.length > 3 && (
-              <span className="text-primary shrink-0">+{clinic.languages.length - 3}</span>
-            )}
-          </div>
-        )}
+        <Button
+          asChild
+          className="mt-3 w-full h-10 rounded-xl font-semibold"
+        >
+          <Link to={`/clinic/${clinic.id}`}>Get Price</Link>
+        </Button>
       </div>
-    </Link>
+    </div>
   );
 };
 
@@ -96,7 +121,7 @@ export const FeaturedClinicsSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
           {loading
             ? Array.from({ length: 8 }).map((_, i) => (
                 <div
@@ -107,6 +132,7 @@ export const FeaturedClinicsSection = () => {
                   <div className="p-3 lg:p-4 space-y-2">
                     <div className="h-4 bg-muted rounded animate-pulse" />
                     <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
+                    <div className="h-10 bg-muted rounded-xl animate-pulse mt-3" />
                   </div>
                 </div>
               ))

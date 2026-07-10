@@ -1,47 +1,43 @@
 ## Goal
 
-Redesign the homepage "Featured Clinics" section (`src/components/home/FeaturedClinicsSection.tsx`) with a cleaner, more modern card layout and a stricter responsive grid.
+Redesign the homepage Featured Clinics cards to a minimal, premium layout with only: image, Google rating badge, name, city+country, and a single "Get Price" button.
 
-## Changes
+## Changes — `src/components/home/FeaturedClinicsSection.tsx`
 
-### 1. Grid layout
-- Mobile: **2 columns** (`grid-cols-2`)
-- Desktop: **4 columns** (`lg:grid-cols-4`)
-- Keep the 8-clinic cap (2 rows × 4).
+### Card contents (in order)
 
-### 2. Card content — strip down to essentials
-Each card shows ONLY:
-1. Clinic image (top, rounded)
-2. Clinic name
-3. City (with small `MapPin` icon)
-4. Languages spoken (flags + names, max 3 with `+N` overflow)
+1. **Image** — `aspect-[4/3]`, `object-cover`, rounded top corners.
+2. **Google rating badge** — floating in top-right corner of the image. Small white pill with star icon + numeric rating (e.g. `★ 4.8`). Only rendered when `clinic.rating` exists.
+3. **Clinic name** — `font-semibold`, `line-clamp-1`.
+4. **City, Country** — small muted text, e.g. `Istanbul, Turkey`. Pulled from `clinic.cities.name` and `clinic.cities.countries.name`.
+5. **"Get Price" button** — full-width primary button, links to `/clinic/{id}`.
 
-Remove from the card:
-- "Featured" badge overlay
-- "Verified" badge overlay
-- Google rating
-- Facilities row
-- Treatments/services chips
-- Quick Apply button
-- View Clinic button
-- Country (keep just city for compactness)
+### Remove
 
-### 3. Card interaction
-- The whole card becomes a single `<Link to={`/clinic/${id}`}>` — clean hover lift, no CTAs.
-- Remove the Quick Apply dialog + `ContactClinicForm` import (no longer needed on homepage).
+- Languages row
+- MapPin icon (city shown as plain text now)
+- Any facilities/treatments/badges
+- Verified/Featured overlays
+- Card-level `<Link>` wrapper (the button is the sole CTA; card itself is not clickable, keeps focus on the button)
 
-### 4. Visual style (modern & clean)
-- White card, soft border, subtle shadow, rounded-2xl.
-- Image: `aspect-[4/3]`, `object-cover`, rounded top corners.
-- Tight padding (`p-3` mobile, `p-4` desktop).
-- Typography: name `font-semibold text-sm lg:text-base line-clamp-1`, city `text-xs text-muted-foreground`.
-- Hover: gentle `translate-y` + shadow increase.
+### Rating badge visual
 
-### 5. Section header
-Keep "Featured Clinics" title but tighten spacing (`mb-8`). Keep the empty-state hide behavior.
+- Position: `absolute top-2 right-2`
+- Style: `bg-white/95 backdrop-blur px-2 py-1 rounded-full shadow-sm text-xs font-semibold flex items-center gap-1`
+- Icon: `Star` from lucide, filled amber.
+
+### Responsive grid
+
+Already `grid-cols-2 md:grid-cols-3 lg:grid-cols-4` — confirm md breakpoint for tablets (currently jumps 2 → 4). Update to include `md:grid-cols-3`.
+
+### Data source
+
+No new fields — uses existing `rating`, `cities.name`, `cities.countries.name` already returned by `getHomepageShowcaseClinics`.
 
 ## Files touched
 
-- `src/components/home/FeaturedClinicsSection.tsx` — rewrite the `ShowcaseCard` and grid, remove dialog/apply logic.
+- `src/components/home/FeaturedClinicsSection.tsx` (rewrite `ShowcaseCard` + grid classes)
 
-No backend, service, or schema changes. `getHomepageShowcaseClinics` already returns everything needed.
+No backend, service, schema, or other component changes.  
+  
+**The images should be swipeable on both mobile and desktop.** Users should be able to **swipe with their finger on mobile** and **drag with the mouse on desktop** to browse through the clinic images.
