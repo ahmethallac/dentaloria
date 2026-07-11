@@ -243,81 +243,38 @@ const Index = () => {
               Discover the highest-rated and most trusted dental clinics
             </p>
           </div>
-          
-          {/* Carousel with navigation arrows */}
-          <div className="relative px-10 md:px-14">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-3 md:-ml-4">
-                {loading ? (
-                  // Loading skeleton - different for mobile vs desktop
-                  Array.from({ length: 5 }).map((_, index) => (
-                    <CarouselItem key={index} className="pl-3 md:pl-4 basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                      <Card className="animate-pulse h-full">
-                        {isMobile ? (
-                          // Mobile skeleton - horizontal
-                          <div className="flex h-32">
-                            <div className="w-28 bg-muted shrink-0"></div>
-                            <div className="flex-1 p-3">
-                              <div className="h-3 bg-muted rounded mb-2 w-3/4"></div>
-                              <div className="h-2 bg-muted rounded mb-2 w-1/2"></div>
-                              <div className="h-5 bg-muted rounded w-16 mb-2"></div>
-                              <div className="h-6 bg-muted rounded w-full mt-auto"></div>
-                            </div>
-                          </div>
-                        ) : (
-                          // Desktop skeleton - vertical
-                          <>
-                            <div className="h-40 bg-muted"></div>
-                            <CardContent className="p-4">
-                              <div className="h-4 bg-muted rounded mb-2"></div>
-                              <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
-                              <div className="flex gap-2">
-                                <div className="h-6 bg-muted rounded w-16"></div>
-                                <div className="h-6 bg-muted rounded w-16"></div>
-                              </div>
-                            </CardContent>
-                          </>
-                        )}
-                      </Card>
-                    </CarouselItem>
-                  ))
-                ) : featuredClinics.length > 0 ? (
-                  featuredClinics.map((clinic, index) => (
-                    <CarouselItem 
-                      key={clinic.id} 
-                      className="pl-3 md:pl-4 basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5 animate-fade-in"
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <div className="h-full">
-                        <ClinicCard 
-                          {...mapClinicForCard(clinic)} 
-                          onClick={() => navigate(`/clinic/${clinic.id}`)}
-                          variant={isMobile ? "compact" : "default"}
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))
-                ) : (
-                  <CarouselItem className="pl-3 md:pl-4 basis-full">
-                    <Card className="h-40 flex items-center justify-center">
-                      <CardContent className="text-center">
-                        <p className="text-muted-foreground">No clinics available yet</p>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                )}
-              </CarouselContent>
-              <CarouselPrevious className="-left-2 md:left-0 h-8 w-8 md:h-10 md:w-10 bg-background border-border shadow-md hover:bg-accent" />
-              <CarouselNext className="-right-2 md:right-0 h-8 w-8 md:h-10 md:w-10 bg-background border-border shadow-md hover:bg-accent" />
-            </Carousel>
-          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl overflow-hidden border border-border/60 bg-white"
+                >
+                  <div className="aspect-[4/3] bg-muted animate-pulse" />
+                  <div className="p-3 lg:p-4 space-y-2">
+                    <div className="h-4 bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
+                    <div className="h-10 bg-muted rounded-xl animate-pulse mt-3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featuredClinics.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
+              {featuredClinics.map((clinic) => (
+                <ShowcaseCard key={clinic.id} clinic={clinic} />
+              ))}
+            </div>
+          ) : (
+            <Card className="h-40 flex items-center justify-center">
+              <CardContent className="text-center">
+                <p className="text-muted-foreground">No clinics available yet</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
+
       </section>
 
       {/* Popular Cities */}
