@@ -23,7 +23,7 @@ const getClinicImages = (c: any): string[] => {
   return imgs.length > 0 ? imgs : [fallbackImage];
 };
 
-const ShowcaseCard = ({ clinic }: { clinic: any }) => {
+export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
   const city = clinic.cities?.name || "";
   const country = clinic.cities?.countries?.name || "";
   const location = [city, country].filter(Boolean).join(", ");
