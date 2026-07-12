@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { getHomepageShowcaseClinics, type Clinic } from "@/lib/services";
 import { useI18n } from "@/i18n";
+import { getClinicCardImageUrl } from "@/lib/imageUtils";
 import clinic1 from "@/assets/clinic-1.jpg";
 
 const fallbackImage = clinic1;
@@ -24,7 +25,44 @@ const getClinicImages = (c: any): string[] => {
   return imgs.length > 0 ? imgs : [fallbackImage];
 };
 
-export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
+const ImageWithSkeleton = ({
+  src,
+  alt,
+  loading,
+}: {
+  src: string;
+  alt: string;
+  loading?: "eager" | "lazy";
+}) => {
+  const [loaded, setLoaded] = useState(false);
+  const optimizedSrc = getClinicCardImageUrl(src);
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && (
+        <div className="absolute inset-0 bg-muted animate-pulse rounded-none" />
+      )}
+      <img
+        src={optimizedSrc}
+        alt={alt}
+        loading={loading || "lazy"}
+        onLoad={() => setLoaded(true)}
+        className={`w-full h-full object-cover cursor-grab active:cursor-grabbing transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        draggable={false}
+      />
+    </div>
+  );
+};
+
+export const ShowcaseCard = ({
+  clinic,
+  cardIndex,
+}: {
+  clinic: any;
+  cardIndex: number;
+}) => {
   const { t } = useI18n();
   const city = clinic.cities?.name || "";
   const country = clinic.cities?.countries?.name || "";
@@ -32,6 +70,10 @@ export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
   const images = getClinicImages(clinic);
   const rating =
     typeof clinic.rating === "number" && clinic.rating > 0 ? clinic.rating : null;
+
+  // Eager-load the first image of the first two cards (first visible row on
+  // mobile and desktop). Lazy-load everything else.
+  const firstImageLoading = cardIndex < 2 ? "eager" : "lazy";
 
   return (
     <div className="group bg-white rounded-2xl overflow-hidden border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
@@ -42,12 +84,10 @@ export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
             {images.map((src, idx) => (
               <CarouselItem key={idx}>
                 <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img
+                  <ImageWithSkeleton
                     src={src}
                     alt={`${clinic.name} ${idx + 1}`}
-                    loading="lazy"
-                    className="w-full h-full object-cover cursor-grab active:cursor-grabbing"
-                    draggable={false}
+                    loading={idx === 0 ? firstImageLoading : "lazy"}
                   />
                 </div>
               </CarouselItem>
