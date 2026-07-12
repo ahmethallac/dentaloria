@@ -178,7 +178,9 @@ export const FeaturedClinicsSection = () => {
                   </div>
                 </div>
               ))
-            : clinics.slice(0, 8).map((c) => <ShowcaseCard key={c.id} clinic={c} />)}
+            : clinics.slice(0, 8).map((c, idx) => (
+                <ShowcaseCard key={c.id} clinic={c} cardIndex={idx} />
+              ))}
         </div>
       </div>
     </section>
