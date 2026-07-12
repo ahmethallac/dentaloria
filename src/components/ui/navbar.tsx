@@ -4,12 +4,11 @@ import { Menu, X, User, LogOut, Building2 } from "lucide-react";
 import { Button } from "./button";
 import { useAuth } from "@/contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
-import { useI18n } from "@/i18n";
+
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const { t } = useI18n();
 
   const handleSignOut = async () => {
     await signOut();
@@ -35,23 +34,23 @@ export const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-10">
               <Link to="/" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-                {t('navbar.home')}
+                Home
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link to="/clinic-listing" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-                {t('navbar.clinics')}
+                Clinics
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link to="/clinic" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-                {t('navbar.featuredClinic')}
+                Featured Clinic
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <a href="#treatments" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-                {t('navbar.treatments')}
+                Treatments
                 <span className="absolute -bottom-1 left-0 w-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </a>
               <a href="#about" className="relative text-foreground/80 hover:text-primary transition-all duration-300 font-medium text-lg group">
-                {t('navbar.about')}
+                About Us
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </a>
             </div>
@@ -68,12 +67,12 @@ export const Navbar = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                      {t('dashboard')}
+                      Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      {t('signOut')}
+                      Sign Out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -119,19 +118,19 @@ export const Navbar = () => {
           <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 z-[60] bg-background border-b border-primary/20 shadow-xl animate-fade-in overflow-auto">
             <div className="container mx-auto px-6 py-8 space-y-6">
               <Link to="/" onClick={closeMobileMenu} className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                {t('navbar.home')}
+                Home
               </Link>
               <Link to="/clinic-listing" onClick={closeMobileMenu} className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                {t('navbar.clinics')}
+                Clinics
               </Link>
               <Link to="/clinic" onClick={closeMobileMenu} className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                {t('navbar.featuredClinic')}
+                Featured Clinic
               </Link>
               <a href="#treatments" onClick={closeMobileMenu} className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                {t('navbar.treatments')}
+                Treatments
               </a>
               <a href="#about" onClick={closeMobileMenu} className="block text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-lg py-3">
-                {t('navbar.about')}
+                About Us
               </a>
 
               <div className="mt-4 pt-4 border-t border-primary/20">
@@ -141,10 +140,10 @@ export const Navbar = () => {
                       {profile?.full_name || user.email}
                     </div>
                     <Button onClick={() => { navigate('/dashboard'); closeMobileMenu(); }} variant="outline" className="w-full">
-                      {t('dashboard')}
+                      Dashboard
                     </Button>
                     <Button onClick={() => { handleSignOut(); closeMobileMenu(); }} variant="ghost" className="w-full">
-                      {t('signOut')}
+                      Sign Out
                     </Button>
                   </div>
                 ) : (
