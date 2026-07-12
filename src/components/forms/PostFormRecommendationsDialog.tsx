@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, ExternalLink } from "lucide-react";
+import { Loader2, Check, ExternalLink, Star, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/i18n";
+import { getClinicCardImageUrl } from "@/lib/imageUtils";
+import { getLanguage } from "@/lib/clinicMeta";
 
 export interface SubmittedFormValues {
   clinicId: string;
@@ -19,6 +22,9 @@ interface RecommendedClinic {
   id: string;
   name: string;
   image_url: string | null;
+  rating: number | null;
+  city: string | null;
+  languages: string[];
 }
 
 interface Props {
@@ -29,6 +35,7 @@ interface Props {
 
 export default function PostFormRecommendationsDialog({ open, onOpenChange, values }: Props) {
   const { toast } = useToast();
+  const { lang } = useI18n();
   const [clinics, setClinics] = useState<RecommendedClinic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,37 +51,24 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
     (async () => {
       try {
         const { data, error: invokeError } = await supabase.functions.invoke("recommend-clinics", {
-          body: { excludeClinicId: values.clinicId },
+          body: { excludeClinicId: values.clinicId, language: lang },
         });
 
-        if (invokeError) {
-          console.error("recommend-clinics invoke error", invokeError);
-          throw new Error(invokeError.message || "Could not load recommendations.");
-        }
-
-        if (data?.error) {
-          console.error("recommend-clinics returned error", data.error);
-          throw new Error(data.error);
-        }
+        if (invokeError) throw new Error(invokeError.message || "Could not load recommendations.");
+        if (data?.error) throw new Error(data.error);
 
         const list = (data?.clinics as RecommendedClinic[]) || [];
-        console.log("recommend-clinics returned", list.length, "clinics", list);
         setClinics(list);
       } catch (e: any) {
-        console.error("recommend-clinics error", e);
         const message = e?.message || "Could not load recommendations.";
         setError(message);
-        toast({
-          title: "Recommendations unavailable",
-          description: message,
-          variant: "destructive",
-        });
+        toast({ title: "Recommendations unavailable", description: message, variant: "destructive" });
         setClinics([]);
       } finally {
         setLoading(false);
       }
     })();
-  }, [open, values, toast]);
+  }, [open, values, toast, lang]);
 
   const quickApply = async (clinic: RecommendedClinic) => {
     if (!values) return;
@@ -103,7 +97,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Apply to more clinics</DialogTitle>
           <DialogDescription>
@@ -111,60 +105,110 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
-          {loading ? (
-            <div className="flex items-center justify-center py-8 text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Finding clinics…
-            </div>
-          ) : clinics.length === 0 ? (
-            <div className="text-center text-muted-foreground py-6 text-sm">
-              {error ? (
-                <span className="text-destructive">{error}</span>
-              ) : (
-                "No additional clinic recommendations available right now."
-              )}
-            </div>
-          ) : (
-            clinics.map((c) => {
+        {loading ? (
+          <div className="flex items-center justify-center py-12 text-muted-foreground">
+            <Loader2 className="w-5 h-5 animate-spin mr-2" /> Finding clinics…
+          </div>
+        ) : clinics.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8 text-sm">
+            {error ? (
+              <span className="text-destructive">{error}</span>
+            ) : (
+              "No additional clinic recommendations available right now."
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {clinics.map((c) => {
               const isSent = sentTo.has(c.id);
+              const visibleLangs = c.languages.slice(0, 3);
+              const extraLangs = c.languages.length - visibleLangs.length;
               return (
-                <div key={c.id} className="flex items-center gap-3 p-3 border border-border/60 rounded-lg">
-                  <div className="w-12 h-12 rounded-lg bg-muted overflow-hidden shrink-0">
+                <div
+                  key={c.id}
+                  className="flex flex-col rounded-xl border border-border/60 overflow-hidden bg-card shadow-sm"
+                >
+                  <div className="aspect-[4/3] bg-muted overflow-hidden">
                     {c.image_url ? (
-                      <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img
+                        src={getClinicCardImageUrl(c.image_url)}
+                        alt={c.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">No image</div>
+                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
+                        No image
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{c.name}</div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-                    <Link to={`/clinic/${c.id}`} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" variant="outline">
-                        <ExternalLink className="w-3.5 h-3.5 mr-1" /> Visit
-                      </Button>
-                    </Link>
-                    {isSent ? (
-                      <Button size="sm" variant="secondary" disabled>
-                        <Check className="w-3.5 h-3.5 mr-1" /> Sent
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={() => quickApply(c)}
-                        disabled={sending === c.id}
-                      >
-                        {sending === c.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
-                        Quick Apply
-                      </Button>
+                  <div className="flex-1 flex flex-col p-3 gap-2">
+                    <div className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
+                      {c.name}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {c.rating != null && (
+                        <span className="flex items-center gap-1">
+                          <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                          <span className="font-medium text-foreground">{Number(c.rating).toFixed(1)}</span>
+                        </span>
+                      )}
+                      {c.city && (
+                        <span className="flex items-center gap-1 truncate">
+                          <MapPin className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{c.city}</span>
+                        </span>
+                      )}
+                    </div>
+                    {visibleLangs.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {visibleLangs.map((code) => {
+                          const l = getLanguage(code);
+                          return (
+                            <span
+                              key={code}
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-medium text-foreground/80"
+                            >
+                              <span aria-hidden>{l?.flag ?? "🏳️"}</span>
+                              <span>{l?.name ?? code.toUpperCase()}</span>
+                            </span>
+                          );
+                        })}
+                        {extraLangs > 0 && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-medium text-foreground/70">
+                            +{extraLangs}
+                          </span>
+                        )}
+                      </div>
                     )}
+                    <div className="flex flex-col gap-2 pt-2 mt-auto">
+                      <Link to={`/clinic/${c.id}`} target="_blank" rel="noopener noreferrer" className="w-full">
+                        <Button size="sm" variant="outline" className="w-full">
+                          <ExternalLink className="w-3.5 h-3.5 mr-1" /> Visit
+                        </Button>
+                      </Link>
+                      {isSent ? (
+                        <Button size="sm" variant="secondary" disabled className="w-full">
+                          <Check className="w-3.5 h-3.5 mr-1" /> Sent
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => quickApply(c)}
+                          disabled={sending === c.id}
+                          className="w-full"
+                        >
+                          {sending === c.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
+                          Quick Apply
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
