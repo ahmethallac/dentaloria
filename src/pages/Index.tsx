@@ -262,8 +262,8 @@ const Index = () => {
             </div>
           ) : featuredClinics.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
-              {featuredClinics.map((clinic) => (
-                <ShowcaseCard key={clinic.id} clinic={clinic} />
+              {featuredClinics.map((clinic, idx) => (
+                <ShowcaseCard key={clinic.id} clinic={clinic} cardIndex={idx} />
               ))}
             </div>
           ) : (

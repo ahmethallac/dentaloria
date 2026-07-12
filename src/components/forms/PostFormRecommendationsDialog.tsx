@@ -31,28 +31,50 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
   const { toast } = useToast();
   const [clinics, setClinics] = useState<RecommendedClinic[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !values) return;
     setSentTo(new Set());
+    setError(null);
+    setClinics([]);
     setLoading(true);
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("recommend-clinics", {
+        const { data, error: invokeError } = await supabase.functions.invoke("recommend-clinics", {
           body: { excludeClinicId: values.clinicId },
         });
-        if (error) throw error;
-        setClinics((data?.clinics as RecommendedClinic[]) || []);
-      } catch (e) {
+
+        if (invokeError) {
+          console.error("recommend-clinics invoke error", invokeError);
+          throw new Error(invokeError.message || "Could not load recommendations.");
+        }
+
+        if (data?.error) {
+          console.error("recommend-clinics returned error", data.error);
+          throw new Error(data.error);
+        }
+
+        const list = (data?.clinics as RecommendedClinic[]) || [];
+        console.log("recommend-clinics returned", list.length, "clinics", list);
+        setClinics(list);
+      } catch (e: any) {
         console.error("recommend-clinics error", e);
+        const message = e?.message || "Could not load recommendations.";
+        setError(message);
+        toast({
+          title: "Recommendations unavailable",
+          description: message,
+          variant: "destructive",
+        });
         setClinics([]);
       } finally {
         setLoading(false);
       }
     })();
-  }, [open, values]);
+  }, [open, values, toast]);
 
   const quickApply = async (clinic: RecommendedClinic) => {
     if (!values) return;
@@ -96,7 +118,11 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
             </div>
           ) : clinics.length === 0 ? (
             <div className="text-center text-muted-foreground py-6 text-sm">
-              No additional clinic recommendations available right now.
+              {error ? (
+                <span className="text-destructive">{error}</span>
+              ) : (
+                "No additional clinic recommendations available right now."
+              )}
             </div>
           ) : (
             clinics.map((c) => {
