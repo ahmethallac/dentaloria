@@ -116,7 +116,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
             <div className="flex items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="w-5 h-5 animate-spin mr-2" /> Finding clinics…
             </div>
-          : clinics.length === 0 ? (
+          ) : clinics.length === 0 ? (
             <div className="text-center text-muted-foreground py-6 text-sm">
               {error ? (
                 <span className="text-destructive">{error}</span>
