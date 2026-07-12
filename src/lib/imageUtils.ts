@@ -101,3 +101,36 @@ export const optimizeDoctorImages = (files: File[]): Promise<File[]> => {
     format: 'jpeg'
   })
 }
+
+const SUPABASE_STORAGE_PUBLIC_REGEX = /^https:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/;
+
+/**
+ * Returns a Supabase Storage image-transformation URL for thumbnails.
+ * Non-Supabase URLs are returned unchanged.
+ */
+export const getOptimizedImageUrl = (
+  url: string,
+  options: { width?: number; height?: number; quality?: number; resize?: string } = {}
+): string => {
+  if (!url) return url;
+
+  const match = url.match(SUPABASE_STORAGE_PUBLIC_REGEX);
+  if (!match) return url;
+
+  const [, bucket, path] = match;
+  const params = new URLSearchParams();
+  if (options.width) params.set("width", String(options.width));
+  if (options.height) params.set("height", String(options.height));
+  if (options.quality) params.set("quality", String(options.quality));
+  if (options.resize) params.set("resize", options.resize);
+
+  const query = params.toString();
+  return `https://${match[0].split('/')[2]}/storage/v1/render/image/public/${bucket}/${path}${query ? `?${query}` : ""}`;
+};
+
+/**
+ * Convenience helper for clinic card thumbnails (~600px wide).
+ */
+export const getClinicCardImageUrl = (url: string): string => {
+  return getOptimizedImageUrl(url, { width: 600, quality: 80, resize: "cover" });
+};
