@@ -126,9 +126,9 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
               return (
                 <div
                   key={c.id}
-                  className="flex flex-col rounded-xl border border-border/60 overflow-hidden bg-card shadow-sm"
+                  className="flex flex-row sm:flex-col rounded-xl border border-border/60 overflow-hidden bg-card shadow-sm"
                 >
-                  <div className="aspect-[4/3] bg-muted overflow-hidden">
+                  <div className="w-20 h-20 sm:w-full sm:h-auto shrink-0 sm:aspect-[4/3] bg-muted overflow-hidden">
                     {c.image_url ? (
                       <img
                         src={getClinicCardImageUrl(c.image_url)}
@@ -137,13 +137,13 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
+                      <div className="w-full h-full flex items-center justify-center text-[9px] sm:text-xs text-center px-1 text-muted-foreground">
                         No image
                       </div>
                     )}
                   </div>
-                  <div className="flex-1 flex flex-col p-3 gap-2">
-                    <div className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
+                  <div className="flex-1 min-w-0 flex flex-col p-3 gap-1.5 sm:gap-2">
+                    <div className="font-semibold text-sm leading-snug line-clamp-1 sm:line-clamp-2 sm:min-h-[2.5rem]">
                       {c.name}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -181,14 +181,14 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                         )}
                       </div>
                     )}
-                    <div className="flex flex-col gap-2 pt-2 mt-auto">
-                      <Link to={`/clinic/${c.id}`} target="_blank" rel="noopener noreferrer" className="w-full">
+                    <div className="flex flex-row sm:flex-col gap-2 mt-1 sm:mt-auto sm:pt-2">
+                      <Link to={`/clinic/${c.id}`} target="_blank" rel="noopener noreferrer" className="flex-1 sm:w-full">
                         <Button size="sm" variant="outline" className="w-full">
                           <ExternalLink className="w-3.5 h-3.5 mr-1" /> Visit
                         </Button>
                       </Link>
                       {isSent ? (
-                        <Button size="sm" variant="secondary" disabled className="w-full">
+                        <Button size="sm" variant="secondary" disabled className="flex-1 sm:w-full">
                           <Check className="w-3.5 h-3.5 mr-1" /> Sent
                         </Button>
                       ) : (
@@ -196,7 +196,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                           size="sm"
                           onClick={() => quickApply(c)}
                           disabled={sending === c.id}
-                          className="w-full"
+                          className="flex-1 sm:w-full"
                         >
                           {sending === c.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
                           Quick Apply

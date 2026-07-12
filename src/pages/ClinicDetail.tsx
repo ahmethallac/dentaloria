@@ -19,7 +19,7 @@ import {
   Languages as LanguagesIcon,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { useAuth } from "@/contexts/AuthContext";
@@ -311,6 +311,13 @@ const ClinicDetail = () => {
     setRecoOpen(true);
     setMobileOpen(false);
   };
+
+  // Stable reference so PostFormRecommendationsDialog's fetch effect only reruns
+  // when a new submission actually happens, not on every unrelated re-render.
+  const recoDialogValues = useMemo(
+    () => (recoValues ? { ...recoValues, clinicId: id! } : null),
+    [recoValues, id]
+  );
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -1080,7 +1087,7 @@ const ClinicDetail = () => {
       <PostFormRecommendationsDialog
         open={recoOpen}
         onOpenChange={setRecoOpen}
-        values={recoValues ? { ...recoValues, clinicId: id! } : null}
+        values={recoDialogValues}
       />
 
       {/* Bottom padding for mobile CTA */}
