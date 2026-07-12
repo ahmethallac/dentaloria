@@ -10,12 +10,16 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     let excludeId: string | null = null;
+    let language: string | null = null;
     if (req.method === "GET") {
       excludeId = url.searchParams.get("excludeClinicId");
+      language = url.searchParams.get("language");
     } else {
       const body = await req.json().catch(() => ({}));
       excludeId = body?.excludeClinicId || null;
+      language = body?.language || null;
     }
+    const lang = (language || "en").toLowerCase().slice(0, 5);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -35,24 +39,20 @@ serve(async (req) => {
     const pickedIds = new Set<string>();
     if (excludeId) pickedIds.add(excludeId);
 
-    // Helper to fetch candidates with optional balance filter and city filter
     const fetchCandidates = async (opts: {
       cityId?: string | null;
+      requireLanguage?: boolean;
       requireBalance?: boolean;
       limit: number;
     }) => {
       let q = supabase
         .from("clinics_public")
-        .select("id, name, balance_cents")
-        .limit(opts.limit * 3); // fetch a larger pool for randomization
+        .select("id, name, rating, languages, city_id, balance_cents")
+        .limit(Math.max(opts.limit * 4, 12));
 
-      if (opts.requireBalance) {
-        q = q.gt("balance_cents", 0);
-      }
-
-      if (opts.cityId) {
-        q = q.eq("city_id", opts.cityId);
-      }
+      if (opts.requireBalance) q = q.gt("balance_cents", 0);
+      if (opts.cityId) q = q.eq("city_id", opts.cityId);
+      if (opts.requireLanguage) q = q.contains("languages", [lang]);
 
       if (pickedIds.size > 0) {
         q = q.not("id", "in", `(${Array.from(pickedIds).join(",")})`);
@@ -63,10 +63,9 @@ serve(async (req) => {
       return data || [];
     };
 
-    // Random pick helper
     const randomPick = (pool: any[], count: number) => {
       const copy = pool.slice();
-      const picks: typeof pool = [];
+      const picks: any[] = [];
       while (picks.length < count && copy.length > 0) {
         const i = Math.floor(Math.random() * copy.length);
         picks.push(copy.splice(i, 1)[0]);
@@ -74,33 +73,40 @@ serve(async (req) => {
       return picks;
     };
 
-    // 1. Try same-city clinics with balance
-    const sameCityBalance = targetCityId
-      ? await fetchCandidates({ cityId: targetCityId, requireBalance: true, limit: 3 })
-      : [];
-    const sameCityPicks = randomPick(sameCityBalance, 3);
-    sameCityPicks.forEach((c) => pickedIds.add(c.id));
+    const picks: any[] = [];
 
-    // 2. If fewer than 3, fill globally with balance
-    if (sameCityPicks.length < 3) {
-      const needed = 3 - sameCityPicks.length;
-      const globalBalance = await fetchCandidates({ requireBalance: true, limit: needed });
-      const globalPicks = randomPick(globalBalance, needed);
-      globalPicks.forEach((c) => pickedIds.add(c.id));
-      sameCityPicks.push(...globalPicks);
+    // Tier 1: same city + same language + balance
+    if (targetCityId) {
+      const t1 = await fetchCandidates({
+        cityId: targetCityId,
+        requireLanguage: true,
+        requireBalance: true,
+        limit: 3,
+      });
+      const p1 = randomPick(t1, 3 - picks.length);
+      p1.forEach((c) => pickedIds.add(c.id));
+      picks.push(...p1);
     }
 
-    // 3. Safety net: if still fewer than 3, fall back to any published clinic
-    // so the popup never appears empty when real clinics exist.
-    if (sameCityPicks.length < 3) {
-      const needed = 3 - sameCityPicks.length;
-      const fallback = await fetchCandidates({ requireBalance: false, limit: needed });
-      const fallbackPicks = randomPick(fallback, needed);
-      fallbackPicks.forEach((c) => pickedIds.add(c.id));
-      sameCityPicks.push(...fallbackPicks);
+    // Tier 2: same language (any city) + balance
+    if (picks.length < 3) {
+      const t2 = await fetchCandidates({
+        requireLanguage: true,
+        requireBalance: true,
+        limit: 3 - picks.length,
+      });
+      const p2 = randomPick(t2, 3 - picks.length);
+      p2.forEach((c) => pickedIds.add(c.id));
+      picks.push(...p2);
     }
 
-    const picks = sameCityPicks;
+    // Tier 3: last-resort safety net — any published clinic
+    if (picks.length < 3) {
+      const t3 = await fetchCandidates({ limit: 3 - picks.length });
+      const p3 = randomPick(t3, 3 - picks.length);
+      p3.forEach((c) => pickedIds.add(c.id));
+      picks.push(...p3);
+    }
 
     if (picks.length === 0) {
       return new Response(JSON.stringify({ clinics: [] }), {
@@ -108,12 +114,18 @@ serve(async (req) => {
       });
     }
 
-    // Fetch a primary image per clinic
     const ids = picks.map((c) => c.id);
-    const { data: images } = await supabase
-      .from("clinic_images")
-      .select("clinic_id, image_url, is_primary")
-      .in("clinic_id", ids);
+    const cityIds = Array.from(new Set(picks.map((c) => c.city_id).filter(Boolean)));
+
+    const [{ data: images }, { data: cities }] = await Promise.all([
+      supabase
+        .from("clinic_images")
+        .select("clinic_id, image_url, is_primary")
+        .in("clinic_id", ids),
+      cityIds.length > 0
+        ? supabase.from("cities").select("id, name").in("id", cityIds)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
 
     const imgByClinic = new Map<string, string>();
     for (const img of images || []) {
@@ -121,11 +133,16 @@ serve(async (req) => {
         imgByClinic.set(img.clinic_id, img.image_url);
       }
     }
+    const cityById = new Map<string, string>();
+    for (const c of cities || []) cityById.set(c.id, c.name);
 
     const result = picks.map((c) => ({
       id: c.id,
       name: c.name,
       image_url: imgByClinic.get(c.id) || null,
+      rating: c.rating ?? null,
+      city: c.city_id ? cityById.get(c.city_id) || null : null,
+      languages: Array.isArray(c.languages) ? c.languages : [],
     }));
 
     return new Response(JSON.stringify({ clinics: result }), {
