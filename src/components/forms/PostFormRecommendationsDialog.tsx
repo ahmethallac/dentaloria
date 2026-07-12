@@ -5,7 +5,6 @@ import { Loader2, Check, ExternalLink, Star, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useI18n } from "@/i18n";
 import { getClinicCardImageUrl } from "@/lib/imageUtils";
 import { getLanguage } from "@/lib/clinicMeta";
 
@@ -35,7 +34,6 @@ interface Props {
 
 export default function PostFormRecommendationsDialog({ open, onOpenChange, values }: Props) {
   const { toast } = useToast();
-  const { lang } = useI18n();
   const [clinics, setClinics] = useState<RecommendedClinic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +49,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
     (async () => {
       try {
         const { data, error: invokeError } = await supabase.functions.invoke("recommend-clinics", {
-          body: { excludeClinicId: values.clinicId, language: lang },
+          body: { excludeClinicId: values.clinicId },
         });
 
         if (invokeError) throw new Error(invokeError.message || "Could not load recommendations.");
@@ -68,7 +66,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
         setLoading(false);
       }
     })();
-  }, [open, values, toast, lang]);
+  }, [open, values, toast]);
 
   const quickApply = async (clinic: RecommendedClinic) => {
     if (!values) return;

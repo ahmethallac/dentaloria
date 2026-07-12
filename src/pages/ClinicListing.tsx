@@ -16,7 +16,8 @@ import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
 import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard } from "@/lib/clinicMeta";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ContactClinicForm } from "@/components/forms/ContactClinicForm";
+import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
+import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -185,6 +186,14 @@ export default function ClinicListing() {
   const [page, setPage] = useState(1);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [applyOpenForClinicId, setApplyOpenForClinicId] = useState<string | null>(null);
+  const [recoOpen, setRecoOpen] = useState(false);
+  const [recoValues, setRecoValues] = useState<ContactClinicSubmittedValues | null>(null);
+
+  const handleApplySuccess = (values: ContactClinicSubmittedValues) => {
+    setApplyOpenForClinicId(null);
+    setRecoValues(values);
+    setRecoOpen(true);
+  };
 
   // Map UI sort to backend sort. Filters never touch sortBy — only the dropdown does.
   const { 
@@ -750,7 +759,7 @@ export default function ClinicListing() {
                           <ContactClinicForm
                             clinicId={clinic.id}
                             initialTreatment={selectedTreatmentName || ""}
-                            onSuccess={() => setApplyOpenForClinicId(null)}
+                            onSuccess={handleApplySuccess}
                             submitLabel="Send Application"
                           />
                         </DialogContent>
@@ -784,6 +793,12 @@ export default function ClinicListing() {
       </div>
       
       <Footer />
+
+      <PostFormRecommendationsDialog
+        open={recoOpen}
+        onOpenChange={setRecoOpen}
+        values={recoValues}
+      />
     </div>
   );
 }

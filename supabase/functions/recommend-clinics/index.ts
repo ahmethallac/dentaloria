@@ -10,30 +10,31 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     let excludeId: string | null = null;
-    let language: string | null = null;
     if (req.method === "GET") {
       excludeId = url.searchParams.get("excludeClinicId");
-      language = url.searchParams.get("language");
     } else {
       const body = await req.json().catch(() => ({}));
       excludeId = body?.excludeClinicId || null;
-      language = body?.language || null;
     }
-    const lang = (language || "en").toLowerCase().slice(0, 5);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // "Same language" means the languages actually spoken by the clinic the
+    // patient just applied to (clinics_public.languages), not the site's UI
+    // locale (en/tr) — those are unrelated concepts.
     let targetCityId: string | null = null;
+    let targetLanguages: string[] = [];
     if (excludeId) {
       const { data: excluded } = await supabase
         .from("clinics_public")
-        .select("city_id")
+        .select("city_id, languages")
         .eq("id", excludeId)
         .maybeSingle();
       targetCityId = excluded?.city_id || null;
+      targetLanguages = Array.isArray(excluded?.languages) ? excluded.languages : [];
     }
 
     const pickedIds = new Set<string>();
@@ -52,7 +53,7 @@ serve(async (req) => {
 
       if (opts.requireBalance) q = q.gt("balance_cents", 0);
       if (opts.cityId) q = q.eq("city_id", opts.cityId);
-      if (opts.requireLanguage) q = q.contains("languages", [lang]);
+      if (opts.requireLanguage) q = q.overlaps("languages", targetLanguages);
 
       if (pickedIds.size > 0) {
         q = q.not("id", "in", `(${Array.from(pickedIds).join(",")})`);
@@ -76,7 +77,8 @@ serve(async (req) => {
     const picks: any[] = [];
 
     // Tier 1: same city + same language + balance
-    if (targetCityId) {
+    // (only meaningful if the applied-to clinic actually has languages set)
+    if (targetCityId && targetLanguages.length > 0) {
       const t1 = await fetchCandidates({
         cityId: targetCityId,
         requireLanguage: true,
@@ -89,7 +91,7 @@ serve(async (req) => {
     }
 
     // Tier 2: same language (any city) + balance
-    if (picks.length < 3) {
+    if (picks.length < 3 && targetLanguages.length > 0) {
       const t2 = await fetchCandidates({
         requireLanguage: true,
         requireBalance: true,
