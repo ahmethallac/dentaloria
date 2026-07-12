@@ -8,5 +8,6 @@
   "dashboard": "Panel",
   "addClinic": "Klinik Ekle",
   "signOut": "Çıkış Yap",
-  "actions.refresh": "Yenile"
+  "actions.refresh": "Yenile",
+  "clinic.viewClinic": "Kliniği Görüntüle"
 }

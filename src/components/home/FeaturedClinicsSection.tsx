@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { getHomepageShowcaseClinics, type Clinic } from "@/lib/services";
+import { useI18n } from "@/i18n";
 import clinic1 from "@/assets/clinic-1.jpg";
 
 const fallbackImage = clinic1;
@@ -24,6 +25,7 @@ const getClinicImages = (c: any): string[] => {
 };
 
 export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
+  const { t } = useI18n();
   const city = clinic.cities?.name || "";
   const country = clinic.cities?.countries?.name || "";
   const location = [city, country].filter(Boolean).join(", ");
@@ -81,7 +83,7 @@ export const ShowcaseCard = ({ clinic }: { clinic: any }) => {
           asChild
           className="mt-3 w-full h-10 rounded-xl font-semibold"
         >
-          <Link to={`/clinic/${clinic.id}`}>Get Price</Link>
+          <Link to={`/clinic/${clinic.id}`}>{t("clinic.viewClinic")}</Link>
         </Button>
       </div>
     </div>

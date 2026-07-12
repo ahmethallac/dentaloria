@@ -8,5 +8,6 @@
   "dashboard": "Dashboard",
   "addClinic": "Add Clinic",
   "signOut": "Sign Out",
-  "actions.refresh": "Refresh"
+  "actions.refresh": "Refresh",
+  "clinic.viewClinic": "View Clinic"
 }
