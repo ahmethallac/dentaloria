@@ -8,13 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle, ShieldCheck, Tag, Send } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
@@ -474,35 +467,37 @@ const Index = () => {
             </p>
           </div>
 
-          <Carousel opts={{ align: "start", loop: true }} className="max-w-5xl mx-auto">
-            <CarouselContent>
-              {TESTIMONIALS.map((t) => (
-                <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="h-full">
-                    <CardContent className="p-6 flex flex-col h-full">
-                      <div className="flex gap-1 mb-4">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        ))}
+          <div className="relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-medical-light/30 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-medical-light/30 to-transparent z-10" />
+
+            <div className="flex w-max gap-6 animate-marquee hover:[animation-play-state:paused]">
+              {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
+                <Card
+                  key={`${t.name}-${i}`}
+                  className="w-80 shrink-0 border-primary/10 bg-gradient-to-br from-white to-primary/5 shadow-card hover:shadow-elegant transition-shadow duration-300"
+                >
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="flex gap-1 mb-4">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <Star key={idx} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mb-6 flex-1">"{t.quote}"</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                        {getInitials(t.name)}
                       </div>
-                      <p className="text-muted-foreground mb-6 flex-1">"{t.quote}"</p>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                          {getInitials(t.name)}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-sm">{t.name}</div>
-                          <div className="text-xs text-muted-foreground">{t.location}</div>
-                        </div>
+                      <div>
+                        <div className="font-semibold text-sm">{t.name}</div>
+                        <div className="text-xs text-muted-foreground">{t.location}</div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden sm:flex" />
-            <CarouselNext className="hidden sm:flex" />
-          </Carousel>
+            </div>
+          </div>
         </div>
       </section>
 
