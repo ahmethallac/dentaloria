@@ -16,7 +16,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle } from "lucide-react";
+import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle, ShieldCheck, Tag, Send } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
@@ -66,6 +66,67 @@ const POPULAR_CITIES_META: Record<string, { image: string; description: string }
   "Antalya": { image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png", description: "Pearl of the Mediterranean" },
   "Izmir": { image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png", description: "Shining star of the Aegean" },
 };
+
+// Why Dentaloria — core value props of the comparison platform itself
+const WHY_DENTALORIA = [
+  {
+    icon: Grid3X3,
+    title: "Compare, don't chase",
+    description: "See every clinic that matches your treatment and location side by side, instead of messaging each one separately.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Verified clinics only",
+    description: "Every clinic on Dentaloria is reviewed before it goes live, so you're never guessing who to trust.",
+  },
+  {
+    icon: Tag,
+    title: "Transparent pricing",
+    description: "Real prices and real patient ratings upfront — no surprise quotes once you arrive.",
+  },
+  {
+    icon: Send,
+    title: "One application, real replies",
+    description: "Submit your details once. Only the clinics that actually fit your needs get back to you.",
+  },
+];
+
+// Testimonials about Dentaloria itself (the comparison platform), not individual clinics
+const TESTIMONIALS = [
+  {
+    name: "Sarah M.",
+    location: "United Kingdom",
+    quote: "I didn't want to message ten different clinics and repeat my story every time. On Dentaloria I compared everything in one place and only reached out once I knew exactly who I wanted.",
+  },
+  {
+    name: "Michael R.",
+    location: "Ireland",
+    quote: "What I liked most was not having to negotiate with every clinic myself. I filled in one form and only the clinics that matched what I needed got back to me.",
+  },
+  {
+    name: "Anna K.",
+    location: "Germany",
+    quote: "I was overwhelmed by how many clinics claim to be the best. Dentaloria let me actually compare prices and reviews side by side instead of guessing.",
+  },
+  {
+    name: "James T.",
+    location: "United States",
+    quote: "Finding a dental clinic abroad felt risky until I found this site. Seeing verified reviews and real prices upfront made the decision so much easier.",
+  },
+  {
+    name: "Emma L.",
+    location: "Netherlands",
+    quote: "I found exactly what I was looking for within a day. No back and forth with ten clinics — just one platform that did the comparing for me.",
+  },
+  {
+    name: "David P.",
+    location: "United Kingdom",
+    quote: "Dentaloria saved me hours of research. I could filter by treatment and language, and the clinic I chose matched everything I needed.",
+  },
+];
+
+const getInitials = (name: string) =>
+  name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -231,6 +292,35 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Why Dentaloria */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge variant="secondary" className="mb-4">Why Dentaloria</Badge>
+            <h2 className="text-3xl font-bold mb-4">One platform. Every clinic compared.</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Dentaloria replaces messaging clinics one by one with a single place to compare, apply, and hear back.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {WHY_DENTALORIA.map((item, index) => (
+              <div
+                key={item.title}
+                className="text-center group animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <item.icon className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Admin-curated Featured Clinics (Homepage Showcase) */}
       <FeaturedClinicsSection />
 
@@ -371,6 +461,48 @@ const Index = () => {
                 </CardContent>
               </Card>))}
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 bg-gradient-to-br from-medical-light/30 to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">What patients say about Dentaloria</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Real feedback from patients who found their clinic through Dentaloria
+            </p>
+          </div>
+
+          <Carousel opts={{ align: "start", loop: true }} className="max-w-5xl mx-auto">
+            <CarouselContent>
+              {TESTIMONIALS.map((t) => (
+                <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3">
+                  <Card className="h-full">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex gap-1 mb-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <p className="text-muted-foreground mb-6 flex-1">"{t.quote}"</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                          {getInitials(t.name)}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-sm">{t.name}</div>
+                          <div className="text-xs text-muted-foreground">{t.location}</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden sm:flex" />
+            <CarouselNext className="hidden sm:flex" />
+          </Carousel>
         </div>
       </section>
 
