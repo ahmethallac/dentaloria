@@ -292,35 +292,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Why Dentaloria */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge variant="secondary" className="mb-4">Why Dentaloria</Badge>
-            <h2 className="text-3xl font-bold mb-4">One platform. Every clinic compared.</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Dentaloria replaces messaging clinics one by one with a single place to compare, apply, and hear back.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {WHY_DENTALORIA.map((item, index) => (
-              <div
-                key={item.title}
-                className="text-center group animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="h-8 w-8" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Admin-curated Featured Clinics (Homepage Showcase) */}
       <FeaturedClinicsSection />
 
@@ -460,6 +431,35 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground">{treatment.description || 'Click to explore clinics offering this treatment'}</p>
                 </CardContent>
               </Card>))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Dentaloria */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge variant="secondary" className="mb-4">Why Dentaloria</Badge>
+            <h2 className="text-3xl font-bold mb-4">One platform. Every clinic compared.</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Dentaloria replaces messaging clinics one by one with a single place to compare, apply, and hear back.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {WHY_DENTALORIA.map((item, index) => (
+              <div
+                key={item.title}
+                className="text-center group animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <item.icon className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
