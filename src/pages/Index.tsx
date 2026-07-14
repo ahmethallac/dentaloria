@@ -13,6 +13,7 @@ import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck
 import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
+import { AISearchBar } from "@/components/home/AISearchBar";
 
 // Helper function to map clinic data for ClinicCard component
 const mapClinicForCard = (clinic: Clinic) => ({
@@ -227,7 +228,16 @@ const Index = () => {
             <p className="text-xl text-white/90 mb-12 animate-fade-in">
               World-class dental treatment at your fingertips
             </p>
-            
+
+            {/* AI Search Bar */}
+            <AISearchBar className="max-w-2xl mx-auto animate-scale-in mb-6" />
+
+            <div className="flex items-center gap-4 max-w-2xl mx-auto mb-6">
+              <div className="h-px flex-1 bg-white/30" />
+              <span className="text-white/80 text-sm font-medium">or search with filters</span>
+              <div className="h-px flex-1 bg-white/30" />
+            </div>
+
             {/* Search Bar */}
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto animate-scale-in">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

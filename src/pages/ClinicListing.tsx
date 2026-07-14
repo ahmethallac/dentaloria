@@ -18,6 +18,7 @@ import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
+import { AISearchBar } from "@/components/home/AISearchBar";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -168,7 +169,7 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
 };
 
 export default function ClinicListing() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // State for filter data
   const [countries, setCountries] = useState<any[]>([]);
@@ -188,6 +189,11 @@ export default function ClinicListing() {
   const [applyOpenForClinicId, setApplyOpenForClinicId] = useState<string | null>(null);
   const [recoOpen, setRecoOpen] = useState(false);
   const [recoValues, setRecoValues] = useState<ContactClinicSubmittedValues | null>(null);
+
+  const handleAISearchResults = (params: URLSearchParams) => {
+    setPage(1);
+    setSearchParams(params);
+  };
 
   const handleApplySuccess = (values: ContactClinicSubmittedValues) => {
     setApplyOpenForClinicId(null);
@@ -267,6 +273,8 @@ export default function ClinicListing() {
     const countryParam = searchParams.get('country');
     const treatmentParam = searchParams.get('treatment');
     const cityParam = searchParams.get('city');
+    const languagesParam = searchParams.get('languages');
+    const sortParam = searchParams.get('sort');
 
     if (countryParam && countryParam !== 'all') {
       setSelectedCountry(countryParam);
@@ -276,6 +284,12 @@ export default function ClinicListing() {
     }
     if (cityParam && cityParam !== 'all') {
       setSelectedCity(cityParam);
+    }
+    if (languagesParam) {
+      setSelectedLanguages(languagesParam.split(',').filter(Boolean));
+    }
+    if (sortParam && ['balance', 'rating', 'price_asc', 'price_desc'].includes(sortParam)) {
+      setSortBy(sortParam as 'balance' | 'rating' | 'price_asc' | 'price_desc');
     }
   }, [searchParams]);
 
@@ -378,9 +392,11 @@ export default function ClinicListing() {
           <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
             World's Best Medical Clinics
           </h1>
-          <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80">
+          <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80 mb-8">
             Find your perfect healthcare solution with expert doctors, modern technology and reliable service
           </p>
+
+          <AISearchBar className="max-w-2xl mx-auto animate-scale-in" onResults={handleAISearchResults} />
         </div>
       </div>
 
