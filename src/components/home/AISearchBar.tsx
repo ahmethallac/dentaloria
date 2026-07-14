@@ -123,7 +123,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
       <div className="relative">
         <svg
           viewBox="0 0 60 60"
-          className="absolute -top-8 -left-4 sm:left-4 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
+          className="absolute -top-7 left-2 sm:left-10 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
           aria-hidden="true"
         >
