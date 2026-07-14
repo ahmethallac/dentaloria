@@ -116,32 +116,56 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
           AI-powered search
         </span>
       </div>
-      <p className="text-center mb-3 px-2">
-        <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
-          Just type what you're looking for below
-        </span>
-      </p>
-      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-2xl flex items-center gap-2">
-        <Search className="h-5 w-5 text-muted-foreground ml-2 shrink-0" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => (typingPaused.current = true)}
-          onBlur={() => {
-            if (!query) typingPaused.current = false;
-          }}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          placeholder={placeholder}
-          className="flex-1 h-16 sm:h-14 bg-transparent outline-none text-base sm:text-lg text-foreground placeholder:text-muted-foreground/70 min-w-0"
-        />
-        <Button
-          onClick={handleSubmit}
-          disabled={submitting || !query.trim() || !data}
-          className="h-16 sm:h-14 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
+      <div className="relative">
+        <svg
+          viewBox="0 0 60 60"
+          className="absolute -top-9 right-6 sm:right-14 w-10 h-10 sm:w-12 sm:h-12 animate-bounce"
+          style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
+          aria-hidden="true"
         >
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
-        </Button>
+          <path
+            d="M50 6 C 32 6, 14 16, 11 36"
+            fill="none"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M11 36 L4 26 M11 36 L21 31"
+            fill="none"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-2xl flex items-start gap-2">
+          <Search className="h-5 w-5 text-muted-foreground ml-2 mt-2.5 shrink-0" />
+          <textarea
+            rows={2}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => (typingPaused.current = true)}
+            onBlur={() => {
+              if (!query) typingPaused.current = false;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            placeholder={placeholder}
+            className="flex-1 py-2 bg-transparent outline-none resize-none text-base sm:text-lg text-foreground placeholder:text-muted-foreground/70 min-w-0"
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting || !query.trim() || !data}
+            className="self-center h-12 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+          </Button>
+        </div>
       </div>
     </div>
   );
