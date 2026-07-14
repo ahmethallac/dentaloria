@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,6 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
   const [placeholder, setPlaceholder] = useState("");
   const [data, setData] = useState<SearchableData | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const typingPaused = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -41,7 +40,11 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
     })();
   }, []);
 
-  // Typewriter effect cycling through example queries; pauses while the user is typing.
+  // Typewriter effect cycling through example queries. Keeps running all the
+  // time, even while the box is focused — the browser only ever shows a
+  // placeholder when the field is empty, so this naturally hides itself the
+  // moment the patient types a character and resumes right where it left off
+  // as soon as they clear the field again. No pause/resume logic needed.
   useEffect(() => {
     let exampleIndex = 0;
     let charIndex = 0;
@@ -49,10 +52,6 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const tick = () => {
-      if (typingPaused.current) {
-        timeoutId = setTimeout(tick, 300);
-        return;
-      }
       const current = EXAMPLE_QUERIES[exampleIndex];
       if (!deleting) {
         charIndex++;
@@ -116,7 +115,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
           AI-powered search
         </span>
       </div>
-      <p className="text-center mb-8 sm:mb-10 px-2">
+      <p className="text-center mb-3 px-2">
         <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
           Just type what you're looking for below
         </span>
@@ -124,7 +123,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
       <div className="relative">
         <svg
           viewBox="0 0 60 60"
-          className="absolute -top-8 left-6 sm:left-14 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
+          className="absolute -top-8 -left-4 sm:left-4 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
           aria-hidden="true"
         >
@@ -150,10 +149,6 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
             rows={2}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => (typingPaused.current = true)}
-            onBlur={() => {
-              if (!query) typingPaused.current = false;
-            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
