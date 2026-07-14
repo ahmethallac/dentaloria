@@ -116,10 +116,15 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
           AI-powered search
         </span>
       </div>
+      <p className="text-center mb-8 sm:mb-10 px-2">
+        <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
+          Just type what you're looking for below
+        </span>
+      </p>
       <div className="relative">
         <svg
           viewBox="0 0 60 60"
-          className="absolute -top-9 right-6 sm:right-14 w-10 h-10 sm:w-12 sm:h-12 animate-bounce"
+          className="absolute -top-8 left-6 sm:left-14 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
           aria-hidden="true"
         >
