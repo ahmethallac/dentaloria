@@ -38,20 +38,22 @@ const TREATMENT_KEYWORDS: Array<{ match: string[]; nameIncludes: string }> = [
   { match: ["implant"], nameIncludes: "implant" },
 ];
 
-// Native self-names patients commonly use for their own language, in
-// addition to the English name already in LANGUAGES.
+// Native self-names AND Turkish names patients commonly use for a
+// language, in addition to the English name already in LANGUAGES. Many
+// patients (and Ahmet's own testing) type Turkish sentences even though
+// the site itself is English — these must be covered too.
 const LANGUAGE_ALIASES: Record<string, string[]> = {
-  de: ["deutsch", "german"],
-  pl: ["polski", "polish", "lehçe", "lehce"],
-  fr: ["français", "francais", "french"],
-  nl: ["nederlands", "dutch"],
-  ro: ["română", "romana", "romanian"],
-  ar: ["arabic", "عربي"],
-  it: ["italiano", "italian"],
-  es: ["español", "espanol", "spanish"],
-  pt: ["português", "portugues", "portuguese"],
-  ru: ["русский", "russian"],
-  en: ["english"],
+  de: ["deutsch", "german", "almanca"],
+  pl: ["polski", "polish", "lehçe"],
+  fr: ["français", "french", "fransızca"],
+  nl: ["nederlands", "dutch", "hollandaca", "felemenkçe"],
+  ro: ["română", "romanian", "romence"],
+  ar: ["arabic", "عربي", "arapça"],
+  it: ["italiano", "italian", "italyanca"],
+  es: ["español", "spanish", "ispanyolca"],
+  pt: ["português", "portuguese", "portekizce"],
+  ru: ["русский", "russian", "rusça"],
+  en: ["english", "ingilizce"],
 };
 
 const PRICE_ASC_KEYWORDS = [
@@ -76,7 +78,29 @@ const RATING_KEYWORDS = [
   "best",
 ];
 
-const norm = (s: string) => s.toLowerCase().trim();
+// Turkish characters fold to their closest ASCII Latin letter before
+// lowercasing. This matters for two reasons: (1) patients type Turkish
+// city/language names while the stored data is plain ASCII ("İzmir" vs
+// "Izmir"), and (2) JavaScript's default (non-locale) toLowerCase() turns
+// the Turkish dotted capital "İ" into "i" + a combining dot above
+// (U+0307), NOT plain "i" — so "İstanbul" would otherwise never match the
+// stored "Istanbul" at all.
+const TURKISH_FOLD: Record<string, string> = {
+  İ: "i", I: "i", ı: "i",
+  Ğ: "g", ğ: "g",
+  Ü: "u", ü: "u",
+  Ş: "s", ş: "s",
+  Ö: "o", ö: "o",
+  Ç: "c", ç: "c",
+};
+
+const norm = (s: string) =>
+  s
+    .split("")
+    .map((ch) => TURKISH_FOLD[ch] ?? ch)
+    .join("")
+    .toLowerCase()
+    .trim();
 
 export function parseSearchQuery(query: string, data: SearchableData): ParsedSearchQuery {
   const q = norm(query);
