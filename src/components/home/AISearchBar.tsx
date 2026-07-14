@@ -116,8 +116,13 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
           AI-powered search
         </span>
       </div>
-      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-2 shadow-2xl flex items-center gap-2">
-        <Search className="h-5 w-5 text-muted-foreground ml-3 shrink-0" />
+      <p className="text-center mb-3 px-2">
+        <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
+          Just type what you're looking for below
+        </span>
+      </p>
+      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-2xl flex items-center gap-2">
+        <Search className="h-5 w-5 text-muted-foreground ml-2 shrink-0" />
         <input
           type="text"
           value={query}
@@ -128,12 +133,12 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
           }}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder={placeholder}
-          className="flex-1 h-12 bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground/70 min-w-0"
+          className="flex-1 h-16 sm:h-14 bg-transparent outline-none text-base sm:text-lg text-foreground placeholder:text-muted-foreground/70 min-w-0"
         />
         <Button
           onClick={handleSubmit}
           disabled={submitting || !query.trim() || !data}
-          className="h-12 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
+          className="h-16 sm:h-14 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
         >
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
         </Button>
