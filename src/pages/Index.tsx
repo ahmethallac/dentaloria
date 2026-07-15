@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Star, Users, Award, CheckCircle, MapPin, Search, Stethoscope, UserCheck, Smile, Crown, Activity, ArrowRight, Play, Sparkles, Anchor, Layers, Zap, Grid3X3, Brush, Minus, Circle, ShieldCheck, Tag, Send } from "lucide-react";
+import { Star, Users, Award, CheckCircle, MapPin, Search, UserCheck, Activity, ArrowRight, Play, Grid3X3, ShieldCheck, Tag, Send } from "lucide-react";
 import { getFeaturedClinics, getTreatments, getPopularTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
@@ -34,23 +34,35 @@ const mapClinicForCard = (clinic: Clinic) => ({
   isVerified: clinic.is_verified || false
 });
 
-// Helper function to get treatment-specific icons
-const getTreatmentIcon = (treatmentName: string) => {
+// Real, freely-licensed (Unsplash) photos representing each treatment category,
+// shown inside the circle avatars on the homepage Treatment Options section.
+const TREATMENT_IMAGES = {
+  implant: "https://images.unsplash.com/photo-1593022356769-11f762e25ed9?w=200&h=200&fit=crop&q=80",
+  crown: "https://images.unsplash.com/photo-1609918438269-9a4c5f8fe3a4?w=200&h=200&fit=crop&q=80",
+  whitening: "https://images.unsplash.com/photo-1677026010083-78ec7f1b84ed?w=200&h=200&fit=crop&q=80",
+  veneers: "https://images.unsplash.com/photo-1660737217679-6ddd9768654a?w=200&h=200&fit=crop&q=80",
+  invisalign: "https://images.unsplash.com/photo-1694675236489-d73651370688?w=200&h=200&fit=crop&q=80",
+  braces: "https://images.unsplash.com/photo-1598256989809-394fa4f6cd26?w=200&h=200&fit=crop&q=80",
+  bonding: "https://images.unsplash.com/photo-1667133295315-820bb6481730?w=200&h=200&fit=crop&q=80",
+  wisdom: "https://images.unsplash.com/photo-1522849696084-818b29dfe210?w=200&h=200&fit=crop&q=80",
+} as const;
+
+// Helper function to get a treatment-specific real photo
+const getTreatmentImage = (treatmentName: string): string => {
   const name = treatmentName.toLowerCase();
-  
-  if (name.includes('implant') || name.includes('all-on')) return Anchor;
-  if (name.includes('whitening') || name.includes('bleach')) return Sparkles;
-  if (name.includes('veneer') || name.includes('laminate')) return Layers;
-  if (name.includes('crown') || name.includes('cap')) return Crown;
-  if (name.includes('root canal') || name.includes('endodontic')) return Zap;
-  if (name.includes('orthodontic') || name.includes('braces') || name.includes('invisalign')) return Grid3X3;
-  if (name.includes('cleaning') || name.includes('hygiene') || name.includes('prophylaxis')) return Brush;
-  if (name.includes('extraction') || name.includes('removal')) return Minus;
-  if (name.includes('filling') || name.includes('restoration')) return Circle;
-  if (name.includes('smile') || name.includes('makeover')) return Smile;
-  
-  // Default icon for general treatments
-  return Stethoscope;
+
+  if (name.includes('invisalign') || name.includes('aligner')) return TREATMENT_IMAGES.invisalign;
+  if (name.includes('brace') || name.includes('orthodontic')) return TREATMENT_IMAGES.braces;
+  if (name.includes('implant') || name.includes('all-on')) return TREATMENT_IMAGES.implant;
+  if (name.includes('whitening') || name.includes('bleach')) return TREATMENT_IMAGES.whitening;
+  if (name.includes('veneer') || name.includes('laminate') || name.includes('smile') || name.includes('makeover')) return TREATMENT_IMAGES.veneers;
+  if (name.includes('crown') || name.includes('cap') || name.includes('filling') || name.includes('restoration')) return TREATMENT_IMAGES.crown;
+  if (name.includes('wisdom') || name.includes('extraction') || name.includes('removal')) return TREATMENT_IMAGES.wisdom;
+  if (name.includes('bonding') || name.includes('root canal') || name.includes('endodontic')) return TREATMENT_IMAGES.bonding;
+  if (name.includes('cleaning') || name.includes('hygiene') || name.includes('prophylaxis')) return TREATMENT_IMAGES.whitening;
+
+  // Default for anything else
+  return TREATMENT_IMAGES.crown;
 };
 
 // Treatment and location data
@@ -424,11 +436,12 @@ const Index = () => {
             animationDelay: `${index * 0.1}s`
           }} onClick={() => handleTreatmentClick(treatment.id)}>
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-primary/10 to-blue-600/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:from-primary/20 group-hover:to-blue-600/20 transition-colors duration-300">
-                    {(() => {
-                      const IconComponent = getTreatmentIcon(treatment.name);
-                      return <IconComponent className="h-8 w-8 text-primary" />;
-                    })()}
+                  <div className="rounded-full w-16 h-16 mx-auto mb-4 overflow-hidden ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300">
+                    <img
+                      src={getTreatmentImage(treatment.name)}
+                      alt={treatment.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
                   </div>
                   <h3 className="font-semibold mb-2">{treatment.name}</h3>
                   <p className="text-sm text-muted-foreground">{treatment.description || 'Click to explore clinics offering this treatment'}</p>
