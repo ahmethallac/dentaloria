@@ -40,6 +40,18 @@ const mapClinicForCard = (clinic: Clinic) => ({
   isVerified: clinic.is_verified || false
 });
 
+// Only treatments Ahmet gave a real photo for are shown on the homepage
+// showcase — everything else stays a normal filterable/searchable/priceable
+// treatment everywhere else in the app, just not featured here.
+const HOMEPAGE_SHOWCASE_TREATMENTS = [
+  "All-on-4 Dental Implants",
+  "All-on-6 Dental Implants",
+  "Single Tooth Implant",
+  "Composite Bonding",
+  "Laminate Veneer",
+  "Zirconium Crown",
+];
+
 // Real photos representing each treatment category, shown inside the circle
 // avatars on the homepage Treatment Options section. The implant/bonding/
 // veneer/crown photos are the exact ones Ahmet picked; whitening/braces/
@@ -443,7 +455,7 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {treatments.filter((treatment) => treatment.name !== 'Porcelain Veneers').map((treatment, index) => (
+            {treatments.filter((treatment) => HOMEPAGE_SHOWCASE_TREATMENTS.includes(treatment.name)).map((treatment, index) => (
               <Card key={treatment.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
             animationDelay: `${index * 0.1}s`
           }} onClick={() => handleTreatmentClick(treatment.id)}>
