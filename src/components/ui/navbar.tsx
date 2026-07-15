@@ -72,8 +72,8 @@ export const Navbar = () => {
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-background/95 backdrop-blur-xl shadow-md shadow-primary/5 border-b border-primary/10"
-          : "bg-background/70 backdrop-blur-md border-b border-transparent"
+          ? "bg-background/95 backdrop-blur-xl shadow-md shadow-primary/5"
+          : "bg-background/70 backdrop-blur-md"
       }`}
     >
       <div className="container mx-auto px-6">
@@ -208,6 +208,7 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
+      <div className="pointer-events-none absolute inset-x-0 top-full h-10 bg-gradient-to-b from-background/70 to-transparent" />
     </nav>
   );
 };
