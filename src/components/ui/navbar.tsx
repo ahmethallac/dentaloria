@@ -75,6 +75,10 @@ export const Navbar = () => {
           ? "bg-background/95 backdrop-blur-xl shadow-md shadow-primary/5"
           : "bg-background/70 backdrop-blur-md"
       }`}
+      style={{
+        WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+        maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+      }}
     >
       <div className="container mx-auto px-6">
         <div
@@ -208,7 +212,6 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-full h-10 bg-gradient-to-b from-background/70 to-transparent" />
     </nav>
   );
 };
