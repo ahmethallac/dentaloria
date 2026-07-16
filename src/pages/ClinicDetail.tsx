@@ -1058,10 +1058,18 @@ const ClinicDetail = () => {
 
       {/* ── Video Lightbox ── */}
       <Dialog open={videoLightbox !== null} onOpenChange={(open) => !open && setVideoLightbox(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0">
+        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0 [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Video</DialogTitle>
           </DialogHeader>
+          <button
+            type="button"
+            onClick={() => setVideoLightbox(null)}
+            aria-label="Close video"
+            className="absolute top-3 right-3 z-20 rounded-full bg-white/90 hover:bg-white text-black p-2 shadow-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
           {videoLightbox && (
             <div className="aspect-[9/16] w-full">
               <iframe
@@ -1071,8 +1079,7 @@ const ClinicDetail = () => {
                     : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
                 }
                 className="w-full h-full"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
               />
             </div>
           )}
