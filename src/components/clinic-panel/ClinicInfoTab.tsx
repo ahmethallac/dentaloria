@@ -11,6 +11,7 @@ import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTr
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
 import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
 import ClinicVideosManager from "./ClinicVideosManager";
+import GoogleBusinessLink from "./GoogleBusinessLink";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { LANGUAGES, FACILITIES } from "@/lib/clinicMeta";
@@ -40,10 +41,6 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
     website: clinic.website || "",
     address: clinic.address || "",
     description: clinic.description || "",
-    google_rating:
-      clinic.rating != null && Number(clinic.rating) >= 3
-        ? Number(clinic.rating).toFixed(1)
-        : "",
   });
 
   const [languages, setLanguages] = useState<string[]>(
@@ -55,12 +52,6 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
   const toggleInArray = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
-
-  // 3.0 → 5.0 in 0.1 steps (21 values)
-  const ratingOptions = useMemo(
-    () => Array.from({ length: 21 }, (_, i) => (3 + i * 0.1).toFixed(1)),
-    []
-  );
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -129,7 +120,6 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         city_id: cityId || clinic.city_id,
         // @ts-ignore
         display_name: form.display_name.trim() || null,
-        ...(form.google_rating ? { rating: parseFloat(form.google_rating) } : {}),
         // @ts-ignore
         languages,
         // @ts-ignore
@@ -199,20 +189,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             <Input value={form.website} onChange={(e) => onChange("website", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Google Rating</label>
-            <select
-              className="w-full px-3 py-2 border border-border rounded-md bg-background"
-              value={form.google_rating}
-              onChange={(e) => onChange("google_rating", e.target.value)}
-            >
-              <option value="" disabled>Select rating</option>
-              {ratingOptions.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-            <p className="text-xs text-destructive mt-1">
-              This rating must match your actual rating on Google Maps. Entering an inaccurate rating may result in your listing being removed.
-            </p>
+            <GoogleBusinessLink clinic={clinic} onUpdated={onUpdated} />
           </div>
         </div>
 

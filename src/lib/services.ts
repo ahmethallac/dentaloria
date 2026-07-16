@@ -79,6 +79,8 @@ export interface Clinic {
   website?: string
   rating: number
   review_count: number
+  google_place_id?: string
+  google_rating_synced_at?: string
   is_verified: boolean
   is_featured: boolean
   is_published?: boolean
