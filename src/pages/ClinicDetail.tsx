@@ -138,52 +138,25 @@ const BeforeAfterCarousel = ({
   images: string[];
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-
-  const scroll = (dir: -1 | 1) => {
-    const el = ref.current;
-    if (!el) return;
-    const card = el.firstElementChild as HTMLElement | null;
-    const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
 
   return (
     <div ref={sectionRef} className="scroll-mt-32">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
           Before & After
         </h3>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => scroll(-1)}
-            aria-label="Scroll left"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll(1)}
-            aria-label="Scroll right"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
-      <div
-        ref={ref}
-        className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-      >
-        {images.map((src, i) => (
+
+      <HorizontalMediaRow
+        items={images}
+        aspectClass="aspect-video"
+        keyFor={(_: string, i: number) => i}
+        renderItem={(src: string, i: number) => (
           <button
-            key={i}
             type="button"
             onClick={() => setLightboxIdx(i)}
-            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
+            className="w-full h-full block group cursor-zoom-in"
             aria-label={`Open before & after image ${i + 1}`}
           >
             <img
@@ -193,8 +166,8 @@ const BeforeAfterCarousel = ({
               loading="lazy"
             />
           </button>
-        ))}
-      </div>
+        )}
+      />
 
       {/* Lightbox */}
       <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
