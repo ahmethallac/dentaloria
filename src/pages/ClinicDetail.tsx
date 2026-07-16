@@ -1057,21 +1057,27 @@ const ClinicDetail = () => {
       </Dialog>
 
       {/* ── Video Lightbox ── */}
-      <Dialog open={videoLightbox !== null} onOpenChange={(open) => !open && setVideoLightbox(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0 [&>button]:hidden">
-          <DialogHeader className="sr-only">
-            <DialogTitle>Video</DialogTitle>
-          </DialogHeader>
-          <button
-            type="button"
-            onClick={() => setVideoLightbox(null)}
-            aria-label="Close video"
-            className="absolute top-3 right-3 z-20 rounded-full bg-white/90 hover:bg-white text-black p-2 shadow-lg"
+      {videoLightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Video player"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-8 animate-in fade-in-0 duration-200"
+          onClick={() => setVideoLightbox(null)}
+        >
+          <div
+            className="relative w-full max-w-[300px] sm:max-w-[340px]"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X className="w-5 h-5" />
-          </button>
-          {videoLightbox && (
-            <div className="aspect-[9/16] w-full">
+            <button
+              type="button"
+              onClick={() => setVideoLightbox(null)}
+              aria-label="Close video"
+              className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 z-20 rounded-full bg-white hover:bg-white text-black p-2.5 shadow-xl ring-2 ring-black/10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl">
               <iframe
                 src={
                   videoLightbox.provider === "instagram"
@@ -1082,9 +1088,9 @@ const ClinicDetail = () => {
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
               />
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      )}
 
       {/* ── Fullscreen Image Viewer ── */}
       {fullscreenIdx !== null && (
