@@ -1021,6 +1021,29 @@ const ClinicDetail = () => {
         </DialogContent>
       </Dialog>
 
+      {/* ── Video Lightbox ── */}
+      <Dialog open={videoLightbox !== null} onOpenChange={(open) => !open && setVideoLightbox(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Video</DialogTitle>
+          </DialogHeader>
+          {videoLightbox && (
+            <div className="aspect-[9/16] w-full">
+              <iframe
+                src={
+                  videoLightbox.provider === "instagram"
+                    ? `https://www.instagram.com/reel/${videoLightbox.providerId}/embed`
+                    : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
+                }
+                className="w-full h-full"
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* ── Fullscreen Image Viewer ── */}
       {fullscreenIdx !== null && (
         <div
