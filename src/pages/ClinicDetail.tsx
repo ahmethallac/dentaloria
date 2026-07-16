@@ -43,7 +43,7 @@ import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommenda
 import { GoogleRating } from "@/components/ui/google-rating";
 import { getLanguage, getFacility } from "@/lib/clinicMeta";
 import HorizontalMediaRow from "@/components/clinic-detail/HorizontalMediaRow";
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
