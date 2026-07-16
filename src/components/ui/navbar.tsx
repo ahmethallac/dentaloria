@@ -73,7 +73,7 @@ export const Navbar = () => {
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-background/95 backdrop-blur-xl shadow-md shadow-primary/5"
-          : "bg-background/70 backdrop-blur-md"
+          : "bg-gradient-to-b from-background/85 to-background/40 backdrop-blur-md"
       }`}
       style={{
         WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
