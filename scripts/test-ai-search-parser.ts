@@ -80,6 +80,18 @@ const CASES: Case[] = [
     query: "kızım için ağzı bozmayacak bir implant istiyorum",
     expect: { city: null, treatment: "All-on-4 Dental Implants" },
   },
+  {
+    query: "zirkonyum kron istanbul",
+    expect: { city: "Istanbul", treatment: "Zirconium Crown" },
+  },
+  {
+    query: "lamine veneer istanbul",
+    expect: { city: "Istanbul", treatment: "Laminate Veneer" },
+  },
+  {
+    query: "kompozit dolgu istanbul",
+    expect: { city: "Istanbul", treatment: "Composite Bonding" },
+  },
 ];
 
 async function main() {

@@ -24,15 +24,25 @@ export interface SearchableData {
 const TREATMENT_KEYWORDS: Array<{ match: string[]; nameIncludes: string }> = [
   { match: ["all-on-4", "all on 4", "all on four"], nameIncludes: "all-on-4" },
   { match: ["all-on-6", "all on 6", "all on six"], nameIncludes: "all-on-6" },
-  { match: ["single tooth implant", "single implant", "single tooth"], nameIncludes: "single tooth" },
-  { match: ["multiple tooth", "multiple teeth", "multiple implants"], nameIncludes: "multiple tooth" },
-  { match: ["hollywood smile", "smile makeover", "veneer"], nameIncludes: "veneer" },
-  { match: ["whitening", "whiten", "bleaching"], nameIncludes: "whitening" },
-  { match: ["crown", "cap"], nameIncludes: "crown" },
-  { match: ["invisalign", "clear aligner", "invisible aligner"], nameIncludes: "invisalign" },
-  { match: ["braces"], nameIncludes: "braces" },
-  { match: ["bonding"], nameIncludes: "bonding" },
-  { match: ["wisdom tooth", "wisdom teeth"], nameIncludes: "wisdom" },
+  {
+    match: ["single tooth implant", "single implant", "single tooth", "tek diş implant", "tek implant"],
+    nameIncludes: "single tooth",
+  },
+  // Laminate Veneer must be checked before the generic "veneer" entry below,
+  // otherwise its substring match would also hit "Porcelain Veneers" (whose
+  // longer name wins the length-sort tiebreak) even when the patient typed
+  // "laminate"/"lamine" specifically.
+  {
+    match: ["laminate veneer", "laminate", "lamine veneer", "lamine", "laminat"],
+    nameIncludes: "laminate",
+  },
+  { match: ["hollywood smile", "smile makeover", "gülüş tasarımı", "gülüş yenileme", "porselen veneer", "veneer"], nameIncludes: "veneer" },
+  { match: ["whitening", "whiten", "bleaching", "beyazlatma", "diş beyazlatma"], nameIncludes: "whitening" },
+  { match: ["zirconium", "zirkonyum", "zirkon", "crown", "kron", "cap"], nameIncludes: "crown" },
+  { match: ["invisalign", "clear aligner", "invisible aligner", "şeffaf plak", "görünmez plak"], nameIncludes: "invisalign" },
+  { match: ["braces", "diş teli", "tel tedavisi", "ortodonti"], nameIncludes: "braces" },
+  { match: ["bonding", "composite", "kompozit dolgu", "kompozit bonding", "kompozit"], nameIncludes: "bonding" },
+  { match: ["wisdom tooth", "wisdom teeth", "yirmi yaş dişi", "20 yaş dişi"], nameIncludes: "wisdom" },
   // Generic fallback: any mention of "implant(s)" with no specific
   // qualifier above matches whichever implant treatment comes first.
   { match: ["implant"], nameIncludes: "implant" },
