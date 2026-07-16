@@ -138,52 +138,25 @@ const BeforeAfterCarousel = ({
   images: string[];
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-
-  const scroll = (dir: -1 | 1) => {
-    const el = ref.current;
-    if (!el) return;
-    const card = el.firstElementChild as HTMLElement | null;
-    const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
 
   return (
     <div ref={sectionRef} className="scroll-mt-32">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
           Before & After
         </h3>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => scroll(-1)}
-            aria-label="Scroll left"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll(1)}
-            aria-label="Scroll right"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
-      <div
-        ref={ref}
-        className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-      >
-        {images.map((src, i) => (
+
+      <HorizontalMediaRow
+        items={images}
+        aspectClass="aspect-video"
+        keyFor={(_: string, i: number) => i}
+        renderItem={(src: string, i: number) => (
           <button
-            key={i}
             type="button"
             onClick={() => setLightboxIdx(i)}
-            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
+            className="w-full h-full block group cursor-zoom-in"
             aria-label={`Open before & after image ${i + 1}`}
           >
             <img
@@ -193,8 +166,8 @@ const BeforeAfterCarousel = ({
               loading="lazy"
             />
           </button>
-        ))}
-      </div>
+        )}
+      />
 
       {/* Lightbox */}
       <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
@@ -676,28 +649,83 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Photo gallery (2 on mobile / 3 on desktop, horizontal arrows) ── */}
-              <HorizontalMediaRow
-                items={clinic.images as string[]}
-                aspectClass="aspect-video"
-                keyFor={(_: string, i: number) => i}
-                renderItem={(src: string, idx: number) => (
-                  <button
-                    type="button"
-                    onClick={() => setFullscreenIdx(idx)}
-                    className="w-full h-full block group"
-                    aria-label={`Open photo ${idx + 1}`}
-                  >
-                    <img
-                      src={src}
-                      alt={`${clinic.name} ${idx + 1}`}
-                      draggable={false}
-                      loading={idx < 3 ? "eager" : "lazy"}
-                      className="h-full w-full object-cover select-none transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </button>
+              {/* ── Image Slider ── */}
+              <div className="relative overflow-hidden rounded-2xl">
+                <div
+                  ref={galleryRef}
+                  tabIndex={0}
+                  className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
+                  {clinic.images.map((src: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="w-full shrink-0 snap-center relative"
+                      onClick={() => {
+                        if (isMobile) setTappedImageIdx((prev) => (prev === idx ? null : idx));
+                      }}
+                    >
+                      <div className="aspect-video overflow-hidden rounded-2xl bg-muted/30">
+                        <img
+                          src={src}
+                          alt={`${clinic.name} ${idx + 1}`}
+                          draggable={false}
+                          className="h-full w-full object-cover select-none"
+                        />
+                      </div>
+                      {/* Mobile "Full Screen" button overlay */}
+                      {isMobile && tappedImageIdx === idx && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl">
+                          <Button
+                            variant="secondary"
+                            className="bg-white/90 text-foreground font-semibold shadow-lg"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTappedImageIdx(null);
+                              setFullscreenIdx(idx);
+                            }}
+                          >
+                            Full Screen
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {clinic.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex - 1))}
+                      aria-label="Previous image"
+                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex + 1))}
+                      aria-label="Next image"
+                      className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+
+                    {/* Dot indicators */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {clinic.images.map((_: string, i: number) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            i === currentImageIndex ? "bg-white" : "bg-white/40"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
                 )}
-              />
+              </div>
 
               {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
               {clinic.videos && clinic.videos.length > 0 && (
