@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
       throw new Error('GOOGLE_PLACES_API_KEY is not configured')
     }
 
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=name,rating,user_ratings_total&key=${apiKey}`
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=name,rating,user_ratings_total,reviews&key=${apiKey}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -38,11 +38,26 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Google returns at most 5 reviews per place, chosen by its own
+    // relevance algorithm — we only keep the positive ones (4-5 stars) since
+    // that's all this app ever displays.
+    const reviews = ((data.result.reviews ?? []) as any[])
+      .filter((r) => (r.rating ?? 0) >= 4)
+      .map((r) => ({
+        authorName: r.author_name ?? 'Google user',
+        rating: r.rating ?? null,
+        text: r.text ?? '',
+        relativeTimeDescription: r.relative_time_description ?? '',
+        profilePhotoUrl: r.profile_photo_url ?? null,
+        time: r.time ?? null,
+      }))
+
     return new Response(
       JSON.stringify({
         name: data.result.name ?? null,
         rating: data.result.rating ?? null,
         reviewCount: data.result.user_ratings_total ?? null,
+        reviews,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

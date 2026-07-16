@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { updateClinic, type Clinic } from "@/lib/services";
+import { updateClinic, type Clinic, type GoogleReview } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 
 const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_BROWSER_KEY as string;
@@ -33,6 +33,7 @@ interface RatingPreview {
   name: string | null;
   rating: number | null;
   reviewCount: number | null;
+  reviews: GoogleReview[];
 }
 
 interface GoogleBusinessLinkProps {
@@ -57,7 +58,13 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         body: { placeId },
       });
       if (error) throw error;
-      setPreview({ placeId, name: data.name, rating: data.rating, reviewCount: data.reviewCount });
+      setPreview({
+        placeId,
+        name: data.name,
+        rating: data.rating,
+        reviewCount: data.reviewCount,
+        reviews: data.reviews ?? [],
+      });
     } catch (e) {
       console.error("Could not fetch Google rating:", e);
       toast({
@@ -105,6 +112,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         google_place_id: preview.placeId,
         rating: preview.rating ?? clinic.rating,
         review_count: preview.reviewCount ?? clinic.review_count,
+        google_reviews: preview.reviews,
         google_rating_synced_at: new Date().toISOString(),
       });
       toast({ title: "Success", description: "Google rating linked and saved." });
@@ -130,6 +138,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
       const updated = await updateClinic(clinic.id, {
         rating: data.rating ?? clinic.rating,
         review_count: data.reviewCount ?? clinic.review_count,
+        google_reviews: data.reviews ?? [],
         google_rating_synced_at: new Date().toISOString(),
       });
       toast({ title: "Success", description: "Rating refreshed from Google." });
@@ -185,6 +194,11 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
                 <span>{preview.rating ?? "—"}</span>
                 <span className="text-muted-foreground">({preview.reviewCount ?? 0} reviews)</span>
               </div>
+              <p className="text-xs text-muted-foreground">
+                {preview.reviews.length > 0
+                  ? `${preview.reviews.length} positive review${preview.reviews.length > 1 ? "s" : ""} will be shown on your clinic page.`
+                  : "No 4-5 star reviews were found to show on your clinic page."}
+              </p>
               <div className="flex gap-2">
                 <Button type="button" size="sm" onClick={handleConfirm} disabled={fetching}>
                   {fetching ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}

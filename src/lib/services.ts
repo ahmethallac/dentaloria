@@ -68,6 +68,15 @@ interface Doctor {
   created_at: string
 }
 
+export interface GoogleReview {
+  authorName: string
+  rating: number | null
+  text: string
+  relativeTimeDescription: string
+  profilePhotoUrl?: string | null
+  time?: number | null
+}
+
 export interface Clinic {
   id: string
   name: string
@@ -81,6 +90,7 @@ export interface Clinic {
   review_count: number
   google_place_id?: string
   google_rating_synced_at?: string
+  google_reviews?: GoogleReview[]
   is_verified: boolean
   is_featured: boolean
   is_published?: boolean

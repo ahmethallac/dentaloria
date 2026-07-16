@@ -43,6 +43,7 @@ import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommenda
 import { GoogleRating } from "@/components/ui/google-rating";
 import { getLanguage, getFacility } from "@/lib/clinicMeta";
 import HorizontalMediaRow from "@/components/clinic-detail/HorizontalMediaRow";
+import GoogleReviewsCarousel from "@/components/clinic-detail/GoogleReviewsCarousel";
 import { Play } from "lucide-react";
 
 /* ───────── mapper ───────── */
@@ -118,6 +119,7 @@ const mapClinic = (db: any) => {
         url: v.video_url,
         thumbnail: v.thumbnail_url as string | null,
       })),
+    googleReviews: Array.isArray(db?.google_reviews) ? db.google_reviews : [],
   };
 };
 
@@ -931,7 +933,10 @@ const ClinicDetail = () => {
               </div>
             )}
 
-
+            {/* ── Google Reviews ── */}
+            {clinic.googleReviews && clinic.googleReviews.length > 0 && (
+              <GoogleReviewsCarousel reviews={clinic.googleReviews} />
+            )}
 
             {/* ── Doctors ── */}
 
