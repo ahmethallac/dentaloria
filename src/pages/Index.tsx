@@ -243,9 +243,9 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section with Video Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Video */}
-        <div className="absolute inset-0 w-full h-full">
+      <section className="relative min-h-screen flex items-center justify-center">
+        {/* Background Video (extends up behind the sticky header so the header's fade reveals it even at rest) */}
+        <div className="absolute -top-20 left-0 right-0 bottom-0">
           <video autoPlay muted loop playsInline className="w-full h-full object-cover">
             <source src="https://videos.pexels.com/video-files/4490548/4490548-uhd_2560_1440_25fps.mp4" type="video/mp4" />
           </video>
