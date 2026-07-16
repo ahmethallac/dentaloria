@@ -346,6 +346,14 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             onChanged={() => onUpdated?.(clinic)}
           />
 
+          {/* Videos */}
+          <ClinicVideosManager
+            clinicId={clinic.id}
+            videos={((clinic as any).clinic_videos as any) || []}
+            onChanged={() => onUpdated?.(clinic)}
+          />
+
+
           {/* Treatments */}
           <ClinicTreatmentsManager
             ref={treatmentsRef}
