@@ -727,59 +727,8 @@ const ClinicDetail = () => {
                 )}
               </div>
 
-              {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
-              {clinic.videos && clinic.videos.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-3">Videos</h2>
-                  <HorizontalMediaRow
-                    items={clinic.videos as any[]}
-                    aspectClass="aspect-[9/16]"
-                    keyFor={(v: any) => v.id}
-                    renderItem={(v: any) => (
-                      <button
-                        type="button"
-                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
-                        className="relative w-full h-full block group"
-                        aria-label="Play video"
-                      >
-                        {v.provider === "youtube" && v.thumbnail ? (
-                          <>
-                            <img
-                              src={v.thumbnail}
-                              alt="Video thumbnail"
-                              loading="lazy"
-                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
-                              <div className="rounded-full bg-white/90 p-3 shadow-lg">
-                                <Play className="w-6 h-6 text-black fill-black" />
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <iframe
-                              src={
-                                v.provider === "instagram"
-                                  ? `https://www.instagram.com/reel/${v.providerId}/embed`
-                                  : `https://www.youtube.com/embed/${v.providerId}`
-                              }
-                              className="w-full h-full pointer-events-none"
-                              loading="lazy"
-                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
-                              <div className="rounded-full bg-white/90 p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Play className="w-6 h-6 text-black fill-black" />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </button>
-                    )}
-                  />
-                </div>
-              )}
+
+
 
 
               {/* ── About cluster (description + languages + facilities) ── */}
@@ -926,6 +875,64 @@ const ClinicDetail = () => {
               />
             )}
 
+            {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
+            {clinic.videos && clinic.videos.length > 0 && (
+              <div>
+                <h2 className="text-lg font-semibold mb-3">Videos</h2>
+                <div className="max-w-xl">
+                  <HorizontalMediaRow
+                    items={clinic.videos as any[]}
+                    aspectClass="aspect-[9/16]"
+                    keyFor={(v: any) => v.id}
+                    renderItem={(v: any) => (
+                      <button
+                        type="button"
+                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
+                        className="relative w-full h-full block group"
+                        aria-label="Play video"
+                      >
+                        {v.provider === "youtube" && v.thumbnail ? (
+                          <>
+                            <img
+                              src={v.thumbnail}
+                              alt="Video thumbnail"
+                              loading="lazy"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                              <div className="rounded-full bg-white/90 p-2.5 shadow-lg">
+                                <Play className="w-5 h-5 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <iframe
+                              src={
+                                v.provider === "instagram"
+                                  ? `https://www.instagram.com/reel/${v.providerId}/embed`
+                                  : `https://www.youtube.com/embed/${v.providerId}`
+                              }
+                              className="w-full h-full pointer-events-none"
+                              loading="lazy"
+                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
+                              <div className="rounded-full bg-white/90 p-2.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Play className="w-5 h-5 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+
+
             {/* ── Doctors ── */}
 
             {clinic.doctors.length > 0 && (
@@ -1051,10 +1058,18 @@ const ClinicDetail = () => {
 
       {/* ── Video Lightbox ── */}
       <Dialog open={videoLightbox !== null} onOpenChange={(open) => !open && setVideoLightbox(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0">
+        <DialogContent className="max-w-md p-0 overflow-hidden bg-black border-0 [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>Video</DialogTitle>
           </DialogHeader>
+          <button
+            type="button"
+            onClick={() => setVideoLightbox(null)}
+            aria-label="Close video"
+            className="absolute top-3 right-3 z-20 rounded-full bg-white/90 hover:bg-white text-black p-2 shadow-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
           {videoLightbox && (
             <div className="aspect-[9/16] w-full">
               <iframe
@@ -1064,8 +1079,7 @@ const ClinicDetail = () => {
                     : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
                 }
                 className="w-full h-full"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
               />
             </div>
           )}
