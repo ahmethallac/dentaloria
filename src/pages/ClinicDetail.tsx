@@ -312,6 +312,7 @@ const ClinicDetail = () => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const [videoLightbox, setVideoLightbox] = useState<null | { provider: "youtube" | "instagram"; providerId: string }>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
