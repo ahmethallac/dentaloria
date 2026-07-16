@@ -10,6 +10,7 @@ import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
 import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
+import ClinicVideosManager from "./ClinicVideosManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { LANGUAGES, FACILITIES } from "@/lib/clinicMeta";
@@ -344,6 +345,14 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             images={(clinic.clinic_images as any) || []}
             onChanged={() => onUpdated?.(clinic)}
           />
+
+          {/* Videos */}
+          <ClinicVideosManager
+            clinicId={clinic.id}
+            videos={((clinic as any).clinic_videos as any) || []}
+            onChanged={() => onUpdated?.(clinic)}
+          />
+
 
           {/* Treatments */}
           <ClinicTreatmentsManager

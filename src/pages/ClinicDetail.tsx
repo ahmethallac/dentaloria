@@ -42,6 +42,8 @@ import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/componen
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
 import { GoogleRating } from "@/components/ui/google-rating";
 import { getLanguage, getFacility } from "@/lib/clinicMeta";
+import HorizontalMediaRow from "@/components/clinic-detail/HorizontalMediaRow";
+import { Play } from "lucide-react";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
@@ -106,6 +108,16 @@ const mapClinic = (db: any) => {
       .slice()
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map((i) => i.image_url),
+    videos: ((db?.clinic_videos || []) as any[])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((v) => ({
+        id: v.id,
+        provider: v.provider as "youtube" | "instagram",
+        providerId: v.provider_id,
+        url: v.video_url,
+        thumbnail: v.thumbnail_url as string | null,
+      })),
   };
 };
 
@@ -126,52 +138,25 @@ const BeforeAfterCarousel = ({
   images: string[];
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-
-  const scroll = (dir: -1 | 1) => {
-    const el = ref.current;
-    if (!el) return;
-    const card = el.firstElementChild as HTMLElement | null;
-    const step = card ? card.clientWidth + 12 : el.clientWidth / 3;
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
 
   return (
     <div ref={sectionRef} className="scroll-mt-32">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
           Before & After
         </h3>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => scroll(-1)}
-            aria-label="Scroll left"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll(1)}
-            aria-label="Scroll right"
-            className="rounded-full border border-border/60 bg-background p-1.5 hover:bg-muted"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
-      <div
-        ref={ref}
-        className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-      >
-        {images.map((src, i) => (
+
+      <HorizontalMediaRow
+        items={images}
+        aspectClass="aspect-video"
+        keyFor={(_: string, i: number) => i}
+        renderItem={(src: string, i: number) => (
           <button
-            key={i}
             type="button"
             onClick={() => setLightboxIdx(i)}
-            className="snap-start shrink-0 basis-[calc((100%-1.5rem)/3)] aspect-video overflow-hidden rounded-lg bg-muted group cursor-zoom-in"
+            className="w-full h-full block group cursor-zoom-in"
             aria-label={`Open before & after image ${i + 1}`}
           >
             <img
@@ -181,8 +166,8 @@ const BeforeAfterCarousel = ({
               loading="lazy"
             />
           </button>
-        ))}
-      </div>
+        )}
+      />
 
       {/* Lightbox */}
       <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
@@ -300,6 +285,7 @@ const ClinicDetail = () => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
+  const [videoLightbox, setVideoLightbox] = useState<null | { provider: "youtube" | "instagram"; providerId: string }>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -741,6 +727,10 @@ const ClinicDetail = () => {
                 )}
               </div>
 
+
+
+
+
               {/* ── About cluster (description + languages + facilities) ── */}
               <div
                 ref={(el) => (sectionRefs.current["about"] = el)}
@@ -885,6 +875,64 @@ const ClinicDetail = () => {
               />
             )}
 
+            {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
+            {clinic.videos && clinic.videos.length > 0 && (
+              <div>
+                <h2 className="text-lg font-semibold mb-3">Videos</h2>
+                <div className="max-w-xl">
+                  <HorizontalMediaRow
+                    items={clinic.videos as any[]}
+                    aspectClass="aspect-[9/16]"
+                    keyFor={(v: any) => v.id}
+                    renderItem={(v: any) => (
+                      <button
+                        type="button"
+                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
+                        className="relative w-full h-full block group"
+                        aria-label="Play video"
+                      >
+                        {v.provider === "youtube" && v.thumbnail ? (
+                          <>
+                            <img
+                              src={v.thumbnail}
+                              alt="Video thumbnail"
+                              loading="lazy"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                              <div className="rounded-full bg-white/90 p-2.5 shadow-lg">
+                                <Play className="w-5 h-5 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <iframe
+                              src={
+                                v.provider === "instagram"
+                                  ? `https://www.instagram.com/reel/${v.providerId}/embed`
+                                  : `https://www.youtube.com/embed/${v.providerId}`
+                              }
+                              className="w-full h-full pointer-events-none"
+                              loading="lazy"
+                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
+                              <div className="rounded-full bg-white/90 p-2.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Play className="w-5 h-5 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+
+
             {/* ── Doctors ── */}
 
             {clinic.doctors.length > 0 && (
@@ -1007,6 +1055,42 @@ const ClinicDetail = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* ── Video Lightbox ── */}
+      {videoLightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Video player"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-8 animate-in fade-in-0 duration-200"
+          onClick={() => setVideoLightbox(null)}
+        >
+          <div
+            className="relative w-full max-w-[300px] sm:max-w-[340px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setVideoLightbox(null)}
+              aria-label="Close video"
+              className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 z-20 rounded-full bg-white hover:bg-white text-black p-2.5 shadow-xl ring-2 ring-black/10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl">
+              <iframe
+                src={
+                  videoLightbox.provider === "instagram"
+                    ? `https://www.instagram.com/reel/${videoLightbox.providerId}/embed`
+                    : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
+                }
+                className="w-full h-full"
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Fullscreen Image Viewer ── */}
       {fullscreenIdx !== null && (

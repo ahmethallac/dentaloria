@@ -276,6 +276,50 @@ export type Database = {
           },
         ]
       }
+      clinic_videos: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          provider: string
+          provider_id: string
+          sort_order: number
+          thumbnail_url: string | null
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          provider: string
+          provider_id: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          provider?: string
+          provider_id?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_videos_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinics: {
         Row: {
           address: string | null
