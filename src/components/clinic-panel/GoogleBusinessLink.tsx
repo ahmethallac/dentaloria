@@ -86,6 +86,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         if (cancelled || !containerRef.current) return;
         element = new (window as any).google.maps.places.PlaceAutocompleteElement();
         element.style.width = "100%";
+        element.placeholder = "Find your business on Google…";
         containerRef.current.innerHTML = "";
         containerRef.current.appendChild(element);
         element.addEventListener("gmp-select", async (event: any) => {
@@ -178,7 +179,10 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         </div>
       ) : (
         <div className="space-y-2">
-          <div ref={containerRef} className="[&_gmp-place-autocomplete]:w-full" />
+          <div
+            ref={containerRef}
+            className="rounded-md border border-input px-1 [&_gmp-place-autocomplete]:w-full"
+          />
 
           {fetching && !preview && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

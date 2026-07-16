@@ -646,7 +646,7 @@ const ClinicDetail = () => {
 
       {/* ── Main Content ── */}
       <section className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-[1fr_380px] gap-10 items-start">
+        <div className="grid lg:grid-cols-[1fr_380px] gap-10">
           {/* LEFT COLUMN */}
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
