@@ -10,6 +10,7 @@ import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTreatmentsManager";
 import ClinicDoctorsManager from "./ClinicDoctorsManager";
 import ClinicBeforeAfterManager from "./ClinicBeforeAfterManager";
+import ClinicVideosManager from "./ClinicVideosManager";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { LANGUAGES, FACILITIES } from "@/lib/clinicMeta";
