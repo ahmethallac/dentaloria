@@ -106,6 +106,16 @@ const mapClinic = (db: any) => {
       .slice()
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map((i) => i.image_url),
+    videos: ((db?.clinic_videos || []) as any[])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((v) => ({
+        id: v.id,
+        provider: v.provider as "youtube" | "instagram",
+        providerId: v.provider_id,
+        url: v.video_url,
+        thumbnail: v.thumbnail_url as string | null,
+      })),
   };
 };
 
