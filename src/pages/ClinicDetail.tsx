@@ -676,83 +676,83 @@ const ClinicDetail = () => {
           <div className="space-y-12 min-w-0">
             {/* Overview section */}
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
-              {/* ── Image Slider ── */}
-              <div className="relative overflow-hidden rounded-2xl">
-                <div
-                  ref={galleryRef}
-                  tabIndex={0}
-                  className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab scrollbar-hide rounded-2xl focus:outline-none"
-                  style={{ WebkitOverflowScrolling: "touch" }}
-                >
-                  {clinic.images.map((src: string, idx: number) => (
-                    <div
-                      key={idx}
-                      className="w-full shrink-0 snap-center relative"
-                      onClick={() => {
-                        if (isMobile) setTappedImageIdx((prev) => (prev === idx ? null : idx));
-                      }}
-                    >
-                      <div className="aspect-video overflow-hidden rounded-2xl bg-muted/30">
-                        <img
-                          src={src}
-                          alt={`${clinic.name} ${idx + 1}`}
-                          draggable={false}
-                          className="h-full w-full object-cover select-none"
-                        />
-                      </div>
-                      {/* Mobile "Full Screen" button overlay */}
-                      {isMobile && tappedImageIdx === idx && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl">
-                          <Button
-                            variant="secondary"
-                            className="bg-white/90 text-foreground font-semibold shadow-lg"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setTappedImageIdx(null);
-                              setFullscreenIdx(idx);
-                            }}
-                          >
-                            Full Screen
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {clinic.images.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex - 1))}
-                      aria-label="Previous image"
-                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex + 1))}
-                      aria-label="Next image"
-                      className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-
-                    {/* Dot indicators */}
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                      {clinic.images.map((_: string, i: number) => (
-                        <div
-                          key={i}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            i === currentImageIndex ? "bg-white" : "bg-white/40"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </>
+              {/* ── Photo gallery (2 on mobile / 3 on desktop, horizontal arrows) ── */}
+              <HorizontalMediaRow
+                items={clinic.images as string[]}
+                aspectClass="aspect-video"
+                keyFor={(_: string, i: number) => i}
+                renderItem={(src: string, idx: number) => (
+                  <button
+                    type="button"
+                    onClick={() => setFullscreenIdx(idx)}
+                    className="w-full h-full block group"
+                    aria-label={`Open photo ${idx + 1}`}
+                  >
+                    <img
+                      src={src}
+                      alt={`${clinic.name} ${idx + 1}`}
+                      draggable={false}
+                      loading={idx < 3 ? "eager" : "lazy"}
+                      className="h-full w-full object-cover select-none transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </button>
                 )}
-              </div>
+              />
+
+              {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
+              {clinic.videos && clinic.videos.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-3">Videos</h2>
+                  <HorizontalMediaRow
+                    items={clinic.videos as any[]}
+                    aspectClass="aspect-[9/16]"
+                    keyFor={(v: any) => v.id}
+                    renderItem={(v: any) => (
+                      <button
+                        type="button"
+                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
+                        className="relative w-full h-full block group"
+                        aria-label="Play video"
+                      >
+                        {v.provider === "youtube" && v.thumbnail ? (
+                          <>
+                            <img
+                              src={v.thumbnail}
+                              alt="Video thumbnail"
+                              loading="lazy"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                              <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                                <Play className="w-6 h-6 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <iframe
+                              src={
+                                v.provider === "instagram"
+                                  ? `https://www.instagram.com/reel/${v.providerId}/embed`
+                                  : `https://www.youtube.com/embed/${v.providerId}`
+                              }
+                              className="w-full h-full pointer-events-none"
+                              loading="lazy"
+                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
+                              <div className="rounded-full bg-white/90 p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Play className="w-6 h-6 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  />
+                </div>
+              )}
+
 
               {/* ── About cluster (description + languages + facilities) ── */}
               <div
