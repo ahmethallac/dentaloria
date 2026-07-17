@@ -7,19 +7,24 @@ interface HorizontalMediaRowProps<T> {
   /** Tailwind aspect utility class for each tile (e.g. "aspect-video" or "aspect-[9/16]") */
   aspectClass: string;
   keyFor?: (item: T, index: number) => string | number;
+  /** How many tiles are visible per row on desktop (mobile is always 2). Defaults to 3. */
+  desktopVisibleCount?: 3 | 5;
 }
 
 /**
- * Horizontal media strip that shows 2 items per row on mobile and 3 on desktop.
- * When the total width exceeds the visible area, previous/next arrows appear
- * and each click scrolls by roughly one page.
+ * Horizontal media strip that shows 2 items per row on mobile and 3 (or 5, via
+ * desktopVisibleCount) on desktop. When the total width exceeds the visible
+ * area, previous/next arrows appear and each click scrolls by roughly one page.
  */
 export default function HorizontalMediaRow<T>({
   items,
   renderItem,
   aspectClass,
   keyFor,
+  desktopVisibleCount = 3,
 }: HorizontalMediaRowProps<T>) {
+  const desktopBasisClass =
+    desktopVisibleCount === 5 ? "md:basis-[calc((100%-4rem)/5)]" : "md:basis-[calc((100%-2rem)/3)]";
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -62,7 +67,7 @@ export default function HorizontalMediaRow<T>({
         {items.map((item, i) => (
           <div
             key={keyFor ? keyFor(item, i) : i}
-            className="snap-start shrink-0 basis-[calc((100%-0.75rem)/2)] md:basis-[calc((100%-2rem)/3)]"
+            className={`snap-start shrink-0 basis-[calc((100%-0.75rem)/2)] ${desktopBasisClass}`}
           >
             <div className={`${aspectClass} w-full overflow-hidden rounded-xl bg-muted/40`}>
               {renderItem(item, i)}

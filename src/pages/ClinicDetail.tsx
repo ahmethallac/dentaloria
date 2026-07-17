@@ -881,10 +881,11 @@ const ClinicDetail = () => {
             {clinic.videos && clinic.videos.length > 0 && (
               <div>
                 <h2 className="text-lg font-semibold mb-3">Videos</h2>
-                <div className="max-w-xl">
+                <div className="max-w-xl md:max-w-none">
                   <HorizontalMediaRow
                     items={clinic.videos as any[]}
                     aspectClass="aspect-[9/16]"
+                    desktopVisibleCount={5}
                     keyFor={(v: any) => v.id}
                     renderItem={(v: any) => (
                       <button
