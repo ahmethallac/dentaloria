@@ -95,7 +95,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       resetModal();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not add dentist.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: `Could not add dentist. ${e?.message || e?.error_description || JSON.stringify(e)}`,
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
