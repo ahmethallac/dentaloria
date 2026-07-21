@@ -28,12 +28,13 @@ interface RequestBody {
   revisionNotes?: string
 }
 
-const wrap = (title: string, bodyHtml: string) => `
+const LOGO_URL = 'https://dentaloria.com/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png'
+
+const wrap = (bodyHtml: string) => `
   <div style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; color: #1f2937;">
-    <h1 style="font-size: 22px; margin: 0 0 4px; color: #2563eb;">Dentaloria</h1>
-    <h2 style="font-size: 18px; margin: 24px 0 12px;">${title}</h2>
+    <img src="${LOGO_URL}" alt="Dentaloria" style="height: 28px; margin-bottom: 28px;" />
     ${bodyHtml}
-    <p style="margin-top: 32px; font-size: 12px; color: #9ca3af;">Dentaloria — Dental Clinic Comparison Platform</p>
+    <p style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af;">Dentaloria — Compare dental clinics with confidence.</p>
   </div>
 `
 
@@ -100,12 +101,11 @@ Deno.serve(async (req) => {
       case 'application_received': {
         await sendEmail(
           clinic.email,
-          'We’ve received your application — Dentaloria',
+          'We’ve got your application!',
           wrap(
-            'Application received',
-            `<p>Hi ${clinicLabel},</p>
-             <p>Thanks for applying to join Dentaloria. Your documents are now being reviewed by our team.</p>
-             <p>We’ll email you as soon as a decision is made — usually within a day or two.</p>`
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">We’ve got your application!</h2>
+             <p>Hi ${clinicLabel},</p>
+             <p>Thanks for applying to Dentaloria. Our team is reviewing your documents now — we’ll email you within a day or two.</p>`
           ),
           apiKey
         )
@@ -117,11 +117,10 @@ Deno.serve(async (req) => {
         if (admins.length === 0) break
         await sendEmail(
           admins,
-          `New clinic application: ${clinicLabel}`,
+          `New application: ${clinicLabel}`,
           wrap(
-            'New application to review',
-            `<p><strong>${clinicLabel}</strong> just applied to join Dentaloria.</p>
-             <p>Please review their documents in the admin panel.</p>
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">New application waiting</h2>
+             <p><strong>${clinicLabel}</strong> just applied to join Dentaloria. Take a look when you get a chance.</p>
              ${button(adminUrl, 'Review application')}`
           ),
           apiKey
@@ -132,12 +131,12 @@ Deno.serve(async (req) => {
       case 'application_approved': {
         await sendEmail(
           clinic.email,
-          'You’re approved — complete your clinic page',
+          'You’re approved!',
           wrap(
-            'Application approved!',
-            `<p>Hi ${clinicLabel},</p>
-             <p>Good news — your application has been approved. The only thing left is to fill in your clinic’s public page: photos, treatments, doctors and more.</p>
-             ${button(panelUrl, 'Complete your clinic page')}`
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">You’re approved!</h2>
+             <p>Hi ${clinicLabel},</p>
+             <p>Great news — you’re approved. One last step: fill in your clinic’s page (photos, treatments, doctors) so patients can find you.</p>
+             ${button(panelUrl, 'Complete your page')}`
           ),
           apiKey
         )
@@ -147,13 +146,13 @@ Deno.serve(async (req) => {
       case 'application_rejected': {
         await sendEmail(
           clinic.email,
-          'Update on your Dentaloria application',
+          'About your application',
           wrap(
-            'Application not approved',
-            `<p>Hi ${clinicLabel},</p>
-             <p>After reviewing your application, we’re unable to approve it at this time.</p>
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">About your application</h2>
+             <p>Hi ${clinicLabel},</p>
+             <p>Thanks for your interest in Dentaloria. After reviewing your application, we’re not able to approve it right now.</p>
              ${rejectionReason ? `<p><strong>Reason:</strong> ${rejectionReason}</p>` : ''}
-             <p>If you believe this is a mistake or have updated documents, feel free to reach out to us.</p>`
+             <p>Feel free to reach out if you have questions.</p>`
           ),
           apiKey
         )
@@ -165,10 +164,10 @@ Deno.serve(async (req) => {
         if (admins.length === 0) break
         await sendEmail(
           admins,
-          `${clinicLabel} submitted their page for review`,
+          `${clinicLabel} is ready for review`,
           wrap(
-            'Clinic page ready for review',
-            `<p><strong>${clinicLabel}</strong> finished filling in their clinic page and submitted it for approval.</p>
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">A page is ready for review</h2>
+             <p><strong>${clinicLabel}</strong> finished their clinic page — it’s ready for your review.</p>
              ${button(adminUrl, 'Review page')}`
           ),
           apiKey
@@ -179,12 +178,12 @@ Deno.serve(async (req) => {
       case 'page_approved': {
         await sendEmail(
           clinic.email,
-          'Great news — your clinic is now live!',
+          'You’re live!',
           wrap(
-            'Your clinic page is live!',
-            `<p>Hi ${clinicLabel},</p>
-             <p>Great news — your clinic page has been approved and is now live on Dentaloria for patients to find.</p>
-             ${button(publicUrl, 'View your live page')}`
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">You’re live!</h2>
+             <p>Hi ${clinicLabel},</p>
+             <p>Your clinic page is approved and now live on Dentaloria — patients can find and contact you starting today.</p>
+             ${button(publicUrl, 'View your page')}`
           ),
           apiKey
         )
@@ -194,13 +193,13 @@ Deno.serve(async (req) => {
       case 'page_rejected': {
         await sendEmail(
           clinic.email,
-          'Your clinic page needs a few changes',
+          'A couple of small changes',
           wrap(
-            'A few changes needed',
-            `<p>Hi ${clinicLabel},</p>
-             <p>We reviewed your clinic page and it needs a few changes before it can go live.</p>
+            `<h2 style="font-size: 18px; margin: 0 0 12px;">A couple of small changes</h2>
+             <p>Hi ${clinicLabel},</p>
+             <p>We reviewed your page — it just needs a couple of tweaks before it can go live.</p>
              ${revisionNotes ? `<p><strong>Notes from our team:</strong> ${revisionNotes}</p>` : ''}
-             ${button(panelUrl, 'Edit your clinic page')}`
+             ${button(panelUrl, 'Edit your page')}`
           ),
           apiKey
         )
