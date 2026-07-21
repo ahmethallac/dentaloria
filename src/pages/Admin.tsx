@@ -200,6 +200,13 @@ const Admin = () => {
       ])
       toast({ title: 'Success', description: `Clinic application ${newStatus}` })
       loadAllData()
+      supabase.functions.invoke('send-clinic-notification', {
+        body: {
+          type: action === 'approve' ? 'application_approved' : 'application_rejected',
+          clinicId,
+          rejectionReason: reason,
+        },
+      }).catch(() => {})
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
     }
@@ -220,6 +227,13 @@ const Admin = () => {
         description: action === 'approve' ? 'Clinic is now live on the site.' : 'The clinic can edit and re-submit.',
       })
       loadAllData()
+      supabase.functions.invoke('send-clinic-notification', {
+        body: {
+          type: action === 'approve' ? 'page_approved' : 'page_rejected',
+          clinicId,
+          revisionNotes: notes,
+        },
+      }).catch(() => {})
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' })
     }

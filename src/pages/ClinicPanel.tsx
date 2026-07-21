@@ -160,6 +160,9 @@ const ClinicPanel = () => {
       if (error) throw error;
       toast({ title: 'Submitted', description: 'Your page has been submitted for Super Admin approval.' });
       loadClinic();
+      supabase.functions.invoke('send-clinic-notification', {
+        body: { type: 'page_submitted', clinicId: id },
+      }).catch(() => {});
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {

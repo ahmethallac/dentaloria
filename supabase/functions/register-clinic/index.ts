@@ -96,10 +96,15 @@ Deno.serve(async (req) => {
       { onConflict: 'user_id,role', ignoreDuplicates: true } as any
     )
 
-    // 5) Fire-and-forget approval email
+    // 5) Fire-and-forget notification emails (clinic confirmation + admin alert)
     try {
-      await admin.functions.invoke('send-approval-request', {
-        body: { clinicId: clinicRow.id, clinicName: String(clinicName).toUpperCase(), clinicEmail: email },
+      await admin.functions.invoke('send-clinic-notification', {
+        body: { type: 'application_received', clinicId: clinicRow.id },
+      })
+    } catch (_) { /* non-fatal */ }
+    try {
+      await admin.functions.invoke('send-clinic-notification', {
+        body: { type: 'admin_new_application', clinicId: clinicRow.id },
       })
     } catch (_) { /* non-fatal */ }
 
