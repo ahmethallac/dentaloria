@@ -1,0 +1,91 @@
+{
+  "backToPanel": "Back to clinic panel",
+  "topup": {
+    "title": "Add balance",
+    "currentBalance": "Current balance",
+    "leadsRemaining_one": "{{count}} lead remaining (€25 per lead)",
+    "leadsRemaining_other": "{{count}} leads remaining (€25 per lead)",
+    "mostPopular": "Most popular",
+    "leadsUnit": "leads",
+    "buyNow": "Buy now",
+    "discountCode": {
+      "title": "Discount code",
+      "description": "Apply a code to discount your top-up.",
+      "appliedLabel": "{{code}} — {{percent}}% off will apply at checkout",
+      "remove": "Remove",
+      "codeLabel": "Code",
+      "codePlaceholder": "Enter code",
+      "apply": "Apply"
+    },
+    "customAmount": {
+      "title": "Custom amount",
+      "description": "Minimum €25.",
+      "amountLabel": "Amount (€)",
+      "amountPlaceholder": "e.g. 100",
+      "button": "Top up"
+    },
+    "toasts": {
+      "receivedTitle": "Top-up received",
+      "receivedDesc": "Your balance has been credited.",
+      "cancelledTitle": "Top-up cancelled",
+      "cancelledDesc": "No charge was made.",
+      "creditedTitle": "Balance credited",
+      "creditedDesc": "Your discounted top-up is complete.",
+      "errorTitle": "Error",
+      "startErrorDesc": "Could not start top-up.",
+      "invalidCodeTitle": "Invalid code",
+      "codeErrorDesc": "Code cannot be applied.",
+      "discountReadyTitle": "Discount ready",
+      "discountReadyDesc": "{{code}} — {{percent}}% off applies at checkout",
+      "validateErrorDesc": "Could not validate code.",
+      "invalidAmountTitle": "Invalid amount",
+      "invalidAmountDesc": "Minimum top-up is €25."
+    }
+  },
+  "purchase": {
+    "title": "Purchase leads",
+    "droppedCount_one": "{{count}} selected lead was removed (already purchased, expired, or invalid).",
+    "droppedCount_other": "{{count}} selected leads were removed (already purchased, expired, or invalid).",
+    "noneAvailable": "No purchasable leads.",
+    "goBack": "Go back",
+    "discountCode": {
+      "title": "Discount code",
+      "description": "Have a code? Apply it below.",
+      "appliedLabel": "{{code}} applied — {{percent}}% off (−€{{amount}})",
+      "remove": "Remove",
+      "codeLabel": "Code",
+      "codePlaceholder": "Enter code",
+      "apply": "Apply"
+    },
+    "summary": {
+      "title": "Order summary",
+      "lineItem_one": "{{count}} lead × €{{price}}",
+      "lineItem_other": "{{count}} leads × €{{price}}",
+      "discountLabel": "Discount ({{code}})",
+      "total": "Total",
+      "unlockFree": "Unlock for free",
+      "payButton": "Pay €{{amount}}"
+    },
+    "toasts": {
+      "cancelledTitle": "Purchase cancelled",
+      "cancelledDesc": "No charge was made.",
+      "invalidCodeTitle": "Invalid code",
+      "appliedTitle": "Discount applied",
+      "appliedDesc": "{{code}} — {{percent}}% off",
+      "validateErrorDesc": "Could not validate code.",
+      "unlockedTitle": "Leads unlocked",
+      "unlockedDesc_one": "{{count}} lead unlocked for free.",
+      "unlockedDesc_other": "{{count}} leads unlocked for free.",
+      "errorTitle": "Error",
+      "startErrorDesc": "Could not start purchase."
+    },
+    "reasons": {
+      "not_found": "This code does not exist.",
+      "inactive": "This code is no longer active.",
+      "expired": "This code has expired.",
+      "max_uses_reached": "This code has reached its usage limit.",
+      "invalid_input": "Please enter a valid code.",
+      "default": "This code cannot be applied."
+    }
+  }
+}

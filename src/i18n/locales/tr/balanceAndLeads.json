@@ -1,0 +1,91 @@
+{
+  "backToPanel": "Klinik paneline dön",
+  "topup": {
+    "title": "Bakiye ekle",
+    "currentBalance": "Mevcut bakiye",
+    "leadsRemaining_one": "{{count}} aday kaldı (aday başına €25)",
+    "leadsRemaining_other": "{{count}} aday kaldı (aday başına €25)",
+    "mostPopular": "En popüler",
+    "leadsUnit": "aday",
+    "buyNow": "Şimdi satın al",
+    "discountCode": {
+      "title": "İndirim kodu",
+      "description": "Yüklemenize indirim uygulamak için bir kod girin.",
+      "appliedLabel": "{{code}} — ödemede %{{percent}} indirim uygulanacak",
+      "remove": "Kaldır",
+      "codeLabel": "Kod",
+      "codePlaceholder": "Kodu girin",
+      "apply": "Uygula"
+    },
+    "customAmount": {
+      "title": "Özel tutar",
+      "description": "Minimum €25.",
+      "amountLabel": "Tutar (€)",
+      "amountPlaceholder": "örn. 100",
+      "button": "Bakiye Yükle"
+    },
+    "toasts": {
+      "receivedTitle": "Yükleme alındı",
+      "receivedDesc": "Bakiyeniz yüklendi.",
+      "cancelledTitle": "Yükleme iptal edildi",
+      "cancelledDesc": "Herhangi bir ücret alınmadı.",
+      "creditedTitle": "Bakiye yüklendi",
+      "creditedDesc": "İndirimli yüklemeniz tamamlandı.",
+      "errorTitle": "Hata",
+      "startErrorDesc": "Yükleme başlatılamadı.",
+      "invalidCodeTitle": "Geçersiz kod",
+      "codeErrorDesc": "Kod uygulanamıyor.",
+      "discountReadyTitle": "İndirim hazır",
+      "discountReadyDesc": "{{code}} — ödemede %{{percent}} indirim uygulanır",
+      "validateErrorDesc": "Kod doğrulanamadı.",
+      "invalidAmountTitle": "Geçersiz tutar",
+      "invalidAmountDesc": "Minimum yükleme tutarı €25'tir."
+    }
+  },
+  "purchase": {
+    "title": "Aday satın al",
+    "droppedCount_one": "{{count}} seçilen aday kaldırıldı (zaten satın alınmış, süresi dolmuş veya geçersiz).",
+    "droppedCount_other": "{{count}} seçilen aday kaldırıldı (zaten satın alınmış, süresi dolmuş veya geçersiz).",
+    "noneAvailable": "Satın alınabilir aday yok.",
+    "goBack": "Geri dön",
+    "discountCode": {
+      "title": "İndirim kodu",
+      "description": "Bir kodunuz mu var? Aşağıdan uygulayın.",
+      "appliedLabel": "{{code}} uygulandı — %{{percent}} indirim (−€{{amount}})",
+      "remove": "Kaldır",
+      "codeLabel": "Kod",
+      "codePlaceholder": "Kodu girin",
+      "apply": "Uygula"
+    },
+    "summary": {
+      "title": "Sipariş özeti",
+      "lineItem_one": "{{count}} aday × €{{price}}",
+      "lineItem_other": "{{count}} aday × €{{price}}",
+      "discountLabel": "İndirim ({{code}})",
+      "total": "Toplam",
+      "unlockFree": "Ücretsiz kilidini aç",
+      "payButton": "€{{amount}} Öde"
+    },
+    "toasts": {
+      "cancelledTitle": "Satın alma iptal edildi",
+      "cancelledDesc": "Herhangi bir ücret alınmadı.",
+      "invalidCodeTitle": "Geçersiz kod",
+      "appliedTitle": "İndirim uygulandı",
+      "appliedDesc": "{{code}} — %{{percent}} indirim",
+      "validateErrorDesc": "Kod doğrulanamadı.",
+      "unlockedTitle": "Adayların kilidi açıldı",
+      "unlockedDesc_one": "{{count}} adayın kilidi ücretsiz açıldı.",
+      "unlockedDesc_other": "{{count}} adayın kilidi ücretsiz açıldı.",
+      "errorTitle": "Hata",
+      "startErrorDesc": "Satın alma başlatılamadı."
+    },
+    "reasons": {
+      "not_found": "Bu kod mevcut değil.",
+      "inactive": "Bu kod artık aktif değil.",
+      "expired": "Bu kodun süresi dolmuş.",
+      "max_uses_reached": "Bu kod kullanım limitine ulaştı.",
+      "invalid_input": "Lütfen geçerli bir kod girin.",
+      "default": "Bu kod uygulanamıyor."
+    }
+  }
+}

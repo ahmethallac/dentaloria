@@ -1,0 +1,99 @@
+{
+  "backToPanel": "Назад в панель клиники",
+  "topup": {
+    "title": "Пополнить баланс",
+    "currentBalance": "Текущий баланс",
+    "leadsRemaining_one": "Осталась {{count}} заявка (€25 за заявку)",
+    "leadsRemaining_few": "Осталось {{count}} заявки (€25 за заявку)",
+    "leadsRemaining_many": "Осталось {{count}} заявок (€25 за заявку)",
+    "leadsRemaining_other": "Осталось {{count}} заявки (€25 за заявку)",
+    "mostPopular": "Самый популярный",
+    "leadsUnit": "заявок",
+    "buyNow": "Купить сейчас",
+    "discountCode": {
+      "title": "Промокод",
+      "description": "Примените код, чтобы получить скидку на пополнение.",
+      "appliedLabel": "{{code}} — скидка {{percent}}% будет применена при оплате",
+      "remove": "Удалить",
+      "codeLabel": "Код",
+      "codePlaceholder": "Введите код",
+      "apply": "Применить"
+    },
+    "customAmount": {
+      "title": "Произвольная сумма",
+      "description": "Минимум €25.",
+      "amountLabel": "Сумма (€)",
+      "amountPlaceholder": "напр. 100",
+      "button": "Пополнить"
+    },
+    "toasts": {
+      "receivedTitle": "Пополнение получено",
+      "receivedDesc": "Ваш баланс пополнен.",
+      "cancelledTitle": "Пополнение отменено",
+      "cancelledDesc": "Оплата не была произведена.",
+      "creditedTitle": "Баланс пополнен",
+      "creditedDesc": "Ваше пополнение со скидкой завершено.",
+      "errorTitle": "Ошибка",
+      "startErrorDesc": "Не удалось начать пополнение.",
+      "invalidCodeTitle": "Неверный код",
+      "codeErrorDesc": "Код не может быть применён.",
+      "discountReadyTitle": "Скидка готова",
+      "discountReadyDesc": "{{code}} — скидка {{percent}}% применится при оплате",
+      "validateErrorDesc": "Не удалось проверить код.",
+      "invalidAmountTitle": "Неверная сумма",
+      "invalidAmountDesc": "Минимальное пополнение — €25."
+    }
+  },
+  "purchase": {
+    "title": "Купить заявки",
+    "droppedCount_one": "{{count}} выбранная заявка была удалена (уже куплена, истекла или недействительна).",
+    "droppedCount_few": "{{count}} выбранные заявки были удалены (уже куплены, истекли или недействительны).",
+    "droppedCount_many": "{{count}} выбранных заявок были удалены (уже куплены, истекли или недействительны).",
+    "droppedCount_other": "{{count}} выбранной заявки были удалены (уже куплены, истекли или недействительны).",
+    "noneAvailable": "Нет доступных для покупки заявок.",
+    "goBack": "Назад",
+    "discountCode": {
+      "title": "Промокод",
+      "description": "Есть код? Примените его ниже.",
+      "appliedLabel": "{{code}} применён — скидка {{percent}}% (−€{{amount}})",
+      "remove": "Удалить",
+      "codeLabel": "Код",
+      "codePlaceholder": "Введите код",
+      "apply": "Применить"
+    },
+    "summary": {
+      "title": "Сводка заказа",
+      "lineItem_one": "{{count}} заявка × €{{price}}",
+      "lineItem_few": "{{count}} заявки × €{{price}}",
+      "lineItem_many": "{{count}} заявок × €{{price}}",
+      "lineItem_other": "{{count}} заявки × €{{price}}",
+      "discountLabel": "Скидка ({{code}})",
+      "total": "Итого",
+      "unlockFree": "Разблокировать бесплатно",
+      "payButton": "Оплатить €{{amount}}"
+    },
+    "toasts": {
+      "cancelledTitle": "Покупка отменена",
+      "cancelledDesc": "Оплата не была произведена.",
+      "invalidCodeTitle": "Неверный код",
+      "appliedTitle": "Скидка применена",
+      "appliedDesc": "{{code}} — скидка {{percent}}%",
+      "validateErrorDesc": "Не удалось проверить код.",
+      "unlockedTitle": "Заявки разблокированы",
+      "unlockedDesc_one": "{{count}} заявка разблокирована бесплатно.",
+      "unlockedDesc_few": "{{count}} заявки разблокированы бесплатно.",
+      "unlockedDesc_many": "{{count}} заявок разблокировано бесплатно.",
+      "unlockedDesc_other": "{{count}} заявки разблокированы бесплатно.",
+      "errorTitle": "Ошибка",
+      "startErrorDesc": "Не удалось начать покупку."
+    },
+    "reasons": {
+      "not_found": "Этот код не существует.",
+      "inactive": "Этот код больше не активен.",
+      "expired": "Срок действия этого кода истёк.",
+      "max_uses_reached": "Этот код достиг лимита использования.",
+      "invalid_input": "Пожалуйста, введите действительный код.",
+      "default": "Этот код не может быть применён."
+    }
+  }
+}

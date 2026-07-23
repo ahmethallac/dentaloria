@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, ShoppingCart, Loader2, Tag, Check, X, AlertCircle } from "lucide-react";
+import { withLocalePrefix } from "@/lib/localePath";
 
 const PRICE_CENTS = 2500;
 const EXPIRY_MS = 48 * 60 * 60 * 1000;
@@ -34,7 +36,8 @@ const maskEmail = (email: string) => {
 };
 
 export default function PurchaseLeadsPage() {
-  const { id: clinicId } = useParams();
+  const { id: clinicId, lang } = useParams();
+  const { t } = useTranslation('balanceAndLeads');
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -51,6 +54,13 @@ export default function PurchaseLeadsPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
+  const reasonText = (reason?: string) => {
+    const key = reason && ['not_found', 'inactive', 'expired', 'max_uses_reached', 'invalid_input'].includes(reason)
+      ? reason
+      : 'default';
+    return t(`purchase.reasons.${key}`);
+  };
+
   const ids = useMemo(() => {
     const raw = searchParams.get("ids") || "";
     return raw.split(",").map((s) => s.trim()).filter(Boolean);
@@ -60,9 +70,9 @@ export default function PurchaseLeadsPage() {
   useEffect(() => {
     if (!clinicId) return;
     if (authLoading) return;
-    if (!user) { navigate("/auth"); return; }
+    if (!user) { navigate(withLocalePrefix("/auth", lang)); return; }
     if (ids.length === 0) {
-      navigate(`/clinic/${clinicId}/panel?section=patients`, { replace: true });
+      navigate(withLocalePrefix(`/clinic/${clinicId}/panel?section=patients`, lang), { replace: true });
       return;
     }
 
@@ -95,7 +105,7 @@ export default function PurchaseLeadsPage() {
   useEffect(() => {
     const p = searchParams.get("purchase");
     if (p === "cancelled") {
-      toast({ title: "Purchase cancelled", description: "No charge was made.", variant: "destructive" });
+      toast({ title: t('purchase.toasts.cancelledTitle'), description: t('purchase.toasts.cancelledDesc'), variant: "destructive" });
       const next = new URLSearchParams(searchParams);
       next.delete("purchase");
       setSearchParams(next, { replace: true });
@@ -119,7 +129,7 @@ export default function PurchaseLeadsPage() {
       const v = data as any;
       if (!v?.valid) {
         toast({
-          title: "Invalid code",
+          title: t('purchase.toasts.invalidCodeTitle'),
           description: reasonText(v?.reason),
           variant: "destructive",
         });
@@ -132,9 +142,9 @@ export default function PurchaseLeadsPage() {
         finalCents: v.final_cents,
         percentOff: v.percent_off,
       });
-      toast({ title: "Discount applied", description: `${v.code} — ${v.percent_off}% off` });
+      toast({ title: t('purchase.toasts.appliedTitle'), description: t('purchase.toasts.appliedDesc', { code: v.code, percent: v.percent_off }) });
     } catch (e: any) {
-      toast({ title: "Error", description: e.message || "Could not validate code.", variant: "destructive" });
+      toast({ title: t('purchase.toasts.invalidCodeTitle'), description: e.message || t('purchase.toasts.validateErrorDesc'), variant: "destructive" });
     } finally {
       setApplyingCode(false);
     }
@@ -161,10 +171,10 @@ export default function PurchaseLeadsPage() {
 
       if (data?.freeUnlock) {
         toast({
-          title: "Leads unlocked",
-          description: `${data.unlockedCount || leads.length} lead${(data.unlockedCount || leads.length) === 1 ? "" : "s"} unlocked for free.`,
+          title: t('purchase.toasts.unlockedTitle'),
+          description: t('purchase.toasts.unlockedDesc', { count: data.unlockedCount || leads.length }),
         });
-        navigate(`/clinic/${clinicId}/panel?section=patients&purchase=success`, { replace: true });
+        navigate(withLocalePrefix(`/clinic/${clinicId}/panel?section=patients&purchase=success`, lang), { replace: true });
         return;
       }
       if (data?.url) {
@@ -173,7 +183,7 @@ export default function PurchaseLeadsPage() {
       }
       throw new Error("No checkout URL returned");
     } catch (e: any) {
-      toast({ title: "Error", description: e.message || "Could not start purchase.", variant: "destructive" });
+      toast({ title: t('purchase.toasts.errorTitle'), description: e.message || t('purchase.toasts.startErrorDesc'), variant: "destructive" });
       setSubmitting(false);
     }
   };
@@ -191,17 +201,17 @@ export default function PurchaseLeadsPage() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-6">
           <Link
-            to={`/clinic/${clinicId}/panel?section=patients`}
+            to={withLocalePrefix(`/clinic/${clinicId}/panel?section=patients`, lang)}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to clinic panel
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('backToPanel')}
           </Link>
         </div>
 
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-primary" /> Purchase leads
+              <ShoppingCart className="w-5 h-5 text-primary" /> {t('purchase.title')}
             </CardTitle>
             <CardDescription>{clinicName}</CardDescription>
           </CardHeader>
@@ -210,14 +220,13 @@ export default function PurchaseLeadsPage() {
               <div className="flex items-start gap-2 p-3 rounded-md border border-destructive/30 bg-destructive/5 text-sm">
                 <AlertCircle className="w-4 h-4 text-destructive mt-0.5" />
                 <span>
-                  {droppedCount} selected lead{droppedCount === 1 ? " was" : "s were"} removed
-                  (already purchased, expired, or invalid).
+                  {t('purchase.droppedCount', { count: droppedCount })}
                 </span>
               </div>
             )}
             {leads.length === 0 ? (
               <div className="p-6 text-center text-muted-foreground">
-                No purchasable leads. <Link to={`/clinic/${clinicId}/panel?section=patients`} className="text-primary hover:underline">Go back</Link>.
+                {t('purchase.noneAvailable')} <Link to={withLocalePrefix(`/clinic/${clinicId}/panel?section=patients`, lang)} className="text-primary hover:underline">{t('purchase.goBack')}</Link>.
               </div>
             ) : (
               <div className="divide-y border rounded-md">
@@ -242,28 +251,28 @@ export default function PurchaseLeadsPage() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Tag className="w-4 h-4 text-primary" /> Discount code
+                  <Tag className="w-4 h-4 text-primary" /> {t('purchase.discountCode.title')}
                 </CardTitle>
-                <CardDescription>Have a code? Apply it below.</CardDescription>
+                <CardDescription>{t('purchase.discountCode.description')}</CardDescription>
               </CardHeader>
               <CardContent>
                 {discount ? (
                   <div className="flex items-center justify-between p-3 rounded-md border border-green-500/30 bg-green-500/5">
                     <div className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-green-600" />
-                      <span><span className="font-semibold">{discount.code}</span> applied — {discount.percentOff}% off (−€{(discount.amountOffCents / 100).toFixed(2)})</span>
+                      <span>{t('purchase.discountCode.appliedLabel', { code: discount.code, percent: discount.percentOff, amount: (discount.amountOffCents / 100).toFixed(2) })}</span>
                     </div>
                     <Button size="sm" variant="ghost" onClick={removeCode}>
-                      <X className="w-4 h-4 mr-1" /> Remove
+                      <X className="w-4 h-4 mr-1" /> {t('purchase.discountCode.remove')}
                     </Button>
                   </div>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
                     <div className="flex-1">
-                      <Label htmlFor="discount-code">Code</Label>
+                      <Label htmlFor="discount-code">{t('purchase.discountCode.codeLabel')}</Label>
                       <Input
                         id="discount-code"
-                        placeholder="Enter code"
+                        placeholder={t('purchase.discountCode.codePlaceholder')}
                         value={codeInput}
                         onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                         onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}
@@ -271,7 +280,7 @@ export default function PurchaseLeadsPage() {
                     </div>
                     <Button onClick={applyCode} disabled={applyingCode || !codeInput.trim()} variant="outline">
                       {applyingCode ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                      Apply
+                      {t('purchase.discountCode.apply')}
                     </Button>
                   </div>
                 )}
@@ -280,21 +289,21 @@ export default function PurchaseLeadsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Order summary</CardTitle>
+                <CardTitle className="text-base">{t('purchase.summary.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span>{leads.length} lead{leads.length === 1 ? "" : "s"} × €{(PRICE_CENTS / 100).toFixed(2)}</span>
+                  <span>{t('purchase.summary.lineItem', { count: leads.length, price: (PRICE_CENTS / 100).toFixed(2) })}</span>
                   <span>€{(subtotalCents / 100).toFixed(2)}</span>
                 </div>
                 {discount && (
                   <div className="flex justify-between text-green-700">
-                    <span>Discount ({discount.code})</span>
+                    <span>{t('purchase.summary.discountLabel', { code: discount.code })}</span>
                     <span>−€{(discount.amountOffCents / 100).toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                  <span>Total</span>
+                  <span>{t('purchase.summary.total')}</span>
                   <span>€{(finalCents / 100).toFixed(2)}</span>
                 </div>
                 <Button
@@ -304,7 +313,7 @@ export default function PurchaseLeadsPage() {
                   disabled={submitting}
                 >
                   {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  {finalCents === 0 ? "Unlock for free" : `Pay €${(finalCents / 100).toFixed(2)}`}
+                  {finalCents === 0 ? t('purchase.summary.unlockFree') : t('purchase.summary.payButton', { amount: (finalCents / 100).toFixed(2) })}
                 </Button>
               </CardContent>
             </Card>
@@ -313,15 +322,4 @@ export default function PurchaseLeadsPage() {
       </div>
     </div>
   );
-}
-
-function reasonText(reason?: string) {
-  switch (reason) {
-    case "not_found": return "This code does not exist.";
-    case "inactive": return "This code is no longer active.";
-    case "expired": return "This code has expired.";
-    case "max_uses_reached": return "This code has reached its usage limit.";
-    case "invalid_input": return "Please enter a valid code.";
-    default: return "This code cannot be applied.";
-  }
 }

@@ -14,6 +14,7 @@ import enClinicPanel from "./locales/en/clinicPanel.json";
 import enApplicationsTab from "./locales/en/applicationsTab.json";
 import enClinicInfoTab from "./locales/en/clinicInfoTab.json";
 import enClinicManagers from "./locales/en/clinicManagers.json";
+import enBalanceAndLeads from "./locales/en/balanceAndLeads.json";
 
 import trCommon from "./locales/tr/common.json";
 import trHome from "./locales/tr/home.json";
@@ -27,6 +28,7 @@ import trClinicPanel from "./locales/tr/clinicPanel.json";
 import trApplicationsTab from "./locales/tr/applicationsTab.json";
 import trClinicInfoTab from "./locales/tr/clinicInfoTab.json";
 import trClinicManagers from "./locales/tr/clinicManagers.json";
+import trBalanceAndLeads from "./locales/tr/balanceAndLeads.json";
 
 import roCommon from "./locales/ro/common.json";
 import roHome from "./locales/ro/home.json";
@@ -40,6 +42,7 @@ import roClinicPanel from "./locales/ro/clinicPanel.json";
 import roApplicationsTab from "./locales/ro/applicationsTab.json";
 import roClinicInfoTab from "./locales/ro/clinicInfoTab.json";
 import roClinicManagers from "./locales/ro/clinicManagers.json";
+import roBalanceAndLeads from "./locales/ro/balanceAndLeads.json";
 
 import plCommon from "./locales/pl/common.json";
 import plHome from "./locales/pl/home.json";
@@ -53,6 +56,7 @@ import plClinicPanel from "./locales/pl/clinicPanel.json";
 import plApplicationsTab from "./locales/pl/applicationsTab.json";
 import plClinicInfoTab from "./locales/pl/clinicInfoTab.json";
 import plClinicManagers from "./locales/pl/clinicManagers.json";
+import plBalanceAndLeads from "./locales/pl/balanceAndLeads.json";
 
 import ruCommon from "./locales/ru/common.json";
 import ruHome from "./locales/ru/home.json";
@@ -66,6 +70,7 @@ import ruClinicPanel from "./locales/ru/clinicPanel.json";
 import ruApplicationsTab from "./locales/ru/applicationsTab.json";
 import ruClinicInfoTab from "./locales/ru/clinicInfoTab.json";
 import ruClinicManagers from "./locales/ru/clinicManagers.json";
+import ruBalanceAndLeads from "./locales/ru/balanceAndLeads.json";
 
 import deCommon from "./locales/de/common.json";
 import deHome from "./locales/de/home.json";
@@ -79,6 +84,7 @@ import deClinicPanel from "./locales/de/clinicPanel.json";
 import deApplicationsTab from "./locales/de/applicationsTab.json";
 import deClinicInfoTab from "./locales/de/clinicInfoTab.json";
 import deClinicManagers from "./locales/de/clinicManagers.json";
+import deBalanceAndLeads from "./locales/de/balanceAndLeads.json";
 
 import frCommon from "./locales/fr/common.json";
 import frHome from "./locales/fr/home.json";
@@ -92,6 +98,7 @@ import frClinicPanel from "./locales/fr/clinicPanel.json";
 import frApplicationsTab from "./locales/fr/applicationsTab.json";
 import frClinicInfoTab from "./locales/fr/clinicInfoTab.json";
 import frClinicManagers from "./locales/fr/clinicManagers.json";
+import frBalanceAndLeads from "./locales/fr/balanceAndLeads.json";
 
 // Statically imported (no i18next-http-backend) on purpose: every locale's
 // JSON is bundled at build time so switching language never triggers a
@@ -101,18 +108,18 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: enCommon, home: enHome, geoPopup: enGeoPopup, clinicListing: enClinicListing, clinicDetail: enClinicDetail, auth: enAuth, registerClinic: enRegisterClinic, dashboard: enDashboard, clinicPanel: enClinicPanel, applicationsTab: enApplicationsTab, clinicInfoTab: enClinicInfoTab, clinicManagers: enClinicManagers },
-      tr: { common: trCommon, home: trHome, geoPopup: trGeoPopup, clinicListing: trClinicListing, clinicDetail: trClinicDetail, auth: trAuth, registerClinic: trRegisterClinic, dashboard: trDashboard, clinicPanel: trClinicPanel, applicationsTab: trApplicationsTab, clinicInfoTab: trClinicInfoTab, clinicManagers: trClinicManagers },
-      ro: { common: roCommon, home: roHome, geoPopup: roGeoPopup, clinicListing: roClinicListing, clinicDetail: roClinicDetail, auth: roAuth, registerClinic: roRegisterClinic, dashboard: roDashboard, clinicPanel: roClinicPanel, applicationsTab: roApplicationsTab, clinicInfoTab: roClinicInfoTab, clinicManagers: roClinicManagers },
-      pl: { common: plCommon, home: plHome, geoPopup: plGeoPopup, clinicListing: plClinicListing, clinicDetail: plClinicDetail, auth: plAuth, registerClinic: plRegisterClinic, dashboard: plDashboard, clinicPanel: plClinicPanel, applicationsTab: plApplicationsTab, clinicInfoTab: plClinicInfoTab, clinicManagers: plClinicManagers },
-      ru: { common: ruCommon, home: ruHome, geoPopup: ruGeoPopup, clinicListing: ruClinicListing, clinicDetail: ruClinicDetail, auth: ruAuth, registerClinic: ruRegisterClinic, dashboard: ruDashboard, clinicPanel: ruClinicPanel, applicationsTab: ruApplicationsTab, clinicInfoTab: ruClinicInfoTab, clinicManagers: ruClinicManagers },
-      de: { common: deCommon, home: deHome, geoPopup: deGeoPopup, clinicListing: deClinicListing, clinicDetail: deClinicDetail, auth: deAuth, registerClinic: deRegisterClinic, dashboard: deDashboard, clinicPanel: deClinicPanel, applicationsTab: deApplicationsTab, clinicInfoTab: deClinicInfoTab, clinicManagers: deClinicManagers },
-      fr: { common: frCommon, home: frHome, geoPopup: frGeoPopup, clinicListing: frClinicListing, clinicDetail: frClinicDetail, auth: frAuth, registerClinic: frRegisterClinic, dashboard: frDashboard, clinicPanel: frClinicPanel, applicationsTab: frApplicationsTab, clinicInfoTab: frClinicInfoTab, clinicManagers: frClinicManagers },
+      en: { common: enCommon, home: enHome, geoPopup: enGeoPopup, clinicListing: enClinicListing, clinicDetail: enClinicDetail, auth: enAuth, registerClinic: enRegisterClinic, dashboard: enDashboard, clinicPanel: enClinicPanel, applicationsTab: enApplicationsTab, clinicInfoTab: enClinicInfoTab, clinicManagers: enClinicManagers, balanceAndLeads: enBalanceAndLeads },
+      tr: { common: trCommon, home: trHome, geoPopup: trGeoPopup, clinicListing: trClinicListing, clinicDetail: trClinicDetail, auth: trAuth, registerClinic: trRegisterClinic, dashboard: trDashboard, clinicPanel: trClinicPanel, applicationsTab: trApplicationsTab, clinicInfoTab: trClinicInfoTab, clinicManagers: trClinicManagers, balanceAndLeads: trBalanceAndLeads },
+      ro: { common: roCommon, home: roHome, geoPopup: roGeoPopup, clinicListing: roClinicListing, clinicDetail: roClinicDetail, auth: roAuth, registerClinic: roRegisterClinic, dashboard: roDashboard, clinicPanel: roClinicPanel, applicationsTab: roApplicationsTab, clinicInfoTab: roClinicInfoTab, clinicManagers: roClinicManagers, balanceAndLeads: roBalanceAndLeads },
+      pl: { common: plCommon, home: plHome, geoPopup: plGeoPopup, clinicListing: plClinicListing, clinicDetail: plClinicDetail, auth: plAuth, registerClinic: plRegisterClinic, dashboard: plDashboard, clinicPanel: plClinicPanel, applicationsTab: plApplicationsTab, clinicInfoTab: plClinicInfoTab, clinicManagers: plClinicManagers, balanceAndLeads: plBalanceAndLeads },
+      ru: { common: ruCommon, home: ruHome, geoPopup: ruGeoPopup, clinicListing: ruClinicListing, clinicDetail: ruClinicDetail, auth: ruAuth, registerClinic: ruRegisterClinic, dashboard: ruDashboard, clinicPanel: ruClinicPanel, applicationsTab: ruApplicationsTab, clinicInfoTab: ruClinicInfoTab, clinicManagers: ruClinicManagers, balanceAndLeads: ruBalanceAndLeads },
+      de: { common: deCommon, home: deHome, geoPopup: deGeoPopup, clinicListing: deClinicListing, clinicDetail: deClinicDetail, auth: deAuth, registerClinic: deRegisterClinic, dashboard: deDashboard, clinicPanel: deClinicPanel, applicationsTab: deApplicationsTab, clinicInfoTab: deClinicInfoTab, clinicManagers: deClinicManagers, balanceAndLeads: deBalanceAndLeads },
+      fr: { common: frCommon, home: frHome, geoPopup: frGeoPopup, clinicListing: frClinicListing, clinicDetail: frClinicDetail, auth: frAuth, registerClinic: frRegisterClinic, dashboard: frDashboard, clinicPanel: frClinicPanel, applicationsTab: frApplicationsTab, clinicInfoTab: frClinicInfoTab, clinicManagers: frClinicManagers, balanceAndLeads: frBalanceAndLeads },
     },
     lng: "en",
     fallbackLng: "en",
     supportedLngs: ["en", "tr", "ro", "pl", "ru", "de", "fr"],
-    ns: ["common", "home", "geoPopup", "clinicListing", "clinicDetail", "auth", "registerClinic", "dashboard", "clinicPanel", "applicationsTab", "clinicInfoTab", "clinicManagers"],
+    ns: ["common", "home", "geoPopup", "clinicListing", "clinicDetail", "auth", "registerClinic", "dashboard", "clinicPanel", "applicationsTab", "clinicInfoTab", "clinicManagers", "balanceAndLeads"],
     defaultNS: "common",
     interpolation: { escapeValue: false }, // React already escapes
     // The URL's :lang segment is the source of truth for the active

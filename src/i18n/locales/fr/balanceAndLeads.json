@@ -1,0 +1,91 @@
+{
+  "backToPanel": "Retour au panneau de la clinique",
+  "topup": {
+    "title": "Ajouter du solde",
+    "currentBalance": "Solde actuel",
+    "leadsRemaining_one": "{{count}} prospect restant (€25 par prospect)",
+    "leadsRemaining_other": "{{count}} prospects restants (€25 par prospect)",
+    "mostPopular": "Le plus populaire",
+    "leadsUnit": "prospects",
+    "buyNow": "Acheter maintenant",
+    "discountCode": {
+      "title": "Code de réduction",
+      "description": "Appliquez un code pour réduire votre recharge.",
+      "appliedLabel": "{{code}} — {{percent}}% de réduction s'appliquera au paiement",
+      "remove": "Retirer",
+      "codeLabel": "Code",
+      "codePlaceholder": "Entrez le code",
+      "apply": "Appliquer"
+    },
+    "customAmount": {
+      "title": "Montant personnalisé",
+      "description": "Minimum €25.",
+      "amountLabel": "Montant (€)",
+      "amountPlaceholder": "ex. 100",
+      "button": "Recharger"
+    },
+    "toasts": {
+      "receivedTitle": "Recharge reçue",
+      "receivedDesc": "Votre solde a été crédité.",
+      "cancelledTitle": "Recharge annulée",
+      "cancelledDesc": "Aucun paiement n'a été effectué.",
+      "creditedTitle": "Solde crédité",
+      "creditedDesc": "Votre recharge à prix réduit est terminée.",
+      "errorTitle": "Erreur",
+      "startErrorDesc": "Impossible de démarrer la recharge.",
+      "invalidCodeTitle": "Code invalide",
+      "codeErrorDesc": "Le code ne peut pas être appliqué.",
+      "discountReadyTitle": "Réduction prête",
+      "discountReadyDesc": "{{code}} — {{percent}}% de réduction s'applique au paiement",
+      "validateErrorDesc": "Impossible de valider le code.",
+      "invalidAmountTitle": "Montant invalide",
+      "invalidAmountDesc": "La recharge minimale est de €25."
+    }
+  },
+  "purchase": {
+    "title": "Acheter des prospects",
+    "droppedCount_one": "{{count}} prospect sélectionné a été retiré (déjà acheté, expiré ou invalide).",
+    "droppedCount_other": "{{count}} prospects sélectionnés ont été retirés (déjà achetés, expirés ou invalides).",
+    "noneAvailable": "Aucun prospect à acheter.",
+    "goBack": "Retour",
+    "discountCode": {
+      "title": "Code de réduction",
+      "description": "Vous avez un code ? Appliquez-le ci-dessous.",
+      "appliedLabel": "{{code}} appliqué — {{percent}}% de réduction (−€{{amount}})",
+      "remove": "Retirer",
+      "codeLabel": "Code",
+      "codePlaceholder": "Entrez le code",
+      "apply": "Appliquer"
+    },
+    "summary": {
+      "title": "Récapitulatif de la commande",
+      "lineItem_one": "{{count}} prospect × €{{price}}",
+      "lineItem_other": "{{count}} prospects × €{{price}}",
+      "discountLabel": "Réduction ({{code}})",
+      "total": "Total",
+      "unlockFree": "Débloquer gratuitement",
+      "payButton": "Payer €{{amount}}"
+    },
+    "toasts": {
+      "cancelledTitle": "Achat annulé",
+      "cancelledDesc": "Aucun paiement n'a été effectué.",
+      "invalidCodeTitle": "Code invalide",
+      "appliedTitle": "Réduction appliquée",
+      "appliedDesc": "{{code}} — {{percent}}% de réduction",
+      "validateErrorDesc": "Impossible de valider le code.",
+      "unlockedTitle": "Prospects débloqués",
+      "unlockedDesc_one": "{{count}} prospect débloqué gratuitement.",
+      "unlockedDesc_other": "{{count}} prospects débloqués gratuitement.",
+      "errorTitle": "Erreur",
+      "startErrorDesc": "Impossible de démarrer l'achat."
+    },
+    "reasons": {
+      "not_found": "Ce code n'existe pas.",
+      "inactive": "Ce code n'est plus actif.",
+      "expired": "Ce code a expiré.",
+      "max_uses_reached": "Ce code a atteint sa limite d'utilisation.",
+      "invalid_input": "Veuillez entrer un code valide.",
+      "default": "Ce code ne peut pas être appliqué."
+    }
+  }
+}
