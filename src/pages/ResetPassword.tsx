@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+import { withLocalePrefix } from '@/lib/localePath'
 
 const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -14,6 +16,8 @@ const ResetPassword = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const navigate = useNavigate()
+  const { lang } = useParams()
+  const { t } = useTranslation('auth')
   const { toast } = useToast()
 
   useEffect(() => {
@@ -41,11 +45,11 @@ const ResetPassword = () => {
     e.preventDefault()
 
     if (password.length < 6) {
-      toast({ title: "Error", description: "Password must be at least 6 characters long.", variant: "destructive" })
+      toast({ title: t('resetPassword.errorTitle'), description: t('resetPassword.tooShort'), variant: "destructive" })
       return
     }
     if (password !== confirmPassword) {
-      toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" })
+      toast({ title: t('resetPassword.errorTitle'), description: t('resetPassword.mismatch'), variant: "destructive" })
       return
     }
 
@@ -54,11 +58,11 @@ const ResetPassword = () => {
       const { error } = await supabase.auth.updateUser({ password })
       if (error) throw error
 
-      toast({ title: "Password updated", description: "Please sign in with your new password." })
+      toast({ title: t('resetPassword.successTitle'), description: t('resetPassword.successDesc') })
       await supabase.auth.signOut()
-      navigate('/auth', { replace: true })
+      navigate(withLocalePrefix('/auth', lang), { replace: true })
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Could not update password.", variant: "destructive" })
+      toast({ title: t('resetPassword.errorTitle'), description: error.message || t('resetPassword.genericError'), variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -68,22 +72,22 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t('resetPassword.title')}</CardTitle>
           <CardDescription>
             {hasRecoverySession === false
-              ? "This link is invalid or expired."
-              : "Enter a new password for your account."}
+              ? t('resetPassword.invalidLink')
+              : t('resetPassword.enterNew')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {hasRecoverySession === false ? (
-            <Button className="w-full" onClick={() => navigate('/auth', { replace: true })}>
-              Back to sign in
+            <Button className="w-full" onClick={() => navigate(withLocalePrefix('/auth', lang), { replace: true })}>
+              {t('resetPassword.backToSignIn')}
             </Button>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
+                <Label htmlFor="new-password">{t('resetPassword.newPasswordLabel')}</Label>
                 <Input
                   id="new-password"
                   type="password"
@@ -94,7 +98,7 @@ const ResetPassword = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+                <Label htmlFor="confirm-new-password">{t('resetPassword.confirmPasswordLabel')}</Label>
                 <Input
                   id="confirm-new-password"
                   type="password"
@@ -106,15 +110,15 @@ const ResetPassword = () => {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading || hasRecoverySession === null}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Update Password
+                {t('resetPassword.updateButton')}
               </Button>
               <Button
                 type="button"
                 variant="ghost"
                 className="w-full"
-                onClick={() => navigate('/auth', { replace: true })}
+                onClick={() => navigate(withLocalePrefix('/auth', lang), { replace: true })}
               >
-                Back to sign in
+                {t('resetPassword.backToSignIn')}
               </Button>
             </form>
           )}

@@ -1,0 +1,45 @@
+{
+  "submitted": {
+    "title": "Registration Submitted",
+    "subtitle": "Awaiting Super Admin approval",
+    "description": "Thank you for registering your clinic. Our team will review your submission and documents. Once your application is approved, you'll be able to sign in and complete your clinic page.",
+    "backHome": "Back to Home"
+  },
+  "form": {
+    "title": "Register Your Clinic",
+    "description": "Provide your clinic's official details. After approval you'll be able to complete your public page.",
+    "accountSection": "Account",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "clinicSection": "Clinic",
+    "legalNameLabel": "Official Company Name (Legal Name)",
+    "countryLabel": "Country",
+    "selectCountry": "Select country",
+    "cityLabel": "City",
+    "selectCity": "Select city",
+    "selectCountryFirst": "Select country first",
+    "phoneLabel": "Phone Number",
+    "websiteLabel": "Website",
+    "documentsSection": "Required Documents",
+    "healthTourismDocLabel": "Health Tourism Authorization Certificate",
+    "agencyCertificateLabel": "Agency Certificate",
+    "uploadFile": "Upload File",
+    "healthcareFacilityCheckbox": "I am applying as a healthcare facility",
+    "agreeCheckbox": "I confirm I represent this clinic and the documents provided are authentic. The registration will be reviewed by Dentaloria before activation.",
+    "submitButton": "Register Clinic",
+    "alreadyApproved": "Already approved?",
+    "signIn": "Sign in"
+  },
+  "errors": {
+    "title": "Error",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "healthDocRequired": "Please upload the Health Tourism Authorization Certificate.",
+    "agencyDocRequired": "Please upload the Agency Certificate, or check \"I am applying as a healthcare facility\".",
+    "agreeRequired": "Please accept the terms.",
+    "registrationErrorTitle": "Registration Error",
+    "genericError": "An error occurred.",
+    "registrationFailed": "Registration failed"
+  }
+}

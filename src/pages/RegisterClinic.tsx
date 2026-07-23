@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,12 +10,15 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2, Upload, CheckCircle, Clock, FileText } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+import { withLocalePrefix } from '@/lib/localePath'
 
 interface Country { id: string; name: string; code: string }
 interface City { id: string; name: string; country_id: string }
 
 const RegisterClinic = () => {
   const navigate = useNavigate()
+  const { lang } = useParams()
+  const { t } = useTranslation('registerClinic')
   const { toast } = useToast()
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -58,19 +62,19 @@ const RegisterClinic = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (form.password !== form.confirmPassword) {
-      toast({ title: 'Error', description: 'Passwords do not match.', variant: 'destructive' }); return
+      toast({ title: t('errors.title'), description: t('errors.passwordMismatch'), variant: 'destructive' }); return
     }
     if (form.password.length < 6) {
-      toast({ title: 'Error', description: 'Password must be at least 6 characters.', variant: 'destructive' }); return
+      toast({ title: t('errors.title'), description: t('errors.passwordTooShort'), variant: 'destructive' }); return
     }
     if (!form.healthTourismDoc) {
-      toast({ title: 'Error', description: 'Please upload the Health Tourism Authorization Certificate.', variant: 'destructive' }); return
+      toast({ title: t('errors.title'), description: t('errors.healthDocRequired'), variant: 'destructive' }); return
     }
     if (!form.isHealthcareFacility && !form.agencyCertificate) {
-      toast({ title: 'Error', description: 'Please upload the Agency Certificate, or check "I am applying as a healthcare facility".', variant: 'destructive' }); return
+      toast({ title: t('errors.title'), description: t('errors.agencyDocRequired'), variant: 'destructive' }); return
     }
     if (!form.agree) {
-      toast({ title: 'Error', description: 'Please accept the terms.', variant: 'destructive' }); return
+      toast({ title: t('errors.title'), description: t('errors.agreeRequired'), variant: 'destructive' }); return
     }
 
     setSubmitting(true)
@@ -104,12 +108,12 @@ const RegisterClinic = () => {
       })
 
       if (error || (data as any)?.error) {
-        throw new Error((data as any)?.error || error?.message || 'Registration failed')
+        throw new Error((data as any)?.error || error?.message || t('errors.registrationFailed'))
       }
 
       setSubmitted(true)
     } catch (err: any) {
-      toast({ title: 'Registration Error', description: err.message || 'An error occurred.', variant: 'destructive' })
+      toast({ title: t('errors.registrationErrorTitle'), description: err.message || t('errors.genericError'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -121,15 +125,14 @@ const RegisterClinic = () => {
         <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <Clock className="w-12 h-12 mx-auto text-primary mb-2" />
-            <CardTitle>Registration Submitted</CardTitle>
-            <CardDescription>Awaiting Super Admin approval</CardDescription>
+            <CardTitle>{t('submitted.title')}</CardTitle>
+            <CardDescription>{t('submitted.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
             <p className="text-sm text-muted-foreground">
-              Thank you for registering your clinic. Our team will review your submission and documents.
-              Once your application is approved, you'll be able to sign in and complete your clinic page.
+              {t('submitted.description')}
             </p>
-            <Button className="w-full" onClick={() => navigate('/')}>Back to Home</Button>
+            <Button className="w-full" onClick={() => navigate(withLocalePrefix('/', lang))}>{t('submitted.backHome')}</Button>
           </CardContent>
         </Card>
       </div>
@@ -141,27 +144,27 @@ const RegisterClinic = () => {
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Register Your Clinic</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('form.title')}</CardTitle>
             <CardDescription>
-              Provide your clinic's official details. After approval you'll be able to complete your public page.
+              {t('form.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Account */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80">Account</h3>
+                <h3 className="text-sm font-semibold text-foreground/80">{t('form.accountSection')}</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">{t('form.emailLabel')}</Label>
                   <Input id="email" type="email" value={form.email} onChange={(e) => upd('email', e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('form.passwordLabel')}</Label>
                     <Input id="password" type="password" value={form.password} onChange={(e) => upd('password', e.target.value)} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirm">Confirm Password</Label>
+                    <Label htmlFor="confirm">{t('form.confirmPasswordLabel')}</Label>
                     <Input id="confirm" type="password" value={form.confirmPassword} onChange={(e) => upd('confirmPassword', e.target.value)} required />
                   </div>
                 </div>
@@ -169,25 +172,25 @@ const RegisterClinic = () => {
 
               {/* Clinic */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80">Clinic</h3>
+                <h3 className="text-sm font-semibold text-foreground/80">{t('form.clinicSection')}</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="clinicName">Official Company Name (Legal Name)</Label>
+                  <Label htmlFor="clinicName">{t('form.legalNameLabel')}</Label>
                   <Input id="clinicName" value={form.clinicName} onChange={(e) => upd('clinicName', e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label>Country</Label>
+                    <Label>{t('form.countryLabel')}</Label>
                     <Select value={countryId} onValueChange={(v) => { setCountryId(v); upd('cityId', '') }}>
-                      <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('form.selectCountry')} /></SelectTrigger>
                       <SelectContent>
                         {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>City</Label>
+                    <Label>{t('form.cityLabel')}</Label>
                     <Select value={form.cityId} onValueChange={(v) => upd('cityId', v)} disabled={!countryId}>
-                      <SelectTrigger><SelectValue placeholder={countryId ? 'Select city' : 'Select country first'} /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={countryId ? t('form.selectCity') : t('form.selectCountryFirst')} /></SelectTrigger>
                       <SelectContent>
                         {filteredCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
@@ -196,11 +199,11 @@ const RegisterClinic = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">{t('form.phoneLabel')}</Label>
                     <Input id="phone" value={form.phone} onChange={(e) => upd('phone', e.target.value)} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
+                    <Label htmlFor="website">{t('form.websiteLabel')}</Label>
                     <Input id="website" placeholder="https://" value={form.website} onChange={(e) => upd('website', e.target.value)} />
                   </div>
                 </div>
@@ -208,13 +211,13 @@ const RegisterClinic = () => {
 
               {/* Documents */}
               <div className="space-y-4 p-4 bg-muted rounded-lg">
-                <h3 className="text-sm font-semibold">Required Documents</h3>
+                <h3 className="text-sm font-semibold">{t('form.documentsSection')}</h3>
 
                 {/* Health Tourism Authorization Certificate — always required */}
                 <div className="space-y-2">
                   <Label className="text-sm flex items-center gap-2">
                     <FileText className="w-4 h-4" />
-                    Health Tourism Authorization Certificate
+                    {t('form.healthTourismDocLabel')}
                     <span className="text-destructive">*</span>
                   </Label>
                   <input
@@ -226,7 +229,7 @@ const RegisterClinic = () => {
                   />
                   <div className="flex items-center gap-3 flex-wrap">
                     <Button type="button" variant="outline" size="sm" onClick={() => healthInputRef.current?.click()}>
-                      <Upload className="w-4 h-4 mr-1" /> Upload File
+                      <Upload className="w-4 h-4 mr-1" /> {t('form.uploadFile')}
                     </Button>
                     {form.healthTourismDoc && (
                       <span className="text-sm flex items-center gap-1 text-green-600 truncate">
@@ -241,7 +244,7 @@ const RegisterClinic = () => {
                 <div className="space-y-2">
                   <Label className="text-sm flex items-center gap-2">
                     <FileText className="w-4 h-4" />
-                    Agency Certificate
+                    {t('form.agencyCertificateLabel')}
                     {!form.isHealthcareFacility && <span className="text-destructive">*</span>}
                   </Label>
                   <input
@@ -259,7 +262,7 @@ const RegisterClinic = () => {
                       onClick={() => agencyInputRef.current?.click()}
                       disabled={form.isHealthcareFacility}
                     >
-                      <Upload className="w-4 h-4 mr-1" /> Upload File
+                      <Upload className="w-4 h-4 mr-1" /> {t('form.uploadFile')}
                     </Button>
                     {form.agencyCertificate && !form.isHealthcareFacility && (
                       <span className="text-sm flex items-center gap-1 text-green-600 truncate">
@@ -279,7 +282,7 @@ const RegisterClinic = () => {
                       }}
                     />
                     <Label htmlFor="healthcare" className="text-sm text-muted-foreground leading-snug">
-                      I am applying as a healthcare facility
+                      {t('form.healthcareFacilityCheckbox')}
                     </Label>
                   </div>
                 </div>
@@ -288,17 +291,17 @@ const RegisterClinic = () => {
               <div className="flex items-start gap-2">
                 <Checkbox id="agree" checked={form.agree} onCheckedChange={(v) => upd('agree', !!v)} />
                 <Label htmlFor="agree" className="text-sm text-muted-foreground leading-snug">
-                  I confirm I represent this clinic and the documents provided are authentic. The registration will be reviewed by Dentaloria before activation.
+                  {t('form.agreeCheckbox')}
                 </Label>
               </div>
 
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Register Clinic
+                {t('form.submitButton')}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Already approved? <Link to="/auth" className="text-primary hover:underline">Sign in</Link>
+                {t('form.alreadyApproved')} <Link to={withLocalePrefix('/auth', lang)} className="text-primary hover:underline">{t('form.signIn')}</Link>
               </p>
             </form>
           </CardContent>

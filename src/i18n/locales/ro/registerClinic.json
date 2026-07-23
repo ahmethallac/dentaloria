@@ -1,0 +1,45 @@
+{
+  "submitted": {
+    "title": "Înregistrare Trimisă",
+    "subtitle": "Se așteaptă aprobarea Super Administratorului",
+    "description": "Vă mulțumim că v-ați înregistrat clinica. Echipa noastră va analiza cererea și documentele dvs. După aprobare, veți putea să vă autentificați și să completați pagina clinicii.",
+    "backHome": "Înapoi la Pagina Principală"
+  },
+  "form": {
+    "title": "Înregistrează-ți Clinica",
+    "description": "Furnizați detaliile oficiale ale clinicii dvs. După aprobare veți putea completa pagina publică.",
+    "accountSection": "Cont",
+    "emailLabel": "Adresă de E-mail",
+    "passwordLabel": "Parolă",
+    "confirmPasswordLabel": "Confirmă Parola",
+    "clinicSection": "Clinică",
+    "legalNameLabel": "Numele Oficial al Companiei (Nume Legal)",
+    "countryLabel": "Țară",
+    "selectCountry": "Selectați țara",
+    "cityLabel": "Oraș",
+    "selectCity": "Selectați orașul",
+    "selectCountryFirst": "Selectați mai întâi țara",
+    "phoneLabel": "Număr de Telefon",
+    "websiteLabel": "Website",
+    "documentsSection": "Documente Necesare",
+    "healthTourismDocLabel": "Certificat de Autorizare Turism Medical",
+    "agencyCertificateLabel": "Certificat de Agenție",
+    "uploadFile": "Încarcă Fișier",
+    "healthcareFacilityCheckbox": "Aplic ca unitate medicală",
+    "agreeCheckbox": "Confirm că reprezint această clinică și că documentele furnizate sunt autentice. Înregistrarea va fi analizată de Dentaloria înainte de activare.",
+    "submitButton": "Înregistrează Clinica",
+    "alreadyApproved": "Deja aprobat?",
+    "signIn": "Autentificare"
+  },
+  "errors": {
+    "title": "Eroare",
+    "passwordMismatch": "Parolele nu se potrivesc.",
+    "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere.",
+    "healthDocRequired": "Vă rugăm să încărcați Certificatul de Autorizare Turism Medical.",
+    "agencyDocRequired": "Vă rugăm să încărcați Certificatul de Agenție sau bifați \"Aplic ca unitate medicală\".",
+    "agreeRequired": "Vă rugăm să acceptați termenii.",
+    "registrationErrorTitle": "Eroare de Înregistrare",
+    "genericError": "A apărut o eroare.",
+    "registrationFailed": "Înregistrarea a eșuat"
+  }
+}

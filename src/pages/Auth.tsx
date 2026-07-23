@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/contexts/AuthContext'
+import { withLocalePrefix } from '@/lib/localePath'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,21 +16,23 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { signIn, signUp, user, userRole, loading } = useAuth()
   const navigate = useNavigate()
+  const { lang } = useParams()
+  const { t } = useTranslation('auth')
   const { toast } = useToast()
 
   useEffect(() => {
     if (loading) return
     if (!user) return
-    
+
     console.log('[Auth] User loaded, role:', userRole)
-    
+
     if (userRole === 'admin' || userRole === 'sub_admin') {
       console.log('[Auth] Admin/sub_admin detected, redirecting to /admin')
-      navigate('/admin', { replace: true })
+      navigate(withLocalePrefix('/admin', lang), { replace: true })
     } else {
-      navigate('/dashboard', { replace: true })
+      navigate(withLocalePrefix('/dashboard', lang), { replace: true })
     }
-  }, [user, userRole, loading, navigate])
+  }, [user, userRole, loading, navigate, lang])
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [showForgot, setShowForgot] = useState(false)
@@ -43,15 +47,15 @@ const Auth = () => {
         redirectTo: `${window.location.origin}/reset-password`,
       })
       toast({
-        title: "Check your inbox",
-        description: "If that email exists, a reset link has been sent.",
+        title: t('forgot.checkInboxTitle'),
+        description: t('forgot.checkInboxDesc'),
       })
       setShowForgot(false)
       setForgotEmail('')
     } catch (error: any) {
       toast({
-        title: "Check your inbox",
-        description: "If that email exists, a reset link has been sent.",
+        title: t('forgot.checkInboxTitle'),
+        description: t('forgot.checkInboxDesc'),
       })
     } finally {
       setIsLoading(false)
@@ -62,9 +66,9 @@ const Auth = () => {
     setIsLoading(true)
     try {
       await signIn(loginForm.email, loginForm.password)
-      toast({ title: "Success!", description: "Logged in successfully." })
+      toast({ title: t('login.successTitle'), description: t('login.successDesc') })
     } catch (error: any) {
-      toast({ title: "Login Error", description: error.message || "An error occurred during login.", variant: "destructive" })
+      toast({ title: t('login.errorTitle'), description: error.message || t('login.errorDescDefault'), variant: 'destructive' })
     } finally {
       setIsLoading(false)
     }
@@ -74,38 +78,38 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Dentaloria</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t('cardTitle')}</CardTitle>
           <CardDescription>
-            Sign in or register your dental clinic
+            {t('cardDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Register Clinic</TabsTrigger>
+              <TabsTrigger value="login">{t('tabs.login')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('tabs.signup')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
               {showForgot ? (
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="forgot-email">Email</Label>
+                    <Label htmlFor="forgot-email">{t('forgot.emailLabel')}</Label>
                     <Input
                       id="forgot-email"
                       type="email"
-                      placeholder="clinic@example.com"
+                      placeholder={t('forgot.emailPlaceholder')}
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      We'll send a password reset link to this email.
+                      {t('forgot.hint')}
                     </p>
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Send reset link
+                    {t('forgot.sendLink')}
                   </Button>
                   <Button
                     type="button"
@@ -113,18 +117,18 @@ const Auth = () => {
                     className="w-full"
                     onClick={() => setShowForgot(false)}
                   >
-                    Back to sign in
+                    {t('forgot.backToSignIn')}
                   </Button>
                 </form>
               ) : (
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input id="login-email" type="email" placeholder="clinic@example.com" value={loginForm.email} onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))} required />
+                    <Label htmlFor="login-email">{t('login.emailLabel')}</Label>
+                    <Input id="login-email" type="email" placeholder={t('forgot.emailPlaceholder')} value={loginForm.email} onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))} required />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="login-password">Password</Label>
+                      <Label htmlFor="login-password">{t('login.passwordLabel')}</Label>
                       <button
                         type="button"
                         onClick={() => {
@@ -133,14 +137,14 @@ const Auth = () => {
                         }}
                         className="text-xs text-primary hover:underline"
                       >
-                        Forgot password?
+                        {t('login.forgotPassword')}
                       </button>
                     </div>
                     <Input id="login-password" type="password" placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))} required />
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Sign In
+                    {t('login.signIn')}
                   </Button>
                 </form>
               )}
@@ -149,10 +153,10 @@ const Auth = () => {
             <TabsContent value="signup">
               <div className="space-y-4 py-6 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Clinic registration now happens through a dedicated form where you provide your clinic's full details and supporting documents in one step.
+                  {t('signup.description')}
                 </p>
-                <Button className="w-full" onClick={() => navigate('/register-clinic')}>
-                  Go to Clinic Registration
+                <Button className="w-full" onClick={() => navigate(withLocalePrefix('/register-clinic', lang))}>
+                  {t('signup.cta')}
                 </Button>
               </div>
             </TabsContent>

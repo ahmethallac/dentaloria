@@ -1,0 +1,45 @@
+{
+  "submitted": {
+    "title": "Zgłoszenie Wysłane",
+    "subtitle": "Oczekiwanie na zatwierdzenie przez Super Administratora",
+    "description": "Dziękujemy za zarejestrowanie kliniki. Nasz zespół sprawdzi zgłoszenie i dokumenty. Po zatwierdzeniu wniosku będziesz mógł się zalogować i uzupełnić stronę kliniki.",
+    "backHome": "Powrót do Strony Głównej"
+  },
+  "form": {
+    "title": "Zarejestruj Swoją Klinikę",
+    "description": "Podaj oficjalne dane swojej kliniki. Po zatwierdzeniu będziesz mógł uzupełnić swoją publiczną stronę.",
+    "accountSection": "Konto",
+    "emailLabel": "Adres E-mail",
+    "passwordLabel": "Hasło",
+    "confirmPasswordLabel": "Potwierdź Hasło",
+    "clinicSection": "Klinika",
+    "legalNameLabel": "Oficjalna Nazwa Firmy (Nazwa Prawna)",
+    "countryLabel": "Kraj",
+    "selectCountry": "Wybierz kraj",
+    "cityLabel": "Miasto",
+    "selectCity": "Wybierz miasto",
+    "selectCountryFirst": "Najpierw wybierz kraj",
+    "phoneLabel": "Numer Telefonu",
+    "websiteLabel": "Strona internetowa",
+    "documentsSection": "Wymagane Dokumenty",
+    "healthTourismDocLabel": "Certyfikat Autoryzacji Turystyki Medycznej",
+    "agencyCertificateLabel": "Certyfikat Agencji",
+    "uploadFile": "Prześlij Plik",
+    "healthcareFacilityCheckbox": "Ubiegam się jako placówka medyczna",
+    "agreeCheckbox": "Potwierdzam, że reprezentuję tę klinikę, a dostarczone dokumenty są autentyczne. Rejestracja zostanie sprawdzona przez Dentaloria przed aktywacją.",
+    "submitButton": "Zarejestruj Klinikę",
+    "alreadyApproved": "Już zatwierdzone?",
+    "signIn": "Zaloguj się"
+  },
+  "errors": {
+    "title": "Błąd",
+    "passwordMismatch": "Hasła nie są zgodne.",
+    "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków.",
+    "healthDocRequired": "Prześlij Certyfikat Autoryzacji Turystyki Medycznej.",
+    "agencyDocRequired": "Prześlij Certyfikat Agencji lub zaznacz \"Ubiegam się jako placówka medyczna\".",
+    "agreeRequired": "Zaakceptuj warunki.",
+    "registrationErrorTitle": "Błąd Rejestracji",
+    "genericError": "Wystąpił błąd.",
+    "registrationFailed": "Rejestracja nie powiodła się"
+  }
+}

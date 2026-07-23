@@ -1,0 +1,45 @@
+{
+  "submitted": {
+    "title": "Kayıt Gönderildi",
+    "subtitle": "Süper Admin onayı bekleniyor",
+    "description": "Kliniğinizi kaydettiğiniz için teşekkür ederiz. Ekibimiz başvurunuzu ve belgelerinizi inceleyecek. Başvurunuz onaylandıktan sonra giriş yapıp klinik sayfanızı tamamlayabileceksiniz.",
+    "backHome": "Ana Sayfaya Dön"
+  },
+  "form": {
+    "title": "Kliniğinizi Kaydedin",
+    "description": "Kliniğinizin resmi bilgilerini girin. Onaydan sonra genel sayfanızı tamamlayabileceksiniz.",
+    "accountSection": "Hesap",
+    "emailLabel": "E-posta Adresi",
+    "passwordLabel": "Şifre",
+    "confirmPasswordLabel": "Şifreyi Onayla",
+    "clinicSection": "Klinik",
+    "legalNameLabel": "Resmi Şirket Adı (Yasal Ad)",
+    "countryLabel": "Ülke",
+    "selectCountry": "Ülke seçin",
+    "cityLabel": "Şehir",
+    "selectCity": "Şehir seçin",
+    "selectCountryFirst": "Önce ülke seçin",
+    "phoneLabel": "Telefon Numarası",
+    "websiteLabel": "Web Sitesi",
+    "documentsSection": "Gerekli Belgeler",
+    "healthTourismDocLabel": "Sağlık Turizmi Yetki Belgesi",
+    "agencyCertificateLabel": "Acente Sertifikası",
+    "uploadFile": "Dosya Yükle",
+    "healthcareFacilityCheckbox": "Sağlık kuruluşu olarak başvuruyorum",
+    "agreeCheckbox": "Bu kliniği temsil ettiğimi ve sağlanan belgelerin gerçek olduğunu onaylıyorum. Kayıt, etkinleştirilmeden önce Dentaloria tarafından incelenecektir.",
+    "submitButton": "Kliniği Kaydet",
+    "alreadyApproved": "Zaten onaylandı mı?",
+    "signIn": "Giriş yap"
+  },
+  "errors": {
+    "title": "Hata",
+    "passwordMismatch": "Şifreler eşleşmiyor.",
+    "passwordTooShort": "Şifre en az 6 karakter olmalıdır.",
+    "healthDocRequired": "Lütfen Sağlık Turizmi Yetki Belgesini yükleyin.",
+    "agencyDocRequired": "Lütfen Acente Sertifikasını yükleyin veya \"Sağlık kuruluşu olarak başvuruyorum\" seçeneğini işaretleyin.",
+    "agreeRequired": "Lütfen şartları kabul edin.",
+    "registrationErrorTitle": "Kayıt Hatası",
+    "genericError": "Bir hata oluştu.",
+    "registrationFailed": "Kayıt başarısız oldu"
+  }
+}
