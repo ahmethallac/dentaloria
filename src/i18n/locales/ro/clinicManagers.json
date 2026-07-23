@@ -1,0 +1,119 @@
+{
+  "images": {
+    "title": "Imagini",
+    "noImages": "Nicio imagine încă.",
+    "cover": "Copertă",
+    "setAsCover": "Setează ca Copertă",
+    "delete": "Șterge",
+    "toasts": {
+      "uploadedTitle": "Încărcat",
+      "uploadedDesc": "Imagine adăugată.",
+      "uploadErrorDesc": "Imaginea nu a putut fi încărcată.",
+      "coverUpdatedTitle": "Actualizat",
+      "coverUpdatedDesc": "Imagine copertă setată.",
+      "coverErrorDesc": "Imaginea copertă nu a putut fi setată.",
+      "deletedTitle": "Șters",
+      "deletedDesc": "Imagine eliminată.",
+      "deleteErrorDesc": "Imaginea nu a putut fi ștearsă.",
+      "errorTitle": "Eroare"
+    }
+  },
+  "beforeAfter": {
+    "title": "Fotografii Înainte & După",
+    "hint": "Fotografiile în format landscape funcționează cel mai bine. Afișate ca un carusel pe pagina dvs. publică.",
+    "noItems": "Nicio fotografie înainte/după încă.",
+    "toasts": {
+      "uploadedTitle": "Încărcat",
+      "uploadedDesc": "Fotografii înainte/după adăugate.",
+      "uploadErrorTitle": "Fotografia nu a putut fi încărcată",
+      "unknownError": "Eroare necunoscută",
+      "deleteErrorTitle": "Eroare",
+      "deleteErrorDesc": "Fotografia nu a putut fi ștearsă."
+    }
+  },
+  "doctors": {
+    "title": "Medici Dentiști",
+    "addDentist": "Adaugă Medic",
+    "noDentists": "Niciun medic adăugat încă.",
+    "yearsExperience": "{{count}} ani experiență",
+    "deleteAriaLabel": "Șterge medicul",
+    "dialogTitle": "Adaugă Medic",
+    "uploadPhoto": "Încarcă fotografie",
+    "readjustPhoto": "Reajustează fotografia",
+    "titleLabel": "Titlu",
+    "titlePlaceholder": "Dr.",
+    "fullNameLabel": "Nume Complet",
+    "fullNamePlaceholder": "Ioana Popescu",
+    "experienceLabel": "Experiență (ani)",
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "toasts": {
+      "missingNameTitle": "Nume lipsă",
+      "missingNameDesc": "Vă rugăm introduceți numele complet al medicului.",
+      "missingPhotoTitle": "Fotografie lipsă",
+      "missingPhotoDesc": "Vă rugăm încărcați și decupați o fotografie de profil.",
+      "addedTitle": "Adăugat",
+      "addedDesc": "Medic adăugat la clinica dvs.",
+      "addErrorDesc": "Medicul nu a putut fi adăugat.",
+      "deletedTitle": "Șters",
+      "deletedDesc": "Medic eliminat.",
+      "deleteErrorDesc": "Medicul nu a putut fi șters.",
+      "errorTitle": "Eroare"
+    }
+  },
+  "treatments": {
+    "title": "Tratamente și Prețuri",
+    "selectedLabel": "Selectate: {{count}}",
+    "loading": "Se încarcă...",
+    "startingPrice": "Preț de Pornire (EUR)",
+    "pricePlaceholder": "ex. 1500",
+    "footerNote": "Tratamentele și prețurile sunt salvate împreună cu restul informațiilor clinicii folosind butonul Salvează din partea de jos a paginii.",
+    "saveErrorDesc": "Tratamentele nu au putut fi salvate."
+  },
+  "videos": {
+    "title": "Videoclipuri",
+    "hint": "Inserați un link YouTube sau Instagram. Videoclipurile sunt afișate într-un cadru 9:16 (Reels) pe pagina dvs. publică.",
+    "placeholder": "https://www.youtube.com/watch?v=… sau https://www.instagram.com/reel/…",
+    "addVideo": "Adaugă video",
+    "noVideos": "Niciun videoclip încă.",
+    "openLink": "Deschide linkul",
+    "toasts": {
+      "unsupportedTitle": "Link neacceptat",
+      "unsupportedDesc": "Vă rugăm inserați un URL video YouTube sau Instagram valid.",
+      "addedTitle": "Video adăugat",
+      "addedDesc": "Previzualizarea este acum vizibilă mai jos.",
+      "addErrorDesc": "Videoclipul nu a putut fi adăugat.",
+      "removedTitle": "Eliminat",
+      "removedDesc": "Videoclip eliminat.",
+      "removeErrorDesc": "Videoclipul nu a putut fi eliminat.",
+      "errorTitle": "Eroare"
+    }
+  },
+  "googleBusiness": {
+    "label": "Rating Google",
+    "reviewsCount": "({{count}} recenzii)",
+    "syncedOn": "· sincronizat {{date}}",
+    "change": "Schimbă",
+    "searchPlaceholder": "Găsiți afacerea dvs. pe Google…",
+    "fetchingRating": "Se preia ratingul…",
+    "positiveReviews_one": "{{count}} recenzie pozitivă va fi afișată pe pagina clinicii dvs.",
+    "positiveReviews_few": "{{count}} recenzii pozitive vor fi afișate pe pagina clinicii dvs.",
+    "positiveReviews_other": "{{count}} de recenzii pozitive vor fi afișate pe pagina clinicii dvs.",
+    "noReviews": "Nu au fost găsite recenzii de 4-5 stele pentru a fi afișate pe pagina clinicii dvs.",
+    "confirmSave": "Confirmă și Salvează",
+    "searchAgain": "Caută din nou",
+    "cancel": "Anulează",
+    "footerNote": "Căutați numele afacerii dvs., selectați-l din sugestiile Google de mai jos, iar noi vom prelua automat ratingul real.",
+    "toasts": {
+      "fetchErrorTitle": "Eroare",
+      "fetchErrorDesc": "Ratingul Google pentru această afacere nu a putut fi preluat.",
+      "mapsLoadErrorDesc": "Căutarea Google nu a putut fi încărcată.",
+      "savedTitle": "Succes",
+      "savedDesc": "Rating Google conectat și salvat.",
+      "saveErrorDesc": "Ratingul Google nu a putut fi salvat.",
+      "refreshedTitle": "Succes",
+      "refreshedDesc": "Rating actualizat de pe Google.",
+      "refreshErrorDesc": "Ratingul nu a putut fi actualizat."
+    }
+  }
+}

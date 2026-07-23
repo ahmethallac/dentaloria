@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function ClinicVideosManager({ clinicId, videos, onChanged }: Props) {
+  const { t } = useTranslation('clinicManagers');
   const { toast } = useToast();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,8 +33,8 @@ export default function ClinicVideosManager({ clinicId, videos, onChanged }: Pro
     const parsed = parseVideoUrl(url);
     if (!parsed) {
       toast({
-        title: "Unsupported link",
-        description: "Please paste a valid YouTube or Instagram video URL.",
+        title: t('videos.toasts.unsupportedTitle'),
+        description: t('videos.toasts.unsupportedDesc'),
         variant: "destructive",
       });
       return;
@@ -50,11 +52,11 @@ export default function ClinicVideosManager({ clinicId, videos, onChanged }: Pro
       });
       if (error) throw error;
       setUrl("");
-      toast({ title: "Video added", description: "Preview is now visible below." });
+      toast({ title: t('videos.toasts.addedTitle'), description: t('videos.toasts.addedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not add video.", variant: "destructive" });
+      toast({ title: t('videos.toasts.errorTitle'), description: t('videos.toasts.addErrorDesc'), variant: "destructive" });
     } finally {
       setBusy(false);
     }
@@ -65,11 +67,11 @@ export default function ClinicVideosManager({ clinicId, videos, onChanged }: Pro
     try {
       const { error } = await supabase.from("clinic_videos").delete().eq("id", id);
       if (error) throw error;
-      toast({ title: "Removed", description: "Video removed." });
+      toast({ title: t('videos.toasts.removedTitle'), description: t('videos.toasts.removedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not remove video.", variant: "destructive" });
+      toast({ title: t('videos.toasts.errorTitle'), description: t('videos.toasts.removeErrorDesc'), variant: "destructive" });
     } finally {
       setBusy(false);
     }
@@ -78,25 +80,25 @@ export default function ClinicVideosManager({ clinicId, videos, onChanged }: Pro
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Videos</h3>
+        <h3 className="text-lg font-semibold">{t('videos.title')}</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-3">
-        Paste a YouTube or Instagram link. Videos display in a 9:16 (Reels) frame on your public page.
+        {t('videos.hint')}
       </p>
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <Input
-          placeholder="https://www.youtube.com/watch?v=… or https://www.instagram.com/reel/…"
+          placeholder={t('videos.placeholder')}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           disabled={busy}
         />
         <Button onClick={add} disabled={busy || !url.trim()}>
-          <Plus className="w-4 h-4 mr-1" /> Add video
+          <Plus className="w-4 h-4 mr-1" /> {t('videos.addVideo')}
         </Button>
       </div>
 
       {videos.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No videos yet.</div>
+        <div className="text-sm text-muted-foreground">{t('videos.noVideos')}</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {videos.map((v) => (
@@ -141,7 +143,7 @@ export default function ClinicVideosManager({ clinicId, videos, onChanged }: Pro
                   rel="noreferrer"
                   className="text-xs text-muted-foreground truncate hover:underline"
                 >
-                  Open link
+                  {t('videos.openLink')}
                 </a>
                 <Button size="sm" variant="destructive" disabled={busy} onClick={() => remove(v.id)}>
                   <Trash2 className="w-4 h-4" />

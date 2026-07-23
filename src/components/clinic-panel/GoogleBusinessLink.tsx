@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +43,7 @@ interface GoogleBusinessLinkProps {
 }
 
 export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusinessLinkProps) {
+  const { t } = useTranslation('clinicManagers');
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const currentPlaceId = clinic.google_place_id;
@@ -68,8 +70,8 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
     } catch (e) {
       console.error("Could not fetch Google rating:", e);
       toast({
-        title: "Error",
-        description: "Could not fetch the Google rating for this business.",
+        title: t('googleBusiness.toasts.fetchErrorTitle'),
+        description: t('googleBusiness.toasts.fetchErrorDesc'),
         variant: "destructive",
       });
     } finally {
@@ -86,7 +88,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         if (cancelled || !containerRef.current) return;
         element = new (window as any).google.maps.places.PlaceAutocompleteElement();
         element.style.width = "100%";
-        element.placeholder = "Find your business on Google…";
+        element.placeholder = t('googleBusiness.searchPlaceholder');
         containerRef.current.innerHTML = "";
         containerRef.current.appendChild(element);
         element.addEventListener("gmp-select", async (event: any) => {
@@ -96,7 +98,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
       })
       .catch((e) => {
         console.error(e);
-        toast({ title: "Error", description: "Could not load Google search.", variant: "destructive" });
+        toast({ title: t('googleBusiness.toasts.fetchErrorTitle'), description: t('googleBusiness.toasts.mapsLoadErrorDesc'), variant: "destructive" });
       });
     return () => {
       cancelled = true;
@@ -116,13 +118,13 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         google_reviews: preview.reviews,
         google_rating_synced_at: new Date().toISOString(),
       });
-      toast({ title: "Success", description: "Google rating linked and saved." });
+      toast({ title: t('googleBusiness.toasts.savedTitle'), description: t('googleBusiness.toasts.savedDesc') });
       onUpdated?.(updated);
       setPreview(null);
       setSearching(false);
     } catch (e) {
       console.error("Could not save Google rating:", e);
-      toast({ title: "Error", description: "Could not save the Google rating.", variant: "destructive" });
+      toast({ title: t('googleBusiness.toasts.fetchErrorTitle'), description: t('googleBusiness.toasts.saveErrorDesc'), variant: "destructive" });
     } finally {
       setFetching(false);
     }
@@ -142,11 +144,11 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
         google_reviews: data.reviews ?? [],
         google_rating_synced_at: new Date().toISOString(),
       });
-      toast({ title: "Success", description: "Rating refreshed from Google." });
+      toast({ title: t('googleBusiness.toasts.refreshedTitle'), description: t('googleBusiness.toasts.refreshedDesc') });
       onUpdated?.(updated);
     } catch (e) {
       console.error("Could not refresh Google rating:", e);
-      toast({ title: "Error", description: "Could not refresh the rating.", variant: "destructive" });
+      toast({ title: t('googleBusiness.toasts.fetchErrorTitle'), description: t('googleBusiness.toasts.refreshErrorDesc'), variant: "destructive" });
     } finally {
       setFetching(false);
     }
@@ -154,17 +156,17 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
 
   return (
     <div>
-      <label className="text-sm font-medium mb-2 block">Google Rating</label>
+      <label className="text-sm font-medium mb-2 block">{t('googleBusiness.label')}</label>
 
       {!searching && currentPlaceId ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
           <div className="flex items-center gap-2 text-sm">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             <span className="font-semibold">{clinic.rating?.toFixed(1)}</span>
-            <span className="text-muted-foreground">({clinic.review_count} reviews)</span>
+            <span className="text-muted-foreground">{t('googleBusiness.reviewsCount', { count: clinic.review_count })}</span>
             {clinic.google_rating_synced_at && (
               <span className="text-xs text-muted-foreground">
-                · synced {new Date(clinic.google_rating_synced_at).toLocaleDateString()}
+                {t('googleBusiness.syncedOn', { date: new Date(clinic.google_rating_synced_at).toLocaleDateString() })}
               </span>
             )}
           </div>
@@ -173,7 +175,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
               {fetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => setSearching(true)}>
-              Change
+              {t('googleBusiness.change')}
             </Button>
           </div>
         </div>
@@ -186,7 +188,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
 
           {fetching && !preview && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" /> Fetching rating…
+              <Loader2 className="w-4 h-4 animate-spin" /> {t('googleBusiness.fetchingRating')}
             </div>
           )}
 
@@ -196,20 +198,20 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
               <div className="flex items-center gap-1 text-sm">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span>{preview.rating ?? "—"}</span>
-                <span className="text-muted-foreground">({preview.reviewCount ?? 0} reviews)</span>
+                <span className="text-muted-foreground">{t('googleBusiness.reviewsCount', { count: preview.reviewCount ?? 0 })}</span>
               </div>
               <p className="text-xs text-muted-foreground">
                 {preview.reviews.length > 0
-                  ? `${preview.reviews.length} positive review${preview.reviews.length > 1 ? "s" : ""} will be shown on your clinic page.`
-                  : "No 4-5 star reviews were found to show on your clinic page."}
+                  ? t('googleBusiness.positiveReviews', { count: preview.reviews.length })
+                  : t('googleBusiness.noReviews')}
               </p>
               <div className="flex gap-2">
                 <Button type="button" size="sm" onClick={handleConfirm} disabled={fetching}>
                   {fetching ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
-                  Confirm & Save
+                  {t('googleBusiness.confirmSave')}
                 </Button>
                 <Button type="button" size="sm" variant="ghost" onClick={() => setPreview(null)}>
-                  Search again
+                  {t('googleBusiness.searchAgain')}
                 </Button>
               </div>
             </div>
@@ -217,13 +219,12 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
 
           {currentPlaceId && !preview && (
             <Button type="button" size="sm" variant="ghost" onClick={() => setSearching(false)}>
-              Cancel
+              {t('googleBusiness.cancel')}
             </Button>
           )}
 
           <p className="text-xs text-muted-foreground">
-            Search your business name, select it from the Google suggestions below, and we'll pull your real rating
-            automatically.
+            {t('googleBusiness.footerNote')}
           </p>
         </div>
       )}

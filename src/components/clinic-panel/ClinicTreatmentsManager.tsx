@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,6 +20,7 @@ export type ClinicTreatmentsHandle = {
 
 const ClinicTreatmentsManager = forwardRef<ClinicTreatmentsHandle, Props>(
   ({ clinicId, selections, onChanged }, ref) => {
+    const { t } = useTranslation('clinicManagers');
     const { toast } = useToast();
     const [allTreatments, setAllTreatments] = useState<Treatment[]>([]);
     const [selected, setSelected] = useState<Record<string, string>>(
@@ -78,7 +80,7 @@ const ClinicTreatmentsManager = forwardRef<ClinicTreatmentsHandle, Props>(
         onChanged?.();
       } catch (e: any) {
         console.error(e);
-        toast({ title: "Error", description: "Could not save treatments.", variant: "destructive" });
+        toast({ title: t('doctors.toasts.errorTitle'), description: t('treatments.saveErrorDesc'), variant: "destructive" });
         throw e;
       }
     };
@@ -90,30 +92,30 @@ const ClinicTreatmentsManager = forwardRef<ClinicTreatmentsHandle, Props>(
     return (
       <Card className="p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Treatments and Prices</h3>
-          <div className="text-sm text-muted-foreground">Selected: {allSelectedCount}</div>
+          <h3 className="text-lg font-semibold">{t('treatments.title')}</h3>
+          <div className="text-sm text-muted-foreground">{t('treatments.selectedLabel', { count: allSelectedCount })}</div>
         </div>
         {loading ? (
-          <div className="text-sm text-muted-foreground">Loading...</div>
+          <div className="text-sm text-muted-foreground">{t('treatments.loading')}</div>
         ) : (
           <div className="space-y-3">
-            {allTreatments.map((t) => {
-              const isChecked = t.id in selected;
+            {allTreatments.map((tr) => {
+              const isChecked = tr.id in selected;
               return (
-                <div key={t.id} className="flex items-center gap-3 p-3 border border-border/60 rounded-lg">
-                  <Checkbox checked={isChecked} onCheckedChange={(c) => toggle(t.id, Boolean(c))} />
+                <div key={tr.id} className="flex items-center gap-3 p-3 border border-border/60 rounded-lg">
+                  <Checkbox checked={isChecked} onCheckedChange={(c) => toggle(tr.id, Boolean(c))} />
                   <div className="flex-1">
-                    <Label className="font-medium">{t.name}</Label>
+                    <Label className="font-medium">{tr.name}</Label>
                   </div>
                   {isChecked && (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Starting Price (EUR)</span>
+                      <span className="text-sm text-muted-foreground">{t('treatments.startingPrice')}</span>
                       <Input
                         type="text"
                         inputMode="decimal"
-                        placeholder="e.g. 1500"
-                        value={selected[t.id] ?? ""}
-                        onChange={(e) => updatePrice(t.id, e.target.value)}
+                        placeholder={t('treatments.pricePlaceholder')}
+                        value={selected[tr.id] ?? ""}
+                        onChange={(e) => updatePrice(tr.id, e.target.value)}
                         className="w-28"
                       />
                     </div>
@@ -124,7 +126,7 @@ const ClinicTreatmentsManager = forwardRef<ClinicTreatmentsHandle, Props>(
           </div>
         )}
         <p className="text-xs text-muted-foreground">
-          Treatments and prices are saved together with the rest of your clinic information using the Save button at the bottom of the page.
+          {t('treatments.footerNote')}
         </p>
       </Card>
     );

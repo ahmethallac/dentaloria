@@ -1,0 +1,118 @@
+{
+  "images": {
+    "title": "Görseller",
+    "noImages": "Henüz görsel yok.",
+    "cover": "Kapak",
+    "setAsCover": "Kapak Yap",
+    "delete": "Sil",
+    "toasts": {
+      "uploadedTitle": "Yüklendi",
+      "uploadedDesc": "Görsel eklendi.",
+      "uploadErrorDesc": "Görsel yüklenemedi.",
+      "coverUpdatedTitle": "Güncellendi",
+      "coverUpdatedDesc": "Kapak görseli ayarlandı.",
+      "coverErrorDesc": "Kapak görseli ayarlanamadı.",
+      "deletedTitle": "Silindi",
+      "deletedDesc": "Görsel kaldırıldı.",
+      "deleteErrorDesc": "Görsel silinemedi.",
+      "errorTitle": "Hata"
+    }
+  },
+  "beforeAfter": {
+    "title": "Öncesi & Sonrası Fotoğrafları",
+    "hint": "Yatay fotoğraflar en iyi sonucu verir. Genel sayfanızda bir slayt olarak gösterilir.",
+    "noItems": "Henüz öncesi/sonrası fotoğrafı yok.",
+    "toasts": {
+      "uploadedTitle": "Yüklendi",
+      "uploadedDesc": "Öncesi/sonrası fotoğrafları eklendi.",
+      "uploadErrorTitle": "Fotoğraf yüklenemedi",
+      "unknownError": "Bilinmeyen hata",
+      "deleteErrorTitle": "Hata",
+      "deleteErrorDesc": "Fotoğraf silinemedi."
+    }
+  },
+  "doctors": {
+    "title": "Diş Hekimleri",
+    "addDentist": "Diş Hekimi Ekle",
+    "noDentists": "Henüz diş hekimi eklenmedi.",
+    "yearsExperience": "{{count}} yıl deneyim",
+    "deleteAriaLabel": "Diş hekimini sil",
+    "dialogTitle": "Diş Hekimi Ekle",
+    "uploadPhoto": "Fotoğraf yükle",
+    "readjustPhoto": "Fotoğrafı yeniden ayarla",
+    "titleLabel": "Unvan",
+    "titlePlaceholder": "Dr.",
+    "fullNameLabel": "Ad Soyad",
+    "fullNamePlaceholder": "Ayşe Yılmaz",
+    "experienceLabel": "Deneyim (yıl)",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "toasts": {
+      "missingNameTitle": "İsim eksik",
+      "missingNameDesc": "Lütfen diş hekiminin tam adını girin.",
+      "missingPhotoTitle": "Fotoğraf eksik",
+      "missingPhotoDesc": "Lütfen bir profil fotoğrafı yükleyip kırpın.",
+      "addedTitle": "Eklendi",
+      "addedDesc": "Diş hekimi kliniğinize eklendi.",
+      "addErrorDesc": "Diş hekimi eklenemedi.",
+      "deletedTitle": "Silindi",
+      "deletedDesc": "Diş hekimi kaldırıldı.",
+      "deleteErrorDesc": "Diş hekimi silinemedi.",
+      "errorTitle": "Hata"
+    }
+  },
+  "treatments": {
+    "title": "Tedaviler ve Fiyatlar",
+    "selectedLabel": "Seçili: {{count}}",
+    "loading": "Yükleniyor...",
+    "startingPrice": "Başlangıç Fiyatı (EUR)",
+    "pricePlaceholder": "örn. 1500",
+    "footerNote": "Tedaviler ve fiyatlar, sayfanın altındaki Kaydet düğmesi kullanılarak klinik bilgilerinizin geri kalanıyla birlikte kaydedilir.",
+    "saveErrorDesc": "Tedaviler kaydedilemedi."
+  },
+  "videos": {
+    "title": "Videolar",
+    "hint": "Bir YouTube veya Instagram bağlantısı yapıştırın. Videolar genel sayfanızda 9:16 (Reels) çerçevesinde gösterilir.",
+    "placeholder": "https://www.youtube.com/watch?v=… veya https://www.instagram.com/reel/…",
+    "addVideo": "Video ekle",
+    "noVideos": "Henüz video yok.",
+    "openLink": "Bağlantıyı aç",
+    "toasts": {
+      "unsupportedTitle": "Desteklenmeyen bağlantı",
+      "unsupportedDesc": "Lütfen geçerli bir YouTube veya Instagram video URL'si yapıştırın.",
+      "addedTitle": "Video eklendi",
+      "addedDesc": "Önizleme artık aşağıda görünüyor.",
+      "addErrorDesc": "Video eklenemedi.",
+      "removedTitle": "Kaldırıldı",
+      "removedDesc": "Video kaldırıldı.",
+      "removeErrorDesc": "Video kaldırılamadı.",
+      "errorTitle": "Hata"
+    }
+  },
+  "googleBusiness": {
+    "label": "Google Puanı",
+    "reviewsCount": "({{count}} değerlendirme)",
+    "syncedOn": "· {{date}} tarihinde senkronize edildi",
+    "change": "Değiştir",
+    "searchPlaceholder": "İşletmenizi Google'da bulun…",
+    "fetchingRating": "Puan alınıyor…",
+    "positiveReviews_one": "{{count}} olumlu değerlendirme klinik sayfanızda gösterilecek.",
+    "positiveReviews_other": "{{count}} olumlu değerlendirme klinik sayfanızda gösterilecek.",
+    "noReviews": "Klinik sayfanızda gösterilecek 4-5 yıldızlı değerlendirme bulunamadı.",
+    "confirmSave": "Onayla ve Kaydet",
+    "searchAgain": "Tekrar ara",
+    "cancel": "İptal",
+    "footerNote": "İşletme adınızı arayın, aşağıdaki Google önerilerinden seçin; gerçek puanınızı otomatik olarak alalım.",
+    "toasts": {
+      "fetchErrorTitle": "Hata",
+      "fetchErrorDesc": "Bu işletme için Google puanı alınamadı.",
+      "mapsLoadErrorDesc": "Google araması yüklenemedi.",
+      "savedTitle": "Başarılı",
+      "savedDesc": "Google puanı bağlandı ve kaydedildi.",
+      "saveErrorDesc": "Google puanı kaydedilemedi.",
+      "refreshedTitle": "Başarılı",
+      "refreshedDesc": "Puan Google'dan yenilendi.",
+      "refreshErrorDesc": "Puan yenilenemedi."
+    }
+  }
+}

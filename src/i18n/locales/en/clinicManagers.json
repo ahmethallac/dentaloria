@@ -1,0 +1,118 @@
+{
+  "images": {
+    "title": "Images",
+    "noImages": "No images yet.",
+    "cover": "Cover",
+    "setAsCover": "Set as Cover",
+    "delete": "Delete",
+    "toasts": {
+      "uploadedTitle": "Uploaded",
+      "uploadedDesc": "Image added.",
+      "uploadErrorDesc": "Could not upload image.",
+      "coverUpdatedTitle": "Updated",
+      "coverUpdatedDesc": "Cover image set.",
+      "coverErrorDesc": "Could not set cover image.",
+      "deletedTitle": "Deleted",
+      "deletedDesc": "Image removed.",
+      "deleteErrorDesc": "Could not delete image.",
+      "errorTitle": "Error"
+    }
+  },
+  "beforeAfter": {
+    "title": "Before & After Photos",
+    "hint": "Landscape photos work best. Shown as a carousel on your public page.",
+    "noItems": "No before/after photos yet.",
+    "toasts": {
+      "uploadedTitle": "Uploaded",
+      "uploadedDesc": "Before/after photos added.",
+      "uploadErrorTitle": "Could not upload photo",
+      "unknownError": "Unknown error",
+      "deleteErrorTitle": "Error",
+      "deleteErrorDesc": "Could not delete photo."
+    }
+  },
+  "doctors": {
+    "title": "Dentists",
+    "addDentist": "Add Dentist",
+    "noDentists": "No dentists added yet.",
+    "yearsExperience": "{{count}} yrs experience",
+    "deleteAriaLabel": "Delete dentist",
+    "dialogTitle": "Add Dentist",
+    "uploadPhoto": "Upload photo",
+    "readjustPhoto": "Re-adjust photo",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Dr.",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "Jane Doe",
+    "experienceLabel": "Experience (years)",
+    "cancel": "Cancel",
+    "save": "Save",
+    "toasts": {
+      "missingNameTitle": "Missing name",
+      "missingNameDesc": "Please enter the dentist's full name.",
+      "missingPhotoTitle": "Missing photo",
+      "missingPhotoDesc": "Please upload and crop a profile photo.",
+      "addedTitle": "Added",
+      "addedDesc": "Dentist added to your clinic.",
+      "addErrorDesc": "Could not add dentist.",
+      "deletedTitle": "Deleted",
+      "deletedDesc": "Dentist removed.",
+      "deleteErrorDesc": "Could not delete dentist.",
+      "errorTitle": "Error"
+    }
+  },
+  "treatments": {
+    "title": "Treatments and Prices",
+    "selectedLabel": "Selected: {{count}}",
+    "loading": "Loading...",
+    "startingPrice": "Starting Price (EUR)",
+    "pricePlaceholder": "e.g. 1500",
+    "footerNote": "Treatments and prices are saved together with the rest of your clinic information using the Save button at the bottom of the page.",
+    "saveErrorDesc": "Could not save treatments."
+  },
+  "videos": {
+    "title": "Videos",
+    "hint": "Paste a YouTube or Instagram link. Videos display in a 9:16 (Reels) frame on your public page.",
+    "placeholder": "https://www.youtube.com/watch?v=… or https://www.instagram.com/reel/…",
+    "addVideo": "Add video",
+    "noVideos": "No videos yet.",
+    "openLink": "Open link",
+    "toasts": {
+      "unsupportedTitle": "Unsupported link",
+      "unsupportedDesc": "Please paste a valid YouTube or Instagram video URL.",
+      "addedTitle": "Video added",
+      "addedDesc": "Preview is now visible below.",
+      "addErrorDesc": "Could not add video.",
+      "removedTitle": "Removed",
+      "removedDesc": "Video removed.",
+      "removeErrorDesc": "Could not remove video.",
+      "errorTitle": "Error"
+    }
+  },
+  "googleBusiness": {
+    "label": "Google Rating",
+    "reviewsCount": "({{count}} reviews)",
+    "syncedOn": "· synced {{date}}",
+    "change": "Change",
+    "searchPlaceholder": "Find your business on Google…",
+    "fetchingRating": "Fetching rating…",
+    "positiveReviews_one": "{{count}} positive review will be shown on your clinic page.",
+    "positiveReviews_other": "{{count}} positive reviews will be shown on your clinic page.",
+    "noReviews": "No 4-5 star reviews were found to show on your clinic page.",
+    "confirmSave": "Confirm & Save",
+    "searchAgain": "Search again",
+    "cancel": "Cancel",
+    "footerNote": "Search your business name, select it from the Google suggestions below, and we'll pull your real rating automatically.",
+    "toasts": {
+      "fetchErrorTitle": "Error",
+      "fetchErrorDesc": "Could not fetch the Google rating for this business.",
+      "mapsLoadErrorDesc": "Could not load Google search.",
+      "savedTitle": "Success",
+      "savedDesc": "Google rating linked and saved.",
+      "saveErrorDesc": "Could not save the Google rating.",
+      "refreshedTitle": "Success",
+      "refreshedDesc": "Rating refreshed from Google.",
+      "refreshErrorDesc": "Could not refresh the rating."
+    }
+  }
+}

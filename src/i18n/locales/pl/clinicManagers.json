@@ -1,0 +1,120 @@
+{
+  "images": {
+    "title": "Zdjęcia",
+    "noImages": "Brak zdjęć.",
+    "cover": "Okładka",
+    "setAsCover": "Ustaw jako Okładkę",
+    "delete": "Usuń",
+    "toasts": {
+      "uploadedTitle": "Przesłano",
+      "uploadedDesc": "Dodano zdjęcie.",
+      "uploadErrorDesc": "Nie udało się przesłać zdjęcia.",
+      "coverUpdatedTitle": "Zaktualizowano",
+      "coverUpdatedDesc": "Ustawiono zdjęcie okładki.",
+      "coverErrorDesc": "Nie udało się ustawić zdjęcia okładki.",
+      "deletedTitle": "Usunięto",
+      "deletedDesc": "Usunięto zdjęcie.",
+      "deleteErrorDesc": "Nie udało się usunąć zdjęcia.",
+      "errorTitle": "Błąd"
+    }
+  },
+  "beforeAfter": {
+    "title": "Zdjęcia Przed i Po",
+    "hint": "Najlepiej sprawdzają się zdjęcia poziome. Wyświetlane jako karuzela na Twojej publicznej stronie.",
+    "noItems": "Brak jeszcze zdjęć przed/po.",
+    "toasts": {
+      "uploadedTitle": "Przesłano",
+      "uploadedDesc": "Dodano zdjęcia przed/po.",
+      "uploadErrorTitle": "Nie udało się przesłać zdjęcia",
+      "unknownError": "Nieznany błąd",
+      "deleteErrorTitle": "Błąd",
+      "deleteErrorDesc": "Nie udało się usunąć zdjęcia."
+    }
+  },
+  "doctors": {
+    "title": "Dentyści",
+    "addDentist": "Dodaj Dentystę",
+    "noDentists": "Nie dodano jeszcze żadnego dentysty.",
+    "yearsExperience": "{{count}} lat doświadczenia",
+    "deleteAriaLabel": "Usuń dentystę",
+    "dialogTitle": "Dodaj Dentystę",
+    "uploadPhoto": "Prześlij zdjęcie",
+    "readjustPhoto": "Dostosuj zdjęcie ponownie",
+    "titleLabel": "Tytuł",
+    "titlePlaceholder": "Dr.",
+    "fullNameLabel": "Imię i Nazwisko",
+    "fullNamePlaceholder": "Jan Kowalski",
+    "experienceLabel": "Doświadczenie (lata)",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "toasts": {
+      "missingNameTitle": "Brak imienia",
+      "missingNameDesc": "Wprowadź pełne imię i nazwisko dentysty.",
+      "missingPhotoTitle": "Brak zdjęcia",
+      "missingPhotoDesc": "Prześlij i przytnij zdjęcie profilowe.",
+      "addedTitle": "Dodano",
+      "addedDesc": "Dentysta dodany do Twojej kliniki.",
+      "addErrorDesc": "Nie udało się dodać dentysty.",
+      "deletedTitle": "Usunięto",
+      "deletedDesc": "Dentysta usunięty.",
+      "deleteErrorDesc": "Nie udało się usunąć dentysty.",
+      "errorTitle": "Błąd"
+    }
+  },
+  "treatments": {
+    "title": "Zabiegi i Ceny",
+    "selectedLabel": "Wybrano: {{count}}",
+    "loading": "Ładowanie...",
+    "startingPrice": "Cena Początkowa (EUR)",
+    "pricePlaceholder": "np. 1500",
+    "footerNote": "Zabiegi i ceny są zapisywane razem z resztą informacji o klinice za pomocą przycisku Zapisz na dole strony.",
+    "saveErrorDesc": "Nie udało się zapisać zabiegów."
+  },
+  "videos": {
+    "title": "Filmy",
+    "hint": "Wklej link do YouTube lub Instagrama. Filmy są wyświetlane w formacie 9:16 (Reels) na Twojej publicznej stronie.",
+    "placeholder": "https://www.youtube.com/watch?v=… lub https://www.instagram.com/reel/…",
+    "addVideo": "Dodaj film",
+    "noVideos": "Brak filmów.",
+    "openLink": "Otwórz link",
+    "toasts": {
+      "unsupportedTitle": "Nieobsługiwany link",
+      "unsupportedDesc": "Wklej prawidłowy adres URL filmu z YouTube lub Instagrama.",
+      "addedTitle": "Dodano film",
+      "addedDesc": "Podgląd jest teraz widoczny poniżej.",
+      "addErrorDesc": "Nie udało się dodać filmu.",
+      "removedTitle": "Usunięto",
+      "removedDesc": "Film usunięty.",
+      "removeErrorDesc": "Nie udało się usunąć filmu.",
+      "errorTitle": "Błąd"
+    }
+  },
+  "googleBusiness": {
+    "label": "Ocena Google",
+    "reviewsCount": "({{count}} opinii)",
+    "syncedOn": "· zsynchronizowano {{date}}",
+    "change": "Zmień",
+    "searchPlaceholder": "Znajdź swoją firmę w Google…",
+    "fetchingRating": "Pobieranie oceny…",
+    "positiveReviews_one": "{{count}} pozytywna opinia zostanie wyświetlona na stronie Twojej kliniki.",
+    "positiveReviews_few": "{{count}} pozytywne opinie zostaną wyświetlone na stronie Twojej kliniki.",
+    "positiveReviews_many": "{{count}} pozytywnych opinii zostanie wyświetlonych na stronie Twojej kliniki.",
+    "positiveReviews_other": "{{count}} pozytywnej opinii zostanie wyświetlonych na stronie Twojej kliniki.",
+    "noReviews": "Nie znaleziono opinii 4-5 gwiazdek do wyświetlenia na stronie Twojej kliniki.",
+    "confirmSave": "Potwierdź i Zapisz",
+    "searchAgain": "Szukaj ponownie",
+    "cancel": "Anuluj",
+    "footerNote": "Wyszukaj nazwę swojej firmy, wybierz ją z sugestii Google poniżej, a my automatycznie pobierzemy Twoją prawdziwą ocenę.",
+    "toasts": {
+      "fetchErrorTitle": "Błąd",
+      "fetchErrorDesc": "Nie udało się pobrać oceny Google dla tej firmy.",
+      "mapsLoadErrorDesc": "Nie udało się załadować wyszukiwania Google.",
+      "savedTitle": "Sukces",
+      "savedDesc": "Ocena Google połączona i zapisana.",
+      "saveErrorDesc": "Nie udało się zapisać oceny Google.",
+      "refreshedTitle": "Sukces",
+      "refreshedDesc": "Ocena odświeżona z Google.",
+      "refreshErrorDesc": "Nie udało się odświeżyć oceny."
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "images": {
+    "title": "Изображения",
+    "noImages": "Пока нет изображений.",
+    "cover": "Обложка",
+    "setAsCover": "Сделать обложкой",
+    "delete": "Удалить",
+    "toasts": {
+      "uploadedTitle": "Загружено",
+      "uploadedDesc": "Изображение добавлено.",
+      "uploadErrorDesc": "Не удалось загрузить изображение.",
+      "coverUpdatedTitle": "Обновлено",
+      "coverUpdatedDesc": "Обложка установлена.",
+      "coverErrorDesc": "Не удалось установить обложку.",
+      "deletedTitle": "Удалено",
+      "deletedDesc": "Изображение удалено.",
+      "deleteErrorDesc": "Не удалось удалить изображение.",
+      "errorTitle": "Ошибка"
+    }
+  },
+  "beforeAfter": {
+    "title": "Фото До и После",
+    "hint": "Горизонтальные фото подходят лучше всего. Отображаются в виде карусели на вашей публичной странице.",
+    "noItems": "Пока нет фото до/после.",
+    "toasts": {
+      "uploadedTitle": "Загружено",
+      "uploadedDesc": "Фото до/после добавлены.",
+      "uploadErrorTitle": "Не удалось загрузить фото",
+      "unknownError": "Неизвестная ошибка",
+      "deleteErrorTitle": "Ошибка",
+      "deleteErrorDesc": "Не удалось удалить фото."
+    }
+  },
+  "doctors": {
+    "title": "Стоматологи",
+    "addDentist": "Добавить стоматолога",
+    "noDentists": "Стоматологи пока не добавлены.",
+    "yearsExperience": "{{count}} лет опыта",
+    "deleteAriaLabel": "Удалить стоматолога",
+    "dialogTitle": "Добавить стоматолога",
+    "uploadPhoto": "Загрузить фото",
+    "readjustPhoto": "Перенастроить фото",
+    "titleLabel": "Звание",
+    "titlePlaceholder": "Д-р",
+    "fullNameLabel": "Полное имя",
+    "fullNamePlaceholder": "Иван Иванов",
+    "experienceLabel": "Опыт (лет)",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "toasts": {
+      "missingNameTitle": "Отсутствует имя",
+      "missingNameDesc": "Введите полное имя стоматолога.",
+      "missingPhotoTitle": "Отсутствует фото",
+      "missingPhotoDesc": "Загрузите и обрежьте фото профиля.",
+      "addedTitle": "Добавлено",
+      "addedDesc": "Стоматолог добавлен в вашу клинику.",
+      "addErrorDesc": "Не удалось добавить стоматолога.",
+      "deletedTitle": "Удалено",
+      "deletedDesc": "Стоматолог удалён.",
+      "deleteErrorDesc": "Не удалось удалить стоматолога.",
+      "errorTitle": "Ошибка"
+    }
+  },
+  "treatments": {
+    "title": "Лечение и цены",
+    "selectedLabel": "Выбрано: {{count}}",
+    "loading": "Загрузка...",
+    "startingPrice": "Начальная цена (EUR)",
+    "pricePlaceholder": "напр. 1500",
+    "footerNote": "Лечение и цены сохраняются вместе с остальной информацией о клинике с помощью кнопки Сохранить внизу страницы.",
+    "saveErrorDesc": "Не удалось сохранить лечение."
+  },
+  "videos": {
+    "title": "Видео",
+    "hint": "Вставьте ссылку на YouTube или Instagram. Видео отображаются в формате 9:16 (Reels) на вашей публичной странице.",
+    "placeholder": "https://www.youtube.com/watch?v=… или https://www.instagram.com/reel/…",
+    "addVideo": "Добавить видео",
+    "noVideos": "Пока нет видео.",
+    "openLink": "Открыть ссылку",
+    "toasts": {
+      "unsupportedTitle": "Неподдерживаемая ссылка",
+      "unsupportedDesc": "Пожалуйста, вставьте действительный URL видео YouTube или Instagram.",
+      "addedTitle": "Видео добавлено",
+      "addedDesc": "Предпросмотр теперь виден ниже.",
+      "addErrorDesc": "Не удалось добавить видео.",
+      "removedTitle": "Удалено",
+      "removedDesc": "Видео удалено.",
+      "removeErrorDesc": "Не удалось удалить видео.",
+      "errorTitle": "Ошибка"
+    }
+  },
+  "googleBusiness": {
+    "label": "Рейтинг Google",
+    "reviewsCount": "({{count}} отзывов)",
+    "syncedOn": "· синхронизировано {{date}}",
+    "change": "Изменить",
+    "searchPlaceholder": "Найдите свой бизнес в Google…",
+    "fetchingRating": "Получение рейтинга…",
+    "positiveReviews_one": "{{count}} положительный отзыв будет показан на странице вашей клиники.",
+    "positiveReviews_few": "{{count}} положительных отзыва будут показаны на странице вашей клиники.",
+    "positiveReviews_many": "{{count}} положительных отзывов будут показаны на странице вашей клиники.",
+    "positiveReviews_other": "{{count}} положительного отзыва будут показаны на странице вашей клиники.",
+    "noReviews": "Отзывы с оценкой 4-5 звёзд для показа на странице клиники не найдены.",
+    "confirmSave": "Подтвердить и Сохранить",
+    "searchAgain": "Искать снова",
+    "cancel": "Отмена",
+    "footerNote": "Найдите название своего бизнеса, выберите его из предложений Google ниже, и мы автоматически получим ваш реальный рейтинг.",
+    "toasts": {
+      "fetchErrorTitle": "Ошибка",
+      "fetchErrorDesc": "Не удалось получить рейтинг Google для этого бизнеса.",
+      "mapsLoadErrorDesc": "Не удалось загрузить поиск Google.",
+      "savedTitle": "Успешно",
+      "savedDesc": "Рейтинг Google привязан и сохранён.",
+      "saveErrorDesc": "Не удалось сохранить рейтинг Google.",
+      "refreshedTitle": "Успешно",
+      "refreshedDesc": "Рейтинг обновлён из Google.",
+      "refreshErrorDesc": "Не удалось обновить рейтинг."
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function ClinicImagesManager({ clinicId, images, onChanged }: Props) {
+  const { t } = useTranslation('clinicManagers');
   const { toast } = useToast();
   const [isWorking, setIsWorking] = useState(false);
   const [cropQueue, setCropQueue] = useState<File[]>([]);
@@ -47,11 +49,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
       });
       if (error) throw error;
 
-      toast({ title: "Uploaded", description: "Image added." });
+      toast({ title: t('images.toasts.uploadedTitle'), description: t('images.toasts.uploadedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not upload image.", variant: "destructive" });
+      toast({ title: t('images.toasts.errorTitle'), description: t('images.toasts.uploadErrorDesc'), variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -82,11 +84,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
       await supabase.from("clinic_images").update({ is_primary: false }).eq("clinic_id", clinicId);
       const { error } = await supabase.from("clinic_images").update({ is_primary: true }).eq("id", imageId);
       if (error) throw error;
-      toast({ title: "Updated", description: "Cover image set." });
+      toast({ title: t('images.toasts.coverUpdatedTitle'), description: t('images.toasts.coverUpdatedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not set cover image.", variant: "destructive" });
+      toast({ title: t('images.toasts.errorTitle'), description: t('images.toasts.coverErrorDesc'), variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -97,11 +99,11 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
     try {
       const { error } = await supabase.from("clinic_images").delete().eq("id", imageId);
       if (error) throw error;
-      toast({ title: "Deleted", description: "Image removed." });
+      toast({ title: t('images.toasts.deletedTitle'), description: t('images.toasts.deletedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not delete image.", variant: "destructive" });
+      toast({ title: t('images.toasts.errorTitle'), description: t('images.toasts.deleteErrorDesc'), variant: "destructive" });
     } finally {
       setIsWorking(false);
     }
@@ -111,13 +113,13 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
     <>
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Images</h3>
+          <h3 className="text-lg font-semibold">{t('images.title')}</h3>
           <label className="inline-flex items-center gap-2">
             <Input type="file" multiple accept="image/*" onChange={handleFileSelect} disabled={isWorking} />
           </label>
         </div>
         {images.length === 0 ? (
-          <div className="text-sm text-muted-foreground">No images yet.</div>
+          <div className="text-sm text-muted-foreground">{t('images.noImages')}</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {images.map((img) => (
@@ -125,10 +127,10 @@ export default function ClinicImagesManager({ clinicId, images, onChanged }: Pro
                 <img src={img.image_url} alt="clinic image" className="w-full h-32 object-cover" loading="lazy" />
                 <div className="p-2 flex items-center justify-between gap-2">
                   <Button size="sm" variant="outline" disabled={isWorking || !!img.is_primary} onClick={() => setPrimary(img.id)}>
-                    {img.is_primary ? "Cover" : "Set as Cover"}
+                    {img.is_primary ? t('images.cover') : t('images.setAsCover')}
                   </Button>
                   <Button size="sm" variant="destructive" disabled={isWorking} onClick={() => remove(img.id)}>
-                    Delete
+                    {t('images.delete')}
                   </Button>
                 </div>
               </div>

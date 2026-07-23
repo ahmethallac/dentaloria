@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function ClinicBeforeAfterManager({ clinicId }: Props) {
+  const { t } = useTranslation('clinicManagers');
   const { toast } = useToast();
   const [items, setItems] = useState<BeforeAfterImage[]>([]);
   const [isWorking, setIsWorking] = useState(false);
@@ -72,13 +74,13 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
         if (error) throw error;
         i++;
       }
-      toast({ title: "Uploaded", description: "Before/after photos added." });
+      toast({ title: t('beforeAfter.toasts.uploadedTitle'), description: t('beforeAfter.toasts.uploadedDesc') });
       await load();
     } catch (err: any) {
       console.error(err);
       toast({
-        title: "Could not upload photo",
-        description: err?.message || "Unknown error",
+        title: t('beforeAfter.toasts.uploadErrorTitle'),
+        description: err?.message || t('beforeAfter.toasts.unknownError'),
         variant: "destructive",
       });
     } finally {
@@ -98,8 +100,8 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
     } catch (err) {
       console.error(err);
       toast({
-        title: "Error",
-        description: "Could not delete photo.",
+        title: t('beforeAfter.toasts.deleteErrorTitle'),
+        description: t('beforeAfter.toasts.deleteErrorDesc'),
         variant: "destructive",
       });
     } finally {
@@ -132,9 +134,9 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
     <Card className="p-4">
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
-          <h3 className="text-lg font-semibold">Before & After Photos</h3>
+          <h3 className="text-lg font-semibold">{t('beforeAfter.title')}</h3>
           <p className="text-xs text-muted-foreground">
-            Landscape photos work best. Shown as a carousel on your public page.
+            {t('beforeAfter.hint')}
           </p>
         </div>
         <Input
@@ -147,7 +149,7 @@ export default function ClinicBeforeAfterManager({ clinicId }: Props) {
         />
       </div>
       {items.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No before/after photos yet.</div>
+        <div className="text-sm text-muted-foreground">{t('beforeAfter.noItems')}</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {items.map((img, idx) => (

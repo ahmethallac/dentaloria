@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ interface Props {
 const EMPTY_FORM = { title: "Dr.", name: "", experience_years: 0 };
 
 export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: Props) {
+  const { t } = useTranslation('clinicManagers');
   const { toast } = useToast();
   const [list, setList] = useState<Doctor[]>(doctors);
   const [open, setOpen] = useState(false);
@@ -60,11 +62,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
 
   const handleSave = async () => {
     if (!form.name.trim()) {
-      toast({ title: "Missing name", description: "Please enter the dentist's full name.", variant: "destructive" });
+      toast({ title: t('doctors.toasts.missingNameTitle'), description: t('doctors.toasts.missingNameDesc'), variant: "destructive" });
       return;
     }
     if (!croppedFile) {
-      toast({ title: "Missing photo", description: "Please upload and crop a profile photo.", variant: "destructive" });
+      toast({ title: t('doctors.toasts.missingPhotoTitle'), description: t('doctors.toasts.missingPhotoDesc'), variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -89,13 +91,13 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       if (error) throw error;
 
       setList((prev) => [...prev, data as Doctor]);
-      toast({ title: "Added", description: "Dentist added to your clinic." });
+      toast({ title: t('doctors.toasts.addedTitle'), description: t('doctors.toasts.addedDesc') });
       onChanged?.();
       setOpen(false);
       resetModal();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not add dentist.", variant: "destructive" });
+      toast({ title: t('doctors.toasts.errorTitle'), description: t('doctors.toasts.addErrorDesc'), variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -106,25 +108,25 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       const { error } = await supabase.from("doctors").delete().eq("id", id);
       if (error) throw error;
       setList((prev) => prev.filter((d) => d.id !== id));
-      toast({ title: "Deleted", description: "Dentist removed." });
+      toast({ title: t('doctors.toasts.deletedTitle'), description: t('doctors.toasts.deletedDesc') });
       onChanged?.();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Error", description: "Could not delete dentist.", variant: "destructive" });
+      toast({ title: t('doctors.toasts.errorTitle'), description: t('doctors.toasts.deleteErrorDesc'), variant: "destructive" });
     }
   };
 
   return (
     <Card className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Dentists</h3>
+        <h3 className="text-lg font-semibold">{t('doctors.title')}</h3>
         <Button onClick={() => { resetModal(); setOpen(true); }} size="sm">
-          <Plus className="w-4 h-4 mr-1" /> Add Dentist
+          <Plus className="w-4 h-4 mr-1" /> {t('doctors.addDentist')}
         </Button>
       </div>
 
       {list.length === 0 ? (
-        <div className="text-sm text-muted-foreground">No dentists added yet.</div>
+        <div className="text-sm text-muted-foreground">{t('doctors.noDentists')}</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {list.map((d) => (
@@ -142,10 +144,10 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
               <div className="flex-1 min-w-0">
                 <div className="font-medium truncate">{d.title ? `${d.title} ` : ""}{d.name}</div>
                 <div className="text-xs text-muted-foreground">
-                  {d.experience_years ? `${d.experience_years} yrs experience` : "—"}
+                  {d.experience_years ? t('doctors.yearsExperience', { count: d.experience_years }) : "—"}
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(d.id)} aria-label="Delete dentist">
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(d.id)} aria-label={t('doctors.deleteAriaLabel')}>
                 <Trash2 className="w-4 h-4 text-destructive" />
               </Button>
             </div>
@@ -156,7 +158,7 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetModal(); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Dentist</DialogTitle>
+            <DialogTitle>{t('doctors.dialogTitle')}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -169,7 +171,7 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
                   ) : (
                     <div className="flex flex-col items-center text-muted-foreground text-xs">
                       <Upload className="w-6 h-6 mb-1" />
-                      Upload photo
+                      {t('doctors.uploadPhoto')}
                     </div>
                   )}
                 </div>
@@ -189,34 +191,34 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
                     if (croppedFile) setRawFile(croppedFile);
                   }}
                 >
-                  Re-adjust photo
+                  {t('doctors.readjustPhoto')}
                 </button>
               )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-1">
-                <Label htmlFor="doc-title">Title</Label>
+                <Label htmlFor="doc-title">{t('doctors.titleLabel')}</Label>
                 <Input
                   id="doc-title"
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  placeholder="Dr."
+                  placeholder={t('doctors.titlePlaceholder')}
                 />
               </div>
               <div className="col-span-2">
-                <Label htmlFor="doc-name">Full Name</Label>
+                <Label htmlFor="doc-name">{t('doctors.fullNameLabel')}</Label>
                 <Input
                   id="doc-name"
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  placeholder="Jane Doe"
+                  placeholder={t('doctors.fullNamePlaceholder')}
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="doc-exp">Experience (years)</Label>
+              <Label htmlFor="doc-exp">{t('doctors.experienceLabel')}</Label>
               <Input
                 id="doc-exp"
                 type="number"
@@ -229,11 +231,11 @@ export default function ClinicDoctorsManager({ clinicId, doctors, onChanged }: P
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
-              Cancel
+              {t('doctors.cancel')}
             </Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Save
+              {t('doctors.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
