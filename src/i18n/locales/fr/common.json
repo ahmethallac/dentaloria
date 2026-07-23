@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Sécurisé par Trustpilot"
   },
   "common": {
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "redirecting": "Redirection..."
   },
   "contactForm": {
     "fullName": "Nom Complet *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Trop de demandes",
     "rateLimitDesc": "Veuillez patienter avant d'envoyer une nouvelle demande.",
     "genericErrorDesc": "Échec de l'envoi. Veuillez réessayer."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oups ! Page introuvable",
+    "backHome": "Retour à l'Accueil"
   }
 }

@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Securizat cu Trustpilot"
   },
   "common": {
-    "search": "Caută"
+    "search": "Caută",
+    "redirecting": "Se redirecționează..."
   },
   "contactForm": {
     "fullName": "Nume Complet *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Prea multe cereri",
     "rateLimitDesc": "Te rugăm să aștepți înainte de a trimite o altă cerere.",
     "genericErrorDesc": "Trimiterea a eșuat. Te rugăm să încerci din nou."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oops! Pagina nu a fost găsită",
+    "backHome": "Înapoi la Pagina Principală"
   }
 }

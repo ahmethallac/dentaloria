@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Zabezpieczone przez Trustpilot"
   },
   "common": {
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "redirecting": "Przekierowywanie..."
   },
   "contactForm": {
     "fullName": "Imię i Nazwisko *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Zbyt wiele żądań",
     "rateLimitDesc": "Poczekaj przed wysłaniem kolejnego zapytania.",
     "genericErrorDesc": "Wysyłanie nie powiodło się. Spróbuj ponownie."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Ups! Nie znaleziono strony",
+    "backHome": "Powrót do Strony Głównej"
   }
 }

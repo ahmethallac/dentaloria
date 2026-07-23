@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Abgesichert mit Trustpilot"
   },
   "common": {
-    "search": "Suchen"
+    "search": "Suchen",
+    "redirecting": "Weiterleitung..."
   },
   "contactForm": {
     "fullName": "Vollständiger Name *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Zu viele Anfragen",
     "rateLimitDesc": "Bitte warten Sie, bevor Sie eine weitere Anfrage senden.",
     "genericErrorDesc": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Hoppla! Seite nicht gefunden",
+    "backHome": "Zurück zur Startseite"
   }
 }

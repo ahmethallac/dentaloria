@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Trustpilot ile güvence altında"
   },
   "common": {
-    "search": "Ara"
+    "search": "Ara",
+    "redirecting": "Yönlendiriliyor..."
   },
   "contactForm": {
     "fullName": "Ad Soyad *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Çok fazla istek",
     "rateLimitDesc": "Yeni bir talep göndermeden önce lütfen bekleyin.",
     "genericErrorDesc": "Gönderim başarısız oldu. Lütfen tekrar deneyin."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Aradığınız sayfa bulunamadı",
+    "backHome": "Ana Sayfaya Dön"
   }
 }

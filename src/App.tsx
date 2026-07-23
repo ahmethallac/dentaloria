@@ -37,6 +37,10 @@ const App = () => (
                     element={element}
                   />
                 ))}
+                {/* Unmatched paths under a valid locale (e.g. /de/typo) still go
+                    through LocaleLayout so the 404 renders in that language,
+                    rather than falling through to the unprefixed catch-all below. */}
+                <Route path="*" element={<NotFound />} />
               </Route>
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

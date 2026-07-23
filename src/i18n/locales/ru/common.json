@@ -32,7 +32,8 @@
     "securedWithTrustpilot": "Защищено Trustpilot"
   },
   "common": {
-    "search": "Поиск"
+    "search": "Поиск",
+    "redirecting": "Перенаправление..."
   },
   "contactForm": {
     "fullName": "Полное Имя *",
@@ -56,5 +57,10 @@
     "rateLimitTitle": "Слишком много запросов",
     "rateLimitDesc": "Пожалуйста, подождите перед отправкой нового запроса.",
     "genericErrorDesc": "Отправка не удалась. Пожалуйста, попробуйте снова."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Упс! Страница не найдена",
+    "backHome": "На главную"
   }
 }
