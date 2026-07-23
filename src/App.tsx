@@ -8,9 +8,18 @@ import { ROUTE_DEFS } from "@/routes/routeDefs";
 import { LocaleLayout } from "@/routes/LocaleLayout";
 import { GeoRedirectGate } from "@/components/i18n/GeoRedirectGate";
 import { LocaleSuggestionBanner } from "@/components/i18n/LocaleSuggestionBanner";
+import { useHreflangTags } from "@/hooks/useHreflangTags";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// Needs to live inside <BrowserRouter> (useLocation requires a Router
+// ancestor) but outside/above <Routes> so it re-runs on every navigation
+// regardless of which route matched.
+const HreflangTags = () => {
+  useHreflangTags();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -18,6 +27,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <HreflangTags />
         <AuthProvider>
           <GeoRedirectGate>
             <LocaleSuggestionBanner />
