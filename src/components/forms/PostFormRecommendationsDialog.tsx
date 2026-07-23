@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, ExternalLink, Star, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getClinicCardImageUrl } from "@/lib/imageUtils";
 import { getLanguage } from "@/lib/clinicMeta";
+import { withLocalePrefix } from "@/lib/localePath";
 
 export interface SubmittedFormValues {
   clinicId: string;
@@ -33,6 +35,8 @@ interface Props {
 }
 
 export default function PostFormRecommendationsDialog({ open, onOpenChange, values }: Props) {
+  const { t } = useTranslation("common");
+  const { lang } = useParams();
   const { toast } = useToast();
   const [clinics, setClinics] = useState<RecommendedClinic[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,15 +56,15 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
           body: { excludeClinicId: values.clinicId },
         });
 
-        if (invokeError) throw new Error(invokeError.message || "Could not load recommendations.");
+        if (invokeError) throw new Error(invokeError.message || t("postFormRecommendations.toasts.loadErrorDesc"));
         if (data?.error) throw new Error(data.error);
 
         const list = (data?.clinics as RecommendedClinic[]) || [];
         setClinics(list);
       } catch (e: any) {
-        const message = e?.message || "Could not load recommendations.";
+        const message = e?.message || t("postFormRecommendations.toasts.loadErrorDesc");
         setError(message);
-        toast({ title: "Recommendations unavailable", description: message, variant: "destructive" });
+        toast({ title: t("postFormRecommendations.toasts.unavailableTitle"), description: message, variant: "destructive" });
         setClinics([]);
       } finally {
         setLoading(false);
@@ -85,9 +89,9 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       setSentTo((prev) => new Set(prev).add(clinic.id));
-      toast({ title: "Sent", description: `Your details were sent to ${clinic.name}.` });
+      toast({ title: t("postFormRecommendations.toasts.sentTitle"), description: t("postFormRecommendations.toasts.sentDesc", { name: clinic.name }) });
     } catch (e: any) {
-      toast({ title: "Could not send", description: e.message || "Please try again.", variant: "destructive" });
+      toast({ title: t("postFormRecommendations.toasts.sendErrorTitle"), description: e.message || t("postFormRecommendations.toasts.sendErrorDesc"), variant: "destructive" });
     } finally {
       setSending(null);
     }
@@ -97,22 +101,22 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Apply to more clinics</DialogTitle>
+          <DialogTitle>{t("postFormRecommendations.title")}</DialogTitle>
           <DialogDescription>
-            We recommend applying to at least 3 clinics to find the best one for you.
+            {t("postFormRecommendations.description")}
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
           <div className="flex items-center justify-center py-12 text-muted-foreground">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" /> Finding clinics…
+            <Loader2 className="w-5 h-5 animate-spin mr-2" /> {t("postFormRecommendations.finding")}
           </div>
         ) : clinics.length === 0 ? (
           <div className="text-center text-muted-foreground py-8 text-sm">
             {error ? (
               <span className="text-destructive">{error}</span>
             ) : (
-              "No additional clinic recommendations available right now."
+              t("postFormRecommendations.noneAvailable")
             )}
           </div>
         ) : (
@@ -136,7 +140,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[9px] sm:text-xs text-center px-1 text-muted-foreground">
-                        No image
+                        {t("postFormRecommendations.noImage")}
                       </div>
                     )}
                   </div>
@@ -168,7 +172,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-medium text-foreground/80"
                             >
                               <span aria-hidden>{l?.flag ?? "🏳️"}</span>
-                              <span>{l?.name ?? code.toUpperCase()}</span>
+                              <span>{l ? t(`languageNames.${l.code}`) : code.toUpperCase()}</span>
                             </span>
                           );
                         })}
@@ -180,14 +184,14 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                       </div>
                     )}
                     <div className="flex flex-row sm:flex-col gap-2 mt-1 sm:mt-auto sm:pt-2">
-                      <Link to={`/clinic/${c.id}`} target="_blank" rel="noopener noreferrer" className="flex-1 sm:w-full">
+                      <Link to={withLocalePrefix(`/clinic/${c.id}`, lang)} target="_blank" rel="noopener noreferrer" className="flex-1 sm:w-full">
                         <Button size="sm" variant="outline" className="w-full">
-                          <ExternalLink className="w-3.5 h-3.5 mr-1" /> Visit
+                          <ExternalLink className="w-3.5 h-3.5 mr-1" /> {t("postFormRecommendations.visit")}
                         </Button>
                       </Link>
                       {isSent ? (
                         <Button size="sm" variant="secondary" disabled className="flex-1 sm:w-full">
-                          <Check className="w-3.5 h-3.5 mr-1" /> Sent
+                          <Check className="w-3.5 h-3.5 mr-1" /> {t("postFormRecommendations.sent")}
                         </Button>
                       ) : (
                         <Button
@@ -197,7 +201,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                           className="flex-1 sm:w-full"
                         >
                           {sending === c.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
-                          Quick Apply
+                          {t("postFormRecommendations.quickApply")}
                         </Button>
                       )}
                     </div>

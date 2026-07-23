@@ -30,6 +30,7 @@ interface ClinicInfoTabProps {
 
 export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUser, submittingPage, onSubmitForApproval }: ClinicInfoTabProps) {
   const { t } = useTranslation('clinicInfoTab');
+  const { t: tCommon } = useTranslation('common');
   const { toast } = useToast();
 
   const [form, setForm] = useState({
@@ -305,7 +306,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
                   )}
                 >
                   <span aria-hidden>{l.flag}</span>
-                  <span>{l.name}</span>
+                  <span>{tCommon(`languageNames.${l.code}`)}</span>
                 </button>
               );
             })}
@@ -335,7 +336,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
                   )}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{f.label}</span>
+                  <span className="truncate">{tCommon(`facilityLabels.${f.key}`)}</span>
                 </button>
               );
             })}

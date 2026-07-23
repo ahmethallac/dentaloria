@@ -62,5 +62,47 @@
     "title": "404",
     "subtitle": "Oops! Pagina nu a fost găsită",
     "backHome": "Înapoi la Pagina Principală"
+  },
+  "languageNames": {
+    "en": "Engleză",
+    "de": "Germană",
+    "pl": "Poloneză",
+    "fr": "Franceză",
+    "nl": "Olandeză",
+    "ro": "Română",
+    "ar": "Arabă",
+    "it": "Italiană",
+    "es": "Spaniolă",
+    "pt": "Portugheză",
+    "ru": "Rusă"
+  },
+  "facilityLabels": {
+    "airport_transfer": "Transfer Aeroport",
+    "hotel_accommodation": "Cazare la Hotel",
+    "patient_coordinator": "Coordonator Personal de Pacienți",
+    "city_tours": "Tururi ale Orașului",
+    "insurance": "Asigurare",
+    "installment_plan": "Plată în Rate",
+    "medication_supply": "Medicamente & Consumabile Medicale",
+    "dietitian": "Nutriționist",
+    "local_sim": "Suport Card SIM Local"
+  },
+  "postFormRecommendations": {
+    "title": "Aplică la mai multe clinici",
+    "description": "Vă recomandăm să aplicați la cel puțin 3 clinici pentru a o găsi pe cea mai potrivită.",
+    "finding": "Se caută clinici…",
+    "noneAvailable": "Nicio recomandare suplimentară de clinică disponibilă momentan.",
+    "noImage": "Fără imagine",
+    "visit": "Vizitează",
+    "sent": "Trimis",
+    "quickApply": "Aplicare Rapidă",
+    "toasts": {
+      "unavailableTitle": "Recomandări indisponibile",
+      "loadErrorDesc": "Recomandările nu au putut fi încărcate.",
+      "sentTitle": "Trimis",
+      "sentDesc": "Datele dvs. au fost trimise către {{name}}.",
+      "sendErrorTitle": "Nu s-a putut trimite",
+      "sendErrorDesc": "Vă rugăm încercați din nou."
+    }
   }
 }

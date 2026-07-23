@@ -547,7 +547,7 @@ export default function ClinicListing() {
                                   return (
                                     <span key={code} className="inline-flex items-center gap-1 shrink-0">
                                       <span aria-hidden>{l.flag}</span>
-                                      <span>{l.name}</span>
+                                      <span>{tCommon(`languageNames.${l.code}`)}</span>
                                     </span>
                                   );
                                 })}
@@ -567,7 +567,7 @@ export default function ClinicListing() {
                                   return (
                                     <span key={key} className="inline-flex items-center gap-1 shrink-0">
                                       <Icon className="w-3.5 h-3.5 text-primary" />
-                                      <span>{f.label}</span>
+                                      <span>{tCommon(`facilityLabels.${f.key}`)}</span>
                                     </span>
                                   );
                                 })}
@@ -683,7 +683,7 @@ export default function ClinicListing() {
                                 return (
                                   <span key={code} className="inline-flex items-center gap-1 shrink-0">
                                     <span aria-hidden>{l.flag}</span>
-                                    <span>{l.name}</span>
+                                    <span>{tCommon(`languageNames.${l.code}`)}</span>
                                   </span>
                                 );
                               })}
@@ -703,7 +703,7 @@ export default function ClinicListing() {
                                 return (
                                   <span key={key} className="inline-flex items-center gap-1 shrink-0">
                                     <Icon className="w-3 h-3 text-primary" />
-                                    <span>{f.label}</span>
+                                    <span>{tCommon(`facilityLabels.${f.key}`)}</span>
                                   </span>
                                 );
                               })}

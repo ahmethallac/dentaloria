@@ -62,5 +62,47 @@
     "title": "404",
     "subtitle": "Aradığınız sayfa bulunamadı",
     "backHome": "Ana Sayfaya Dön"
+  },
+  "languageNames": {
+    "en": "İngilizce",
+    "de": "Almanca",
+    "pl": "Lehçe",
+    "fr": "Fransızca",
+    "nl": "Felemenkçe",
+    "ro": "Rumence",
+    "ar": "Arapça",
+    "it": "İtalyanca",
+    "es": "İspanyolca",
+    "pt": "Portekizce",
+    "ru": "Rusça"
+  },
+  "facilityLabels": {
+    "airport_transfer": "Havalimanı Transferi",
+    "hotel_accommodation": "Otel Konaklaması",
+    "patient_coordinator": "Kişisel Hasta Koordinatörü",
+    "city_tours": "Şehir Turları",
+    "insurance": "Sigorta",
+    "installment_plan": "Taksitli Ödeme Planı",
+    "medication_supply": "İlaç ve Tıbbi Malzeme",
+    "dietitian": "Diyetisyen",
+    "local_sim": "Yerel SIM Kart Desteği"
+  },
+  "postFormRecommendations": {
+    "title": "Daha fazla kliniğe başvurun",
+    "description": "Sizin için en iyisini bulmak adına en az 3 kliniğe başvurmanızı öneririz.",
+    "finding": "Klinikler bulunuyor…",
+    "noneAvailable": "Şu anda başka klinik önerisi mevcut değil.",
+    "noImage": "Görsel yok",
+    "visit": "Ziyaret Et",
+    "sent": "Gönderildi",
+    "quickApply": "Hızlı Başvur",
+    "toasts": {
+      "unavailableTitle": "Öneriler kullanılamıyor",
+      "loadErrorDesc": "Öneriler yüklenemedi.",
+      "sentTitle": "Gönderildi",
+      "sentDesc": "Bilgileriniz {{name}} kliniğine gönderildi.",
+      "sendErrorTitle": "Gönderilemedi",
+      "sendErrorDesc": "Lütfen tekrar deneyin."
+    }
   }
 }

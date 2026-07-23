@@ -62,5 +62,47 @@
     "title": "404",
     "subtitle": "Oops! Page not found",
     "backHome": "Return to Home"
+  },
+  "languageNames": {
+    "en": "English",
+    "de": "German",
+    "pl": "Polish",
+    "fr": "French",
+    "nl": "Dutch",
+    "ro": "Romanian",
+    "ar": "Arabic",
+    "it": "Italian",
+    "es": "Spanish",
+    "pt": "Portuguese",
+    "ru": "Russian"
+  },
+  "facilityLabels": {
+    "airport_transfer": "Airport Transfer",
+    "hotel_accommodation": "Hotel Accommodation",
+    "patient_coordinator": "Personal Patient Coordinator",
+    "city_tours": "City Tours",
+    "insurance": "Insurance",
+    "installment_plan": "Installment Payment Plan",
+    "medication_supply": "Medication & Medical Supplies",
+    "dietitian": "Dietitian",
+    "local_sim": "Local SIM Card Support"
+  },
+  "postFormRecommendations": {
+    "title": "Apply to more clinics",
+    "description": "We recommend applying to at least 3 clinics to find the best one for you.",
+    "finding": "Finding clinics…",
+    "noneAvailable": "No additional clinic recommendations available right now.",
+    "noImage": "No image",
+    "visit": "Visit",
+    "sent": "Sent",
+    "quickApply": "Quick Apply",
+    "toasts": {
+      "unavailableTitle": "Recommendations unavailable",
+      "loadErrorDesc": "Could not load recommendations.",
+      "sentTitle": "Sent",
+      "sentDesc": "Your details were sent to {{name}}.",
+      "sendErrorTitle": "Could not send",
+      "sendErrorDesc": "Please try again."
+    }
   }
 }

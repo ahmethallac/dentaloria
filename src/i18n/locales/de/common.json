@@ -62,5 +62,47 @@
     "title": "404",
     "subtitle": "Hoppla! Seite nicht gefunden",
     "backHome": "Zurück zur Startseite"
+  },
+  "languageNames": {
+    "en": "Englisch",
+    "de": "Deutsch",
+    "pl": "Polnisch",
+    "fr": "Französisch",
+    "nl": "Niederländisch",
+    "ro": "Rumänisch",
+    "ar": "Arabisch",
+    "it": "Italienisch",
+    "es": "Spanisch",
+    "pt": "Portugiesisch",
+    "ru": "Russisch"
+  },
+  "facilityLabels": {
+    "airport_transfer": "Flughafentransfer",
+    "hotel_accommodation": "Hotelunterkunft",
+    "patient_coordinator": "Persönlicher Patientenkoordinator",
+    "city_tours": "Stadtrundfahrten",
+    "insurance": "Versicherung",
+    "installment_plan": "Ratenzahlungsplan",
+    "medication_supply": "Medikamente & Medizinische Versorgung",
+    "dietitian": "Ernährungsberater",
+    "local_sim": "Lokale SIM-Karten-Unterstützung"
+  },
+  "postFormRecommendations": {
+    "title": "Bei weiteren Kliniken bewerben",
+    "description": "Wir empfehlen, sich bei mindestens 3 Kliniken zu bewerben, um die beste für Sie zu finden.",
+    "finding": "Kliniken werden gesucht…",
+    "noneAvailable": "Derzeit keine weiteren Klinikempfehlungen verfügbar.",
+    "noImage": "Kein Bild",
+    "visit": "Besuchen",
+    "sent": "Gesendet",
+    "quickApply": "Schnellbewerbung",
+    "toasts": {
+      "unavailableTitle": "Empfehlungen nicht verfügbar",
+      "loadErrorDesc": "Empfehlungen konnten nicht geladen werden.",
+      "sentTitle": "Gesendet",
+      "sentDesc": "Ihre Daten wurden an {{name}} gesendet.",
+      "sendErrorTitle": "Konnte nicht gesendet werden",
+      "sendErrorDesc": "Bitte versuchen Sie es erneut."
+    }
   }
 }

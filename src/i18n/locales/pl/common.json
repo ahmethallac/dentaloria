@@ -62,5 +62,47 @@
     "title": "404",
     "subtitle": "Ups! Nie znaleziono strony",
     "backHome": "Powrót do Strony Głównej"
+  },
+  "languageNames": {
+    "en": "Angielski",
+    "de": "Niemiecki",
+    "pl": "Polski",
+    "fr": "Francuski",
+    "nl": "Niderlandzki",
+    "ro": "Rumuński",
+    "ar": "Arabski",
+    "it": "Włoski",
+    "es": "Hiszpański",
+    "pt": "Portugalski",
+    "ru": "Rosyjski"
+  },
+  "facilityLabels": {
+    "airport_transfer": "Transfer z Lotniska",
+    "hotel_accommodation": "Zakwaterowanie w Hotelu",
+    "patient_coordinator": "Osobisty Koordynator Pacjenta",
+    "city_tours": "Wycieczki po Mieście",
+    "insurance": "Ubezpieczenie",
+    "installment_plan": "Plan Płatności Ratalnych",
+    "medication_supply": "Leki i Zaopatrzenie Medyczne",
+    "dietitian": "Dietetyk",
+    "local_sim": "Wsparcie Lokalnej Karty SIM"
+  },
+  "postFormRecommendations": {
+    "title": "Aplikuj do większej liczby klinik",
+    "description": "Zalecamy aplikowanie do co najmniej 3 klinik, aby znaleźć najlepszą dla siebie.",
+    "finding": "Wyszukiwanie klinik…",
+    "noneAvailable": "Brak dodatkowych rekomendacji klinik w tej chwili.",
+    "noImage": "Brak zdjęcia",
+    "visit": "Odwiedź",
+    "sent": "Wysłano",
+    "quickApply": "Szybka Aplikacja",
+    "toasts": {
+      "unavailableTitle": "Rekomendacje niedostępne",
+      "loadErrorDesc": "Nie udało się załadować rekomendacji.",
+      "sentTitle": "Wysłano",
+      "sentDesc": "Twoje dane zostały wysłane do {{name}}.",
+      "sendErrorTitle": "Nie udało się wysłać",
+      "sendErrorDesc": "Spróbuj ponownie."
+    }
   }
 }

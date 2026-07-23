@@ -800,7 +800,7 @@ const ClinicDetail = () => {
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
                           >
                             <span aria-hidden>{l.flag}</span>
-                            <span>{l.name}</span>
+                            <span>{tCommon(`languageNames.${l.code}`)}</span>
                           </span>
                         );
                       })}
@@ -822,7 +822,7 @@ const ClinicDetail = () => {
                         return (
                           <div key={key} className="flex items-center gap-2.5">
                             <Icon className="w-4 h-4 text-primary shrink-0" />
-                            <span className="text-sm">{f.label}</span>
+                            <span className="text-sm">{tCommon(`facilityLabels.${f.key}`)}</span>
                           </div>
                         );
                       })}

@@ -37,6 +37,7 @@ export const FilterContent = ({
   showHeader = true,
 }: FilterContentProps) => {
   const { t } = useTranslation("clinicListing");
+  const { t: tCommon } = useTranslation("common");
   const activeFiltersCount = [
     selectedTreatment !== "all",
     selectedCountry !== "all",
@@ -219,7 +220,7 @@ export const FilterContent = ({
                 </div>
                 <span className={`text-sm flex items-center gap-2 ${active ? "text-primary font-medium" : "text-foreground/70"}`}>
                   <span aria-hidden>{lang.flag}</span>
-                  {lang.name}
+                  {tCommon(`languageNames.${lang.code}`)}
                 </span>
               </div>
             );
