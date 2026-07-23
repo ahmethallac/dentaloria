@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "titleFallback": "Информация о клинике | Dentaloria",
+    "descriptionFallback": "Подробная информация о стоматологических клиниках.",
+    "descriptionDefault": "Профессиональная стоматологическая клиника."
+  },
+  "loadingClinic": "Загрузка клиники...",
+  "previewUnavailable": {
+    "title": "Предпросмотр недоступен",
+    "description": "Только супер-администраторы могут открывать предпросмотр анкеты клиники. Пожалуйста, откройте эту страницу из экрана одобрения администратора, войдя в систему.",
+    "back": "Назад к одобрениям"
+  },
+  "notFound": {
+    "title": "Клиника не найдена",
+    "back": "На главную"
+  },
+  "previewBanner": {
+    "label": "Режим предпросмотра",
+    "text": "— эта страница ещё не опубликована. Её видят только супер-администраторы.",
+    "back": "Назад к одобрениям"
+  },
+  "breadcrumb": {
+    "sectionsAriaLabel": "Разделы информации о клинике"
+  },
+  "tabs": {
+    "overview": "Обзор",
+    "about": "О клинике",
+    "photos": "Фото",
+    "treatments": "Лечение",
+    "doctors": "Врачи"
+  },
+  "verified": "Проверено",
+  "beforeAfter": {
+    "title": "До и После",
+    "dialogTitle": "Фото до и после",
+    "openImage": "Открыть фото до и после {{n}}",
+    "close": "Закрыть"
+  },
+  "description": {
+    "title": "О клинике",
+    "showLess": "Свернуть",
+    "readMore": "Читать далее"
+  },
+  "stats": {
+    "yearsExperience": "Лет опыта",
+    "happyPatients": "Довольных пациентов"
+  },
+  "supportedLanguages": "Поддерживаемые языки",
+  "facilitiesAmenities": "Услуги и удобства",
+  "treatmentPrices": {
+    "title": "Цены на лечение",
+    "treatment": "Лечение",
+    "duration": "Длительность",
+    "startingFrom": "Цена от",
+    "contactUs": "Связаться с нами",
+    "getQuote": "Получить расчёт"
+  },
+  "videos": {
+    "title": "Видео",
+    "play": "Воспроизвести видео",
+    "thumbnailAlt": "Миниатюра видео"
+  },
+  "doctors": {
+    "title": "Наши врачи",
+    "yearsExpSuffix": "лет опыта"
+  },
+  "contact": {
+    "mobileTitle": "Связаться с клиникой",
+    "sidebarTitle": "Получить бесплатный расчёт",
+    "sidebarSubtitle": "Заполните форму, и мы ответим в течение 24 часов.",
+    "trust1": "Бесплатная онлайн-консультация",
+    "trust2": "Приоритет при записи",
+    "trust3": "Ответ в течение 24ч",
+    "requestFreeQuote": "Запросить бесплатный расчёт",
+    "verifiedBadge": "Клиника проверена Dentaloria",
+    "mobileBarSubtitle": "Получите бесплатный расчёт сегодня",
+    "getQuote": "Получить расчёт"
+  },
+  "aria": {
+    "fullScreen": "Полный экран",
+    "previousImage": "Предыдущее изображение",
+    "nextImage": "Следующее изображение",
+    "close": "Закрыть",
+    "closeVideo": "Закрыть видео",
+    "videoPlayer": "Видеоплеер"
+  },
+  "loadError": {
+    "title": "Ошибка",
+    "description": "Не удалось загрузить данные клиники."
+  }
+}

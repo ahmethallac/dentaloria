@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "titleFallback": "Klinik Detayları | Dentaloria",
+    "descriptionFallback": "Diş klinikleri hakkında detaylı bilgi görüntüleyin.",
+    "descriptionDefault": "Profesyonel diş kliniği."
+  },
+  "loadingClinic": "Klinik yükleniyor...",
+  "previewUnavailable": {
+    "title": "Önizleme kullanılamıyor",
+    "description": "Klinik inceleme önizlemesini sadece Süper Adminler açabilir. Lütfen giriş yapmış haldeyken bu sayfayı admin onay ekranından açın.",
+    "back": "Onaylara Dön"
+  },
+  "notFound": {
+    "title": "Klinik bulunamadı",
+    "back": "Ana Sayfaya Dön"
+  },
+  "previewBanner": {
+    "label": "Önizleme modu",
+    "text": "— bu sayfa henüz yayında değil. Sadece Süper Adminler görebilir.",
+    "back": "Onaylara dön"
+  },
+  "breadcrumb": {
+    "sectionsAriaLabel": "Klinik detay bölümleri"
+  },
+  "tabs": {
+    "overview": "Genel Bakış",
+    "about": "Hakkında",
+    "photos": "Fotoğraflar",
+    "treatments": "Tedaviler",
+    "doctors": "Doktorlar"
+  },
+  "verified": "Onaylı",
+  "beforeAfter": {
+    "title": "Öncesi & Sonrası",
+    "dialogTitle": "Öncesi ve sonrası fotoğrafları",
+    "openImage": "Öncesi & sonrası görseli {{n}} aç",
+    "close": "Kapat"
+  },
+  "description": {
+    "title": "Klinik Hakkında",
+    "showLess": "Daha az göster",
+    "readMore": "Devamını oku"
+  },
+  "stats": {
+    "yearsExperience": "Yıl Deneyim",
+    "happyPatients": "Memnun Hasta"
+  },
+  "supportedLanguages": "Desteklenen Diller",
+  "facilitiesAmenities": "Olanaklar & Hizmetler",
+  "treatmentPrices": {
+    "title": "Tedavi Fiyatları",
+    "treatment": "Tedavi",
+    "duration": "Süre",
+    "startingFrom": "Başlangıç Fiyatı",
+    "contactUs": "Bize ulaşın",
+    "getQuote": "Teklif Al"
+  },
+  "videos": {
+    "title": "Videolar",
+    "play": "Videoyu oynat",
+    "thumbnailAlt": "Video küçük resmi"
+  },
+  "doctors": {
+    "title": "Doktorlarımız",
+    "yearsExpSuffix": "yıl deneyim"
+  },
+  "contact": {
+    "mobileTitle": "Klinikle İletişim",
+    "sidebarTitle": "Ücretsiz Teklif Alın",
+    "sidebarSubtitle": "Formu doldurun, 24 saat içinde size dönüş yapalım.",
+    "trust1": "Ücretsiz online danışmanlık",
+    "trust2": "Randevuda öncelik",
+    "trust3": "24 saat içinde yanıt",
+    "requestFreeQuote": "Ücretsiz Teklif İste",
+    "verifiedBadge": "Dentaloria Onaylı Klinik",
+    "mobileBarSubtitle": "Bugün ücretsiz teklif alın",
+    "getQuote": "Teklif Al"
+  },
+  "aria": {
+    "fullScreen": "Tam Ekran",
+    "previousImage": "Önceki görsel",
+    "nextImage": "Sonraki görsel",
+    "close": "Kapat",
+    "closeVideo": "Videoyu kapat",
+    "videoPlayer": "Video oynatıcı"
+  },
+  "loadError": {
+    "title": "Hata",
+    "description": "Klinik verileri yüklenemedi."
+  }
+}

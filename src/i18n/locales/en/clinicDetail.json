@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "titleFallback": "Clinic Details | Dentaloria",
+    "descriptionFallback": "View detailed information about dental clinics.",
+    "descriptionDefault": "Professional dental clinic."
+  },
+  "loadingClinic": "Loading clinic...",
+  "previewUnavailable": {
+    "title": "Preview unavailable",
+    "description": "Only Super Admins can open clinic review previews. Please open this page from the admin approvals screen while signed in.",
+    "back": "Back to Approvals"
+  },
+  "notFound": {
+    "title": "Clinic not found",
+    "back": "Back to Home"
+  },
+  "previewBanner": {
+    "label": "Preview mode",
+    "text": "— this page is not live yet. Only Super Admins can see it.",
+    "back": "Back to approvals"
+  },
+  "breadcrumb": {
+    "sectionsAriaLabel": "Clinic detail sections"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "about": "About",
+    "photos": "Photos",
+    "treatments": "Treatments",
+    "doctors": "Doctors"
+  },
+  "verified": "Verified",
+  "beforeAfter": {
+    "title": "Before & After",
+    "dialogTitle": "Before & after photos",
+    "openImage": "Open before & after image {{n}}",
+    "close": "Close"
+  },
+  "description": {
+    "title": "About the Clinic",
+    "showLess": "Show less",
+    "readMore": "Read more"
+  },
+  "stats": {
+    "yearsExperience": "Years Experience",
+    "happyPatients": "Happy Patients"
+  },
+  "supportedLanguages": "Supported Languages",
+  "facilitiesAmenities": "Facilities & Amenities",
+  "treatmentPrices": {
+    "title": "Treatment Prices",
+    "treatment": "Treatment",
+    "duration": "Duration",
+    "startingFrom": "Starting From",
+    "contactUs": "Contact us",
+    "getQuote": "Get Quote"
+  },
+  "videos": {
+    "title": "Videos",
+    "play": "Play video",
+    "thumbnailAlt": "Video thumbnail"
+  },
+  "doctors": {
+    "title": "Our Doctors",
+    "yearsExpSuffix": "yrs exp."
+  },
+  "contact": {
+    "mobileTitle": "Contact Clinic",
+    "sidebarTitle": "Get a Free Quote",
+    "sidebarSubtitle": "Fill out the form and hear back within 24 hours.",
+    "trust1": "Free online consultation",
+    "trust2": "Priority for appointments",
+    "trust3": "Response within 24h",
+    "requestFreeQuote": "Request Free Quote",
+    "verifiedBadge": "Dentaloria Verified Clinic",
+    "mobileBarSubtitle": "Get a free quote today",
+    "getQuote": "Get Quote"
+  },
+  "aria": {
+    "fullScreen": "Full Screen",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "close": "Close",
+    "closeVideo": "Close video",
+    "videoPlayer": "Video player"
+  },
+  "loadError": {
+    "title": "Error",
+    "description": "Failed to load clinic data."
+  }
+}

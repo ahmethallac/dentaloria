@@ -1,4 +1,6 @@
 import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { withLocalePrefix } from "@/lib/localePath";
 import { useHeadMeta } from "@/hooks/useHeadMeta";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -127,11 +129,11 @@ const mapClinic = (db: any) => {
 
 /* ───────── tabs config ───────── */
 const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "about", label: "About" },
-  { id: "photos", label: "Photos" },
-  { id: "treatments", label: "Treatments" },
-  { id: "doctors", label: "Doctors" },
+  { id: "overview", key: "overview" },
+  { id: "about", key: "about" },
+  { id: "photos", key: "photos" },
+  { id: "treatments", key: "treatments" },
+  { id: "doctors", key: "doctors" },
 ] as const;
 
 /* ───────── before/after carousel + lightbox ───────── */
@@ -142,13 +144,14 @@ const BeforeAfterCarousel = ({
   images: string[];
   sectionRef: (el: HTMLDivElement | null) => void;
 }) => {
+  const { t } = useTranslation("clinicDetail");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   return (
     <div ref={sectionRef} className="scroll-mt-32">
       <div className="mb-3">
         <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
-          Before & After
+          {t("beforeAfter.title")}
         </h3>
       </div>
 
@@ -161,11 +164,11 @@ const BeforeAfterCarousel = ({
             type="button"
             onClick={() => setLightboxIdx(i)}
             className="w-full h-full block group cursor-zoom-in"
-            aria-label={`Open before & after image ${i + 1}`}
+            aria-label={t("beforeAfter.openImage", { n: i + 1 })}
           >
             <img
               src={src}
-              alt={`Before & after ${i + 1}`}
+              alt={t("beforeAfter.openImage", { n: i + 1 })}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
@@ -179,14 +182,14 @@ const BeforeAfterCarousel = ({
           className="max-w-5xl w-[95vw] p-0 bg-background border-border/40 [&>button]:hidden"
         >
           <DialogHeader className="sr-only">
-            <DialogTitle>Before & After photos</DialogTitle>
+            <DialogTitle>{t("beforeAfter.dialogTitle")}</DialogTitle>
           </DialogHeader>
           {lightboxIdx !== null && (
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setLightboxIdx(null)}
-                aria-label="Close"
+                aria-label={t("beforeAfter.close")}
                 className="absolute right-3 top-3 z-20 rounded-full bg-background/90 hover:bg-background p-2 border border-border/60 shadow"
               >
                 <X className="w-4 h-4" />
@@ -201,7 +204,7 @@ const BeforeAfterCarousel = ({
                       <div className="flex items-center justify-center bg-black/5 dark:bg-black/40 aspect-[4/3] sm:aspect-video">
                         <img
                           src={src}
-                          alt={`Before & after ${i + 1}`}
+                          alt={t("beforeAfter.openImage", { n: i + 1 })}
                           className="max-h-[80vh] max-w-full object-contain select-none"
                           draggable={false}
                         />
@@ -222,6 +225,7 @@ const BeforeAfterCarousel = ({
 
 /* ───────── expandable description ───────── */
 const ExpandableDescription = ({ html }: { html: string }) => {
+  const { t } = useTranslation("clinicDetail");
   const innerRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
@@ -260,7 +264,7 @@ const ExpandableDescription = ({ html }: { html: string }) => {
           onClick={() => setExpanded((v) => !v)}
           className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
-          {expanded ? "Show less" : "Read more"}
+          {expanded ? t("description.showLess") : t("description.readMore")}
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       )}
@@ -271,6 +275,8 @@ const ExpandableDescription = ({ html }: { html: string }) => {
 /* ───────── component ───────── */
 const ClinicDetail = () => {
   const { id, lang } = useParams();
+  const { t } = useTranslation("clinicDetail");
+  const { t: tCommon } = useTranslation("common");
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { user, userRole, loading: authLoading } = useAuth();
@@ -395,7 +401,7 @@ const ClinicDetail = () => {
         }
       } catch (e) {
         console.error('[ClinicDetail] fetch error', e);
-        toast({ title: "Error", description: "Failed to load clinic data.", variant: "destructive" });
+        toast({ title: t("loadError.title"), description: t("loadError.description"), variant: "destructive" });
       } finally {
         setLoading(false);
       }
@@ -515,14 +521,14 @@ const ClinicDetail = () => {
   }, [clinic?.id, scrollGalleryToIndex]);
 
   useHeadMeta({
-    title: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+    title: clinic ? `${clinic.name} | Dentaloria` : t("meta.titleFallback"),
     description: clinic
-      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
-      : "View detailed information about dental clinics.",
-    ogTitle: clinic ? `${clinic.name} | Dentaloria` : "Clinic Details | Dentaloria",
+      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || t("meta.descriptionDefault")}`
+      : t("meta.descriptionFallback"),
+    ogTitle: clinic ? `${clinic.name} | Dentaloria` : t("meta.titleFallback"),
     ogDescription: clinic
-      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || "Professional dental clinic."}`
-      : "View detailed information about dental clinics.",
+      ? `${clinic.name} - ${clinic.description?.substring(0, 160) || t("meta.descriptionDefault")}`
+      : t("meta.descriptionFallback"),
   });
 
   /* loading / not‑found states */
@@ -531,7 +537,7 @@ const ClinicDetail = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-muted-foreground text-sm">Loading clinic...</span>
+          <span className="text-muted-foreground text-sm">{t("loadingClinic")}</span>
         </div>
       </div>
     );
@@ -541,12 +547,12 @@ const ClinicDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="text-center max-w-md space-y-4">
-          <h1 className="text-2xl font-bold">Preview unavailable</h1>
+          <h1 className="text-2xl font-bold">{t("previewUnavailable.title")}</h1>
           <p className="text-muted-foreground">
-            Only Super Admins can open clinic review previews. Please open this page from the admin approvals screen while signed in.
+            {t("previewUnavailable.description")}
           </p>
-          <Link to="/admin?section=approvals">
-            <Button>Back to Approvals</Button>
+          <Link to={withLocalePrefix("/admin?section=approvals", lang)}>
+            <Button>{t("previewUnavailable.back")}</Button>
           </Link>
         </div>
       </div>
@@ -557,9 +563,9 @@ const ClinicDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Clinic not found</h1>
-          <Link to="/">
-            <Button>Back to Home</Button>
+          <h1 className="text-2xl font-bold mb-4">{t("notFound.title")}</h1>
+          <Link to={withLocalePrefix("/", lang)}>
+            <Button>{t("notFound.back")}</Button>
           </Link>
         </div>
       </div>
@@ -574,10 +580,10 @@ const ClinicDetail = () => {
         <div className="bg-yellow-500/15 border-b border-yellow-500/40 text-sm">
           <div className="container mx-auto px-4 py-2 text-yellow-900 dark:text-yellow-100 flex flex-wrap items-center justify-between gap-3">
             <span>
-              <strong>Preview mode</strong> — this page is not live yet. Only Super Admins can see it.
+              <strong>{t("previewBanner.label")}</strong> {t("previewBanner.text")}
             </span>
-            <Link to="/admin?section=approvals" className="underline underline-offset-4 font-medium">
-              Back to approvals
+            <Link to={withLocalePrefix("/admin?section=approvals", lang)} className="underline underline-offset-4 font-medium">
+              {t("previewBanner.back")}
             </Link>
           </div>
         </div>
@@ -586,9 +592,9 @@ const ClinicDetail = () => {
       {/* ── Breadcrumb ── */}
       <div className="container mx-auto px-4 pt-4 pb-2">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to={withLocalePrefix("/", lang)} className="hover:text-primary transition-colors">{tCommon("nav.home")}</Link>
           <ChevronRight className="w-3 h-3" />
-          <Link to="/clinic-listing" className="hover:text-primary transition-colors">Clinics</Link>
+          <Link to={withLocalePrefix("/clinic-listing", lang)} className="hover:text-primary transition-colors">{tCommon("nav.clinics")}</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-foreground font-medium truncate max-w-[200px]">{clinic.name}</span>
         </div>
@@ -603,7 +609,7 @@ const ClinicDetail = () => {
               {clinic.isVerified && (
                 <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-medium text-xs">
                   <Award className="w-3 h-3 mr-1" />
-                  Verified
+                  {t("verified")}
                 </Badge>
               )}
             </div>
@@ -627,7 +633,7 @@ const ClinicDetail = () => {
           tabSticky ? "bg-background/95 backdrop-blur-md shadow-sm" : "bg-background"
         }`}
       >
-        <nav className="container mx-auto overflow-x-hidden px-4" aria-label="Clinic detail sections">
+        <nav className="container mx-auto overflow-x-hidden px-4" aria-label={t("breadcrumb.sectionsAriaLabel")}>
           <div className="flex min-w-max gap-1 overflow-x-auto scrollbar-hide pr-4">
             {TABS.map((tab) => (
               <button
@@ -639,7 +645,7 @@ const ClinicDetail = () => {
                     : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                 }`}
               >
-                {tab.label}
+                {t(`tabs.${tab.key}`)}
               </button>
             ))}
           </div>
@@ -689,7 +695,7 @@ const ClinicDetail = () => {
                               setFullscreenIdx(idx);
                             }}
                           >
-                            Full Screen
+                            {t("aria.fullScreen")}
                           </Button>
                         </div>
                       )}
@@ -702,7 +708,7 @@ const ClinicDetail = () => {
                     <button
                       type="button"
                       onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex - 1))}
-                      aria-label="Previous image"
+                      aria-label={t("aria.previousImage")}
                       className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
                     >
                       <ChevronLeft className="h-5 w-5" />
@@ -710,7 +716,7 @@ const ClinicDetail = () => {
                     <button
                       type="button"
                       onClick={() => scrollGalleryToIndex(wrapIndex(currentImageIndex + 1))}
-                      aria-label="Next image"
+                      aria-label={t("aria.nextImage")}
                       className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-border/60 bg-background/90 p-2 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-background"
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -743,7 +749,7 @@ const ClinicDetail = () => {
                 {/* About the Clinic */}
                 {clinic.description && (
                   <div>
-                    <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
+                    <h2 className="text-lg font-semibold mb-3">{t("description.title")}</h2>
                     <ExpandableDescription
                       html={sanitizeRichText(
                         localizedField(clinic.description, clinic.descriptionTranslations, lang || "en")
@@ -761,7 +767,7 @@ const ClinicDetail = () => {
                       </div>
                       <div>
                         <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
-                        <div className="text-xs text-muted-foreground">Years Experience</div>
+                        <div className="text-xs text-muted-foreground">{t("stats.yearsExperience")}</div>
                       </div>
                     </div>
                   )}
@@ -772,7 +778,7 @@ const ClinicDetail = () => {
                       </div>
                       <div>
                         <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
-                        <div className="text-xs text-muted-foreground">Happy Patients</div>
+                        <div className="text-xs text-muted-foreground">{t("stats.happyPatients")}</div>
                       </div>
                     </div>
                   )}
@@ -782,7 +788,7 @@ const ClinicDetail = () => {
                 {clinic.languages.length > 0 && (
                   <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
                     <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                      <LanguagesIcon className="w-4 h-4 text-primary" /> Supported Languages
+                      <LanguagesIcon className="w-4 h-4 text-primary" /> {t("supportedLanguages")}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {clinic.languages.map((code: string) => {
@@ -806,7 +812,7 @@ const ClinicDetail = () => {
                 {clinic.facilities.length > 0 && (
                   <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
                     <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-primary" /> Facilities & Amenities
+                      <Sparkles className="w-4 h-4 text-primary" /> {t("facilitiesAmenities")}
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {clinic.facilities.map((key: string) => {
@@ -829,32 +835,32 @@ const ClinicDetail = () => {
             {/* ── Treatments ── */}
             {clinic.treatments.length > 0 && (
               <div ref={(el) => (sectionRefs.current["treatments"] = el)} className="scroll-mt-32">
-                <h2 className="text-xl font-bold mb-4">Treatment Prices</h2>
+                <h2 className="text-xl font-bold mb-4">{t("treatmentPrices.title")}</h2>
                 <div className="rounded-xl border border-border/50 overflow-hidden">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
-                        <th className="text-left px-5 py-3 font-medium">Treatment</th>
-                        <th className="text-left px-5 py-3 font-medium hidden sm:table-cell">Duration</th>
-                        <th className="text-right px-5 py-3 font-medium">Starting From</th>
+                        <th className="text-left px-5 py-3 font-medium">{t("treatmentPrices.treatment")}</th>
+                        <th className="text-left px-5 py-3 font-medium hidden sm:table-cell">{t("treatmentPrices.duration")}</th>
+                        <th className="text-right px-5 py-3 font-medium">{t("treatmentPrices.startingFrom")}</th>
                         <th className="px-5 py-3 w-[1%]"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {clinic.treatments.map((t: any, i: number) => (
+                      {clinic.treatments.map((treatment: any, i: number) => (
                         <tr
                           key={i}
                           className="border-t border-border/30 hover:bg-muted/20 transition-colors"
                         >
                           <td className="px-5 py-4">
-                            <span className="font-medium text-sm">{t.name}</span>
+                            <span className="font-medium text-sm">{treatment.name}</span>
                           </td>
                           <td className="px-5 py-4 text-sm text-muted-foreground hidden sm:table-cell">
-                            {t.duration || "—"}
+                            {treatment.duration || "—"}
                           </td>
                           <td className="px-5 py-4 text-right">
                             <span className="font-semibold text-primary">
-                              {t.price || "Contact us"}
+                              {treatment.price || t("treatmentPrices.contactUs")}
                             </span>
                           </td>
                           <td className="px-5 py-4">
@@ -864,7 +870,7 @@ const ClinicDetail = () => {
                               className="text-xs text-primary hover:text-primary"
                               onClick={() => scrollTo("contact")}
                             >
-                              Get Quote
+                              {t("treatmentPrices.getQuote")}
                             </Button>
                           </td>
                         </tr>
@@ -886,7 +892,7 @@ const ClinicDetail = () => {
             {/* ── Videos (YouTube / Instagram Reels) — 9:16 tiles ── */}
             {clinic.videos && clinic.videos.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold mb-3">Videos</h2>
+                <h2 className="text-lg font-semibold mb-3">{t("videos.title")}</h2>
                 <div className="max-w-xl md:max-w-none">
                   <HorizontalMediaRow
                     items={clinic.videos as any[]}
@@ -898,13 +904,13 @@ const ClinicDetail = () => {
                         type="button"
                         onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
                         className="relative w-full h-full block group"
-                        aria-label="Play video"
+                        aria-label={t("videos.play")}
                       >
                         {v.provider === "youtube" && v.thumbnail ? (
                           <>
                             <img
                               src={v.thumbnail}
-                              alt="Video thumbnail"
+                              alt={t("videos.thumbnailAlt")}
                               loading="lazy"
                               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
@@ -949,7 +955,7 @@ const ClinicDetail = () => {
 
             {clinic.doctors.length > 0 && (
               <div ref={(el) => (sectionRefs.current["doctors"] = el)} className="scroll-mt-32">
-                <h2 className="text-xl font-bold mb-4">Our Doctors</h2>
+                <h2 className="text-xl font-bold mb-4">{t("doctors.title")}</h2>
                 <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
                   {clinic.doctors.map((doc: any, i: number) => (
                     <div
@@ -967,7 +973,7 @@ const ClinicDetail = () => {
                       <p className="text-xs text-muted-foreground mt-0.5">{doc.specialty}</p>
                       {doc.experience > 0 && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {doc.experience} yrs exp.
+                          {doc.experience} {t("doctors.yearsExpSuffix")}
                         </p>
                       )}
                     </div>
@@ -981,7 +987,7 @@ const ClinicDetail = () => {
               ref={(el) => (sectionRefs.current["contact"] = el)}
               className="scroll-mt-32 lg:hidden"
             >
-              <h2 className="text-xl font-bold mb-4">Contact Clinic</h2>
+              <h2 className="text-xl font-bold mb-4">{t("contact.mobileTitle")}</h2>
               <div className="rounded-xl border border-border/50 p-6">
                 <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} onSuccess={handleFormSuccess} />
               </div>
@@ -996,18 +1002,18 @@ const ClinicDetail = () => {
             >
               <div className="glass-sidebar rounded-2xl p-6 space-y-5 shadow-card">
                 <div>
-                  <h3 className="text-lg font-bold">Get a Free Quote</h3>
+                  <h3 className="text-lg font-bold">{t("contact.sidebarTitle")}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Fill out the form and hear back within 24 hours.
+                    {t("contact.sidebarSubtitle")}
                   </p>
                 </div>
 
                 {/* Trust bullets */}
                 <div className="space-y-2">
                   {[
-                    "Free online consultation",
-                    "Priority for appointments",
-                    "Response within 24h",
+                    t("contact.trust1"),
+                    t("contact.trust2"),
+                    t("contact.trust3"),
                   ].map((text, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" />
@@ -1020,7 +1026,7 @@ const ClinicDetail = () => {
                   <ContactClinicForm
                     clinicId={id!}
                     initialTreatment={initialTreatment}
-                    submitLabel="Request Free Quote"
+                    submitLabel={t("contact.requestFreeQuote")}
                     onSuccess={handleFormSuccess}
                   />
                 </div>
@@ -1029,7 +1035,7 @@ const ClinicDetail = () => {
                 {clinic.isVerified && (
                   <div className="flex items-center gap-2 pt-2 border-t border-border/40">
                     <Shield className="w-4 h-4 text-primary" />
-                    <span className="text-xs text-muted-foreground">Dentaloria Verified Clinic</span>
+                    <span className="text-xs text-muted-foreground">{t("contact.verifiedBadge")}</span>
                   </div>
                 )}
               </div>
@@ -1045,10 +1051,10 @@ const ClinicDetail = () => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             <div className="text-sm font-semibold">{clinic.name}</div>
-            <div className="text-xs text-muted-foreground">Get a free quote today</div>
+            <div className="text-xs text-muted-foreground">{t("contact.mobileBarSubtitle")}</div>
           </div>
           <Button onClick={() => setMobileOpen(true)} className="bg-primary text-primary-foreground">
-            Get Quote
+            {t("contact.getQuote")}
           </Button>
         </div>
       </div>
@@ -1057,13 +1063,13 @@ const ClinicDetail = () => {
       <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Get a Free Quote</DialogTitle>
+            <DialogTitle>{t("contact.sidebarTitle")}</DialogTitle>
           </DialogHeader>
           <ContactClinicForm
             clinicId={id!}
             initialTreatment={initialTreatment}
             onSuccess={handleFormSuccess}
-            submitLabel="Request Free Quote"
+            submitLabel={t("contact.requestFreeQuote")}
           />
         </DialogContent>
       </Dialog>
@@ -1073,7 +1079,7 @@ const ClinicDetail = () => {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Video player"
+          aria-label={t("aria.videoPlayer")}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 sm:p-8 animate-in fade-in-0 duration-200"
           onClick={() => setVideoLightbox(null)}
         >
@@ -1084,7 +1090,7 @@ const ClinicDetail = () => {
             <button
               type="button"
               onClick={() => setVideoLightbox(null)}
-              aria-label="Close video"
+              aria-label={t("aria.closeVideo")}
               className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 z-20 rounded-full bg-white hover:bg-white text-black p-2.5 shadow-xl ring-2 ring-black/10"
             >
               <X className="w-6 h-6" />
@@ -1141,7 +1147,7 @@ const ClinicDetail = () => {
           <button
             onClick={() => setFullscreenIdx(null)}
             className="absolute top-4 right-4 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-            aria-label="Close"
+            aria-label={t("aria.close")}
           >
             <X className="h-6 w-6" />
           </button>
@@ -1153,7 +1159,7 @@ const ClinicDetail = () => {
           <button
             onClick={() => setFullscreenIdx((p) => wrapIndex((p ?? 0) - 1))}
             className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-            aria-label="Previous image"
+            aria-label={t("aria.previousImage")}
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -1161,7 +1167,7 @@ const ClinicDetail = () => {
           <button
             onClick={() => setFullscreenIdx((p) => wrapIndex((p ?? 0) + 1))}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/20 p-2.5 text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-            aria-label="Next image"
+            aria-label={t("aria.nextImage")}
           >
             <ChevronRight className="h-6 w-6" />
           </button>
