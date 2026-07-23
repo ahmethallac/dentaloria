@@ -1,0 +1,52 @@
+{
+  "title": "Klinik Bilgileri",
+  "legalName": {
+    "label": "Yasal Şirket Adı",
+    "hint": "(kayıttan alınır — yalnızca idari amaçlı, herkese açık gösterilmez)"
+  },
+  "displayName": {
+    "label": "Görünen Ad",
+    "hint": "(genel sayfada gösterilen kısa, bilinen ad)",
+    "placeholder": "örn. Dental Group Istanbul",
+    "requiredError": "Sayfanızı onaya göndermeden önce bir Görünen Ad belirlemelisiniz."
+  },
+  "emailLabel": "E-posta",
+  "phoneLabel": "Telefon",
+  "websiteLabel": "Web Sitesi",
+  "addressLabel": "Adres",
+  "description": {
+    "label": "Açıklama",
+    "placeholder": "Hastalara kliniğinizi anlatın…",
+    "hint": "Kalın, italik ve madde işaretli liste kullanın. Yapıştırılan biçimlendirme korunur; resimler ve diğer HTML otomatik olarak kaldırılır."
+  },
+  "countryLabel": "Ülke",
+  "cityLabel": "Şehir",
+  "loading": "Yükleniyor...",
+  "selectCountry": "Ülke Seçin",
+  "selectCity": "Şehir Seçin",
+  "selectedLabel": "Seçili: {{country}} / {{city}}",
+  "supportedLanguages": {
+    "label": "Desteklenen Diller",
+    "hint": "Ekibinizin hastalarla iletişim kurabildiği tüm dilleri seçin."
+  },
+  "facilities": {
+    "label": "Olanaklar & Hizmetler",
+    "hint": "Hastalarınıza ziyaretleri sırasında sunduğunuz her şeyi seçin."
+  },
+  "saveButton": "Tüm Değişiklikleri Kaydet",
+  "saving": "Kaydediliyor...",
+  "readyToGoLive": {
+    "title": "Yayına girmeye hazır mısınız?",
+    "description": "Fotoğraflarınızı, doktorlarınızı, tedavilerinizi ve açıklamanızı ekledikten sonra sayfanızı Süper Admin onayına gönderin.",
+    "needsDisplayNameError": "Göndermeden önce yukarıda bir Görünen Ad belirlemelisiniz.",
+    "saveFirstError": "Önce Görünen Adınızı kaydetmek için \"Tüm Değişiklikleri Kaydet\"e tıklayın, ardından gönderin.",
+    "submitButton": "Onaya Gönder"
+  },
+  "pendingApprovalNote": "Sayfanız Süper Admin onayını bekliyor. Düzenlemeye devam edebilirsiniz — onaylandığında yayına girecek.",
+  "toasts": {
+    "successTitle": "Başarılı",
+    "successDesc": "Klinik bilgileri güncellendi.",
+    "errorTitle": "Hata",
+    "errorDesc": "Klinik bilgileri kaydedilirken bir hata oluştu."
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "sections": {
+    "overview": "Genel Bakış",
+    "patients": "Hastalar",
+    "info": "Klinik Bilgileri",
+    "sponsored": "Sponsorlu",
+    "settings": "Admin Ayarları",
+    "clinicInfoShort": "Klinik Bilgisi"
+  },
+  "sidebar": {
+    "clinicGroup": "Klinik",
+    "administrationGroup": "Yönetim",
+    "workspaceGroup": "Çalışma Alanı",
+    "dashboard": "Panel",
+    "clinics": "Klinikler",
+    "pendingApprovals": "Bekleyen Onaylar",
+    "allPatients": "Tüm Hastalar",
+    "users": "Kullanıcılar"
+  },
+  "breadcrumbs": {
+    "admin": "Admin",
+    "dashboard": "Panel"
+  },
+  "backToAllClinics": "Tüm kliniklere dön",
+  "notFound": "Klinik bulunamadı.",
+  "pageBanner": {
+    "revisionsTitle": "Sayfanız düzeltme için geri gönderildi",
+    "pendingTitle": "Sayfanız Süper Admin onayını bekliyor",
+    "completeTitle": "Klinik sayfanızı tamamlayın",
+    "makeCorrections": "Lütfen aşağıdaki düzeltmeleri yapın:",
+    "editAgainNote": "Klinik bilgilerinizi düzenleyin ve Klinik Bilgileri sayfasından tekrar gönderin.",
+    "pendingDesc": "Düzenlemeye devam edebilirsiniz — onaylandığında kliniğiniz yayına girecek.",
+    "completeDesc": "Fotoğraflar, doktorlar, tedaviler ve bir açıklama ekleyin, ardından sayfanızı Klinik Bilgileri sayfasından onay için gönderin.",
+    "pendingBadge": "Sayfa onayı bekleniyor"
+  },
+  "balance": {
+    "emptyTitle": "Bakiye boş",
+    "emptyDesc": "Bakiye yükleyene kadar gelen adaylar kilitli kalacak.",
+    "lowTitle": "Düşük bakiye — yakında yükleyin",
+    "lowDesc": "2'den az adayınız kaldı (€{{amount}}).",
+    "addBalance": "Bakiye Ekle"
+  },
+  "overview": {
+    "totalPatients": "Toplam Hasta",
+    "unlockedLeads": "Kilidi Açılan Adaylar",
+    "pendingLeads": "Bekleyen Adaylar",
+    "welcomeTitle": "Klinik panelinize hoş geldiniz",
+    "welcomeDesc": "Hastaları ve klinik bilgilerini yönetmek için kenar çubuğunu kullanın.",
+    "viewPatients": "Hastaları görüntüle",
+    "editClinicInfo": "Klinik bilgisini düzenle"
+  },
+  "sponsored": {
+    "title": "Sponsorlu Yerleşimler",
+    "description": "Bu kliniği platformun tanıtım alanlarında manuel olarak öne çıkarın. Sadece Süper Adminler görebilir.",
+    "showcaseLabel": "Ana Sayfa Vitrini",
+    "showcaseDesc": "Bu kliniği ana sayfadaki \"Öne Çıkan Klinikler\" bölümünde göster. En fazla 8 vitrin klinik 2×4 ızgarada gösterilir. Ödeme alınmaz — bu manuel bir editoryal yerleşimdir."
+  },
+  "settings": {
+    "title": "Admin Ayarları",
+    "description": "Platform düzeyinde kontroller. Sadece Süper Adminler ve Alt Adminler görebilir.",
+    "pricingLabel": "Fiyatlandırma",
+    "pricingValue": "Aday başına sabit €25 (ön ödemeli bakiye)",
+    "approvalStatusLabel": "Onay Durumu",
+    "statusPending": "Beklemede",
+    "statusApproved": "Onaylandı",
+    "statusRejected": "Reddedildi",
+    "pageStatusLabel": "Sayfa Durumu",
+    "pageIncomplete": "Eksik",
+    "pagePendingApproval": "Sayfa Onayı Bekliyor",
+    "pageLive": "Yayında",
+    "publishedLabel": "Yayınlandı",
+    "verifiedLabel": "Onaylı",
+    "featuredLabel": "Öne Çıkan",
+    "saveButton": "Admin ayarlarını kaydet",
+    "saving": "Kaydediliyor…"
+  },
+  "toasts": {
+    "paymentSuccessTitle": "Ödeme Başarılı!",
+    "paymentSuccessDesc": "Aday iletişim bilgilerinin kilidi açıldı.",
+    "paymentCancelledTitle": "Ödeme İptal Edildi",
+    "paymentCancelledDesc": "Hiçbir adayın kilidi açılmadı.",
+    "notFoundTitle": "Bulunamadı",
+    "notFoundDesc": "Klinik bulunamadı.",
+    "errorTitle": "Hata",
+    "genericErrorDesc": "Bir hata oluştu.",
+    "savedTitle": "Kaydedildi",
+    "savedDesc": "Admin ayarları başarıyla güncellendi.",
+    "showcaseAddedTitle": "Ana Sayfa Vitrinine Eklendi",
+    "showcaseRemovedTitle": "Ana Sayfa Vitrininden Kaldırıldı",
+    "showcaseAddedDesc": "Bu klinik artık ana sayfadaki Öne Çıkan Klinikler bölümünde görünecek.",
+    "showcaseRemovedDesc": "Bu klinik artık ana sayfada görünmeyecek.",
+    "submittedTitle": "Gönderildi",
+    "submittedDesc": "Sayfanız Süper Admin onayı için gönderildi."
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,12 +20,14 @@ import {
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { withLocalePrefix } from "@/lib/localePath";
 
 type PanelSection = 'overview' | 'patients' | 'info' | 'sponsored' | 'settings';
 
 const ClinicPanel = () => {
-  const { id } = useParams();
+  const { id, lang } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation('clinicPanel');
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const { userRole } = useAuth();
@@ -57,9 +60,9 @@ const ClinicPanel = () => {
   useEffect(() => {
     const payment = searchParams.get('payment');
     if (payment === 'success') {
-      toast({ title: "Payment Successful!", description: "Lead contacts have been unlocked." });
+      toast({ title: t('toasts.paymentSuccessTitle'), description: t('toasts.paymentSuccessDesc') });
     } else if (payment === 'cancelled') {
-      toast({ title: "Payment Cancelled", description: "No leads were unlocked.", variant: "destructive" });
+      toast({ title: t('toasts.paymentCancelledTitle'), description: t('toasts.paymentCancelledDesc'), variant: "destructive" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -69,8 +72,8 @@ const ClinicPanel = () => {
     try {
       const data = await getClinicByIdPrivate(id);
       if (!data) {
-        toast({ title: "Not Found", description: "Clinic not found.", variant: "destructive" });
-        navigate(isAdminUser ? "/admin" : "/dashboard");
+        toast({ title: t('toasts.notFoundTitle'), description: t('toasts.notFoundDesc'), variant: "destructive" });
+        navigate(withLocalePrefix(isAdminUser ? "/admin" : "/dashboard", lang));
         return;
       }
       setClinic(data);
@@ -93,15 +96,15 @@ const ClinicPanel = () => {
       setBalanceCents((balanceRes.data as any)?.balance_cents ?? 0);
     } catch (e: any) {
       console.error("Could not load clinic:", e);
-      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
-      navigate(isAdminUser ? "/admin" : "/dashboard");
+      toast({ title: t('toasts.errorTitle'), description: t('toasts.genericErrorDesc'), variant: "destructive" });
+      navigate(withLocalePrefix(isAdminUser ? "/admin" : "/dashboard", lang));
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!id) { navigate("/dashboard"); return; }
+    if (!id) { navigate(withLocalePrefix("/dashboard", lang)); return; }
     loadClinic();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -115,10 +118,10 @@ const ClinicPanel = () => {
         .eq('id', id);
       if (clinicError) throw clinicError;
       // Billing settings table removed - all clinics use the prepaid balance system at €25/lead.
-      toast({ title: "Saved", description: "Admin settings updated successfully." });
+      toast({ title: t('toasts.savedTitle'), description: t('toasts.savedDesc') });
       loadClinic();
     } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: "destructive" });
     } finally {
       setSavingAdmin(false);
     }
@@ -136,14 +139,12 @@ const ClinicPanel = () => {
         .eq('id', id);
       if (error) throw error;
       toast({
-        title: value ? 'Added to Homepage Showcase' : 'Removed from Homepage Showcase',
-        description: value
-          ? 'This clinic will now appear in the Featured Clinics section on the homepage.'
-          : 'This clinic will no longer appear on the homepage.',
+        title: value ? t('toasts.showcaseAddedTitle') : t('toasts.showcaseRemovedTitle'),
+        description: value ? t('toasts.showcaseAddedDesc') : t('toasts.showcaseRemovedDesc'),
       });
     } catch (e: any) {
       setHomepageShowcase(previous);
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' });
     } finally {
       setSavingShowcase(false);
     }
@@ -158,13 +159,13 @@ const ClinicPanel = () => {
         .update({ page_status: 'pending_page_approval', page_revision_notes: null })
         .eq('id', id);
       if (error) throw error;
-      toast({ title: 'Submitted', description: 'Your page has been submitted for Super Admin approval.' });
+      toast({ title: t('toasts.submittedTitle'), description: t('toasts.submittedDesc') });
       loadClinic();
       supabase.functions.invoke('send-clinic-notification', {
         body: { type: 'page_submitted', clinicId: id },
       }).catch(() => {});
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' });
     } finally {
       setSubmittingPage(false);
     }
@@ -178,29 +179,29 @@ const ClinicPanel = () => {
     );
   }
 
-  if (!clinic) return <div className="min-h-screen flex items-center justify-center">Clinic not found.</div>;
+  if (!clinic) return <div className="min-h-screen flex items-center justify-center">{t('notFound')}</div>;
 
   const sectionLabels: Record<PanelSection, string> = {
-    overview: 'Overview',
-    patients: 'Patients',
-    info: 'Clinic Information',
-    sponsored: 'Sponsored',
-    settings: 'Admin Settings',
+    overview: t('sections.overview'),
+    patients: t('sections.patients'),
+    info: t('sections.info'),
+    sponsored: t('sections.sponsored'),
+    settings: t('sections.settings'),
   };
 
   const clinicSections: ShellSection[] = [
     {
-      label: 'Clinic',
+      label: t('sidebar.clinicGroup'),
       items: [
-        { id: 'overview', label: 'Overview', icon: LayoutDashboard, onClick: () => setSection('overview'), active: section === 'overview' },
-        { id: 'patients', label: 'Patients', icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalLeads },
-        { id: 'info', label: 'Clinic Information', icon: Building2, onClick: () => setSection('info'), active: section === 'info' },
+        { id: 'overview', label: t('sections.overview'), icon: LayoutDashboard, onClick: () => setSection('overview'), active: section === 'overview' },
+        { id: 'patients', label: t('sections.patients'), icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalLeads },
+        { id: 'info', label: t('sections.info'), icon: Building2, onClick: () => setSection('info'), active: section === 'info' },
       ],
     },
     {
-      label: 'Administration',
+      label: t('sidebar.administrationGroup'),
       items: [
-        { id: 'settings', label: 'Admin Settings', icon: Shield, onClick: () => setSection('settings'), active: section === 'settings', hidden: !isAdminUser },
+        { id: 'settings', label: t('sections.settings'), icon: Shield, onClick: () => setSection('settings'), active: section === 'settings', hidden: !isAdminUser },
       ],
     },
   ];
@@ -209,18 +210,18 @@ const ClinicPanel = () => {
   // and render the clinic management as a sub-page with in-content tabs.
   const adminSections: ShellSection[] = [
     {
-      label: 'Workspace',
+      label: t('sidebar.workspaceGroup'),
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, onClick: () => navigate('/admin?section=dashboard') },
-        { id: 'clinics', label: 'Clinics', icon: Building2, onClick: () => navigate('/admin?section=clinics'), active: true },
-        { id: 'approvals', label: 'Pending Approvals', icon: Clock, onClick: () => navigate('/admin?section=approvals') },
-        { id: 'patients', label: 'All Patients', icon: Users, onClick: () => navigate('/admin?section=patients') },
+        { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard, onClick: () => navigate(withLocalePrefix('/admin?section=dashboard', lang)) },
+        { id: 'clinics', label: t('sidebar.clinics'), icon: Building2, onClick: () => navigate(withLocalePrefix('/admin?section=clinics', lang)), active: true },
+        { id: 'approvals', label: t('sidebar.pendingApprovals'), icon: Clock, onClick: () => navigate(withLocalePrefix('/admin?section=approvals', lang)) },
+        { id: 'patients', label: t('sidebar.allPatients'), icon: Users, onClick: () => navigate(withLocalePrefix('/admin?section=patients', lang)) },
       ],
     },
     {
-      label: 'Administration',
+      label: t('sidebar.administrationGroup'),
       items: [
-        { id: 'users', label: 'Users', icon: UserCog, onClick: () => navigate('/admin?section=users'), hidden: userRole !== 'admin' },
+        { id: 'users', label: t('sidebar.users'), icon: UserCog, onClick: () => navigate(withLocalePrefix('/admin?section=users', lang)), hidden: userRole !== 'admin' },
       ],
     },
   ];
@@ -228,16 +229,16 @@ const ClinicPanel = () => {
   const sections = isAdminUser ? adminSections : clinicSections;
 
   const clinicDisplayName = (clinic as any).display_name || clinic.name;
-  const panelRoot = `/clinic/${clinic.id}/panel?section=overview`;
+  const panelRoot = withLocalePrefix(`/clinic/${clinic.id}/panel?section=overview`, lang);
   const breadcrumbs = isAdminUser
     ? [
-        { label: 'Admin', to: '/admin?section=clinics' },
-        { label: 'Clinics', to: '/admin?section=clinics' },
+        { label: t('breadcrumbs.admin'), to: withLocalePrefix('/admin?section=clinics', lang) },
+        { label: t('sidebar.clinics'), to: withLocalePrefix('/admin?section=clinics', lang) },
         { label: clinicDisplayName, to: panelRoot },
         { label: sectionLabels[section] },
       ]
     : [
-        { label: 'Dashboard', to: '/dashboard' },
+        { label: t('breadcrumbs.dashboard'), to: withLocalePrefix('/dashboard', lang) },
         { label: clinicDisplayName, to: panelRoot },
         { label: sectionLabels[section] },
       ];
@@ -255,16 +256,16 @@ const ClinicPanel = () => {
     >
       {isAdminUser && (
         <div className="mb-4 flex items-center justify-between gap-3 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => navigate('/admin?section=clinics')}>
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to all clinics
+          <Button variant="outline" size="sm" onClick={() => navigate(withLocalePrefix('/admin?section=clinics', lang))}>
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('backToAllClinics')}
           </Button>
           <Tabs value={section} onValueChange={(v) => setSection(v as PanelSection)}>
             <TabsList>
-              <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1" />Overview</TabsTrigger>
-              <TabsTrigger value="patients"><Users className="w-4 h-4 mr-1" />Patients</TabsTrigger>
-              <TabsTrigger value="info"><Building2 className="w-4 h-4 mr-1" />Clinic Info</TabsTrigger>
-              <TabsTrigger value="sponsored"><Megaphone className="w-4 h-4 mr-1" />Sponsored</TabsTrigger>
-              <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" />Admin Settings</TabsTrigger>
+              <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1" />{t('sections.overview')}</TabsTrigger>
+              <TabsTrigger value="patients"><Users className="w-4 h-4 mr-1" />{t('sections.patients')}</TabsTrigger>
+              <TabsTrigger value="info"><Building2 className="w-4 h-4 mr-1" />{t('sections.clinicInfoShort')}</TabsTrigger>
+              <TabsTrigger value="sponsored"><Megaphone className="w-4 h-4 mr-1" />{t('sections.sponsored')}</TabsTrigger>
+              <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" />{t('sections.settings')}</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -286,31 +287,31 @@ const ClinicPanel = () => {
             <div className="space-y-1">
               <p className="font-semibold">
                 {pageRevisionNotes
-                  ? 'Your page was sent back for revisions'
+                  ? t('pageBanner.revisionsTitle')
                   : pageStatus === 'pending_page_approval'
-                    ? 'Your page is awaiting Super Admin approval'
-                    : 'Complete your clinic page'}
+                    ? t('pageBanner.pendingTitle')
+                    : t('pageBanner.completeTitle')}
               </p>
               {pageRevisionNotes ? (
                 <>
-                  <p className="text-sm text-muted-foreground">Please make the following corrections:</p>
+                  <p className="text-sm text-muted-foreground">{t('pageBanner.makeCorrections')}</p>
                   <p className="text-sm whitespace-pre-wrap rounded-md border bg-background/60 p-3">
                     {pageRevisionNotes}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Edit your clinic information and submit it again from the Clinic Information page.
+                    {t('pageBanner.editAgainNote')}
                   </p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {pageStatus === 'pending_page_approval'
-                    ? 'You can keep editing — your clinic will go live once approved.'
-                    : 'Add photos, doctors, treatments and a description, then submit your page for approval from the Clinic Information page.'}
+                    ? t('pageBanner.pendingDesc')
+                    : t('pageBanner.completeDesc')}
                 </p>
               )}
             </div>
             {pageStatus === 'pending_page_approval' && (
-              <Badge variant="secondary" className="self-start md:self-center">Pending page approval</Badge>
+              <Badge variant="secondary" className="self-start md:self-center">{t('pageBanner.pendingBadge')}</Badge>
             )}
           </CardContent>
         </Card>
@@ -322,11 +323,11 @@ const ClinicPanel = () => {
           <CardContent className="pt-6 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-destructive mt-0.5" />
             <div className="flex-1">
-              <p className="font-semibold text-destructive">Balance empty</p>
-              <p className="text-sm text-muted-foreground">Incoming leads will be locked until you top up.</p>
+              <p className="font-semibold text-destructive">{t('balance.emptyTitle')}</p>
+              <p className="text-sm text-muted-foreground">{t('balance.emptyDesc')}</p>
             </div>
-            <Link to={`/clinic/${clinic.id}/panel/balance`}>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            <Link to={withLocalePrefix(`/clinic/${clinic.id}/panel/balance`, lang)}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">{t('balance.addBalance')}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -336,11 +337,11 @@ const ClinicPanel = () => {
           <CardContent className="pt-6 flex items-start gap-3">
             <Wallet className="w-5 h-5 text-yellow-600 mt-0.5" />
             <div className="flex-1">
-              <p className="font-semibold text-yellow-700 dark:text-yellow-400">Low balance — top up soon</p>
-              <p className="text-sm text-muted-foreground">You have less than 2 leads remaining (€{(balanceCents/100).toFixed(2)}).</p>
+              <p className="font-semibold text-yellow-700 dark:text-yellow-400">{t('balance.lowTitle')}</p>
+              <p className="text-sm text-muted-foreground">{t('balance.lowDesc', { amount: (balanceCents/100).toFixed(2) })}</p>
             </div>
-            <Link to={`/clinic/${clinic.id}/panel/balance`}>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+            <Link to={withLocalePrefix(`/clinic/${clinic.id}/panel/balance`, lang)}>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">{t('balance.addBalance')}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -352,25 +353,25 @@ const ClinicPanel = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card><CardContent className="pt-6 flex items-center gap-3">
               <Users className="w-8 h-8 text-blue-500" />
-              <div><p className="text-2xl font-bold">{stats.totalLeads}</p><p className="text-sm text-muted-foreground">Total Patients</p></div>
+              <div><p className="text-2xl font-bold">{stats.totalLeads}</p><p className="text-sm text-muted-foreground">{t('overview.totalPatients')}</p></div>
             </CardContent></Card>
             <Card><CardContent className="pt-6 flex items-center gap-3">
               <BarChart3 className="w-8 h-8 text-green-500" />
-              <div><p className="text-2xl font-bold">{stats.purchasedLeads}</p><p className="text-sm text-muted-foreground">Unlocked Leads</p></div>
+              <div><p className="text-2xl font-bold">{stats.purchasedLeads}</p><p className="text-sm text-muted-foreground">{t('overview.unlockedLeads')}</p></div>
             </CardContent></Card>
             <Card><CardContent className="pt-6 flex items-center gap-3">
               <Settings className="w-8 h-8 text-orange-500" />
-              <div><p className="text-2xl font-bold">{stats.pendingLeads}</p><p className="text-sm text-muted-foreground">Pending Leads</p></div>
+              <div><p className="text-2xl font-bold">{stats.pendingLeads}</p><p className="text-sm text-muted-foreground">{t('overview.pendingLeads')}</p></div>
             </CardContent></Card>
           </div>
           <Card>
             <CardHeader>
-              <CardTitle>Welcome to your clinic panel</CardTitle>
-              <CardDescription>Use the sidebar to manage patients and clinic information.</CardDescription>
+              <CardTitle>{t('overview.welcomeTitle')}</CardTitle>
+              <CardDescription>{t('overview.welcomeDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex gap-2 flex-wrap">
-              <Button onClick={() => setSection('patients')}><Users className="w-4 h-4 mr-1" /> View patients</Button>
-              <Button variant="outline" onClick={() => setSection('info')}><Building2 className="w-4 h-4 mr-1" /> Edit clinic info</Button>
+              <Button onClick={() => setSection('patients')}><Users className="w-4 h-4 mr-1" /> {t('overview.viewPatients')}</Button>
+              <Button variant="outline" onClick={() => setSection('info')}><Building2 className="w-4 h-4 mr-1" /> {t('overview.editClinicInfo')}</Button>
             </CardContent>
           </Card>
         </div>
@@ -395,20 +396,20 @@ const ClinicPanel = () => {
         <Card className="border-primary/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
-              <Megaphone className="w-5 h-5" /> Sponsored Placements
+              <Megaphone className="w-5 h-5" /> {t('sponsored.title')}
             </CardTitle>
             <CardDescription>
-              Manually feature this clinic in promotional areas of the platform. Visible to Super Admins only.
+              {t('sponsored.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-lg border border-border bg-card p-4 flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <Label htmlFor="homepage_showcase" className="text-base font-semibold">
-                  Homepage Showcase
+                  {t('sponsored.showcaseLabel')}
                 </Label>
                 <p className="text-sm text-muted-foreground max-w-xl">
-                  Feature this clinic in the “Featured Clinics” section on the homepage. Up to 8 showcased clinics are displayed in a 2×4 grid. No payment is taken — this is a manual editorial placement.
+                  {t('sponsored.showcaseDesc')}
                 </p>
               </div>
               <Switch
@@ -427,58 +428,58 @@ const ClinicPanel = () => {
         <Card className="border-primary/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
-              <Shield className="w-5 h-5" /> Admin Settings
+              <Shield className="w-5 h-5" /> {t('settings.title')}
             </CardTitle>
-            <CardDescription>Platform-level controls. Visible to Super Admins and Sub-Admins only.</CardDescription>
+            <CardDescription>{t('settings.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label>Pricing</Label>
+                <Label>{t('settings.pricingLabel')}</Label>
                 <div className="px-3 py-2 rounded-md border border-border bg-muted/40 text-sm">
-                  Fixed €25 per lead (prepaid balance)
+                  {t('settings.pricingValue')}
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Approval Status</Label>
+                <Label>{t('settings.approvalStatusLabel')}</Label>
                 <Select value={approvalStatus} onValueChange={setApprovalStatus}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="pending">{t('settings.statusPending')}</SelectItem>
+                    <SelectItem value="approved">{t('settings.statusApproved')}</SelectItem>
+                    <SelectItem value="rejected">{t('settings.statusRejected')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Page Status</Label>
+                <Label>{t('settings.pageStatusLabel')}</Label>
                 <Select value={pageStatus} onValueChange={(v: any) => setPageStatus(v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="incomplete">Incomplete</SelectItem>
-                    <SelectItem value="pending_page_approval">Pending Page Approval</SelectItem>
-                    <SelectItem value="live">Live</SelectItem>
+                    <SelectItem value="incomplete">{t('settings.pageIncomplete')}</SelectItem>
+                    <SelectItem value="pending_page_approval">{t('settings.pagePendingApproval')}</SelectItem>
+                    <SelectItem value="live">{t('settings.pageLive')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="published">Published</Label>
+                  <Label htmlFor="published">{t('settings.publishedLabel')}</Label>
                   <Switch id="published" checked={isPublished} onCheckedChange={setIsPublished} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="verified">Verified</Label>
+                  <Label htmlFor="verified">{t('settings.verifiedLabel')}</Label>
                   <Switch id="verified" checked={isVerified} onCheckedChange={setIsVerified} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="featured">Featured</Label>
+                  <Label htmlFor="featured">{t('settings.featuredLabel')}</Label>
                   <Switch id="featured" checked={isFeatured} onCheckedChange={setIsFeatured} />
                 </div>
               </div>
             </div>
             <div className="mt-6 flex justify-end">
               <Button onClick={handleSaveAdminSettings} disabled={savingAdmin}>
-                {savingAdmin ? 'Saving…' : 'Save admin settings'}
+                {savingAdmin ? t('settings.saving') : t('settings.saveButton')}
               </Button>
             </div>
           </CardContent>

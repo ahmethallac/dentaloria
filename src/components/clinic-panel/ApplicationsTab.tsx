@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
 import { Mail, Phone, Search, Lock, Unlock, Loader2, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { withLocalePrefix } from "@/lib/localePath";
 
 interface ApplicationsTabProps {
   clinicId: string;
@@ -31,18 +33,14 @@ const maskPhone = (phone: string) => {
   return `${phone.slice(0, 3)}${'*'.repeat(Math.max(1, phone.length - 5))}${phone.slice(-2)}`;
 };
 
-const statusLabel = (s: string) =>
-  s === 'new' ? 'New' : s === 'contacted' ? 'Contacted' : s === 'completed' ? 'Completed' : s;
-
-const statusTone = (s: string) =>
-  s === 'new' ? 'bg-blue-500' : s === 'contacted' ? 'bg-yellow-500' : s === 'completed' ? 'bg-green-500' : 'bg-gray-500';
-
 const isExpired = (createdAt: string) =>
   Date.now() - new Date(createdAt).getTime() > EXPIRY_HOURS * 60 * 60 * 1000;
 
 export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
+  const { t } = useTranslation('applicationsTab');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { lang } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [requests, setRequests] = useState<ContactRequest[]>([]);
   const [total, setTotal] = useState(0);
@@ -52,6 +50,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const [unlocking, setUnlocking] = useState<string | null>(null);
   const [bulkUnlocking, setBulkUnlocking] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const statusLabel = (s: string) =>
+    s === 'new' ? t('status.new') : s === 'contacted' ? t('status.contacted') : s === 'completed' ? t('status.completed') : s;
+
+  const statusTone = (s: string) =>
+    s === 'new' ? 'bg-blue-500' : s === 'contacted' ? 'bg-yellow-500' : s === 'completed' ? 'bg-green-500' : 'bg-gray-500';
 
   const [q, setQ] = useState('');
   const [bucket, setBucket] = useState<LeadBucket>('pending');
@@ -72,7 +76,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
       setBalanceCents(balanceRes.data?.balance_cents ?? 0);
     } catch (e: any) {
       console.error('Could not load patients:', e);
-      toast({ title: 'Error', description: 'An error occurred while loading patients.', variant: 'destructive' });
+      toast({ title: t('toasts.loadErrorTitle'), description: t('toasts.loadErrorDesc'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -84,7 +88,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   useEffect(() => {
     const p = searchParams.get('purchase');
     if (p === 'success') {
-      toast({ title: 'Purchase complete', description: 'Your selected leads have been unlocked.' });
+      toast({ title: t('toasts.purchaseCompleteTitle'), description: t('toasts.purchaseCompleteDesc') });
       const next = new URLSearchParams(searchParams);
       next.delete('purchase');
       setSearchParams(next, { replace: true });
@@ -112,15 +116,15 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
     try {
       const updated = await updateContactRequest(id, updates);
       setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
-      toast({ title: 'Updated', description: 'Patient record updated.' });
+      toast({ title: t('toasts.updatedTitle'), description: t('toasts.updatedDesc') });
     } catch {
-      toast({ title: 'Error', description: 'Failed to update.', variant: 'destructive' });
+      toast({ title: t('toasts.loadErrorTitle'), description: t('toasts.updateErrorDesc'), variant: 'destructive' });
     }
   };
 
   const unlockOne = async (requestId: string) => {
     if (balanceCents < PRICE_CENTS) {
-      toast({ title: 'Insufficient balance', description: 'Top up your balance to unlock this lead.', variant: 'destructive' });
+      toast({ title: t('toasts.insufficientBalanceTitle'), description: t('toasts.insufficientBalanceDescSingle'), variant: 'destructive' });
       return;
     }
     setUnlocking(requestId);
@@ -133,9 +137,9 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
       const newBalance = (data as any)?.balance_cents ?? balanceCents - PRICE_CENTS;
       setBalanceCents(newBalance);
       setPurchasedIds((prev) => new Set(prev).add(requestId));
-      toast({ title: 'Unlocked', description: 'Lead details revealed.' });
+      toast({ title: t('toasts.unlockedTitle'), description: t('toasts.unlockedDesc') });
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message || 'Failed to unlock.', variant: 'destructive' });
+      toast({ title: t('toasts.loadErrorTitle'), description: e.message || t('toasts.unlockErrorDesc'), variant: 'destructive' });
     } finally {
       setUnlocking(null);
     }
@@ -160,7 +164,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const unlockAllPending = async () => {
     if (lockedPending.length === 0) return;
     if (balanceCents < PRICE_CENTS) {
-      toast({ title: 'Insufficient balance', description: 'Top up to unlock leads.', variant: 'destructive' });
+      toast({ title: t('toasts.insufficientBalanceTitle'), description: t('toasts.insufficientBalanceDescBulk'), variant: 'destructive' });
       return;
     }
     setBulkUnlocking(true);
@@ -181,7 +185,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         if (typeof nb === 'number') setBalanceCents(nb);
         setPurchasedIds((prev) => new Set(prev).add(lead.id));
       }
-      toast({ title: 'Done', description: `${unlockedCount} lead${unlockedCount === 1 ? '' : 's'} unlocked.` });
+      toast({ title: t('toasts.doneTitle'), description: t('toasts.unlockedCount', { count: unlockedCount }) });
     } finally {
       setBulkUnlocking(false);
     }
@@ -223,13 +227,13 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
 
   const goToPurchasePage = (ids: string[]) => {
     if (ids.length === 0) return;
-    navigate(`/clinic/${clinicId}/panel/purchase-leads?ids=${ids.join(',')}`);
+    navigate(withLocalePrefix(`/clinic/${clinicId}/panel/purchase-leads?ids=${ids.join(',')}`, lang));
   };
 
   const renderPending = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
-        <div className="p-6 text-center text-muted-foreground">No pending leads.</div>
+        <div className="p-6 text-center text-muted-foreground">{t('noPending')}</div>
       ) : (
         list.map((r) => (
           <div key={r.id} className="p-4 border border-border/50 rounded-lg">
@@ -238,12 +242,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 className="mt-1"
                 checked={selectedIds.has(r.id)}
                 onCheckedChange={() => toggleSelect(r.id)}
-                aria-label={`Select ${r.name}`}
+                aria-label={t('selectAriaLabel', { name: r.name })}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-medium">{r.name}</span>
-                  <Badge variant="secondary"><Lock className="w-3 h-3 mr-1" />Locked</Badge>
+                  <Badge variant="secondary"><Lock className="w-3 h-3 mr-1" />{t('locked')}</Badge>
                 </div>
                 <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
                 {r.message && <div className="mt-2 text-sm">{r.message}</div>}
@@ -259,14 +263,14 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   disabled={unlocking === r.id || balanceCents < PRICE_CENTS}
                 >
                   {unlocking === r.id ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Unlock className="w-4 h-4 mr-1" />}
-                  Unlock for €25
+                  {t('unlockFor25')}
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => goToPurchasePage([r.id])}
                 >
-                  Buy now
+                  {t('buyNow')}
                 </Button>
               </div>
             </div>
@@ -279,7 +283,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const renderExpired = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
-        <div className="p-6 text-center text-muted-foreground">No expired leads.</div>
+        <div className="p-6 text-center text-muted-foreground">{t('noExpired')}</div>
       ) : (
         list.map((r) => (
           <div key={r.id} className="p-4 border border-border/50 rounded-lg opacity-70">
@@ -288,7 +292,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-medium">{r.name}</span>
                   <Badge variant="outline" className="border-destructive/40 text-destructive">
-                    <Clock className="w-3 h-3 mr-1" />Expired
+                    <Clock className="w-3 h-3 mr-1" />{t('expiredBadge')}
                   </Badge>
                 </div>
                 <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
@@ -298,7 +302,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 </div>
               </div>
               <div className="shrink-0">
-                <Button size="sm" disabled>Unlock unavailable</Button>
+                <Button size="sm" disabled>{t('unlockUnavailable')}</Button>
               </div>
             </div>
           </div>
@@ -310,7 +314,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
   const renderPurchased = (list: ContactRequest[]) => (
     <div className="space-y-3">
       {list.length === 0 ? (
-        <div className="p-6 text-center text-muted-foreground">No purchased leads yet.</div>
+        <div className="p-6 text-center text-muted-foreground">{t('noPurchased')}</div>
       ) : (
         list.map((r) => (
           <div key={r.id} className="p-4 border border-border/50 rounded-lg">
@@ -319,7 +323,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-medium">{r.name}</span>
                   <Badge className={`${statusTone(r.status)} text-white`}>{statusLabel(r.status)}</Badge>
-                  <Badge className="bg-green-500 text-white"><Unlock className="w-3 h-3 mr-1" />Unlocked</Badge>
+                  <Badge className="bg-green-500 text-white"><Unlock className="w-3 h-3 mr-1" />{t('unlockedBadge')}</Badge>
                 </div>
                 <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
                 {r.message && <div className="mt-2 text-sm">{r.message}</div>}
@@ -329,32 +333,32 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                 </div>
               </div>
               <div className="flex flex-col gap-2 shrink-0">
-                <a href={`mailto:${r.email}`}><Button size="sm" variant="outline"><Mail className="w-4 h-4 mr-1" />Email</Button></a>
-                {r.phone && <a href={`tel:${r.phone}`}><Button size="sm" variant="outline"><Phone className="w-4 h-4 mr-1" />Call</Button></a>}
+                <a href={`mailto:${r.email}`}><Button size="sm" variant="outline"><Mail className="w-4 h-4 mr-1" />{t('email')}</Button></a>
+                {r.phone && <a href={`tel:${r.phone}`}><Button size="sm" variant="outline"><Phone className="w-4 h-4 mr-1" />{t('call')}</Button></a>}
                 <select
                   className="px-2 py-1 border border-border rounded-md bg-background text-sm"
                   value={r.status}
                   onChange={(e) => handleUpdate(r.id, { status: e.target.value as any })}
                 >
-                  <option value="new">New</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="completed">Completed</option>
+                  <option value="new">{t('status.new')}</option>
+                  <option value="contacted">{t('status.contacted')}</option>
+                  <option value="completed">{t('status.completed')}</option>
                 </select>
               </div>
             </div>
             <div className="mt-3">
-              <label className="text-xs text-muted-foreground mb-1 block">Internal notes</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t('internalNotes')}</label>
               <div className="flex gap-2">
                 <Textarea
                   rows={2}
-                  placeholder="Notes..."
+                  placeholder={t('notesPlaceholder')}
                   value={r.notes || ''}
                   onChange={(e) =>
                     setRequests((prev) => prev.map((x) => (x.id === r.id ? { ...x, notes: e.target.value } : x)))
                   }
                 />
                 <Button size="sm" onClick={() => handleUpdate(r.id, { notes: requests.find((x) => x.id === r.id)?.notes })}>
-                  Save
+                  {t('save')}
                 </Button>
               </div>
             </div>
@@ -368,19 +372,19 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Patients
-          <Badge variant="outline" className="ml-2">{total} total</Badge>
+          {t('title')}
+          <Badge variant="outline" className="ml-2">{t('totalBadge', { count: total })}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Balance summary */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-3 rounded-lg border border-border/60 bg-muted/40">
           <div className="text-sm">
-            Balance: <span className="font-semibold">€{(balanceCents / 100).toFixed(2)}</span>
-            <span className="text-muted-foreground"> · {Math.floor(balanceCents / PRICE_CENTS)} lead{Math.floor(balanceCents / PRICE_CENTS) === 1 ? '' : 's'} remaining</span>
+            {t('balanceLabel')} <span className="font-semibold">€{(balanceCents / 100).toFixed(2)}</span>
+            <span className="text-muted-foreground"> · {t('leadsRemaining', { count: Math.floor(balanceCents / PRICE_CENTS) })}</span>
           </div>
-          <Link to={`/clinic/${clinicId}/panel/balance`}>
-            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+          <Link to={withLocalePrefix(`/clinic/${clinicId}/panel/balance`, lang)}>
+            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">{t('addBalance')}</Button>
           </Link>
         </div>
 
@@ -388,16 +392,16 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
           <div className="flex gap-3 items-center flex-wrap">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search by name..." className="pl-10 w-72" value={q} onChange={(e) => setQ(e.target.value)} />
+              <Input placeholder={t('searchPlaceholder')} className="pl-10 w-72" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
           </div>
         </div>
 
         <Tabs value={bucket} onValueChange={(v) => setBucket(v as LeadBucket)}>
           <TabsList>
-            <TabsTrigger value="pending">Pending ({buckets.pending.length})</TabsTrigger>
-            <TabsTrigger value="expired">Expired ({buckets.expired.length})</TabsTrigger>
-            <TabsTrigger value="purchased">Purchased ({buckets.purchased.length})</TabsTrigger>
+            <TabsTrigger value="pending">{t('tabs.pending')} ({buckets.pending.length})</TabsTrigger>
+            <TabsTrigger value="expired">{t('tabs.expired')} ({buckets.expired.length})</TabsTrigger>
+            <TabsTrigger value="purchased">{t('tabs.purchased')} ({buckets.purchased.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-4 space-y-3">
@@ -407,12 +411,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                   <Checkbox
                     checked={allVisibleSelected}
                     onCheckedChange={toggleSelectAllVisible}
-                    aria-label="Select all visible pending leads"
+                    aria-label={t('selectAllVisibleAriaLabel')}
                   />
                   <span className="font-medium">
                     {selectedIds.size > 0
-                      ? `${selectedIds.size} selected · €${((selectedIds.size * PRICE_CENTS) / 100).toFixed(2)}`
-                      : 'Select leads to purchase'}
+                      ? t('selectedSummary', { count: selectedIds.size, amount: ((selectedIds.size * PRICE_CENTS) / 100).toFixed(2) })
+                      : t('selectLeadsToPurchase')}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -436,12 +440,12 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                         }
                         setSelectedIds(new Set());
                         setBulkUnlocking(false);
-                        toast({ title: 'Done', description: `${count} lead${count === 1 ? '' : 's'} unlocked.` });
+                        toast({ title: t('toasts.doneTitle'), description: t('toasts.unlockedCount', { count }) });
                       }}
                       disabled={bulkUnlocking}
                     >
                       {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
-                      Unlock with balance
+                      {t('unlockWithBalance')}
                     </Button>
                   )}
                   <Button
@@ -449,7 +453,7 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                     onClick={() => goToPurchasePage(Array.from(selectedIds))}
                     disabled={selectedIds.size === 0}
                   >
-                    Buy selected leads
+                    {t('buySelectedLeads')}
                   </Button>
                   {bulkCount > 0 && selectedIds.size === 0 && (
                     <Button
@@ -459,21 +463,21 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
                       disabled={bulkUnlocking}
                     >
                       {bulkUnlocking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Unlock className="w-4 h-4 mr-2" />}
-                      Unlock all ({bulkCount}) for €{((bulkCount * PRICE_CENTS) / 100).toFixed(2)}
+                      {t('unlockAllFor', { count: bulkCount, amount: ((bulkCount * PRICE_CENTS) / 100).toFixed(2) })}
                     </Button>
                   )}
                 </div>
               </div>
             )}
-            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPending(visiblePending)}
+            {loading ? <div className="p-6 text-center text-muted-foreground">{t('loading')}</div> : renderPending(visiblePending)}
           </TabsContent>
 
           <TabsContent value="expired" className="mt-4">
-            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderExpired(filteredQ(buckets.expired))}
+            {loading ? <div className="p-6 text-center text-muted-foreground">{t('loading')}</div> : renderExpired(filteredQ(buckets.expired))}
           </TabsContent>
 
           <TabsContent value="purchased" className="mt-4">
-            {loading ? <div className="p-6 text-center text-muted-foreground">Loading...</div> : renderPurchased(filteredQ(buckets.purchased))}
+            {loading ? <div className="p-6 text-center text-muted-foreground">{t('loading')}</div> : renderPurchased(filteredQ(buckets.purchased))}
           </TabsContent>
         </Tabs>
       </CardContent>

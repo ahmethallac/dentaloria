@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
+import { withLocalePrefix } from "@/lib/localePath";
 
 interface BalanceWidgetProps {
   clinicId: string;
@@ -11,6 +13,8 @@ interface BalanceWidgetProps {
 const PRICE_CENTS = 2500;
 
 export default function BalanceWidget({ clinicId }: BalanceWidgetProps) {
+  const { t } = useTranslation('applicationsTab');
+  const { lang } = useParams();
   const [balanceCents, setBalanceCents] = useState<number>(0);
   const [loaded, setLoaded] = useState(false);
 
@@ -53,17 +57,17 @@ export default function BalanceWidget({ clinicId }: BalanceWidgetProps) {
           <Wallet className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <div className="text-xs text-muted-foreground">Balance</div>
+          <div className="text-xs text-muted-foreground">{t('balanceLabel').replace(':', '')}</div>
           <div className="text-xl font-bold leading-tight">
             {loaded ? `€${(balanceCents / 100).toFixed(2)}` : "…"}
           </div>
           <div className="text-xs text-muted-foreground">
-            {leads} lead{leads === 1 ? "" : "s"} remaining
+            {t('leadsRemaining', { count: leads })}
           </div>
         </div>
       </div>
-      <Link to={`/clinic/${clinicId}/panel/balance`}>
-        <Button className="bg-green-600 hover:bg-green-700 text-white">Add Balance</Button>
+      <Link to={withLocalePrefix(`/clinic/${clinicId}/panel/balance`, lang)}>
+        <Button className="bg-green-600 hover:bg-green-700 text-white">{t('addBalance')}</Button>
       </Link>
     </div>
   );

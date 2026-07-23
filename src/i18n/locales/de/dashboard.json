@@ -1,0 +1,17 @@
+{
+  "noClinic": {
+    "title": "Keine Klinik für dieses Konto",
+    "description": "Dieses Konto ist mit keiner Klinik verknüpft. Bitte registrieren Sie eine neue Klinik oder kontaktieren Sie den Support.",
+    "cta": "Klinik Registrieren"
+  },
+  "status": {
+    "subtitle": "Status der Klinikregistrierung",
+    "pendingTitle": "Genehmigung Ausstehend",
+    "pendingDesc": "Ihre Klinikregistrierung wird geprüft. Sie werden benachrichtigt, sobald sie genehmigt wurde.",
+    "rejectedTitle": "Registrierung Abgelehnt",
+    "rejectedDesc": "Leider wurde Ihre Klinikregistrierung nicht genehmigt. Bitte kontaktieren Sie den Support für weitere Informationen.",
+    "approvedTitle": "Genehmigt!",
+    "approvedDesc": "Ihre Klinik ist genehmigt und aktiv.",
+    "goToPanel": "Zum Klinik-Panel"
+  }
+}

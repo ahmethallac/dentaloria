@@ -1,0 +1,17 @@
+{
+  "noClinic": {
+    "title": "No clinic on this account",
+    "description": "This account is not linked to a clinic. Please register a new clinic or contact support.",
+    "cta": "Register a Clinic"
+  },
+  "status": {
+    "subtitle": "Clinic Registration Status",
+    "pendingTitle": "Pending Approval",
+    "pendingDesc": "Your clinic registration is under review. You will be notified once it's approved.",
+    "rejectedTitle": "Registration Rejected",
+    "rejectedDesc": "Unfortunately, your clinic registration was not approved. Please contact support for more information.",
+    "approvedTitle": "Approved!",
+    "approvedDesc": "Your clinic is approved and active.",
+    "goToPanel": "Go to Clinic Panel"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "noClinic": {
+    "title": "Aucune clinique sur ce compte",
+    "description": "Ce compte n'est lié à aucune clinique. Veuillez inscrire une nouvelle clinique ou contacter le support.",
+    "cta": "Inscrire une Clinique"
+  },
+  "status": {
+    "subtitle": "Statut d'Inscription de la Clinique",
+    "pendingTitle": "En Attente d'Approbation",
+    "pendingDesc": "L'inscription de votre clinique est en cours d'examen. Vous serez notifié une fois qu'elle sera approuvée.",
+    "rejectedTitle": "Inscription Rejetée",
+    "rejectedDesc": "Malheureusement, l'inscription de votre clinique n'a pas été approuvée. Veuillez contacter le support pour plus d'informations.",
+    "approvedTitle": "Approuvé !",
+    "approvedDesc": "Votre clinique est approuvée et active.",
+    "goToPanel": "Aller au Panneau de la Clinique"
+  }
+}

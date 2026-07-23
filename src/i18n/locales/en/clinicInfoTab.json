@@ -1,0 +1,52 @@
+{
+  "title": "Clinic Information",
+  "legalName": {
+    "label": "Legal Company Name",
+    "hint": "(from registration — administrative use only, not shown publicly)"
+  },
+  "displayName": {
+    "label": "Display Name",
+    "hint": "(short, commonly-known name shown on the public page)",
+    "placeholder": "e.g. Dental Group Istanbul",
+    "requiredError": "Display name is required before you can submit your page for approval."
+  },
+  "emailLabel": "Email",
+  "phoneLabel": "Phone",
+  "websiteLabel": "Website",
+  "addressLabel": "Address",
+  "description": {
+    "label": "Description",
+    "placeholder": "Tell patients about your clinic…",
+    "hint": "Use <b>bold</b>, <i>italic</i> and bullet lists. Pasted formatting is preserved; images and other HTML are removed automatically."
+  },
+  "countryLabel": "Country",
+  "cityLabel": "City",
+  "loading": "Loading...",
+  "selectCountry": "Select Country",
+  "selectCity": "Select City",
+  "selectedLabel": "Selected: {{country}} / {{city}}",
+  "supportedLanguages": {
+    "label": "Supported Languages",
+    "hint": "Select every language your team can communicate in with patients."
+  },
+  "facilities": {
+    "label": "Facilities & Amenities",
+    "hint": "Pick everything you offer your patients during their visit."
+  },
+  "saveButton": "Save All Changes",
+  "saving": "Saving...",
+  "readyToGoLive": {
+    "title": "Ready to go live?",
+    "description": "Once you've added your photos, doctors, treatments and description, submit your page for Super Admin approval.",
+    "needsDisplayNameError": "You must set a Display Name above before submitting.",
+    "saveFirstError": "Click \"Save All Changes\" first to save your Display Name, then submit.",
+    "submitButton": "Submit for Approval"
+  },
+  "pendingApprovalNote": "Your page is awaiting Super Admin approval. You can keep editing — it will go live once approved.",
+  "toasts": {
+    "successTitle": "Success",
+    "successDesc": "Clinic information updated.",
+    "errorTitle": "Error",
+    "errorDesc": "An error occurred while saving the clinic information."
+  }
+}

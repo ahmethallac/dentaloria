@@ -1,0 +1,17 @@
+{
+  "noClinic": {
+    "title": "Bu hesapta klinik yok",
+    "description": "Bu hesap bir klinikle ilişkilendirilmemiş. Lütfen yeni bir klinik kaydedin veya destek ekibiyle iletişime geçin.",
+    "cta": "Klinik Kaydet"
+  },
+  "status": {
+    "subtitle": "Klinik Kayıt Durumu",
+    "pendingTitle": "Onay Bekleniyor",
+    "pendingDesc": "Klinik kaydınız incelemede. Onaylandığında bilgilendirileceksiniz.",
+    "rejectedTitle": "Kayıt Reddedildi",
+    "rejectedDesc": "Maalesef klinik kaydınız onaylanmadı. Daha fazla bilgi için lütfen destek ekibiyle iletişime geçin.",
+    "approvedTitle": "Onaylandı!",
+    "approvedDesc": "Kliniğiniz onaylandı ve aktif.",
+    "goToPanel": "Klinik Paneline Git"
+  }
+}

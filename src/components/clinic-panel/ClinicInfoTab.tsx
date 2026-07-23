@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +29,7 @@ interface ClinicInfoTabProps {
 }
 
 export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUser, submittingPage, onSubmitForApproval }: ClinicInfoTabProps) {
+  const { t } = useTranslation('clinicInfoTab');
   const { toast } = useToast();
 
   const [form, setForm] = useState({
@@ -133,7 +135,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
       } catch (e) {
         // toast already handled inside the manager
       }
-      toast({ title: "Success", description: "Clinic information updated." });
+      toast({ title: t('toasts.successTitle'), description: t('toasts.successDesc') });
       onUpdated?.(updated);
 
       // Translate the description in the background — never blocks the save
@@ -162,7 +164,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
       }
     } catch (e: any) {
       console.error("Could not update clinic:", e);
-      toast({ title: "Error", description: "An error occurred while saving the clinic information.", variant: "destructive" });
+      toast({ title: t('toasts.errorTitle'), description: t('toasts.errorDesc'), variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -171,31 +173,31 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Clinic Information</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Legal name (read-only) + Display name (required, public-facing) */}
         <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">
-              Legal Company Name <span className="text-xs text-muted-foreground font-normal">(from registration — administrative use only, not shown publicly)</span>
+              {t('legalName.label')} <span className="text-xs text-muted-foreground font-normal">{t('legalName.hint')}</span>
             </label>
             <Input value={form.name} readOnly disabled className="bg-background/60" />
           </div>
           <div>
             <label className="text-sm font-medium mb-2 block">
-              Display Name <span className="text-destructive">*</span>{" "}
-              <span className="text-xs text-muted-foreground font-normal">(short, commonly-known name shown on the public page)</span>
+              {t('displayName.label')} <span className="text-destructive">*</span>{" "}
+              <span className="text-xs text-muted-foreground font-normal">{t('displayName.hint')}</span>
             </label>
             <Input
               value={form.display_name}
               onChange={(e) => onChange("display_name", e.target.value)}
-              placeholder="e.g. Dental Group Istanbul"
+              placeholder={t('displayName.placeholder')}
               required
             />
             {!form.display_name.trim() && (
               <p className="text-xs text-destructive mt-1">
-                Display name is required before you can submit your page for approval.
+                {t('displayName.requiredError')}
               </p>
             )}
           </div>
@@ -203,15 +205,15 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Email</label>
+            <label className="text-sm font-medium mb-2 block">{t('emailLabel')}</label>
             <Input value={form.email} onChange={(e) => onChange("email", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Phone</label>
+            <label className="text-sm font-medium mb-2 block">{t('phoneLabel')}</label>
             <Input value={form.phone} onChange={(e) => onChange("phone", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">Website</label>
+            <label className="text-sm font-medium mb-2 block">{t('websiteLabel')}</label>
             <Input value={form.website} onChange={(e) => onChange("website", e.target.value)} />
           </div>
           <div>
@@ -220,27 +222,28 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Address</label>
+          <label className="text-sm font-medium mb-2 block">{t('addressLabel')}</label>
           <Textarea value={form.address} onChange={(e) => onChange("address", e.target.value)} />
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Description</label>
+          <label className="text-sm font-medium mb-2 block">{t('description.label')}</label>
           <RichTextEditor
             value={form.description}
             onChange={(html) => onChange("description", sanitizeRichText(html))}
-            placeholder="Tell patients about your clinic…"
+            placeholder={t('description.placeholder')}
           />
-          <p className="text-xs text-muted-foreground mt-1">
-            Use <strong>bold</strong>, <em>italic</em> and bullet lists. Pasted formatting is preserved; images and other HTML are removed automatically.
-          </p>
+          <p
+            className="text-xs text-muted-foreground mt-1"
+            dangerouslySetInnerHTML={{ __html: t('description.hint') }}
+          />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Country</label>
+            <label className="text-sm font-medium mb-2 block">{t('countryLabel')}</label>
             {loadingLoc ? (
-              <div className="text-sm text-muted-foreground">Loading...</div>
+              <div className="text-sm text-muted-foreground">{t('loading')}</div>
             ) : (
               <select
                 className="w-full px-3 py-2 border border-border rounded-md bg-background"
@@ -248,7 +251,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
                 onChange={(e) => handleCountryChange(e.target.value)}
               >
                 <option value="" disabled>
-                  Select Country
+                  {t('selectCountry')}
                 </option>
                 {countries.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -259,14 +262,14 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             )}
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">City</label>
+            <label className="text-sm font-medium mb-2 block">{t('cityLabel')}</label>
             <select
               className="w-full px-3 py-2 border border-border rounded-md bg-background"
               value={cityId}
               onChange={(e) => setCityId(e.target.value)}
             >
               <option value="" disabled>
-                Select City
+                {t('selectCity')}
               </option>
               {cities.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -275,16 +278,16 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
               ))}
             </select>
             <div className="text-xs text-muted-foreground mt-1">
-              Selected: {selectedCountryName} / {selectedCityName}
+              {t('selectedLabel', { country: selectedCountryName, city: selectedCityName })}
             </div>
           </div>
         </div>
 
         {/* Supported Languages */}
         <div>
-          <label className="text-sm font-medium mb-2 block">Supported Languages</label>
+          <label className="text-sm font-medium mb-2 block">{t('supportedLanguages.label')}</label>
           <p className="text-xs text-muted-foreground mb-3">
-            Select every language your team can communicate in with patients.
+            {t('supportedLanguages.hint')}
           </p>
           <div className="flex flex-wrap gap-2">
             {LANGUAGES.map((l) => {
@@ -311,9 +314,9 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
 
         {/* Facilities & Amenities */}
         <div>
-          <label className="text-sm font-medium mb-2 block">Facilities & Amenities</label>
+          <label className="text-sm font-medium mb-2 block">{t('facilities.label')}</label>
           <p className="text-xs text-muted-foreground mb-3">
-            Pick everything you offer your patients during their visit.
+            {t('facilities.hint')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
             {FACILITIES.map((f) => {
@@ -389,7 +392,7 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
             size="lg"
             className="bg-gradient-primary hover:opacity-90"
           >
-            {saving ? "Saving..." : "Save All Changes"}
+            {saving ? t('saving') : t('saveButton')}
           </Button>
         </div>
 
@@ -401,28 +404,28 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
           return (
             <div className="border-t mt-6 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <p className="font-semibold">Ready to go live?</p>
+                <p className="font-semibold">{t('readyToGoLive.title')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Once you've added your photos, doctors, treatments and description, submit your page for Super Admin approval.
+                  {t('readyToGoLive.description')}
                 </p>
                 {!canSubmit && (
                   <p className="text-xs text-destructive mt-2">
                     {!hasDisplayName
-                      ? "You must set a Display Name above before submitting."
-                      : "Click \"Save All Changes\" first to save your Display Name, then submit."}
+                      ? t('readyToGoLive.needsDisplayNameError')
+                      : t('readyToGoLive.saveFirstError')}
                   </p>
                 )}
               </div>
               <Button onClick={onSubmitForApproval} disabled={!!submittingPage || !canSubmit}>
                 {submittingPage ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-                Submit for Approval
+                {t('readyToGoLive.submitButton')}
               </Button>
             </div>
           );
         })()}
         {!isAdminUser && pageStatus === "pending_page_approval" && (
           <div className="border-t mt-6 pt-6 text-sm text-muted-foreground">
-            Your page is awaiting Super Admin approval. You can keep editing — it will go live once approved.
+            {t('pendingApprovalNote')}
           </div>
         )}
       </CardContent>

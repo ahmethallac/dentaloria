@@ -1,0 +1,95 @@
+{
+  "sections": {
+    "overview": "Übersicht",
+    "patients": "Patienten",
+    "info": "Klinikinformationen",
+    "sponsored": "Gesponsert",
+    "settings": "Admin-Einstellungen",
+    "clinicInfoShort": "Klinik-Info"
+  },
+  "sidebar": {
+    "clinicGroup": "Klinik",
+    "administrationGroup": "Verwaltung",
+    "workspaceGroup": "Arbeitsbereich",
+    "dashboard": "Übersicht",
+    "clinics": "Kliniken",
+    "pendingApprovals": "Ausstehende Genehmigungen",
+    "allPatients": "Alle Patienten",
+    "users": "Benutzer"
+  },
+  "breadcrumbs": {
+    "admin": "Admin",
+    "dashboard": "Übersicht"
+  },
+  "backToAllClinics": "Zurück zu allen Kliniken",
+  "notFound": "Klinik nicht gefunden.",
+  "pageBanner": {
+    "revisionsTitle": "Ihre Seite wurde zur Überarbeitung zurückgesendet",
+    "pendingTitle": "Ihre Seite wartet auf die Genehmigung des Super-Admins",
+    "completeTitle": "Vervollständigen Sie Ihre Klinikseite",
+    "makeCorrections": "Bitte nehmen Sie folgende Korrekturen vor:",
+    "editAgainNote": "Bearbeiten Sie Ihre Klinikinformationen und senden Sie sie erneut über die Seite Klinikinformationen.",
+    "pendingDesc": "Sie können weiter bearbeiten — Ihre Klinik wird nach Genehmigung veröffentlicht.",
+    "completeDesc": "Fügen Sie Fotos, Ärzte, Behandlungen und eine Beschreibung hinzu und reichen Sie Ihre Seite dann zur Genehmigung über die Seite Klinikinformationen ein.",
+    "pendingBadge": "Seitengenehmigung ausstehend"
+  },
+  "balance": {
+    "emptyTitle": "Guthaben leer",
+    "emptyDesc": "Eingehende Leads werden gesperrt, bis Sie Ihr Guthaben aufladen.",
+    "lowTitle": "Niedriges Guthaben — bald aufladen",
+    "lowDesc": "Sie haben weniger als 2 Leads übrig (€{{amount}}).",
+    "addBalance": "Guthaben Aufladen"
+  },
+  "overview": {
+    "totalPatients": "Patienten Gesamt",
+    "unlockedLeads": "Freigeschaltete Leads",
+    "pendingLeads": "Ausstehende Leads",
+    "welcomeTitle": "Willkommen in Ihrem Klinik-Panel",
+    "welcomeDesc": "Verwenden Sie die Seitenleiste, um Patienten und Klinikinformationen zu verwalten.",
+    "viewPatients": "Patienten anzeigen",
+    "editClinicInfo": "Klinikinfo bearbeiten"
+  },
+  "sponsored": {
+    "title": "Gesponserte Platzierungen",
+    "description": "Heben Sie diese Klinik manuell in den Werbebereichen der Plattform hervor. Nur für Super-Admins sichtbar.",
+    "showcaseLabel": "Startseiten-Vitrine",
+    "showcaseDesc": "Präsentieren Sie diese Klinik im Bereich „Vorgestellte Kliniken“ auf der Startseite. Bis zu 8 vorgestellte Kliniken werden in einem 2×4-Raster angezeigt. Es wird keine Zahlung erhoben — dies ist eine manuelle redaktionelle Platzierung."
+  },
+  "settings": {
+    "title": "Admin-Einstellungen",
+    "description": "Einstellungen auf Plattformebene. Nur für Super-Admins und Unter-Admins sichtbar.",
+    "pricingLabel": "Preisgestaltung",
+    "pricingValue": "Fest €25 pro Lead (Guthaben im Voraus)",
+    "approvalStatusLabel": "Genehmigungsstatus",
+    "statusPending": "Ausstehend",
+    "statusApproved": "Genehmigt",
+    "statusRejected": "Abgelehnt",
+    "pageStatusLabel": "Seitenstatus",
+    "pageIncomplete": "Unvollständig",
+    "pagePendingApproval": "Seitengenehmigung Ausstehend",
+    "pageLive": "Live",
+    "publishedLabel": "Veröffentlicht",
+    "verifiedLabel": "Verifiziert",
+    "featuredLabel": "Hervorgehoben",
+    "saveButton": "Admin-Einstellungen speichern",
+    "saving": "Wird gespeichert…"
+  },
+  "toasts": {
+    "paymentSuccessTitle": "Zahlung Erfolgreich!",
+    "paymentSuccessDesc": "Lead-Kontakte wurden freigeschaltet.",
+    "paymentCancelledTitle": "Zahlung Abgebrochen",
+    "paymentCancelledDesc": "Es wurden keine Leads freigeschaltet.",
+    "notFoundTitle": "Nicht Gefunden",
+    "notFoundDesc": "Klinik nicht gefunden.",
+    "errorTitle": "Fehler",
+    "genericErrorDesc": "Ein Fehler ist aufgetreten.",
+    "savedTitle": "Gespeichert",
+    "savedDesc": "Admin-Einstellungen erfolgreich aktualisiert.",
+    "showcaseAddedTitle": "Zur Startseiten-Vitrine Hinzugefügt",
+    "showcaseRemovedTitle": "Aus Startseiten-Vitrine Entfernt",
+    "showcaseAddedDesc": "Diese Klinik wird nun im Bereich Vorgestellte Kliniken auf der Startseite angezeigt.",
+    "showcaseRemovedDesc": "Diese Klinik wird nicht mehr auf der Startseite angezeigt.",
+    "submittedTitle": "Eingereicht",
+    "submittedDesc": "Ihre Seite wurde zur Genehmigung durch den Super-Admin eingereicht."
+  }
+}

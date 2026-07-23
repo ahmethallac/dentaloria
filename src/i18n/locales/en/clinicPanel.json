@@ -1,0 +1,95 @@
+{
+  "sections": {
+    "overview": "Overview",
+    "patients": "Patients",
+    "info": "Clinic Information",
+    "sponsored": "Sponsored",
+    "settings": "Admin Settings",
+    "clinicInfoShort": "Clinic Info"
+  },
+  "sidebar": {
+    "clinicGroup": "Clinic",
+    "administrationGroup": "Administration",
+    "workspaceGroup": "Workspace",
+    "dashboard": "Dashboard",
+    "clinics": "Clinics",
+    "pendingApprovals": "Pending Approvals",
+    "allPatients": "All Patients",
+    "users": "Users"
+  },
+  "breadcrumbs": {
+    "admin": "Admin",
+    "dashboard": "Dashboard"
+  },
+  "backToAllClinics": "Back to all clinics",
+  "notFound": "Clinic not found.",
+  "pageBanner": {
+    "revisionsTitle": "Your page was sent back for revisions",
+    "pendingTitle": "Your page is awaiting Super Admin approval",
+    "completeTitle": "Complete your clinic page",
+    "makeCorrections": "Please make the following corrections:",
+    "editAgainNote": "Edit your clinic information and submit it again from the Clinic Information page.",
+    "pendingDesc": "You can keep editing — your clinic will go live once approved.",
+    "completeDesc": "Add photos, doctors, treatments and a description, then submit your page for approval from the Clinic Information page.",
+    "pendingBadge": "Pending page approval"
+  },
+  "balance": {
+    "emptyTitle": "Balance empty",
+    "emptyDesc": "Incoming leads will be locked until you top up.",
+    "lowTitle": "Low balance — top up soon",
+    "lowDesc": "You have less than 2 leads remaining (€{{amount}}).",
+    "addBalance": "Add Balance"
+  },
+  "overview": {
+    "totalPatients": "Total Patients",
+    "unlockedLeads": "Unlocked Leads",
+    "pendingLeads": "Pending Leads",
+    "welcomeTitle": "Welcome to your clinic panel",
+    "welcomeDesc": "Use the sidebar to manage patients and clinic information.",
+    "viewPatients": "View patients",
+    "editClinicInfo": "Edit clinic info"
+  },
+  "sponsored": {
+    "title": "Sponsored Placements",
+    "description": "Manually feature this clinic in promotional areas of the platform. Visible to Super Admins only.",
+    "showcaseLabel": "Homepage Showcase",
+    "showcaseDesc": "Feature this clinic in the “Featured Clinics” section on the homepage. Up to 8 showcased clinics are displayed in a 2×4 grid. No payment is taken — this is a manual editorial placement."
+  },
+  "settings": {
+    "title": "Admin Settings",
+    "description": "Platform-level controls. Visible to Super Admins and Sub-Admins only.",
+    "pricingLabel": "Pricing",
+    "pricingValue": "Fixed €25 per lead (prepaid balance)",
+    "approvalStatusLabel": "Approval Status",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "pageStatusLabel": "Page Status",
+    "pageIncomplete": "Incomplete",
+    "pagePendingApproval": "Pending Page Approval",
+    "pageLive": "Live",
+    "publishedLabel": "Published",
+    "verifiedLabel": "Verified",
+    "featuredLabel": "Featured",
+    "saveButton": "Save admin settings",
+    "saving": "Saving…"
+  },
+  "toasts": {
+    "paymentSuccessTitle": "Payment Successful!",
+    "paymentSuccessDesc": "Lead contacts have been unlocked.",
+    "paymentCancelledTitle": "Payment Cancelled",
+    "paymentCancelledDesc": "No leads were unlocked.",
+    "notFoundTitle": "Not Found",
+    "notFoundDesc": "Clinic not found.",
+    "errorTitle": "Error",
+    "genericErrorDesc": "An error occurred.",
+    "savedTitle": "Saved",
+    "savedDesc": "Admin settings updated successfully.",
+    "showcaseAddedTitle": "Added to Homepage Showcase",
+    "showcaseRemovedTitle": "Removed from Homepage Showcase",
+    "showcaseAddedDesc": "This clinic will now appear in the Featured Clinics section on the homepage.",
+    "showcaseRemovedDesc": "This clinic will no longer appear on the homepage.",
+    "submittedTitle": "Submitted",
+    "submittedDesc": "Your page has been submitted for Super Admin approval."
+  }
+}
