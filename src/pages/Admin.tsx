@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -36,12 +37,15 @@ import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
 import UsersManager from '@/components/admin/UsersManager'
 import * as XLSX from 'xlsx'
+import { withLocalePrefix } from '@/lib/localePath'
 
 type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users'
 
 const Admin = () => {
   const { user, userRole, loading: authLoading } = useAuth()
   const navigate = useNavigate()
+  const { lang } = useParams()
+  const { t } = useTranslation('admin')
   const { toast } = useToast()
   const [params, setParams] = useSearchParams()
   const section = (params.get('section') as AdminSection) || 'dashboard'
@@ -88,7 +92,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (!authLoading && (!user || userRole !== 'admin')) {
-      navigate('/')
+      navigate(withLocalePrefix('/', lang))
       return
     }
     if (user && userRole === 'admin') {
@@ -178,7 +182,7 @@ const Admin = () => {
       })
     } catch (e: any) {
       console.error('Error loading admin data:', e)
-      toast({ title: 'Error', description: 'Failed to load admin data', variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: t('toasts.loadErrorDesc'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -198,7 +202,7 @@ const Admin = () => {
         }).eq('clinic_id', clinicId),
         supabase.from('clinics').update(clinicUpdate).eq('id', clinicId),
       ])
-      toast({ title: 'Success', description: `Clinic application ${newStatus}` })
+      toast({ title: t('toasts.successTitle'), description: t('toasts.applicationStatusDesc', { status: newStatus }) })
       loadAllData()
       supabase.functions.invoke('send-clinic-notification', {
         body: {
@@ -208,7 +212,7 @@ const Admin = () => {
         },
       }).catch(() => {})
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     }
   }
 
@@ -223,8 +227,8 @@ const Admin = () => {
         .eq('id', clinicId)
       if (error) throw error
       toast({
-        title: action === 'approve' ? 'Page approved' : 'Sent back to clinic',
-        description: action === 'approve' ? 'Clinic is now live on the site.' : 'The clinic can edit and re-submit.',
+        title: action === 'approve' ? t('toasts.pageApprovedTitle') : t('toasts.sentBackTitle'),
+        description: action === 'approve' ? t('toasts.pageApprovedDesc') : t('toasts.sentBackDesc'),
       })
       loadAllData()
       supabase.functions.invoke('send-clinic-notification', {
@@ -235,14 +239,14 @@ const Admin = () => {
         },
       }).catch(() => {})
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     }
   }
 
   const submitSendBack = async () => {
     if (!sendBackTarget) return
     if (!sendBackNotes.trim()) {
-      toast({ title: 'Required', description: 'Please write what needs to be corrected.', variant: 'destructive' })
+      toast({ title: t('toasts.requiredTitle'), description: t('toasts.requiredDesc'), variant: 'destructive' })
       return
     }
     setSendBackBusy(true)
@@ -273,7 +277,7 @@ const Admin = () => {
       }
     } catch (e: any) {
       try { win?.close() } catch (_) { /* noop */ }
-      toast({ title: 'Error', description: e.message || 'Could not open document', variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message || t('toasts.documentErrorDesc'), variant: 'destructive' })
     }
   }
 
@@ -287,11 +291,11 @@ const Admin = () => {
         .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id, is_published: false })
         .in('id', ids)
       if (error) throw error
-      toast({ title: 'Moved to Trash', description: `${ids.length} clinic(s) trashed.` })
+      toast({ title: t('toasts.movedToTrashTitle'), description: t('toasts.movedToTrashDesc', { count: ids.length }) })
       setSelectedIds(new Set())
       loadAllData()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     } finally {
       setBulkBusy(false)
     }
@@ -306,11 +310,11 @@ const Admin = () => {
         .update({ deleted_at: null, deleted_by: null })
         .in('id', ids)
       if (error) throw error
-      toast({ title: 'Restored', description: `${ids.length} clinic(s) restored.` })
+      toast({ title: t('toasts.restoredTitle'), description: t('toasts.restoredDesc', { count: ids.length }) })
       setSelectedIds(new Set())
       loadAllData()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     } finally {
       setBulkBusy(false)
     }
@@ -327,14 +331,15 @@ const Admin = () => {
       if (data?.error) throw new Error(data.error)
       const errs = (data?.errors as string[] | undefined) || []
       toast({
-        title: 'Permanently deleted',
-        description: `${data?.deletedClinics ?? ids.length} clinic(s), ${data?.deletedImages ?? 0} image(s), ${data?.deletedDocs ?? 0} doc(s) removed.${errs.length ? ` Warnings: ${errs.join('; ')}` : ''}`,
+        title: t('toasts.permanentlyDeletedTitle'),
+        description: t('toasts.permanentlyDeletedDesc', { clinics: data?.deletedClinics ?? ids.length, images: data?.deletedImages ?? 0, docs: data?.deletedDocs ?? 0 })
+          + (errs.length ? t('toasts.warningsLabel', { warnings: errs.join('; ') }) : ''),
       })
       setSelectedIds(new Set())
       setConfirmHardDelete(null)
       loadAllData()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     } finally {
       setBulkBusy(false)
     }
@@ -351,14 +356,14 @@ const Admin = () => {
         .in('id', ids)
       if (error) throw error
       toast({
-        title: active ? 'Activated' : 'Deactivated',
-        description: `${ids.length} clinic(s) marked as ${active ? 'Active' : 'Inactive'}.`,
+        title: active ? t('toasts.activatedTitle') : t('toasts.deactivatedTitle'),
+        description: t('toasts.statusDesc', { count: ids.length, status: active ? t('toasts.statusActive') : t('toasts.statusInactive') }),
       })
       setSelectedIds(new Set())
       setBulkStatus('')
       loadAllData()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('toasts.errorTitle'), description: e.message, variant: 'destructive' })
     } finally {
       setBulkBusy(false)
     }
@@ -378,46 +383,46 @@ const Admin = () => {
 
   const sections: ShellSection[] = [
     {
-      label: 'Workspace',
+      label: t('sidebar.workspaceGroup'),
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, onClick: () => setSection('dashboard'), active: section === 'dashboard' },
-        { id: 'clinics', label: 'Clinics', icon: Building2, onClick: () => setSection('clinics'), active: section === 'clinics', badge: stats.totalClinics },
-        { id: 'approvals', label: 'Pending Approvals', icon: Clock, onClick: () => setSection('approvals'), active: section === 'approvals', badge: stats.pendingApprovals },
-        { id: 'patients', label: 'All Patients', icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalPatients },
+        { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard, onClick: () => setSection('dashboard'), active: section === 'dashboard' },
+        { id: 'clinics', label: t('sidebar.clinics'), icon: Building2, onClick: () => setSection('clinics'), active: section === 'clinics', badge: stats.totalClinics },
+        { id: 'approvals', label: t('sidebar.approvals'), icon: Clock, onClick: () => setSection('approvals'), active: section === 'approvals', badge: stats.pendingApprovals },
+        { id: 'patients', label: t('sidebar.patients'), icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalPatients },
       ],
     },
     {
-      label: 'Administration',
+      label: t('sidebar.administrationGroup'),
       items: [
-        { id: 'users', label: 'Users', icon: UserCog, onClick: () => setSection('users'), active: section === 'users', hidden: !isMainAdmin },
+        { id: 'users', label: t('sidebar.users'), icon: UserCog, onClick: () => setSection('users'), active: section === 'users', hidden: !isMainAdmin },
       ],
     },
   ]
 
   const titles: Record<AdminSection, string> = {
-    dashboard: 'Dashboard',
-    clinics: 'Clinics',
-    approvals: 'Pending Approvals',
-    patients: 'All Patients',
-    users: 'Users & Roles',
+    dashboard: t('titles.dashboard'),
+    clinics: t('titles.clinics'),
+    approvals: t('titles.approvals'),
+    patients: t('titles.patients'),
+    users: t('titles.users'),
   }
 
   return (
     <AdminShell
       sections={sections}
       title={titles[section]}
-      breadcrumbs={[{ label: 'Admin', to: '/admin' }, { label: titles[section] }]}
+      breadcrumbs={[{ label: t('breadcrumbs.admin'), to: withLocalePrefix('/admin', lang) }, { label: titles[section] }]}
     >
       {section === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard icon={Building2} label="Total Clinics" value={stats.totalClinics} accent="text-primary" />
-            <StatCard icon={Clock} label="Pending Approvals" value={stats.pendingApprovals} accent="text-yellow-500" />
-            <StatCard icon={Users} label="Total Patients" value={stats.totalPatients} accent="text-blue-500" />
-            <StatCard icon={DollarSign} label="Revenue" value={`$${stats.totalRevenue.toFixed(2)}`} accent="text-green-500" />
+            <StatCard icon={Building2} label={t('dashboard.totalClinics')} value={stats.totalClinics} accent="text-primary" />
+            <StatCard icon={Clock} label={t('dashboard.pendingApprovals')} value={stats.pendingApprovals} accent="text-yellow-500" />
+            <StatCard icon={Users} label={t('dashboard.totalPatients')} value={stats.totalPatients} accent="text-blue-500" />
+            <StatCard icon={DollarSign} label={t('dashboard.revenue')} value={`$${stats.totalRevenue.toFixed(2)}`} accent="text-green-500" />
           </div>
           <Card>
-            <CardHeader><CardTitle>Recent Clinics</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('dashboard.recentClinics')}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {clinics.slice(0, 5).map(c => (
                 <div key={c.id} className="flex items-center justify-between py-2 border-b last:border-0">
@@ -425,10 +430,10 @@ const Admin = () => {
                     <div className="font-medium">{c.display_name || c.name}</div>
                     <div className="text-xs text-muted-foreground">{c.email}</div>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => navigate(`/clinic/${c.id}/panel`)}>Manage</Button>
+                  <Button size="sm" variant="outline" onClick={() => navigate(withLocalePrefix(`/clinic/${c.id}/panel`, lang))}>{t('dashboard.manage')}</Button>
                 </div>
               ))}
-              {clinics.length === 0 && <p className="text-sm text-muted-foreground py-4 text-center">No clinics yet.</p>}
+              {clinics.length === 0 && <p className="text-sm text-muted-foreground py-4 text-center">{t('dashboard.noClinics')}</p>}
             </CardContent>
           </Card>
         </div>
@@ -475,11 +480,11 @@ const Admin = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
               <div>
-                <CardTitle>All Clinics</CardTitle>
+                <CardTitle>{t('clinics.title')}</CardTitle>
                 <CardDescription className="mt-1">
                   {clinicView === 'active'
-                    ? 'Active clinics. Move to Trash to hide them from the public site.'
-                    : 'Trashed clinics. Restore them or delete permanently.'}
+                    ? t('clinics.activeDesc')
+                    : t('clinics.trashDesc')}
                 </CardDescription>
               </div>
               <div className="inline-flex rounded-md border p-1 bg-muted">
@@ -488,14 +493,14 @@ const Admin = () => {
                   size="sm"
                   onClick={() => { setClinicView('active'); setSelectedIds(new Set()) }}
                 >
-                  Active ({activeClinics.length})
+                  {t('clinics.activeTab', { count: activeClinics.length })}
                 </Button>
                 <Button
                   variant={clinicView === 'trash' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => { setClinicView('trash'); setSelectedIds(new Set()) }}
                 >
-                  <Trash className="w-3.5 h-3.5 mr-1" /> Trash ({trashedClinics.length})
+                  <Trash className="w-3.5 h-3.5 mr-1" /> {t('clinics.trashTab', { count: trashedClinics.length })}
                 </Button>
               </div>
             </CardHeader>
@@ -503,44 +508,44 @@ const Admin = () => {
               {/* Filters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
                 <Input
-                  placeholder="Search by name…"
+                  placeholder={t('clinics.searchPlaceholder')}
                   value={filterSearch}
                   onChange={(e) => setFilterSearch(e.target.value)}
                   className="lg:col-span-2"
                 />
                 <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterCity('all') }}>
-                  <SelectTrigger><SelectValue placeholder="Country" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('clinics.countryPlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All countries</SelectItem>
+                    <SelectItem value="all">{t('clinics.allCountries')}</SelectItem>
                     {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={filterCity} onValueChange={setFilterCity} disabled={filterCountry === 'all'}>
-                  <SelectTrigger><SelectValue placeholder={filterCountry === 'all' ? 'Pick country first' : 'City'} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={filterCountry === 'all' ? t('clinics.pickCountryFirst') : t('clinics.cityPlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All cities</SelectItem>
+                    <SelectItem value="all">{t('clinics.allCities')}</SelectItem>
                     {visibleCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('clinics.statusPlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All statuses</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="all">{t('clinics.allStatuses')}</SelectItem>
+                    <SelectItem value="pending">{t('clinics.statusPending')}</SelectItem>
+                    <SelectItem value="approved">{t('clinics.statusApproved')}</SelectItem>
+                    <SelectItem value="rejected">{t('clinics.statusRejected')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {filtersActive && (
                 <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
-                  <span>Showing {list.length} of {baseList.length}</span>
+                  <span>{t('clinics.showingOf', { shown: list.length, total: baseList.length })}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => { setFilterSearch(''); setFilterCountry('all'); setFilterCity('all'); setFilterStatus('all') }}
                   >
-                    <X className="w-3.5 h-3.5 mr-1" /> Clear filters
+                    <X className="w-3.5 h-3.5 mr-1" /> {t('clinics.clearFilters')}
                   </Button>
                 </div>
               )}
@@ -550,7 +555,7 @@ const Admin = () => {
                 <div className="flex items-center justify-between gap-3 mb-3 p-2 rounded-md border bg-muted/30 flex-wrap">
                   <div className="flex items-center gap-2 text-sm">
                     <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
-                    <span>{selectedArray.length} of {list.length} selected</span>
+                    <span>{t('clinics.selectedOf', { selected: selectedArray.length, total: list.length })}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {clinicView === 'active' ? (
@@ -565,14 +570,14 @@ const Admin = () => {
                           disabled={!selectedArray.length || bulkBusy}
                         >
                           <SelectTrigger className="h-9 w-[180px]">
-                            <SelectValue placeholder="Set status…" />
+                            <SelectValue placeholder={t('clinics.setStatusPlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="active">
-                              <span className="inline-flex items-center gap-2"><Power className="w-3.5 h-3.5 text-green-600" /> Active</span>
+                              <span className="inline-flex items-center gap-2"><Power className="w-3.5 h-3.5 text-green-600" /> {t('clinics.activeOption')}</span>
                             </SelectItem>
                             <SelectItem value="inactive">
-                              <span className="inline-flex items-center gap-2"><PowerOff className="w-3.5 h-3.5 text-muted-foreground" /> Inactive</span>
+                              <span className="inline-flex items-center gap-2"><PowerOff className="w-3.5 h-3.5 text-muted-foreground" /> {t('clinics.inactiveOption')}</span>
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -582,7 +587,7 @@ const Admin = () => {
                           disabled={!selectedArray.length || bulkBusy}
                           onClick={() => trashClinics(selectedArray)}
                         >
-                          <Trash2 className="w-4 h-4 mr-1" /> Move to Trash ({selectedArray.length})
+                          <Trash2 className="w-4 h-4 mr-1" /> {t('clinics.moveToTrashCount', { count: selectedArray.length })}
                         </Button>
                       </>
                     ) : (
@@ -593,7 +598,7 @@ const Admin = () => {
                           disabled={!selectedArray.length || bulkBusy}
                           onClick={() => restoreClinics(selectedArray)}
                         >
-                          <RotateCcw className="w-4 h-4 mr-1" /> Restore ({selectedArray.length})
+                          <RotateCcw className="w-4 h-4 mr-1" /> {t('clinics.restoreCount', { count: selectedArray.length })}
                         </Button>
                         <Button
                           size="sm"
@@ -601,7 +606,7 @@ const Admin = () => {
                           disabled={!selectedArray.length || bulkBusy}
                           onClick={() => setConfirmHardDelete({ ids: selectedArray })}
                         >
-                          <Trash2 className="w-4 h-4 mr-1" /> Delete Permanently
+                          <Trash2 className="w-4 h-4 mr-1" /> {t('clinics.deletePermanently')}
                         </Button>
                         {trashedClinics.length > 0 && (
                           <Button
@@ -610,7 +615,7 @@ const Admin = () => {
                             disabled={bulkBusy}
                             onClick={() => setConfirmHardDelete({ ids: trashedClinics.map(c => c.id), emptyAll: true })}
                           >
-                            Empty Trash
+                            {t('clinics.emptyTrash')}
                           </Button>
                         )}
                       </>
@@ -636,28 +641,28 @@ const Admin = () => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold truncate">{clinic.display_name || clinic.name}</h3>
                           {clinic.deleted_at ? (
-                            <Badge variant="outline" className="text-destructive border-destructive">In Trash</Badge>
+                            <Badge variant="outline" className="text-destructive border-destructive">{t('clinics.inTrash')}</Badge>
                           ) : (
                             <>
                               {clinic.is_published ? (
-                                <Badge className="bg-green-600 text-white hover:bg-green-700">Active</Badge>
+                                <Badge className="bg-green-600 text-white hover:bg-green-700">{t('clinics.activeBadge')}</Badge>
                               ) : (
                                 <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
-                                  Inactive
+                                  {t('clinics.inactiveBadge')}
                                 </Badge>
                               )}
                               {clinic.page_status === 'live' ? (
-                                <Badge variant="secondary">Live</Badge>
+                                <Badge variant="secondary">{t('clinics.liveBadge')}</Badge>
                               ) : (
                                 <Badge variant="outline" className="text-muted-foreground border-muted-foreground/40">
-                                  Not Live
+                                  {t('clinics.notLiveBadge')}
                                 </Badge>
                               )}
                             </>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 truncate">
-                          {clinic.email} • {clinic.phone || 'No phone'}
+                          {clinic.email} • {clinic.phone || t('clinics.noPhone')}
                         </p>
                       </div>
                     </div>
@@ -665,7 +670,7 @@ const Admin = () => {
                       {clinic.deleted_at ? (
                         <>
                           <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => restoreClinics([clinic.id])}>
-                            <RotateCcw className="w-4 h-4 mr-1" /> Restore
+                            <RotateCcw className="w-4 h-4 mr-1" /> {t('clinics.restore')}
                           </Button>
                           <Button
                             size="icon"
@@ -673,21 +678,21 @@ const Admin = () => {
                             className="h-9 w-9 text-destructive hover:text-destructive"
                             disabled={bulkBusy}
                             onClick={() => setConfirmHardDelete({ ids: [clinic.id] })}
-                            title="Delete permanently"
+                            title={t('clinics.deletePermanentlyTitle')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </>
                       ) : (
                         <>
-                          <Button size="sm" onClick={() => navigate(`/clinic/${clinic.id}/panel`)}>Manage</Button>
+                          <Button size="sm" onClick={() => navigate(withLocalePrefix(`/clinic/${clinic.id}/panel`, lang))}>{t('clinics.manage')}</Button>
                           <Button
                             size="icon"
                             variant="ghost"
                             className="h-9 w-9 text-destructive hover:text-destructive"
                             disabled={bulkBusy}
                             onClick={() => trashClinics([clinic.id])}
-                            title="Move to Trash"
+                            title={t('clinics.moveToTrashTitle')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -698,7 +703,7 @@ const Admin = () => {
                 ))}
                 {list.length === 0 && (
                   <p className="text-center text-muted-foreground py-6">
-                    {clinicView === 'active' ? 'No active clinics.' : 'Trash is empty.'}
+                    {clinicView === 'active' ? t('clinics.noActiveClinics') : t('clinics.trashEmpty')}
                   </p>
                 )}
               </div>
@@ -711,22 +716,21 @@ const Admin = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {confirmHardDelete?.emptyAll ? 'Empty Trash?' : 'Delete permanently?'}
+              {confirmHardDelete?.emptyAll ? t('hardDeleteDialog.emptyTitle') : t('hardDeleteDialog.deleteTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete {confirmHardDelete?.ids.length ?? 0} clinic(s) and all related data
-              (images, doctors, treatments, leads, billing). This action cannot be undone.
+              {t('hardDeleteDialog.description', { count: confirmHardDelete?.ids.length ?? 0 })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={bulkBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={bulkBusy}>{t('hardDeleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               disabled={bulkBusy}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => confirmHardDelete && hardDeleteClinics(confirmHardDelete.ids)}
             >
               {bulkBusy ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
-              Delete forever
+              {t('hardDeleteDialog.deleteForever')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -735,15 +739,15 @@ const Admin = () => {
       <Dialog open={!!sendBackTarget} onOpenChange={(open) => { if (!open) { setSendBackTarget(null); setSendBackNotes('') } }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Send Back to Clinic</DialogTitle>
+            <DialogTitle>{t('sendBackDialog.title')}</DialogTitle>
             <DialogDescription>
-              {sendBackTarget ? `Tell ${sendBackTarget.name} what needs to be corrected before their page can go live.` : ''}
+              {sendBackTarget ? t('sendBackDialog.description', { name: sendBackTarget.name }) : ''}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <Textarea
               rows={6}
-              placeholder="Describe the corrections needed (missing photos, incomplete description, doctors info, etc.)…"
+              placeholder={t('sendBackDialog.placeholder')}
               value={sendBackNotes}
               onChange={(e) => setSendBackNotes(e.target.value)}
               autoFocus
@@ -751,11 +755,11 @@ const Admin = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setSendBackTarget(null); setSendBackNotes('') }} disabled={sendBackBusy}>
-              Cancel
+              {t('sendBackDialog.cancel')}
             </Button>
             <Button variant="destructive" onClick={submitSendBack} disabled={sendBackBusy || !sendBackNotes.trim()}>
               {sendBackBusy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <XCircle className="w-4 h-4 mr-2" />}
-              Send Back
+              {t('sendBackDialog.sendBack')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -766,9 +770,9 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
             <div>
-              <CardTitle>Pending Approvals</CardTitle>
+              <CardTitle>{t('approvals.title')}</CardTitle>
               <CardDescription className="mt-1">
-                Review new clinic applications and finished clinic pages waiting to go live.
+                {t('approvals.description')}
               </CardDescription>
             </div>
             <div className="inline-flex rounded-md border p-1 bg-muted">
@@ -777,14 +781,14 @@ const Admin = () => {
                 size="sm"
                 onClick={() => setApprovalsTab('application')}
               >
-                Clinic Application Approvals ({pendingApprovals.length})
+                {t('approvals.applicationTab', { count: pendingApprovals.length })}
               </Button>
               <Button
                 variant={approvalsTab === 'page' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setApprovalsTab('page')}
               >
-                Clinic Page Approvals ({pendingPageApprovals.length})
+                {t('approvals.pageTab', { count: pendingPageApprovals.length })}
               </Button>
             </div>
           </CardHeader>
@@ -799,15 +803,15 @@ const Admin = () => {
                     <div key={approval.id} className="p-4 border rounded-lg space-y-3">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div className="min-w-0">
-                          <h3 className="font-semibold">{c.name || 'Unknown'}</h3>
+                          <h3 className="font-semibold">{c.name || t('approvals.unknownName')}</h3>
                           <p className="text-sm text-muted-foreground">
                             {[country, city].filter(Boolean).join(' • ') || '—'}
                           </p>
                           <div className="text-sm mt-1 space-y-0.5">
-                            <p><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
-                            <p><span className="text-muted-foreground">Phone:</span> {c.phone || '—'}</p>
+                            <p><span className="text-muted-foreground">{t('approvals.emailLabel')}</span> {c.email || '—'}</p>
+                            <p><span className="text-muted-foreground">{t('approvals.phoneLabel')}</span> {c.phone || '—'}</p>
                             <p>
-                              <span className="text-muted-foreground">Website:</span>{' '}
+                              <span className="text-muted-foreground">{t('approvals.websiteLabel')}</span>{' '}
                               {c.website ? (
                                 <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
                                   {c.website}
@@ -816,42 +820,42 @@ const Admin = () => {
                             </p>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Applied: {new Date(approval.created_at).toLocaleDateString()}
+                            {t('approvals.appliedLabel', { date: new Date(approval.created_at).toLocaleDateString() })}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
                         <Button size="sm" variant="outline" onClick={() => openDocument(approval.health_tourism_doc_url)} disabled={!approval.health_tourism_doc_url}>
-                          <FileCheck className="w-4 h-4 mr-1" /> Health Tourism Authorization Certificate
+                          <FileCheck className="w-4 h-4 mr-1" /> {t('approvals.healthDoc')}
                         </Button>
                         {approval.applied_as_healthcare_facility ? (
-                          <Badge variant="secondary" className="self-center">Applied as healthcare facility</Badge>
+                          <Badge variant="secondary" className="self-center">{t('approvals.healthcareFacilityBadge')}</Badge>
                         ) : approval.tax_certificate_url ? (
                           <Button size="sm" variant="outline" onClick={() => openDocument(approval.tax_certificate_url)}>
-                            <FileCheck className="w-4 h-4 mr-1" /> Agency Certificate
+                            <FileCheck className="w-4 h-4 mr-1" /> {t('approvals.agencyDoc')}
                           </Button>
                         ) : (
-                          <Badge variant="outline" className="self-center">No agency certificate</Badge>
+                          <Badge variant="outline" className="self-center">{t('approvals.noAgencyDoc')}</Badge>
                         )}
                       </div>
 
                       <div className="flex gap-2 pt-2">
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApproval(approval.clinic_id, 'approve')}>
-                          <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                          <CheckCircle className="w-4 h-4 mr-1" /> {t('approvals.approve')}
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => {
-                          const reason = window.prompt('Rejection reason:')
+                          const reason = window.prompt(t('approvals.rejectPrompt'))
                           if (reason) handleApproval(approval.clinic_id, 'reject', reason)
                         }}>
-                          <XCircle className="w-4 h-4 mr-1" /> Reject
+                          <XCircle className="w-4 h-4 mr-1" /> {t('approvals.reject')}
                         </Button>
                       </div>
                     </div>
                   )
                 })}
                 {pendingApprovals.length === 0 && (
-                  <p className="text-center text-muted-foreground py-6">No clinic applications waiting.</p>
+                  <p className="text-center text-muted-foreground py-6">{t('approvals.noApplications')}</p>
                 )}
               </div>
             )}
@@ -869,30 +873,30 @@ const Admin = () => {
                           <p className="text-sm text-muted-foreground">
                             {[country, city].filter(Boolean).join(' • ') || '—'}
                           </p>
-                          <p className="text-sm"><span className="text-muted-foreground">Email:</span> {c.email || '—'}</p>
+                          <p className="text-sm"><span className="text-muted-foreground">{t('approvals.emailLabel')}</span> {c.email || '—'}</p>
                         </div>
-                        <Badge variant="secondary">Pending page approval</Badge>
+                        <Badge variant="secondary">{t('approvals.pendingPageBadge')}</Badge>
                       </div>
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
                         <Button size="sm" variant="outline" asChild>
-                          <Link to={`/clinic/${c.id}?preview=1`}>Review Page</Link>
+                          <Link to={withLocalePrefix(`/clinic/${c.id}?preview=1`, lang)}>{t('approvals.reviewPage')}</Link>
                         </Button>
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handlePageApproval(c.id, 'approve')}>
-                          <CheckCircle className="w-4 h-4 mr-1" /> Approve & Go Live
+                          <CheckCircle className="w-4 h-4 mr-1" /> {t('approvals.approveGoLive')}
                         </Button>
                         <Button
                           size="sm"
                           variant="destructive"
                           onClick={() => { setSendBackTarget({ id: c.id, name: c.name }); setSendBackNotes('') }}
                         >
-                          <XCircle className="w-4 h-4 mr-1" /> Send Back
+                          <XCircle className="w-4 h-4 mr-1" /> {t('approvals.sendBack')}
                         </Button>
                       </div>
                     </div>
                   )
                 })}
                 {pendingPageApprovals.length === 0 && (
-                  <p className="text-center text-muted-foreground py-6">No pages waiting for approval.</p>
+                  <p className="text-center text-muted-foreground py-6">{t('approvals.noPages')}</p>
                 )}
               </div>
             )}
@@ -996,15 +1000,15 @@ const Admin = () => {
         }
 
         const buildExportRows = () => exportTargets.map(p => ({
-          Name: p.name,
-          Email: p.email,
-          Phone: p.phone || '',
-          Submissions: p.count,
-          'Last Submission': new Date(p.lastDate).toISOString().slice(0, 10),
-          'Clinics Applied To': Array.from(p.clinicNames).join('; '),
-          Cities: Array.from(p.cityNames).join('; '),
-          Countries: Array.from(p.countryNames).join('; '),
-          Languages: Array.from(p.languages).join('; '),
+          [t('patients.exportName')]: p.name,
+          [t('patients.exportEmail')]: p.email,
+          [t('patients.exportPhone')]: p.phone || '',
+          [t('patients.exportSubmissions')]: p.count,
+          [t('patients.exportLastSubmission')]: new Date(p.lastDate).toISOString().slice(0, 10),
+          [t('patients.exportClinics')]: Array.from(p.clinicNames).join('; '),
+          [t('patients.exportCities')]: Array.from(p.cityNames).join('; '),
+          [t('patients.exportCountries')]: Array.from(p.countryNames).join('; '),
+          [t('patients.exportLanguages')]: Array.from(p.languages).join('; '),
         }))
 
         const downloadCsv = () => {
@@ -1039,48 +1043,48 @@ const Admin = () => {
         }
 
         const dateLabel: Record<DatePreset, string> = {
-          today: 'Today',
-          yesterday: 'Yesterday',
-          last2weeks: 'Last 2 weeks',
-          lastMonth: 'Last 1 month',
-          thisYear: 'This year',
-          lastYear: 'Last year',
-          all: 'All time',
-          custom: 'Custom range',
+          today: t('patients.dateToday'),
+          yesterday: t('patients.dateYesterday'),
+          last2weeks: t('patients.dateLast2Weeks'),
+          lastMonth: t('patients.dateLastMonth'),
+          thisYear: t('patients.dateThisYear'),
+          lastYear: t('patients.dateLastYear'),
+          all: t('patients.dateAllTime'),
+          custom: t('patients.dateCustom'),
         }
 
         const selectionLabel = (() => {
-          if (selectedPatients.size === 0) return '0 selected'
+          if (selectedPatients.size === 0) return t('patients.selectionNone')
           if (allFilteredSelected) {
             return filtersActive
-              ? `All ${filtered.length} filtered selected`
-              : `All ${patients.length} patients selected`
+              ? t('patients.selectionAllFiltered', { count: filtered.length })
+              : t('patients.selectionAllPatients', { count: patients.length })
           }
-          return `${selectedVisibleCount} of ${filtered.length} selected`
+          return t('patients.selectionPartial', { selected: selectedVisibleCount, total: filtered.length })
         })()
 
         return (
           <Card>
             <CardHeader className="flex flex-row items-start justify-between gap-3 flex-wrap">
               <div>
-                <CardTitle>All Patients</CardTitle>
+                <CardTitle>{t('patients.title')}</CardTitle>
                 <CardDescription className="mt-1">
-                  Patients grouped by email. Filter by the city, country, language, or submission date.
+                  {t('patients.description')}
                 </CardDescription>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="sm" variant="outline" disabled={!exportTargets.length}>
-                    <Download className="w-4 h-4 mr-1" /> Export
+                    <Download className="w-4 h-4 mr-1" /> {t('patients.export')}
                     <ChevronDown className="w-3.5 h-3.5 ml-1" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={downloadCsv}>
-                    <Download className="w-4 h-4 mr-2" /> Download as CSV
+                    <Download className="w-4 h-4 mr-2" /> {t('patients.downloadCsv')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={downloadXlsx}>
-                    <FileSpreadsheet className="w-4 h-4 mr-2" /> Download as XLSX
+                    <FileSpreadsheet className="w-4 h-4 mr-2" /> {t('patients.downloadXlsx')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -1088,7 +1092,7 @@ const Admin = () => {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
                 <Input
-                  placeholder="Search name / email / phone…"
+                  placeholder={t('patients.searchPlaceholder')}
                   value={patientSearch}
                   onChange={(e) => setPatientSearch(e.target.value)}
                 />
@@ -1096,9 +1100,9 @@ const Admin = () => {
                   value={patientFilterCountry}
                   onValueChange={(v) => { setPatientFilterCountry(v); setPatientFilterCity('all') }}
                 >
-                  <SelectTrigger><SelectValue placeholder="Clinic country" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('patients.countryPlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All countries</SelectItem>
+                    <SelectItem value="all">{t('patients.allCountries')}</SelectItem>
                     {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -1108,17 +1112,17 @@ const Admin = () => {
                   disabled={patientFilterCountry === 'all'}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={patientFilterCountry === 'all' ? 'Pick country first' : 'Clinic city'} />
+                    <SelectValue placeholder={patientFilterCountry === 'all' ? t('patients.pickCountryFirst') : t('patients.cityPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All cities</SelectItem>
+                    <SelectItem value="all">{t('patients.allCities')}</SelectItem>
                     {visiblePatientCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={patientFilterLanguage} onValueChange={setPatientFilterLanguage}>
-                  <SelectTrigger><SelectValue placeholder="Clinic language" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('patients.languagePlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All languages</SelectItem>
+                    <SelectItem value="all">{t('patients.allLanguages')}</SelectItem>
                     {allLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -1129,16 +1133,16 @@ const Admin = () => {
                     if (v !== 'custom') setPatientCustomRange(undefined)
                   }}
                 >
-                  <SelectTrigger><SelectValue placeholder="Date range" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('patients.datePlaceholder')} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="yesterday">Yesterday</SelectItem>
-                    <SelectItem value="last2weeks">Last 2 weeks</SelectItem>
-                    <SelectItem value="lastMonth">Last 1 month</SelectItem>
-                    <SelectItem value="thisYear">This year</SelectItem>
-                    <SelectItem value="lastYear">Last year</SelectItem>
-                    <SelectItem value="all">All time</SelectItem>
-                    <SelectItem value="custom">Custom range</SelectItem>
+                    <SelectItem value="today">{t('patients.dateToday')}</SelectItem>
+                    <SelectItem value="yesterday">{t('patients.dateYesterday')}</SelectItem>
+                    <SelectItem value="last2weeks">{t('patients.dateLast2Weeks')}</SelectItem>
+                    <SelectItem value="lastMonth">{t('patients.dateLastMonth')}</SelectItem>
+                    <SelectItem value="thisYear">{t('patients.dateThisYear')}</SelectItem>
+                    <SelectItem value="lastYear">{t('patients.dateLastYear')}</SelectItem>
+                    <SelectItem value="all">{t('patients.dateAllTime')}</SelectItem>
+                    <SelectItem value="custom">{t('patients.dateCustom')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1160,7 +1164,7 @@ const Admin = () => {
                             format(patientCustomRange.from, 'LLL d, yyyy')
                           )
                         ) : (
-                          <span>Pick a date range</span>
+                          <span>{t('patients.pickDateRange')}</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -1180,12 +1184,12 @@ const Admin = () => {
 
               <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground gap-2 flex-wrap">
                 <div className="flex items-center gap-3">
-                  <span>Showing {filtered.length} of {patients.length}</span>
+                  <span>{t('patients.showingOf', { shown: filtered.length, total: patients.length })}</span>
                   <span className="font-medium text-foreground">{selectionLabel}</span>
                   <Badge variant="outline" className="font-normal">{dateLabel[patientDateRange]}</Badge>
                 </div>
                 <Button variant="ghost" size="sm" onClick={clearAll}>
-                  <X className="w-3.5 h-3.5 mr-1" /> Clear
+                  <X className="w-3.5 h-3.5 mr-1" /> {t('patients.clear')}
                 </Button>
               </div>
 
@@ -1200,15 +1204,15 @@ const Admin = () => {
                           aria-label="Select all"
                         />
                       </th>
-                      <th className="text-left py-2 px-3">Name</th>
-                      <th className="text-left py-2 px-3">Email</th>
-                      <th className="text-left py-2 px-3">Phone</th>
-                      <th className="text-left py-2 px-3">Submissions</th>
-                      <th className="text-left py-2 px-3">Clinics</th>
-                      <th className="text-left py-2 px-3">Cities</th>
-                      <th className="text-left py-2 px-3">Countries</th>
-                      <th className="text-left py-2 px-3">Languages</th>
-                      <th className="text-left py-2 px-3">Last submission</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableName')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableEmail')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tablePhone')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableSubmissions')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableClinics')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableCities')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableCountries')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableLanguages')}</th>
+                      <th className="text-left py-2 px-3">{t('patients.tableLastSubmission')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1238,7 +1242,7 @@ const Admin = () => {
                 </table>
                 {filtered.length === 0 && (
                   <p className="text-center text-muted-foreground py-6">
-                    {patients.length === 0 ? 'No patients yet.' : 'No patients match the filters.'}
+                    {patients.length === 0 ? t('patients.noPatientsYet') : t('patients.noPatientsMatch')}
                   </p>
                 )}
               </div>
@@ -1249,7 +1253,7 @@ const Admin = () => {
 
       {section === 'users' && isMainAdmin && <UsersManager />}
       {section === 'users' && !isMainAdmin && (
-        <Card><CardContent className="py-10 text-center text-muted-foreground">Only Super Admins can manage users.</CardContent></Card>
+        <Card><CardContent className="py-10 text-center text-muted-foreground">{t('users.onlyAdmins')}</CardContent></Card>
       )}
     </AdminShell>
   )

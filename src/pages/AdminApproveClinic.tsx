@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client'
 
 const AdminApproveClinic = () => {
   const [searchParams] = useSearchParams()
+  const { t } = useTranslation('admin')
   const clinicId = searchParams.get('id')
   const token = searchParams.get('token')
   const initialAction = searchParams.get('action')
@@ -32,7 +34,7 @@ const AdminApproveClinic = () => {
       const { data, error } = await supabase.functions.invoke('clinic-approval-action', {
         body: { clinicId, token, action: 'info' }
       })
-      
+
       // Even if it fails with "invalid action", we'll handle it
       // Just load what we can from the URL params
       setLoading(false)
@@ -49,9 +51,9 @@ const AdminApproveClinic = () => {
     setProcessing(true)
     try {
       const { data, error } = await supabase.functions.invoke('clinic-approval-action', {
-        body: { 
-          clinicId, 
-          token, 
+        body: {
+          clinicId,
+          token,
           action,
           rejectionReason: action === 'reject' ? rejectionReason : undefined
         }
@@ -62,16 +64,16 @@ const AdminApproveClinic = () => {
       if (data?.error) {
         setResult({ success: false, status: 'error', message: data.error })
       } else {
-        setResult({ 
-          success: true, 
-          status: data.status, 
-          message: action === 'approve' 
-            ? `${data.clinicName || 'Clinic'} has been approved successfully!` 
-            : `${data.clinicName || 'Clinic'} has been rejected.`
+        setResult({
+          success: true,
+          status: data.status,
+          message: action === 'approve'
+            ? t('approveClinic.approvedMessage', { name: data.clinicName || t('approveClinic.defaultClinicName') })
+            : t('approveClinic.rejectedMessage', { name: data.clinicName || t('approveClinic.defaultClinicName') })
         })
       }
     } catch (e: any) {
-      setResult({ success: false, status: 'error', message: e.message || 'An error occurred' })
+      setResult({ success: false, status: 'error', message: e.message || t('approveClinic.genericErrorMessage') })
     } finally {
       setProcessing(false)
     }
@@ -83,8 +85,8 @@ const AdminApproveClinic = () => {
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <p className="text-lg font-medium">Invalid Link</p>
-            <p className="text-muted-foreground mt-2">This approval link is invalid or missing required parameters.</p>
+            <p className="text-lg font-medium">{t('approveClinic.invalidLinkTitle')}</p>
+            <p className="text-muted-foreground mt-2">{t('approveClinic.invalidLinkDesc')}</p>
           </CardContent>
         </Card>
       </div>
@@ -106,7 +108,7 @@ const AdminApproveClinic = () => {
               <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
             )}
             <h2 className="text-xl font-bold mb-2">
-              {result.success ? (result.status === 'approved' ? 'Approved!' : 'Rejected') : 'Error'}
+              {result.success ? (result.status === 'approved' ? t('approveClinic.approvedTitle') : t('approveClinic.rejectedTitle')) : t('approveClinic.errorTitle')}
             </h2>
             <p className="text-muted-foreground">{result.message}</p>
           </CardContent>
@@ -121,14 +123,14 @@ const AdminApproveClinic = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5" />
-            Clinic Approval Review
+            {t('approveClinic.title')}
           </CardTitle>
-          <CardDescription>Review and approve or reject this clinic registration</CardDescription>
+          <CardDescription>{t('approveClinic.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="p-4 bg-muted rounded-lg space-y-2">
-            <p className="text-sm"><strong>Clinic ID:</strong> {clinicId}</p>
-            <Badge variant="outline">Pending Review</Badge>
+            <p className="text-sm"><strong>{t('approveClinic.clinicIdLabel')}</strong> {clinicId}</p>
+            <Badge variant="outline">{t('approveClinic.pendingReview')}</Badge>
           </div>
 
           <div className="flex gap-3">
@@ -138,14 +140,14 @@ const AdminApproveClinic = () => {
               className="flex-1 bg-green-600 hover:bg-green-700"
             >
               {processing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-              Approve
+              {t('approveClinic.approve')}
             </Button>
           </div>
 
           <div className="border-t pt-4 space-y-3">
-            <Label>Rejection Reason (required to reject)</Label>
+            <Label>{t('approveClinic.rejectionReasonLabel')}</Label>
             <Textarea
-              placeholder="Please explain why this clinic registration is being rejected..."
+              placeholder={t('approveClinic.rejectionPlaceholder')}
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               rows={3}
@@ -157,7 +159,7 @@ const AdminApproveClinic = () => {
               className="w-full"
             >
               {processing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <XCircle className="w-4 h-4 mr-2" />}
-              Reject
+              {t('approveClinic.reject')}
             </Button>
           </div>
         </CardContent>

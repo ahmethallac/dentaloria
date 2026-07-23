@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ interface ManagedUser {
 }
 
 export default function UsersManager() {
+  const { t } = useTranslation('admin')
   const { toast } = useToast()
   const { user: currentUser } = useAuth()
   const [users, setUsers] = useState<ManagedUser[]>([])
@@ -42,7 +44,7 @@ export default function UsersManager() {
       if (data?.error) throw new Error(data.error)
       setUsers(data?.users || [])
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message || 'Failed to load users', variant: 'destructive' })
+      toast({ title: t('usersManager.toasts.loadErrorTitle'), description: e.message || t('usersManager.toasts.loadErrorDesc'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -52,7 +54,7 @@ export default function UsersManager() {
 
   const handleCreate = async () => {
     if (!form.email || !form.password || !form.full_name) {
-      toast({ title: 'Missing fields', description: 'Email, full name and password are required.', variant: 'destructive' })
+      toast({ title: t('usersManager.toasts.missingFieldsTitle'), description: t('usersManager.toasts.missingFieldsDesc'), variant: 'destructive' })
       return
     }
     setCreating(true)
@@ -62,18 +64,18 @@ export default function UsersManager() {
       })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
-      toast({ title: 'Super Admin created', description: `${form.email} can now sign in.` })
+      toast({ title: t('usersManager.toasts.createdTitle'), description: t('usersManager.toasts.createdDesc', { email: form.email }) })
       setForm({ email: '', full_name: '', password: '' })
       load()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message || 'Failed to create user', variant: 'destructive' })
+      toast({ title: t('usersManager.toasts.errorTitle'), description: e.message || t('usersManager.toasts.createErrorDesc'), variant: 'destructive' })
     } finally {
       setCreating(false)
     }
   }
 
   const handleDelete = async (userId: string, email: string) => {
-    if (!window.confirm(`Permanently delete ${email}? This cannot be undone.`)) return
+    if (!window.confirm(t('usersManager.toasts.confirmDelete', { email }))) return
     setUpdatingId(userId)
     try {
       const { data, error } = await supabase.functions.invoke('admin-update-user-role', {
@@ -81,10 +83,10 @@ export default function UsersManager() {
       })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
-      toast({ title: 'User deleted' })
+      toast({ title: t('usersManager.toasts.deletedTitle') })
       load()
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' })
+      toast({ title: t('usersManager.toasts.errorTitle'), description: e.message, variant: 'destructive' })
     } finally {
       setUpdatingId(null)
     }
@@ -104,24 +106,24 @@ export default function UsersManager() {
       <Card className="border-primary/20 bg-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Shield className="w-4 h-4" /> About Super Admins
+            <Shield className="w-4 h-4" /> {t('usersManager.aboutTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <p>
-            <Badge variant="destructive" className="mr-2">Super Admin</Badge>
-            Has full access to the platform: manages all clinics, approvals, billing, and other Super Admins.
+            <Badge variant="destructive" className="mr-2">{t('usersManager.aboutBadge')}</Badge>
+            {t('usersManager.aboutDesc1')}
           </p>
           <p>
-            Clinics are <strong>not</strong> managed here. Each clinic owner registers their own account and is given Clinic Admin access automatically — they manage their own clinic from their own panel.
+            {t('usersManager.aboutDesc2Prefix')} <strong>{t('usersManager.aboutDesc2Bold')}</strong> {t('usersManager.aboutDesc2Suffix')}
           </p>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="all">
         <TabsList>
-          <TabsTrigger value="all">Super Admins ({filtered.length})</TabsTrigger>
-          <TabsTrigger value="create">Create Super Admin</TabsTrigger>
+          <TabsTrigger value="all">{t('usersManager.tabAll', { count: filtered.length })}</TabsTrigger>
+          <TabsTrigger value="create">{t('usersManager.tabCreate')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -129,14 +131,14 @@ export default function UsersManager() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name or email…"
+                placeholder={t('usersManager.searchPlaceholder')}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8"
               />
             </div>
             <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Refresh'}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('usersManager.refresh')}
             </Button>
           </div>
 
@@ -144,18 +146,18 @@ export default function UsersManager() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="w-[120px] text-right">Actions</TableHead>
+                  <TableHead>{t('usersManager.tableName')}</TableHead>
+                  <TableHead>{t('usersManager.tableEmail')}</TableHead>
+                  <TableHead>{t('usersManager.tableRole')}</TableHead>
+                  <TableHead>{t('usersManager.tableCreated')}</TableHead>
+                  <TableHead className="w-[120px] text-right">{t('usersManager.tableActions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow><TableCell colSpan={5} className="text-center py-10"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No Super Admins found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">{t('usersManager.noneFound')}</TableCell></TableRow>
                 ) : (
                   filtered.map(u => {
                     const isSelf = currentUser?.id === u.id
@@ -165,7 +167,7 @@ export default function UsersManager() {
                         <TableCell className="text-muted-foreground">{u.email}</TableCell>
                         <TableCell>
                           <Badge variant="destructive">{displayRoleName('admin')}</Badge>
-                          {isSelf && <Badge variant="outline" className="ml-2 text-[10px]">You</Badge>}
+                          {isSelf && <Badge variant="outline" className="ml-2 text-[10px]">{t('usersManager.youBadge')}</Badge>}
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs">
                           {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
@@ -177,7 +179,7 @@ export default function UsersManager() {
                             className="h-8 w-8 text-destructive hover:text-destructive"
                             disabled={updatingId === u.id || isSelf}
                             onClick={() => handleDelete(u.id, u.email)}
-                            title={isSelf ? "You can't delete yourself" : 'Delete user'}
+                            title={isSelf ? t('usersManager.cantDeleteSelf') : t('usersManager.deleteUser')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -194,27 +196,27 @@ export default function UsersManager() {
         <TabsContent value="create">
           <Card>
             <CardHeader>
-              <CardTitle>Create new Super Admin</CardTitle>
-              <CardDescription>The account is created and can sign in immediately. Only Super Admin accounts can be created here.</CardDescription>
+              <CardTitle>{t('usersManager.createTitle')}</CardTitle>
+              <CardDescription>{t('usersManager.createDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 max-w-xl">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Full name</Label>
-                  <Input value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder="Jane Doe" />
+                  <Label>{t('usersManager.fullNameLabel')}</Label>
+                  <Input value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} placeholder={t('usersManager.fullNamePlaceholder')} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jane@example.com" />
+                  <Label>{t('usersManager.emailLabel')}</Label>
+                  <Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('usersManager.emailPlaceholder')} />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Temporary password</Label>
-                <Input type="text" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" />
+                <Label>{t('usersManager.passwordLabel')}</Label>
+                <Input type="text" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder={t('usersManager.passwordPlaceholder')} />
               </div>
               <Button onClick={handleCreate} disabled={creating}>
                 {creating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
-                Create Super Admin
+                {t('usersManager.createButton')}
               </Button>
             </CardContent>
           </Card>
