@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTreatments, getCountries, getCities, type Treatment, type Country, type City } from "@/lib/services";
 import { parseSearchQuery, type SearchableData } from "@/lib/aiSearchParser";
+import { withLocalePrefix } from "@/lib/localePath";
 
 const EXAMPLE_QUERIES = [
   "Cheapest dental implant clinics in Antalya",
@@ -20,6 +22,8 @@ interface AISearchBarProps {
 
 export function AISearchBar({ className, onResults }: AISearchBarProps) {
   const navigate = useNavigate();
+  const { lang } = useParams();
+  const { t } = useTranslation("home");
   const [query, setQuery] = useState("");
   const [placeholder, setPlaceholder] = useState("");
   const [data, setData] = useState<SearchableData | null>(null);
@@ -103,7 +107,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
       onResults(params);
       setSubmitting(false);
     } else {
-      navigate(`/clinic-listing?${params.toString()}`);
+      navigate(withLocalePrefix(`/clinic-listing?${params.toString()}`, lang));
     }
   };
 
@@ -112,12 +116,12 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
       <div className="flex justify-center mb-3">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-primary shadow-sm text-xs font-semibold tracking-wide">
           <Sparkles className="h-3.5 w-3.5" />
-          AI-powered search
+          {t("aiSearch.badge")}
         </span>
       </div>
       <p className="text-center mb-3 px-2">
         <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
-          Just type what you're looking for below
+          {t("aiSearch.hint")}
         </span>
       </p>
       <div className="relative">
@@ -163,7 +167,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
             disabled={submitting || !query.trim() || !data}
             className="self-center h-12 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
           >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("aiSearch.search")}
           </Button>
         </div>
       </div>

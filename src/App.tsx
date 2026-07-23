@@ -4,21 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
-import ClinicDetail from "./pages/ClinicDetail";
-import ClinicPanel from "./pages/ClinicPanel";
-import ClinicListing from "./pages/ClinicListing";
-import FeaturedClinic from "./pages/FeaturedClinic";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import Dashboard from "./pages/Dashboard";
-import AddClinic from "./pages/AddClinic";
-import Admin from "./pages/Admin";
-import AdminApproveClinic from "./pages/AdminApproveClinic";
-import RegisterClinic from "./pages/RegisterClinic";
+import { ROUTE_DEFS } from "@/routes/routeDefs";
+import { LocaleLayout } from "@/routes/LocaleLayout";
+import { GeoRedirectGate } from "@/components/i18n/GeoRedirectGate";
+import { LocaleSuggestionBanner } from "@/components/i18n/LocaleSuggestionBanner";
 import NotFound from "./pages/NotFound";
-import BalanceTopupPage from "./pages/BalanceTopupPage";
-import PurchaseLeadsPage from "./pages/PurchaseLeadsPage";
 
 const queryClient = new QueryClient();
 
@@ -29,25 +19,30 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/register-clinic" element={<RegisterClinic />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/add-clinic" element={<RegisterClinic />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/approve-clinic" element={<AdminApproveClinic />} />
-            <Route path="/clinic" element={<FeaturedClinic />} />
-            <Route path="/clinic/:id" element={<ClinicDetail />} />
-            <Route path="/clinic/:id/panel" element={<ClinicPanel />} />
-            <Route path="/clinic/:id/panel/balance" element={<BalanceTopupPage />} />
-            <Route path="/clinic/:id/panel/purchase-leads" element={<PurchaseLeadsPage />} />
-            <Route path="/clinic-listing" element={<ClinicListing />} />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <GeoRedirectGate>
+            <LocaleSuggestionBanner />
+            <Routes>
+              {/* Bare English routes — unprefixed, unchanged from before i18n */}
+              {ROUTE_DEFS.map(({ path, element }) => (
+                <Route key={`en-${path}`} path={path} element={element} />
+              ))}
+
+              {/* Locale-prefixed variants: /tr, /ro, /pl, /ru, /de, /fr */}
+              <Route path="/:lang" element={<LocaleLayout />}>
+                {ROUTE_DEFS.map(({ path, element }) => (
+                  <Route
+                    key={`loc-${path}`}
+                    index={path === "/"}
+                    path={path === "/" ? undefined : path.slice(1)}
+                    element={element}
+                  />
+                ))}
+              </Route>
+
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </GeoRedirectGate>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

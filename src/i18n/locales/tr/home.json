@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Dentaloria | Sizin İçin En İyi Diş Kliniğini Bulun",
+    "description": "Dentaloria; fiyat, tedavi seçenekleri, konum ve hasta yorumlarına göre diş kliniklerini karşılaştırmanıza yardımcı olur — yurt dışındaki en iyi kliniği güvenle seçmenizi kolaylaştırır."
+  },
+  "hero": {
+    "titleLine1": "En İyi",
+    "titleLine2": "Diş Kliniğini Bulun",
+    "subtitle": "Dünya standartlarında diş tedavisi parmaklarınızın ucunda",
+    "orFilters": "ya da filtrelerle arayın",
+    "selectTreatment": "Tedavi türü seçin",
+    "selectCountry": "Ülke seçin",
+    "searchClinics": "Klinikleri Ara",
+    "verifiedClinics": "Onaylı Klinik",
+    "happyPatients": "Memnun Hasta",
+    "averageRating": "Ortalama Puan"
+  },
+  "aiSearch": {
+    "badge": "Yapay zeka destekli arama",
+    "hint": "Aradığınızı aşağıya yazmanız yeterli",
+    "search": "Ara"
+  },
+  "featured": {
+    "title": "Öne Çıkan Klinikler",
+    "subtitle": "Editör ekibimiz tarafından özenle seçildi",
+    "viewClinic": "Kliniği Görüntüle"
+  },
+  "popularClinics": {
+    "title": "Popüler Klinikler",
+    "subtitle": "En yüksek puanlı ve en güvenilir diş kliniklerini keşfedin",
+    "empty": "Henüz klinik bulunmuyor"
+  },
+  "popularCities": {
+    "title": "Popüler Şehirler",
+    "subtitle": "En çok tercih edilen destinasyonları keşfedin",
+    "istanbul": "Türkiye'nin en büyük şehri",
+    "antalya": "Akdeniz'in incisi",
+    "izmir": "Ege'nin parlayan yıldızı"
+  },
+  "howItWorks": {
+    "title": "Nasıl Çalışır?",
+    "subtitle": "3 basit adımda size en uygun kliniği bulun",
+    "step1Title": "1. Karşılaştırın",
+    "step1Desc": "Klinikleri karşılaştırın ve sizin için en iyi seçeneği bulun",
+    "step2Title": "2. Doğru Kliniği Bulun",
+    "step2Desc": "İhtiyaçlarınıza en uygun kliniği seçin",
+    "step3Title": "3. Başvurun",
+    "step3Desc": "Kolayca randevu alın ve tedavinize başlayın"
+  },
+  "treatmentOptions": {
+    "title": "Tedavi Seçenekleri",
+    "subtitle": "En popüler diş tedavilerini keşfedin",
+    "defaultDescription": "Bu tedaviyi sunan klinikleri keşfetmek için tıklayın"
+  },
+  "whyDentaloria": {
+    "badge": "Neden Dentaloria",
+    "title": "Tek platform. Karşılaştırılmış tüm klinikler.",
+    "subtitle": "Dentaloria, kliniklerle tek tek yazışmak yerine karşılaştırma, başvuru ve geri dönüş alabileceğiniz tek bir yer sunar.",
+    "compare": { "title": "Kovalamayın, karşılaştırın", "description": "Tek tek her klinikle yazışmak yerine, tedavinize ve konumunuza uygun tüm klinikleri yan yana görün." },
+    "verified": { "title": "Sadece onaylı klinikler", "description": "Dentaloria'daki her klinik yayına girmeden önce incelenir, kime güveneceğinizi tahmin etmek zorunda kalmazsınız." },
+    "pricing": { "title": "Şeffaf fiyatlandırma", "description": "Gerçek fiyatlar ve gerçek hasta puanları baştan önünüzde — yerinde sürpriz teklif yok." },
+    "application": { "title": "Tek başvuru, gerçek yanıtlar", "description": "Bilgilerinizi bir kez girin. Sadece ihtiyacınıza gerçekten uyan klinikler size geri dönsün." }
+  },
+  "testimonials": {
+    "title": "Hastalar Dentaloria hakkında ne diyor",
+    "subtitle": "Dentaloria üzerinden kliniğini bulan hastalardan gerçek yorumlar",
+    "list": [
+      { "name": "Sarah M.", "location": "Birleşik Krallık", "quote": "On farklı klinikle yazışıp her seferinde aynı hikayeyi anlatmak istemiyordum. Dentaloria'da her şeyi tek yerde karşılaştırdım ve ancak kimi istediğimi netleştirdikten sonra iletişime geçtim." },
+      { "name": "Michael R.", "location": "İrlanda", "quote": "En çok beğendiğim şey her klinikle tek tek pazarlık etmek zorunda kalmamamdı. Tek bir form doldurdum ve ihtiyacıma uyan klinikler bana döndü." },
+      { "name": "Anna K.", "location": "Almanya", "quote": "Kendini en iyi ilan eden o kadar çok klinik vardı ki kararsız kalmıştım. Dentaloria sayesinde tahmin etmek yerine fiyatları ve yorumları yan yana gerçekten karşılaştırabildim." },
+      { "name": "James T.", "location": "Amerika Birleşik Devletleri", "quote": "Bu siteyi bulana kadar yurt dışında diş kliniği bulmak riskli hissettiriyordu. Onaylı yorumları ve gerçek fiyatları baştan görmek kararı çok kolaylaştırdı." },
+      { "name": "Emma L.", "location": "Hollanda", "quote": "Aradığımı bir gün içinde tam olarak buldum. On klinikle uğraşmak yerine karşılaştırmayı benim için yapan tek bir platform yeterli oldu." },
+      { "name": "David P.", "location": "Birleşik Krallık", "quote": "Dentaloria saatlerce araştırma yapmamı gereksiz kıldı. Tedavi ve dile göre filtreleyebildim, seçtiğim klinik tüm ihtiyaçlarımı karşıladı." }
+    ]
+  },
+  "cta": {
+    "title": "Hayalinizdeki Gülüşe Bugün Başlayın!",
+    "subtitle": "Binlerce hasta platformumuz sayesinde hayalindeki gülüşe kavuştu. Sıra sizde!",
+    "getStarted": "Hemen Başlayın"
+  }
+}

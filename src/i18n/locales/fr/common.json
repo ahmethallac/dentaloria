@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "clinics": "Cliniques",
+    "featuredClinic": "Clinique en Vedette",
+    "treatments": "Traitements",
+    "aboutUs": "À Propos",
+    "registerClinic": "Inscrire Votre Clinique",
+    "dashboard": "Tableau de Bord",
+    "signOut": "Déconnexion"
+  },
+  "footer": {
+    "tagline": "La plateforme de comparaison de cliniques dentaires la plus fiable de Turquie. Nous vous aidons à trouver le meilleur traitement au meilleur prix.",
+    "securePlatform": "Plateforme Sécurisée",
+    "verifiedClinics": "Cliniques Vérifiées",
+    "quickLinks": "Liens Rapides",
+    "home": "Accueil",
+    "clinics": "Cliniques",
+    "featuredClinic": "Clinique en Vedette",
+    "popularTreatments": "Traitements Populaires",
+    "contact": "Contact",
+    "newsletterTitle": "Abonnez-vous à Notre Newsletter",
+    "newsletterPlaceholder": "Votre adresse e-mail",
+    "subscribe": "S'abonner",
+    "newsletterNote": "Restez informé des dernières offres et campagnes.",
+    "designedBy": "Conçu par DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
+    "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Tous droits réservés 2026",
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfService": "Conditions d'Utilisation",
+    "cookiePolicy": "Politique de Cookies",
+    "gdpr": "RGPD",
+    "securedWithTrustpilot": "Sécurisé par Trustpilot"
+  },
+  "common": {
+    "search": "Rechercher"
+  }
+}

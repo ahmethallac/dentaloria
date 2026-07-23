@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Dentaloria | Finden Sie die Beste Zahnklinik für Sich",
+    "description": "Dentaloria hilft Ihnen, Zahnkliniken nach Preis, Behandlungsarten, Standort und Patientenbewertungen zu vergleichen — damit Sie die beste Klinik im Ausland mit Vertrauen auswählen können."
+  },
+  "hero": {
+    "titleLine1": "Finden Sie die Beste",
+    "titleLine2": "Zahnklinik",
+    "subtitle": "Erstklassige Zahnbehandlung, direkt zur Hand",
+    "orFilters": "oder mit Filtern suchen",
+    "selectTreatment": "Behandlungsart auswählen",
+    "selectCountry": "Land auswählen",
+    "searchClinics": "Kliniken Suchen",
+    "verifiedClinics": "Geprüfte Kliniken",
+    "happyPatients": "Zufriedene Patienten",
+    "averageRating": "Durchschnittsbewertung"
+  },
+  "aiSearch": {
+    "badge": "KI-gestützte Suche",
+    "hint": "Schreiben Sie einfach unten, wonach Sie suchen",
+    "search": "Suchen"
+  },
+  "featured": {
+    "title": "Empfohlene Kliniken",
+    "subtitle": "Sorgfältig ausgewählt von unserem Redaktionsteam",
+    "viewClinic": "Klinik Ansehen"
+  },
+  "popularClinics": {
+    "title": "Beliebte Kliniken",
+    "subtitle": "Entdecken Sie die bestbewerteten und vertrauenswürdigsten Zahnkliniken",
+    "empty": "Noch keine Kliniken verfügbar"
+  },
+  "popularCities": {
+    "title": "Beliebte Städte",
+    "subtitle": "Entdecken Sie die beliebtesten Reiseziele",
+    "istanbul": "Die größte Stadt der Türkei",
+    "antalya": "Perle des Mittelmeers",
+    "izmir": "Strahlender Stern der Ägäis"
+  },
+  "howItWorks": {
+    "title": "So Funktioniert Es",
+    "subtitle": "Finden Sie die perfekte Klinik in 3 einfachen Schritten",
+    "step1Title": "1. Vergleichen",
+    "step1Desc": "Vergleichen Sie Kliniken und finden Sie die beste Option für sich",
+    "step2Title": "2. Perfekte Klinik Finden",
+    "step2Desc": "Wählen Sie die Klinik, die am besten zu Ihren Bedürfnissen passt",
+    "step3Title": "3. Bewerben",
+    "step3Desc": "Vereinbaren Sie ganz einfach einen Termin und starten Sie Ihre Behandlung"
+  },
+  "treatmentOptions": {
+    "title": "Behandlungsoptionen",
+    "subtitle": "Entdecken Sie die beliebtesten Zahnbehandlungen",
+    "defaultDescription": "Klicken Sie, um Kliniken mit dieser Behandlung zu entdecken"
+  },
+  "whyDentaloria": {
+    "badge": "Warum Dentaloria",
+    "title": "Eine Plattform. Alle Kliniken im Vergleich.",
+    "subtitle": "Dentaloria ersetzt das einzelne Anschreiben von Kliniken durch einen einzigen Ort zum Vergleichen, Bewerben und Antworten erhalten.",
+    "compare": { "title": "Vergleichen statt hinterherlaufen", "description": "Sehen Sie alle passenden Kliniken zu Ihrer Behandlung und Ihrem Standort nebeneinander, statt jede einzeln anzuschreiben." },
+    "verified": { "title": "Nur geprüfte Kliniken", "description": "Jede Klinik auf Dentaloria wird vor der Veröffentlichung überprüft, damit Sie nie raten müssen, wem Sie vertrauen können." },
+    "pricing": { "title": "Transparente Preise", "description": "Echte Preise und echte Patientenbewertungen von Anfang an sichtbar — keine Überraschungsangebote vor Ort." },
+    "application": { "title": "Eine Anfrage, echte Antworten", "description": "Geben Sie Ihre Daten einmal ein. Nur die Kliniken, die wirklich zu Ihnen passen, melden sich zurück." }
+  },
+  "testimonials": {
+    "title": "Das sagen Patienten über Dentaloria",
+    "subtitle": "Echte Erfahrungsberichte von Patienten, die ihre Klinik über Dentaloria gefunden haben",
+    "list": [
+      { "name": "Sarah M.", "location": "Vereinigtes Königreich", "quote": "Ich wollte nicht zehn verschiedene Kliniken anschreiben und jedes Mal meine Geschichte wiederholen. Auf Dentaloria habe ich alles an einem Ort verglichen und mich erst gemeldet, als ich genau wusste, wen ich wollte." },
+      { "name": "Michael R.", "location": "Irland", "quote": "Am meisten gefiel mir, dass ich nicht selbst mit jeder Klinik verhandeln musste. Ich habe ein Formular ausgefüllt, und nur die passenden Kliniken haben sich gemeldet." },
+      { "name": "Anna K.", "location": "Deutschland", "quote": "Ich war überwältigt davon, wie viele Kliniken behaupteten, die beste zu sein. Mit Dentaloria konnte ich Preise und Bewertungen wirklich direkt vergleichen, statt zu raten." },
+      { "name": "James T.", "location": "Vereinigte Staaten", "quote": "Eine Zahnklinik im Ausland zu finden fühlte sich riskant an, bis ich diese Seite fand. Geprüfte Bewertungen und echte Preise auf einen Blick machten die Entscheidung viel einfacher." },
+      { "name": "Emma L.", "location": "Niederlande", "quote": "Ich habe innerhalb eines Tages genau gefunden, wonach ich gesucht habe. Kein Hin und Her mit zehn Kliniken — eine einzige Plattform hat den Vergleich für mich übernommen." },
+      { "name": "David P.", "location": "Vereinigtes Königreich", "quote": "Dentaloria hat mir Stunden an Recherche erspart. Ich konnte nach Behandlung und Sprache filtern, und die gewählte Klinik entsprach genau meinen Bedürfnissen." }
+    ]
+  },
+  "cta": {
+    "title": "Starten Sie Noch Heute Ihre Reise zum Perfekten Lächeln!",
+    "subtitle": "Tausende Patienten haben über unsere Plattform ihr Traumlächeln erreicht. Jetzt sind Sie an der Reihe!",
+    "getStarted": "Jetzt Starten"
+  }
+}

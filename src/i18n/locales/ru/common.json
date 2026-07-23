@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Главная",
+    "clinics": "Клиники",
+    "featuredClinic": "Рекомендуемая Клиника",
+    "treatments": "Лечение",
+    "aboutUs": "О Нас",
+    "registerClinic": "Зарегистрировать Клинику",
+    "dashboard": "Панель Управления",
+    "signOut": "Выйти"
+  },
+  "footer": {
+    "tagline": "Самая надёжная платформа для сравнения стоматологических клиник в Турции. Мы помогаем найти лучшее лечение по самой выгодной цене.",
+    "securePlatform": "Безопасная Платформа",
+    "verifiedClinics": "Проверенные Клиники",
+    "quickLinks": "Быстрые Ссылки",
+    "home": "Главная",
+    "clinics": "Клиники",
+    "featuredClinic": "Рекомендуемая Клиника",
+    "popularTreatments": "Популярные Процедуры",
+    "contact": "Контакты",
+    "newsletterTitle": "Подпишитесь на Рассылку",
+    "newsletterPlaceholder": "Ваш адрес электронной почты",
+    "subscribe": "Подписаться",
+    "newsletterNote": "Будьте в курсе последних акций и предложений.",
+    "designedBy": "Разработано DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
+    "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Все права защищены 2026",
+    "privacyPolicy": "Политика Конфиденциальности",
+    "termsOfService": "Условия Использования",
+    "cookiePolicy": "Политика Использования Cookie",
+    "gdpr": "GDPR",
+    "securedWithTrustpilot": "Защищено Trustpilot"
+  },
+  "common": {
+    "search": "Поиск"
+  }
+}

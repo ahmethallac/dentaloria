@@ -1,0 +1,5 @@
+{
+  "message": "We set the site to {{language}} since you're visiting from {{country}}.",
+  "changeLanguage": "Change language",
+  "dismiss": "Got it"
+}

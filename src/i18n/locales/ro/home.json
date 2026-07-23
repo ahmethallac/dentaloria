@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Dentaloria | Găsește Cea Mai Bună Clinică Dentară pentru Tine",
+    "description": "Dentaloria te ajută să compari clinicile dentare după preț, tipuri de tratament, locație și recenzii ale pacienților — astfel încât să alegi cu încredere cea mai bună clinică din străinătate."
+  },
+  "hero": {
+    "titleLine1": "Găsește Cea Mai Bună",
+    "titleLine2": "Clinică Dentară",
+    "subtitle": "Tratament dentar de talie mondială, la un click distanță",
+    "orFilters": "sau caută cu filtre",
+    "selectTreatment": "Selectează tipul de tratament",
+    "selectCountry": "Selectează țara",
+    "searchClinics": "Caută Clinici",
+    "verifiedClinics": "Clinici Verificate",
+    "happyPatients": "Pacienți Mulțumiți",
+    "averageRating": "Rating Mediu"
+  },
+  "aiSearch": {
+    "badge": "Căutare cu inteligență artificială",
+    "hint": "Scrie mai jos ce cauți",
+    "search": "Caută"
+  },
+  "featured": {
+    "title": "Clinici Recomandate",
+    "subtitle": "Selectate cu grijă de echipa noastră editorială",
+    "viewClinic": "Vezi Clinica"
+  },
+  "popularClinics": {
+    "title": "Clinici Populare",
+    "subtitle": "Descoperă clinicile dentare cele mai bine cotate și de încredere",
+    "empty": "Nu sunt încă clinici disponibile"
+  },
+  "popularCities": {
+    "title": "Orașe Populare",
+    "subtitle": "Explorează cele mai căutate destinații",
+    "istanbul": "Cel mai mare oraș al Turciei",
+    "antalya": "Perla Mediteranei",
+    "izmir": "Steaua strălucitoare a Egeei"
+  },
+  "howItWorks": {
+    "title": "Cum Funcționează?",
+    "subtitle": "Găsește clinica potrivită în 3 pași simpli",
+    "step1Title": "1. Compară",
+    "step1Desc": "Compară clinicile și găsește cea mai bună opțiune pentru tine",
+    "step2Title": "2. Găsește Clinica Potrivită",
+    "step2Desc": "Alege clinica care se potrivește cel mai bine nevoilor tale",
+    "step3Title": "3. Aplică",
+    "step3Desc": "Programează-te ușor și începe-ți tratamentul"
+  },
+  "treatmentOptions": {
+    "title": "Opțiuni de Tratament",
+    "subtitle": "Descoperă cele mai populare tratamente dentare",
+    "defaultDescription": "Apasă pentru a vedea clinicile care oferă acest tratament"
+  },
+  "whyDentaloria": {
+    "badge": "De ce Dentaloria",
+    "title": "O singură platformă. Toate clinicile comparate.",
+    "subtitle": "Dentaloria înlocuiește contactarea clinicilor una câte una cu un singur loc unde poți compara, aplica și primi răspuns.",
+    "compare": { "title": "Compară, nu alerga după oferte", "description": "Vezi toate clinicile potrivite pentru tratamentul și locația ta, una lângă alta, în loc să scrii separat fiecăreia." },
+    "verified": { "title": "Doar clinici verificate", "description": "Fiecare clinică de pe Dentaloria este verificată înainte de publicare, așa că nu trebuie să ghicești în cine să ai încredere." },
+    "pricing": { "title": "Prețuri transparente", "description": "Prețuri reale și recenzii reale ale pacienților, vizibile de la început — fără oferte-surpriză la sosire." },
+    "application": { "title": "O singură cerere, răspunsuri reale", "description": "Completează datele o singură dată. Doar clinicile care ți se potrivesc cu adevărat te vor contacta." }
+  },
+  "testimonials": {
+    "title": "Ce spun pacienții despre Dentaloria",
+    "subtitle": "Păreri reale de la pacienți care și-au găsit clinica prin Dentaloria",
+    "list": [
+      { "name": "Sarah M.", "location": "Marea Britanie", "quote": "Nu am vrut să scriu la zece clinici diferite și să-mi repet povestea de fiecare dată. Pe Dentaloria am comparat totul într-un singur loc și am contactat clinica abia după ce am știut exact pe care o vreau." },
+      { "name": "Michael R.", "location": "Irlanda", "quote": "Ce mi-a plăcut cel mai mult a fost că nu a trebuit să negociez singur cu fiecare clinică. Am completat un singur formular și doar clinicile potrivite mi-au răspuns." },
+      { "name": "Anna K.", "location": "Germania", "quote": "Eram copleșită de câte clinici pretindeau că sunt cele mai bune. Dentaloria m-a lăsat să compar chiar prețurile și recenziile una lângă alta, în loc să ghicesc." },
+      { "name": "James T.", "location": "Statele Unite", "quote": "Găsirea unei clinici dentare în străinătate mi se părea riscantă până am descoperit acest site. Recenziile verificate și prețurile reale, vizibile de la început, au făcut decizia mult mai simplă." },
+      { "name": "Emma L.", "location": "Țările de Jos", "quote": "Am găsit exact ce căutam într-o singură zi. Fără du-te-vino cu zece clinici — o singură platformă care a făcut comparația în locul meu." },
+      { "name": "David P.", "location": "Marea Britanie", "quote": "Dentaloria mi-a economisit ore întregi de căutări. Am putut filtra după tratament și limbă, iar clinica aleasă a corespuns exact nevoilor mele." }
+    ]
+  },
+  "cta": {
+    "title": "Începe-ți Astăzi Călătoria Spre Zâmbetul Perfect!",
+    "subtitle": "Mii de pacienți și-au obținut zâmbetul visat prin platforma noastră. E rândul tău!",
+    "getStarted": "Începe Acum"
+  }
+}

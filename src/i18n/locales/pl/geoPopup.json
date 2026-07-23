@@ -1,0 +1,5 @@
+{
+  "message": "Ustawiliśmy stronę w języku {{language}}, ponieważ odwiedzasz nas z: {{country}}.",
+  "changeLanguage": "Zmień język",
+  "dismiss": "Rozumiem"
+}

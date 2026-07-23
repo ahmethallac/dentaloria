@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Dentaloria | Znajdź Najlepszą Klinikę Dentystyczną dla Siebie",
+    "description": "Dentaloria pomaga porównywać kliniki dentystyczne pod względem ceny, rodzaju zabiegów, lokalizacji i opinii pacjentów — dzięki czemu łatwo i pewnie wybierzesz najlepszą klinikę za granicą."
+  },
+  "hero": {
+    "titleLine1": "Znajdź Najlepszą",
+    "titleLine2": "Klinikę Dentystyczną",
+    "subtitle": "Światowej klasy leczenie stomatologiczne na wyciągnięcie ręki",
+    "orFilters": "lub szukaj z filtrami",
+    "selectTreatment": "Wybierz rodzaj zabiegu",
+    "selectCountry": "Wybierz kraj",
+    "searchClinics": "Szukaj Klinik",
+    "verifiedClinics": "Zweryfikowanych Klinik",
+    "happyPatients": "Zadowolonych Pacjentów",
+    "averageRating": "Średnia Ocena"
+  },
+  "aiSearch": {
+    "badge": "Wyszukiwanie ze sztuczną inteligencją",
+    "hint": "Wystarczy wpisać poniżej, czego szukasz",
+    "search": "Szukaj"
+  },
+  "featured": {
+    "title": "Polecane Kliniki",
+    "subtitle": "Starannie wybrane przez nasz zespół redakcyjny",
+    "viewClinic": "Zobacz Klinikę"
+  },
+  "popularClinics": {
+    "title": "Popularne Kliniki",
+    "subtitle": "Odkryj najwyżej oceniane i najbardziej zaufane kliniki dentystyczne",
+    "empty": "Brak dostępnych klinik"
+  },
+  "popularCities": {
+    "title": "Popularne Miasta",
+    "subtitle": "Odkryj najchętniej wybierane kierunki",
+    "istanbul": "Największe miasto Turcji",
+    "antalya": "Perła Morza Śródziemnego",
+    "izmir": "Lśniąca gwiazda Morza Egejskiego"
+  },
+  "howItWorks": {
+    "title": "Jak To Działa?",
+    "subtitle": "Znajdź idealną klinikę w 3 prostych krokach",
+    "step1Title": "1. Porównaj",
+    "step1Desc": "Porównaj kliniki i znajdź najlepszą opcję dla siebie",
+    "step2Title": "2. Znajdź Idealną Klinikę",
+    "step2Desc": "Wybierz klinikę, która najlepiej odpowiada Twoim potrzebom",
+    "step3Title": "3. Zgłoś się",
+    "step3Desc": "Łatwo umów wizytę i rozpocznij leczenie"
+  },
+  "treatmentOptions": {
+    "title": "Rodzaje Zabiegów",
+    "subtitle": "Odkryj najpopularniejsze zabiegi stomatologiczne",
+    "defaultDescription": "Kliknij, aby zobaczyć kliniki oferujące ten zabieg"
+  },
+  "whyDentaloria": {
+    "badge": "Dlaczego Dentaloria",
+    "title": "Jedna platforma. Wszystkie kliniki porównane.",
+    "subtitle": "Dentaloria zastępuje pisanie do klinik jedna po drugiej jednym miejscem, w którym możesz porównać, zgłosić się i otrzymać odpowiedź.",
+    "compare": { "title": "Porównuj, nie uganiaj się", "description": "Zobacz wszystkie kliniki pasujące do Twojego zabiegu i lokalizacji obok siebie, zamiast pisać do każdej z osobna." },
+    "verified": { "title": "Tylko zweryfikowane kliniki", "description": "Każda klinika na Dentaloria jest sprawdzana przed publikacją, więc nigdy nie musisz zgadywać, komu zaufać." },
+    "pricing": { "title": "Przejrzyste ceny", "description": "Prawdziwe ceny i prawdziwe oceny pacjentów widoczne od razu — żadnych niespodzianek na miejscu." },
+    "application": { "title": "Jedno zgłoszenie, prawdziwe odpowiedzi", "description": "Podaj swoje dane raz. Odezwą się tylko te kliniki, które naprawdę odpowiadają Twoim potrzebom." }
+  },
+  "testimonials": {
+    "title": "Co pacjenci mówią o Dentaloria",
+    "subtitle": "Prawdziwe opinie pacjentów, którzy znaleźli swoją klinikę dzięki Dentaloria",
+    "list": [
+      { "name": "Sarah M.", "location": "Wielka Brytania", "quote": "Nie chciałam pisać do dziesięciu różnych klinik i za każdym razem powtarzać swojej historii. Na Dentaloria porównałam wszystko w jednym miejscu i odezwałam się dopiero, gdy dokładnie wiedziałam, czego chcę." },
+      { "name": "Michael R.", "location": "Irlandia", "quote": "Najbardziej podobało mi się to, że nie musiałem negocjować samodzielnie z każdą kliniką. Wypełniłem jeden formularz i odezwały się tylko te kliniki, które pasowały do moich potrzeb." },
+      { "name": "Anna K.", "location": "Niemcy", "quote": "Byłam przytłoczona tym, ile klinik twierdzi, że jest najlepsza. Dentaloria pozwoliła mi naprawdę porównać ceny i opinie obok siebie, zamiast zgadywać." },
+      { "name": "James T.", "location": "Stany Zjednoczone", "quote": "Znalezienie kliniki dentystycznej za granicą wydawało się ryzykowne, dopóki nie znalazłem tej strony. Zweryfikowane opinie i prawdziwe ceny widoczne od razu bardzo ułatwiły decyzję." },
+      { "name": "Emma L.", "location": "Holandia", "quote": "Znalazłam dokładnie to, czego szukałam, w ciągu jednego dnia. Żadnego biegania od kliniki do kliniki — jedna platforma zrobiła to porównanie za mnie." },
+      { "name": "David P.", "location": "Wielka Brytania", "quote": "Dentaloria zaoszczędziła mi godzin researchu. Mogłem filtrować według zabiegu i języka, a wybrana klinika spełniła wszystkie moje potrzeby." }
+    ]
+  },
+  "cta": {
+    "title": "Zacznij Swoją Podróż do Idealnego Uśmiechu Już Dziś!",
+    "subtitle": "Tysiące pacjentów spełniło marzenie o pięknym uśmiechu dzięki naszej platformie. Teraz Twoja kolej!",
+    "getStarted": "Zaczynamy"
+  }
+}

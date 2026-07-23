@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { withLocalePrefix } from "@/lib/localePath";
 import {
   Carousel,
   CarouselContent,
@@ -62,6 +64,8 @@ export const ShowcaseCard = ({
   clinic: any;
   cardIndex: number;
 }) => {
+  const { t } = useTranslation("home");
+  const { lang } = useParams();
   const city = clinic.cities?.name || "";
   const country = clinic.cities?.countries?.name || "";
   const location = [city, country].filter(Boolean).join(", ");
@@ -121,7 +125,7 @@ export const ShowcaseCard = ({
           asChild
           className="mt-3 w-full h-10 rounded-xl font-semibold"
         >
-          <Link to={`/clinic/${clinic.id}`}>View Clinic</Link>
+          <Link to={withLocalePrefix(`/clinic/${clinic.id}`, lang)}>{t("featured.viewClinic")}</Link>
         </Button>
       </div>
     </div>
@@ -129,6 +133,7 @@ export const ShowcaseCard = ({
 };
 
 export const FeaturedClinicsSection = () => {
+  const { t } = useTranslation("home");
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -155,9 +160,9 @@ export const FeaturedClinicsSection = () => {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-3">Featured Clinics</h2>
+          <h2 className="text-3xl font-bold mb-3">{t("featured.title")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Hand-picked clinics from our editorial team
+            {t("featured.subtitle")}
           </p>
         </div>
 

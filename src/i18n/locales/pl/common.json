@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Strona Główna",
+    "clinics": "Kliniki",
+    "featuredClinic": "Polecana Klinika",
+    "treatments": "Zabiegi",
+    "aboutUs": "O Nas",
+    "registerClinic": "Zarejestruj Klinikę",
+    "dashboard": "Panel",
+    "signOut": "Wyloguj się"
+  },
+  "footer": {
+    "tagline": "Najbardziej zaufana platforma porównywania klinik dentystycznych w Turcji. Pomagamy znaleźć najlepsze leczenie w najkorzystniejszej cenie.",
+    "securePlatform": "Bezpieczna Platforma",
+    "verifiedClinics": "Zweryfikowane Kliniki",
+    "quickLinks": "Szybkie Linki",
+    "home": "Strona Główna",
+    "clinics": "Kliniki",
+    "featuredClinic": "Polecana Klinika",
+    "popularTreatments": "Popularne Zabiegi",
+    "contact": "Kontakt",
+    "newsletterTitle": "Zapisz się do Newslettera",
+    "newsletterPlaceholder": "Twój adres e-mail",
+    "subscribe": "Zapisz się",
+    "newsletterNote": "Bądź na bieżąco z najnowszymi promocjami i ofertami.",
+    "designedBy": "Zaprojektowane przez DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
+    "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Wszelkie prawa zastrzeżone 2026",
+    "privacyPolicy": "Polityka Prywatności",
+    "termsOfService": "Regulamin",
+    "cookiePolicy": "Polityka Cookies",
+    "gdpr": "RODO",
+    "securedWithTrustpilot": "Zabezpieczone przez Trustpilot"
+  },
+  "common": {
+    "search": "Szukaj"
+  }
+}

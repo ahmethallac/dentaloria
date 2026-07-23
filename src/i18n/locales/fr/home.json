@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "Dentaloria | Trouvez la Meilleure Clinique Dentaire pour Vous",
+    "description": "Dentaloria vous aide à comparer les cliniques dentaires selon le prix, les types de traitement, la localisation et les avis des patients — pour choisir en toute confiance la meilleure clinique à l'étranger."
+  },
+  "hero": {
+    "titleLine1": "Trouvez la Meilleure",
+    "titleLine2": "Clinique Dentaire",
+    "subtitle": "Des soins dentaires de classe mondiale à portée de main",
+    "orFilters": "ou recherchez avec des filtres",
+    "selectTreatment": "Sélectionnez le type de traitement",
+    "selectCountry": "Sélectionnez le pays",
+    "searchClinics": "Rechercher des Cliniques",
+    "verifiedClinics": "Cliniques Vérifiées",
+    "happyPatients": "Patients Satisfaits",
+    "averageRating": "Note Moyenne"
+  },
+  "aiSearch": {
+    "badge": "Recherche par intelligence artificielle",
+    "hint": "Écrivez simplement ce que vous cherchez ci-dessous",
+    "search": "Rechercher"
+  },
+  "featured": {
+    "title": "Cliniques en Vedette",
+    "subtitle": "Sélectionnées avec soin par notre équipe éditoriale",
+    "viewClinic": "Voir la Clinique"
+  },
+  "popularClinics": {
+    "title": "Cliniques Populaires",
+    "subtitle": "Découvrez les cliniques dentaires les mieux notées et les plus fiables",
+    "empty": "Aucune clinique disponible pour le moment"
+  },
+  "popularCities": {
+    "title": "Villes Populaires",
+    "subtitle": "Découvrez les destinations les plus prisées",
+    "istanbul": "La plus grande ville de Turquie",
+    "antalya": "La perle de la Méditerranée",
+    "izmir": "L'étoile brillante de la mer Égée"
+  },
+  "howItWorks": {
+    "title": "Comment Ça Marche ?",
+    "subtitle": "Trouvez la clinique idéale en 3 étapes simples",
+    "step1Title": "1. Comparez",
+    "step1Desc": "Comparez les cliniques et trouvez la meilleure option pour vous",
+    "step2Title": "2. Trouvez la Clinique Idéale",
+    "step2Desc": "Choisissez la clinique qui correspond le mieux à vos besoins",
+    "step3Title": "3. Postulez",
+    "step3Desc": "Prenez facilement rendez-vous et commencez votre traitement"
+  },
+  "treatmentOptions": {
+    "title": "Options de Traitement",
+    "subtitle": "Découvrez les traitements dentaires les plus populaires",
+    "defaultDescription": "Cliquez pour découvrir les cliniques proposant ce traitement"
+  },
+  "whyDentaloria": {
+    "badge": "Pourquoi Dentaloria",
+    "title": "Une seule plateforme. Toutes les cliniques comparées.",
+    "subtitle": "Dentaloria remplace les échanges individuels avec chaque clinique par un seul endroit pour comparer, postuler et obtenir une réponse.",
+    "compare": { "title": "Comparez, ne courez plus après", "description": "Consultez côte à côte toutes les cliniques correspondant à votre traitement et à votre localisation, au lieu d'écrire à chacune séparément." },
+    "verified": { "title": "Uniquement des cliniques vérifiées", "description": "Chaque clinique sur Dentaloria est examinée avant sa mise en ligne, vous n'avez donc jamais à deviner en qui faire confiance." },
+    "pricing": { "title": "Tarification transparente", "description": "Des prix réels et de vraies notes de patients affichés dès le départ — aucune surprise une fois sur place." },
+    "application": { "title": "Une seule demande, de vraies réponses", "description": "Renseignez vos informations une seule fois. Seules les cliniques qui correspondent réellement à vos besoins vous répondront." }
+  },
+  "testimonials": {
+    "title": "Ce que disent les patients à propos de Dentaloria",
+    "subtitle": "De vrais témoignages de patients qui ont trouvé leur clinique grâce à Dentaloria",
+    "list": [
+      { "name": "Sarah M.", "location": "Royaume-Uni", "quote": "Je ne voulais pas écrire à dix cliniques différentes et répéter mon histoire à chaque fois. Sur Dentaloria, j'ai tout comparé au même endroit et je n'ai contacté une clinique que lorsque je savais exactement laquelle je voulais." },
+      { "name": "Michael R.", "location": "Irlande", "quote": "Ce que j'ai le plus apprécié, c'est de ne pas avoir à négocier moi-même avec chaque clinique. J'ai rempli un seul formulaire et seules les cliniques qui correspondaient à mes besoins m'ont répondu." },
+      { "name": "Anna K.", "location": "Allemagne", "quote": "J'étais submergée par le nombre de cliniques qui prétendaient être les meilleures. Dentaloria m'a permis de vraiment comparer les prix et les avis côte à côte, au lieu de deviner." },
+      { "name": "James T.", "location": "États-Unis", "quote": "Trouver une clinique dentaire à l'étranger me semblait risqué jusqu'à ce que je trouve ce site. Voir des avis vérifiés et de vrais prix dès le départ a rendu la décision bien plus facile." },
+      { "name": "Emma L.", "location": "Pays-Bas", "quote": "J'ai trouvé exactement ce que je cherchais en une journée. Plus d'allers-retours avec dix cliniques — une seule plateforme a fait la comparaison à ma place." },
+      { "name": "David P.", "location": "Royaume-Uni", "quote": "Dentaloria m'a fait gagner des heures de recherche. J'ai pu filtrer par traitement et par langue, et la clinique choisie correspondait exactement à mes besoins." }
+    ]
+  },
+  "cta": {
+    "title": "Commencez Dès Aujourd'hui Votre Parcours vers le Sourire Parfait !",
+    "subtitle": "Des milliers de patients ont obtenu le sourire de leurs rêves grâce à notre plateforme. À vous de jouer !",
+    "getStarted": "Commencer"
+  }
+}

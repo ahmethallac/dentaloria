@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, LogOut, Building2, LayoutDashboard } from "lucide-react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Menu, LogOut, Building2, LayoutDashboard, Globe } from "lucide-react";
 import { Button } from "./button";
 import { useAuth } from "@/contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
 import { Avatar, AvatarFallback } from "./avatar";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./sheet";
+import { SITE_LOCALES } from "@/i18n/siteLocales";
+import { withLocalePrefix } from "@/lib/localePath";
+import { LOCALE_CHOICE_KEY } from "@/components/i18n/GeoRedirectGate";
 
-const NAV_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/clinic-listing", label: "Clinics" },
-  { to: "/clinic", label: "Featured Clinic" },
-  { href: "#treatments", label: "Treatments" },
-  { href: "#about", label: "About Us" },
+interface NavLinkDef {
+  to?: string;
+  href?: string;
+  key: string;
+}
+
+const NAV_LINK_DEFS: NavLinkDef[] = [
+  { to: "/", key: "nav.home" },
+  { to: "/clinic-listing", key: "nav.clinics" },
+  { to: "/clinic", key: "nav.featuredClinic" },
+  { href: "#treatments", key: "nav.treatments" },
+  { href: "#about", key: "nav.aboutUs" },
 ];
 
 const getInitials = (name: string) =>
@@ -25,21 +35,25 @@ const getInitials = (name: string) =>
     .toUpperCase() || "U";
 
 const NavLink = ({
-  link,
+  to,
+  href,
+  label,
   onClick,
   className,
 }: {
-  link: (typeof NAV_LINKS)[number];
+  to?: string;
+  href?: string;
+  label: string;
   onClick?: () => void;
   className: string;
 }) =>
-  link.to ? (
-    <Link to={link.to} onClick={onClick} className={className}>
-      {link.label}
+  to ? (
+    <Link to={to} onClick={onClick} className={className}>
+      {label}
     </Link>
   ) : (
-    <a href={link.href} onClick={onClick} className={className}>
-      {link.label}
+    <a href={href} onClick={onClick} className={className}>
+      {label}
     </a>
   );
 
@@ -48,6 +62,9 @@ export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
+  const { lang } = useParams();
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -58,7 +75,7 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    navigate(withLocalePrefix("/", lang));
   };
 
   const closeMobile = () => setMobileOpen(false);
@@ -67,6 +84,46 @@ export const Navbar = () => {
     "px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200";
   const mobileLinkClass =
     "px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors";
+
+  // Strips the current locale prefix (if any) off the path, so we can
+  // rebuild it with a different locale prefix when switching languages.
+  const pathWithoutLocale = (() => {
+    if (!lang) return location.pathname;
+    const stripped = location.pathname.replace(new RegExp(`^/${lang}`), "");
+    return stripped === "" ? "/" : stripped;
+  })();
+
+  const switchLocale = (code: string) => {
+    localStorage.setItem(LOCALE_CHOICE_KEY, code);
+    navigate(withLocalePrefix(pathWithoutLocale, code === "en" ? undefined : code) + location.search);
+  };
+
+  const currentLocale = SITE_LOCALES.find((l) => l.code === (lang || "en"));
+
+  const LanguageSwitcher = ({ mobile }: { mobile?: boolean }) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={
+            mobile
+              ? "flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors w-full"
+              : "flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200"
+          }
+        >
+          <Globe className="w-4 h-4" />
+          <span>{currentLocale?.flag} {currentLocale?.label}</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={mobile ? "start" : "end"}>
+        {SITE_LOCALES.map((l) => (
+          <DropdownMenuItem key={l.code} onClick={() => switchLocale(l.code)}>
+            <span className="mr-2">{l.flag}</span>
+            {l.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   return (
     <nav
@@ -87,7 +144,7 @@ export const Navbar = () => {
           }`}
         >
           {/* Logo */}
-          <Link to="/" className="flex items-center shrink-0">
+          <Link to={withLocalePrefix("/", lang)} className="flex items-center shrink-0">
             <img
               src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png"
               alt="Dentaloria"
@@ -97,13 +154,20 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <NavLink key={link.label} link={link} className={linkClass} />
+            {NAV_LINK_DEFS.map((link) => (
+              <NavLink
+                key={link.key}
+                to={link.to ? withLocalePrefix(link.to, lang) : undefined}
+                href={link.href}
+                label={t(link.key)}
+                className={linkClass}
+              />
             ))}
           </div>
 
           {/* Right Section: Auth */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            <LanguageSwitcher />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -117,24 +181,24 @@ export const Navbar = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                  <DropdownMenuItem onClick={() => navigate(withLocalePrefix("/dashboard", lang))}>
                     <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
+                    {t("nav.dashboard")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                    {t("nav.signOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate(withLocalePrefix("/auth", lang))}
                 className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 rounded-full shadow-md shadow-primary/20 transition-all duration-300"
               >
                 <Building2 className="w-4 h-4 mr-2" />
-                Register Clinic
+                {t("nav.registerClinic")}
               </Button>
             )}
           </div>
@@ -157,9 +221,17 @@ export const Navbar = () => {
                   />
                 </div>
                 <div className="flex flex-col px-3 py-4 gap-1">
-                  {NAV_LINKS.map((link) => (
-                    <NavLink key={link.label} link={link} onClick={closeMobile} className={mobileLinkClass} />
+                  {NAV_LINK_DEFS.map((link) => (
+                    <NavLink
+                      key={link.key}
+                      to={link.to ? withLocalePrefix(link.to, lang) : undefined}
+                      href={link.href}
+                      label={t(link.key)}
+                      onClick={closeMobile}
+                      className={mobileLinkClass}
+                    />
                   ))}
+                  <LanguageSwitcher mobile />
                 </div>
                 <div className="mt-auto px-6 py-5 border-t border-border">
                   {user ? (
@@ -174,13 +246,13 @@ export const Navbar = () => {
                       </div>
                       <Button
                         onClick={() => {
-                          navigate("/dashboard");
+                          navigate(withLocalePrefix("/dashboard", lang));
                           closeMobile();
                         }}
                         variant="outline"
                         className="w-full rounded-full"
                       >
-                        Dashboard
+                        {t("nav.dashboard")}
                       </Button>
                       <Button
                         onClick={() => {
@@ -191,19 +263,19 @@ export const Navbar = () => {
                         className="w-full rounded-full"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
-                        Sign Out
+                        {t("nav.signOut")}
                       </Button>
                     </div>
                   ) : (
                     <Button
                       onClick={() => {
-                        navigate("/auth");
+                        navigate(withLocalePrefix("/auth", lang));
                         closeMobile();
                       }}
                       className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-5 rounded-full shadow-md shadow-primary/20"
                     >
                       <Building2 className="w-4 h-4 mr-2" />
-                      Register Clinic
+                      {t("nav.registerClinic")}
                     </Button>
                   )}
                 </div>

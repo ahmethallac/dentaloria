@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "clinics": "Kliniken",
+    "featuredClinic": "Empfohlene Klinik",
+    "treatments": "Behandlungen",
+    "aboutUs": "Über Uns",
+    "registerClinic": "Klinik Registrieren",
+    "dashboard": "Dashboard",
+    "signOut": "Abmelden"
+  },
+  "footer": {
+    "tagline": "Die vertrauenswürdigste Plattform zum Vergleich von Zahnkliniken in der Türkei. Wir helfen Ihnen, die beste Behandlung zum besten Preis zu finden.",
+    "securePlatform": "Sichere Plattform",
+    "verifiedClinics": "Geprüfte Kliniken",
+    "quickLinks": "Schnellzugriff",
+    "home": "Startseite",
+    "clinics": "Kliniken",
+    "featuredClinic": "Empfohlene Klinik",
+    "popularTreatments": "Beliebte Behandlungen",
+    "contact": "Kontakt",
+    "newsletterTitle": "Newsletter Abonnieren",
+    "newsletterPlaceholder": "Ihre E-Mail-Adresse",
+    "subscribe": "Abonnieren",
+    "newsletterNote": "Bleiben Sie über die neuesten Aktionen und Angebote informiert.",
+    "designedBy": "Gestaltet von DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
+    "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Alle Rechte vorbehalten 2026",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "cookiePolicy": "Cookie-Richtlinie",
+    "gdpr": "DSGVO",
+    "securedWithTrustpilot": "Abgesichert mit Trustpilot"
+  },
+  "common": {
+    "search": "Suchen"
+  }
+}

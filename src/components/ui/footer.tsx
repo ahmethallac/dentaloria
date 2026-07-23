@@ -3,8 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Star, Shield, Award } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { getPopularTreatments } from "@/lib/services";
+import { withLocalePrefix } from "@/lib/localePath";
 export const Footer = () => {
+  const { t } = useTranslation("common");
+  const { lang } = useParams();
   const [popularTreatments, setPopularTreatments] = useState<any[]>([]);
   useEffect(() => {
     getPopularTreatments(7)
@@ -20,20 +25,19 @@ export const Footer = () => {
             <div>
               <img src="/lovable-uploads/8e8bbef7-0d15-4132-8e92-9ecafe42543e.png" alt="Dentaloria" className="h-10 mb-4" />
               <p className="text-muted-foreground leading-relaxed">
-                Turkey's most trusted dental clinic comparison platform. 
-                We help you find the best treatment at the most affordable price.
+                {t("footer.tagline")}
               </p>
             </div>
-            
+
             {/* Trust Indicators */}
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <Shield className="w-4 h-4 text-medical-green" />
-                <span>Secure Platform</span>
+                <span>{t("footer.securePlatform")}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Award className="w-4 h-4 text-trust-gold" />
-                <span>Verified Clinics</span>
+                <span>{t("footer.verifiedClinics")}</span>
               </div>
             </div>
 
@@ -56,21 +60,21 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Quick Links</h3>
+            <h3 className="text-lg font-semibold">{t("footer.quickLinks")}</h3>
             <ul className="space-y-3">
               <li>
-                <a href="/" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
-                  Home
+                <a href={withLocalePrefix("/", lang)} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  {t("footer.home")}
                 </a>
               </li>
               <li>
-                <a href="/clinic-listing" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
-                  Clinics
+                <a href={withLocalePrefix("/clinic-listing", lang)} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  {t("footer.clinics")}
                 </a>
               </li>
               <li>
-                <a href="/clinic" className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
-                  Featured Clinic
+                <a href={withLocalePrefix("/clinic", lang)} className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:underline">
+                  {t("footer.featuredClinic")}
                 </a>
               </li>
             </ul>
@@ -78,7 +82,7 @@ export const Footer = () => {
 
           {/* Services */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Popular Treatments</h3>
+            <h3 className="text-lg font-semibold">{t("footer.popularTreatments")}</h3>
             <ul className="space-y-3">
               {popularTreatments.map((t) => (
                 <li key={t.id}>
@@ -92,35 +96,35 @@ export const Footer = () => {
 
           {/* Contact & Newsletter */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Contact</h3>
-            
+            <h3 className="text-lg font-semibold">{t("footer.contact")}</h3>
+
             {/* Contact Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                
-                
+
+
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary" />
                 <span className="text-muted-foreground">info@dentaloria.com</span>
               </div>
               <div className="flex items-start gap-3">
-                
-                
+
+
               </div>
             </div>
 
             {/* Newsletter */}
             <div className="space-y-3">
-              <h4 className="font-medium">Subscribe to Our Newsletter</h4>
+              <h4 className="font-medium">{t("footer.newsletterTitle")}</h4>
               <div className="flex gap-2">
-                <Input placeholder="Your email address" className="flex-1 bg-background/70 border-border/50 focus:border-primary" />
+                <Input placeholder={t("footer.newsletterPlaceholder")} className="flex-1 bg-background/70 border-border/50 focus:border-primary" />
                 <Button size="sm" className="bg-gradient-primary hover:opacity-90">
-                  Subscribe
+                  {t("footer.subscribe")}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Stay informed about the latest campaigns and opportunities.
+                {t("footer.newsletterNote")}
               </p>
             </div>
           </div>
@@ -131,29 +135,29 @@ export const Footer = () => {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            Designed by DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC
+            {t("footer.designedBy")}
             <br />
-            HALLAC HEALTH TOURISM TRAVEL AGENCY All rights reserved 2026
+            {t("footer.rightsReserved")}
           </div>
-          
+
           <div className="flex flex-wrap gap-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Privacy Policy
+              {t("footer.privacyPolicy")}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Terms of Service
+              {t("footer.termsOfService")}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              Cookie Policy
+              {t("footer.cookiePolicy")}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-300">
-              GDPR
+              {t("footer.gdpr")}
             </a>
           </div>
-          
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Star className="w-4 h-4 fill-trust-gold text-trust-gold" />
-            <span>Secured with Trustpilot</span>
+            <span>{t("footer.securedWithTrustpilot")}</span>
           </div>
         </div>
       </div>
