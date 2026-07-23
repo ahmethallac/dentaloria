@@ -1,5 +1,7 @@
 {
-  "message": "We set the site to {{language}} since you're visiting from {{country}}.",
+  "title": "Choose your language",
+  "message": "We set the site to {{language}} since you're visiting from {{country}}. Feel free to switch to any language below.",
   "changeLanguage": "Change language",
-  "dismiss": "Got it"
+  "dismiss": "Got it",
+  "current": "Current"
 }

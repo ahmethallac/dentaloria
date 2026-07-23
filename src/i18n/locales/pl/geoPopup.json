@@ -1,5 +1,7 @@
 {
-  "message": "Ustawiliśmy stronę w języku {{language}}, ponieważ odwiedzasz nas z: {{country}}.",
+  "title": "Wybierz swój język",
+  "message": "Ustawiliśmy stronę na {{language}}, ponieważ łączysz się z {{country}}. Możesz zmienić język poniżej.",
   "changeLanguage": "Zmień język",
-  "dismiss": "Rozumiem"
+  "dismiss": "Rozumiem",
+  "current": "Bieżący"
 }

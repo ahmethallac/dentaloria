@@ -1,5 +1,7 @@
 {
-  "message": "{{country}}'den ziyaret ettiğiniz için siteyi {{language}} olarak ayarladık.",
+  "title": "Dilinizi Seçin",
+  "message": "{{country}} üzerinden bağlandığınız için sitenizi {{language}} olarak ayarladık. Aşağıdan istediğiniz dile geçebilirsiniz.",
   "changeLanguage": "Dili değiştir",
-  "dismiss": "Anladım"
+  "dismiss": "Anladım",
+  "current": "Şu anki"
 }
