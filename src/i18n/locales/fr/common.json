@@ -33,5 +33,28 @@
   },
   "common": {
     "search": "Rechercher"
+  },
+  "contactForm": {
+    "fullName": "Nom Complet *",
+    "phone": "Téléphone *",
+    "email": "E-mail *",
+    "treatment": "Traitement (facultatif)",
+    "message": "Votre message (facultatif)",
+    "sending": "Envoi en cours...",
+    "sendRequest": "Envoyer la Demande",
+    "sendApplication": "Envoyer la Candidature",
+    "invalidPhone": "Veuillez saisir un numéro de téléphone valide.",
+    "nameTooShort": "Veuillez saisir votre nom complet.",
+    "phoneRequired": "Veuillez saisir votre numéro de téléphone.",
+    "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
+    "invalidClinicIdDesc": "Identifiant de clinique invalide.",
+    "invalidEmailToastDesc": "Veuillez saisir une adresse e-mail valide.",
+    "blockedTitle": "Message bloqué",
+    "blockedDesc": "Votre message contient un contenu non autorisé. Veuillez le modifier et réessayer.",
+    "successTitle": "Demande reçue",
+    "successDesc": "La clinique vous contactera bientôt.",
+    "rateLimitTitle": "Trop de demandes",
+    "rateLimitDesc": "Veuillez patienter avant d'envoyer une nouvelle demande.",
+    "genericErrorDesc": "Échec de l'envoi. Veuillez réessayer."
   }
 }

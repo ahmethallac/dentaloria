@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Kliniki Dentystyczne | Dentaloria",
+    "description": "Przeglądaj i porównuj kliniki dentystyczne na całym świecie. Znajdź idealną klinikę dla swojego leczenia dzięki zweryfikowanym opiniom i przejrzystym cenom."
+  },
+  "tryAgain": "Spróbuj Ponownie",
+  "hero": {
+    "title": "Najlepsze Kliniki Medyczne na Świecie",
+    "subtitle": "Znajdź idealne rozwiązanie zdrowotne dzięki doświadczonym lekarzom, nowoczesnej technologii i niezawodnej obsłudze"
+  },
+  "loading": "Ładowanie...",
+  "clinicsFound": "Znaleziono {{count}} Klinik",
+  "discoverSubtitle": "Odkryj najlepsze kliniki medyczne na świecie",
+  "sort": {
+    "recommended": "Polecane",
+    "highestRated": "Najwyżej Oceniane",
+    "priceLowToHigh": "Cena: Od Najniższej",
+    "priceHighToLow": "Cena: Od Najwyższej"
+  },
+  "featured": "Polecana",
+  "verified": "Zweryfikowana",
+  "quickApply": "Szybkie Zgłoszenie",
+  "viewClinic": "Zobacz Klinikę",
+  "startingFrom": "Cena od",
+  "contactForPricing": "Skontaktuj się w sprawie ceny",
+  "noResults": {
+    "title": "Nie Znaleziono Klinik",
+    "description": "Żadna klinika nie spełnia wybranych kryteriów. Spróbuj zmienić filtry.",
+    "clearFilters": "Wyczyść Filtry"
+  },
+  "applyDialog": {
+    "titlePrefix": "Zgłoszenie do"
+  },
+  "filters": {
+    "title": "Filtry",
+    "active": "aktywne",
+    "treatments": "Zabiegi",
+    "allTreatments": "Wszystkie Zabiegi",
+    "countries": "Kraje",
+    "allCountries": "Wszystkie Kraje",
+    "cities": "Miasta",
+    "allCities": "Wszystkie Miasta",
+    "languages": "Języki",
+    "clearFilters": "Wyczyść Filtry",
+    "applyFilters": "Zastosuj Filtry",
+    "filterClinics": "Filtruj Kliniki"
+  }
+}

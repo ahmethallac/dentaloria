@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { Filter, Circle, CheckCircle2 } from "lucide-react";
 import { LANGUAGES } from "@/lib/clinicMeta";
 
@@ -35,6 +36,7 @@ export const FilterContent = ({
   onApply,
   showHeader = true,
 }: FilterContentProps) => {
+  const { t } = useTranslation("clinicListing");
   const activeFiltersCount = [
     selectedTreatment !== "all",
     selectedCountry !== "all",
@@ -57,12 +59,12 @@ export const FilterContent = ({
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
-              Filters
+              {t("filters.title")}
             </h3>
           </div>
           {activeFiltersCount > 0 && (
             <span className="text-xs bg-primary text-white px-2 py-1 rounded-full">
-              {activeFiltersCount} active
+              {activeFiltersCount} {t("filters.active")}
             </span>
           )}
         </div>
@@ -70,7 +72,7 @@ export const FilterContent = ({
 
       {/* Treatments Filter */}
       <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">Treatments</h4>
+        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.treatments")}</h4>
         <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
           <div
             onClick={() => setSelectedTreatment("all")}
@@ -84,7 +86,7 @@ export const FilterContent = ({
               )}
             </div>
             <span className={`text-sm ${selectedTreatment === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-              All Treatments
+              {t("filters.allTreatments")}
             </span>
           </div>
           {treatments.map((treatment) => (
@@ -110,7 +112,7 @@ export const FilterContent = ({
 
       {/* Countries Filter */}
       <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">Countries</h4>
+        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.countries")}</h4>
         <div className="space-y-2 max-h-[150px] overflow-y-auto pr-2">
           <div
             onClick={() => {
@@ -127,7 +129,7 @@ export const FilterContent = ({
               )}
             </div>
             <span className={`text-sm ${selectedCountry === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-              All Countries
+              {t("filters.allCountries")}
             </span>
           </div>
           {countries.map((country) => (
@@ -157,7 +159,7 @@ export const FilterContent = ({
       {/* Cities Filter */}
       {selectedCountry !== "all" && cities.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold mb-4 text-foreground/80">Cities</h4>
+          <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.cities")}</h4>
           <div className="space-y-2 max-h-[150px] overflow-y-auto pr-2">
             <div
               onClick={() => setSelectedCity("all")}
@@ -171,7 +173,7 @@ export const FilterContent = ({
                 )}
               </div>
               <span className={`text-sm ${selectedCity === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                All Cities
+                {t("filters.allCities")}
               </span>
             </div>
             {cities.map((city) => (
@@ -198,7 +200,7 @@ export const FilterContent = ({
 
       {/* Languages Filter */}
       <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">Languages</h4>
+        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.languages")}</h4>
         <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
           {LANGUAGES.map((lang) => {
             const active = selectedLanguages.includes(lang.code);
@@ -232,14 +234,14 @@ export const FilterContent = ({
           variant="outline"
           className="w-full bg-white/50 border-white/30 hover:bg-white/70 rounded-xl"
         >
-          Clear Filters
+          {t("filters.clearFilters")}
         </Button>
         {onApply && (
           <Button
             onClick={onApply}
             className="w-full bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl"
           >
-            Apply Filters
+            {t("filters.applyFilters")}
           </Button>
         )}
       </div>

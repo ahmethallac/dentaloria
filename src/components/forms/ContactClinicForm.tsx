@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -16,20 +17,21 @@ import {
 } from "@/lib/patientInfo";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 
-const schema = z.object({
-  name: z.string().min(2, "Please enter your full name."),
-  phone: z
-    .string()
-    .min(1, "Please enter your phone number.")
-    .refine((v) => isPossiblePhoneNumber(v), {
-      message: "Please enter a valid phone number.",
-    }),
-  email: z.string().email("Please enter a valid email."),
-  treatment: z.string().optional().or(z.literal("")),
-  message: z.string().optional().or(z.literal("")),
-});
+const buildSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.string().min(2, t("contactForm.nameTooShort")),
+    phone: z
+      .string()
+      .min(1, t("contactForm.phoneRequired"))
+      .refine((v) => isPossiblePhoneNumber(v), {
+        message: t("contactForm.invalidPhone"),
+      }),
+    email: z.string().email(t("contactForm.invalidEmail")),
+    treatment: z.string().optional().or(z.literal("")),
+    message: z.string().optional().or(z.literal("")),
+  });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 export interface ContactClinicSubmittedValues {
   clinicId: string;
@@ -68,10 +70,12 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
   clinicId,
   initialTreatment = "",
   onSuccess,
-  submitLabel = "Send Request",
+  submitLabel,
 }) => {
+  const { t } = useTranslation("common");
   const { toast } = useToast();
   const [defaultCountry, setDefaultCountry] = useState<string | undefined>(undefined);
+  const resolvedSubmitLabel = submitLabel ?? t("contactForm.sendRequest");
 
   const {
     register,
@@ -81,7 +85,7 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
     setValue,
     formState: { isSubmitting, errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(buildSchema(t)),
     defaultValues: {
       name: "",
       phone: "",
@@ -107,7 +111,7 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
 
   const onSubmit = async (values: FormValues) => {
     if (!clinicId || !isUuid(clinicId)) {
-      toast({ title: "Error", description: "Invalid clinic id.", variant: "destructive" });
+      toast({ title: "Error", description: t("contactForm.invalidClinicIdDesc"), variant: "destructive" });
       return;
     }
 
@@ -124,7 +128,7 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       // Validate email format more strictly
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(sanitizedValues.email)) {
-        toast({ title: "Error", description: "Please enter a valid email address.", variant: "destructive" });
+        toast({ title: "Error", description: t("contactForm.invalidEmailToastDesc"), variant: "destructive" });
         return;
       }
 
@@ -138,8 +142,8 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       const messageToCheck = `${sanitizedValues.name} ${sanitizedValues.message} ${sanitizedValues.treatment}`;
       if (suspiciousPatterns.some((pattern) => pattern.test(messageToCheck))) {
         toast({
-          title: "Message blocked",
-          description: "Your message contains content that is not allowed. Please revise and try again.",
+          title: t("contactForm.blockedTitle"),
+          description: t("contactForm.blockedDesc"),
           variant: "destructive",
         });
         return;
@@ -165,7 +169,7 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       };
       savePatientContactInfo(patientInfo);
 
-      toast({ title: "Inquiry received", description: "The clinic will contact you soon.", variant: "default" });
+      toast({ title: t("contactForm.successTitle"), description: t("contactForm.successDesc"), variant: "default" });
       const submitted: ContactClinicSubmittedValues = {
         clinicId,
         name: sanitizedValues.name,
@@ -189,27 +193,27 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
       // Handle rate limiting errors
       if (err?.message?.includes("rate limit") || err?.code === "RATE_LIMIT_EXCEEDED") {
         toast({
-          title: "Too many requests",
-          description: "Please wait before submitting another request.",
+          title: t("contactForm.rateLimitTitle"),
+          description: t("contactForm.rateLimitDesc"),
           variant: "destructive",
         });
         return;
       }
 
-      const description = err?.details || err?.message || "Submission failed. Please try again.";
+      const description = err?.details || err?.message || t("contactForm.genericErrorDesc");
       toast({ title: "Error", description, variant: "destructive" });
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <Input placeholder="Full Name *" autoComplete="name" {...register("name")} required />
+      <Input placeholder={t("contactForm.fullName")} autoComplete="name" {...register("name")} required />
       <Controller
         name="phone"
         control={control}
         render={({ field }) => (
           <PhoneInput
-            placeholder="Phone *"
+            placeholder={t("contactForm.phone")}
             value={field.value}
             onChange={field.onChange}
             defaultCountry={defaultCountry}
@@ -219,12 +223,12 @@ export const ContactClinicForm: React.FC<ContactClinicFormProps> = ({
         )}
       />
       {errors.phone && <p className="text-xs text-destructive -mt-2">{errors.phone.message}</p>}
-      <Input placeholder="Email *" type="email" autoComplete="email" {...register("email")} required />
-      <Input placeholder="Treatment (optional)" {...register("treatment")} />
-      <Textarea placeholder="Your message (optional)" className="min-h-[80px]" {...register("message")} />
+      <Input placeholder={t("contactForm.email")} type="email" autoComplete="email" {...register("email")} required />
+      <Input placeholder={t("contactForm.treatment")} {...register("treatment")} />
+      <Textarea placeholder={t("contactForm.message")} className="min-h-[80px]" {...register("message")} />
       <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-primary group overflow-hidden">
         <span className="inline-flex">
-          {(isSubmitting ? "Sending..." : submitLabel).split("").map((letter, index) => (
+          {(isSubmitting ? t("contactForm.sending") : resolvedSubmitLabel).split("").map((letter, index) => (
             <span
               key={index}
               className="inline-block opacity-100 transition-all duration-300 group-hover:animate-[letter-fade-in_0.5s_ease-out_forwards]"

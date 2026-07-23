@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Dental Clinics | Dentaloria",
+    "description": "Browse and compare dental clinics worldwide. Find the perfect clinic for your treatment with verified reviews and transparent pricing."
+  },
+  "tryAgain": "Try Again",
+  "hero": {
+    "title": "World's Best Medical Clinics",
+    "subtitle": "Find your perfect healthcare solution with expert doctors, modern technology and reliable service"
+  },
+  "loading": "Loading...",
+  "clinicsFound": "{{count}} Clinics Found",
+  "discoverSubtitle": "Discover the best medical clinics worldwide",
+  "sort": {
+    "recommended": "Recommended",
+    "highestRated": "Highest Rated",
+    "priceLowToHigh": "Price: Low to High",
+    "priceHighToLow": "Price: High to Low"
+  },
+  "featured": "Featured",
+  "verified": "Verified",
+  "quickApply": "Quick Apply",
+  "viewClinic": "View Clinic",
+  "startingFrom": "Starting from",
+  "contactForPricing": "Contact for pricing",
+  "noResults": {
+    "title": "No Clinics Found",
+    "description": "No clinics match your selected criteria. Try changing your filters.",
+    "clearFilters": "Clear Filters"
+  },
+  "applyDialog": {
+    "titlePrefix": "Apply to"
+  },
+  "filters": {
+    "title": "Filters",
+    "active": "active",
+    "treatments": "Treatments",
+    "allTreatments": "All Treatments",
+    "countries": "Countries",
+    "allCountries": "All Countries",
+    "cities": "Cities",
+    "allCities": "All Cities",
+    "languages": "Languages",
+    "clearFilters": "Clear Filters",
+    "applyFilters": "Apply Filters",
+    "filterClinics": "Filter Clinics"
+  }
+}

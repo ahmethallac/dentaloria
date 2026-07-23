@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Cliniques Dentaires | Dentaloria",
+    "description": "Parcourez et comparez les cliniques dentaires du monde entier. Trouvez la clinique idéale pour votre traitement grâce à des avis vérifiés et des prix transparents."
+  },
+  "tryAgain": "Réessayer",
+  "hero": {
+    "title": "Les Meilleures Cliniques Médicales au Monde",
+    "subtitle": "Trouvez la solution de santé idéale avec des médecins experts, une technologie moderne et un service fiable"
+  },
+  "loading": "Chargement...",
+  "clinicsFound": "{{count}} Cliniques Trouvées",
+  "discoverSubtitle": "Découvrez les meilleures cliniques médicales au monde",
+  "sort": {
+    "recommended": "Recommandées",
+    "highestRated": "Les Mieux Notées",
+    "priceLowToHigh": "Prix : Croissant",
+    "priceHighToLow": "Prix : Décroissant"
+  },
+  "featured": "En Vedette",
+  "verified": "Vérifiée",
+  "quickApply": "Candidature Rapide",
+  "viewClinic": "Voir la Clinique",
+  "startingFrom": "À partir de",
+  "contactForPricing": "Contacter pour le prix",
+  "noResults": {
+    "title": "Aucune Clinique Trouvée",
+    "description": "Aucune clinique ne correspond aux critères sélectionnés. Essayez de modifier vos filtres.",
+    "clearFilters": "Effacer les Filtres"
+  },
+  "applyDialog": {
+    "titlePrefix": "Candidature pour"
+  },
+  "filters": {
+    "title": "Filtres",
+    "active": "actifs",
+    "treatments": "Traitements",
+    "allTreatments": "Tous les Traitements",
+    "countries": "Pays",
+    "allCountries": "Tous les Pays",
+    "cities": "Villes",
+    "allCities": "Toutes les Villes",
+    "languages": "Langues",
+    "clearFilters": "Effacer les Filtres",
+    "applyFilters": "Appliquer les Filtres",
+    "filterClinics": "Filtrer les Cliniques"
+  }
+}

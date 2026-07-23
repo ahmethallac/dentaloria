@@ -33,5 +33,28 @@
   },
   "common": {
     "search": "Suchen"
+  },
+  "contactForm": {
+    "fullName": "Vollständiger Name *",
+    "phone": "Telefon *",
+    "email": "E-Mail *",
+    "treatment": "Behandlung (optional)",
+    "message": "Ihre Nachricht (optional)",
+    "sending": "Wird gesendet...",
+    "sendRequest": "Anfrage Senden",
+    "sendApplication": "Bewerbung Senden",
+    "invalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein.",
+    "nameTooShort": "Bitte geben Sie Ihren vollständigen Namen ein.",
+    "phoneRequired": "Bitte geben Sie Ihre Telefonnummer ein.",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "invalidClinicIdDesc": "Ungültige Klinik-ID.",
+    "invalidEmailToastDesc": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "blockedTitle": "Nachricht blockiert",
+    "blockedDesc": "Ihre Nachricht enthält nicht zulässige Inhalte. Bitte überarbeiten Sie sie und versuchen Sie es erneut.",
+    "successTitle": "Anfrage erhalten",
+    "successDesc": "Die Klinik wird sich in Kürze bei Ihnen melden.",
+    "rateLimitTitle": "Zu viele Anfragen",
+    "rateLimitDesc": "Bitte warten Sie, bevor Sie eine weitere Anfrage senden.",
+    "genericErrorDesc": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut."
   }
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -39,6 +40,7 @@ export const MobileFilterDrawer = ({
   setSelectedLanguages,
   clearFilters,
 }: MobileFilterDrawerProps) => {
+  const { t } = useTranslation("clinicListing");
   const [open, setOpen] = useState(false);
 
   const activeFiltersCount = [
@@ -56,7 +58,7 @@ export const MobileFilterDrawer = ({
           className="flex items-center gap-2 bg-white/80 backdrop-blur-glass border-white/30 hover:bg-white/90 rounded-xl shadow-card px-4 py-2.5"
         >
           <SlidersHorizontal className="h-4 w-4 text-primary" />
-          <span className="font-medium">Filters</span>
+          <span className="font-medium">{t("filters.title")}</span>
           {activeFiltersCount > 0 && (
             <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full ml-1">
               {activeFiltersCount}
@@ -69,7 +71,7 @@ export const MobileFilterDrawer = ({
           <SheetTitle className="flex items-center gap-2 text-lg">
             <Filter className="h-5 w-5 text-primary" />
             <span className="bg-gradient-primary bg-clip-text text-transparent font-semibold">
-              Filter Clinics
+              {t("filters.filterClinics")}
             </span>
           </SheetTitle>
         </SheetHeader>

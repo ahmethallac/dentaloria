@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useHeadMeta } from "@/hooks/useHeadMeta";
+import { withLocalePrefix } from "@/lib/localePath";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -169,6 +171,9 @@ const ImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
 };
 
 export default function ClinicListing() {
+  const { t } = useTranslation("clinicListing");
+  const { t: tCommon } = useTranslation("common");
+  const { lang } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   
   // State for filter data
@@ -320,10 +325,10 @@ export default function ClinicListing() {
   };
 
   useHeadMeta({
-    title: "Dental Clinics | Dentaloria",
-    description: "Browse and compare dental clinics worldwide. Find the perfect clinic for your treatment with verified reviews and transparent pricing.",
-    ogTitle: "Dental Clinics | Dentaloria",
-    ogDescription: "Browse and compare dental clinics worldwide. Find the perfect clinic for your treatment with verified reviews and transparent pricing."
+    title: t("meta.title"),
+    description: t("meta.description"),
+    ogTitle: t("meta.title"),
+    ogDescription: t("meta.description"),
   });
 
   const getClinicImages = (clinic: any): string[] => {
@@ -355,7 +360,7 @@ export default function ClinicListing() {
         return `€${minPrice}`;
       }
     }
-    return "Contact for pricing";
+    return t("contactForPricing");
   };
 
   const getClinicLocation = (clinic: any): string => {
@@ -373,7 +378,7 @@ export default function ClinicListing() {
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
             <p className="text-red-500 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+            <Button onClick={() => window.location.reload()}>{t("tryAgain")}</Button>
           </div>
         </div>
         <Footer />
@@ -390,10 +395,10 @@ export default function ClinicListing() {
         <div className="absolute inset-0 bg-white/30"></div>
         <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
-            World's Best Medical Clinics
+            {t("hero.title")}
           </h1>
           <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80 mb-8">
-            Find your perfect healthcare solution with expert doctors, modern technology and reliable service
+            {t("hero.subtitle")}
           </p>
 
           <AISearchBar className="max-w-2xl mx-auto animate-scale-in" onResults={handleAISearchResults} />
@@ -449,20 +454,20 @@ export default function ClinicListing() {
                   {showSkeleton ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Loading...
+                      {t("loading")}
                     </div>
                   ) : (
                     <span className="flex items-center gap-2">
-                      {`${totalClinics} Clinics Found`}
+                      {t("clinicsFound", { count: totalClinics })}
                       {clinicsFetching && !showSkeleton && (
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                       )}
                     </span>
                   )}
                 </h2>
-                <p className="text-foreground/70">Discover the best medical clinics worldwide</p>
+                <p className="text-foreground/70">{t("discoverSubtitle")}</p>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4 text-foreground/70" />
                 <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
@@ -470,10 +475,10 @@ export default function ClinicListing() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
-                    <SelectItem value="balance">Recommended</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                    <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                    <SelectItem value="balance">{t("sort.recommended")}</SelectItem>
+                    <SelectItem value="rating">{t("sort.highestRated")}</SelectItem>
+                    <SelectItem value="price_asc">{t("sort.priceLowToHigh")}</SelectItem>
+                    <SelectItem value="price_desc">{t("sort.priceHighToLow")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -505,7 +510,7 @@ export default function ClinicListing() {
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
                             <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg z-10">
-                              Featured
+                              {t("featured")}
                             </Badge>
                           )}
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2.5 px-3 z-10">
@@ -527,7 +532,7 @@ export default function ClinicListing() {
                                 {clinic.is_verified && (
                                   <span className="inline-flex items-center gap-1 text-xs text-foreground/70">
                                     <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
-                                    Verified
+                                    {t("verified")}
                                   </span>
                                 )}
                               </div>
@@ -605,7 +610,7 @@ export default function ClinicListing() {
                               {/* Price badge — pill above buttons */}
                               <div className="self-center inline-flex flex-col items-center px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
                                 <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
-                                  Starting from
+                                  {t("startingFrom")}
                                 </span>
                                 <span className="text-xl font-extrabold text-primary leading-tight mt-0.5">
                                   {getClinicPrice(clinic)}
@@ -615,16 +620,16 @@ export default function ClinicListing() {
                                 onClick={() => setApplyOpenForClinicId(clinic.id)}
                                 className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
                               >
-                                Quick Apply
+                                {t("quickApply")}
                               </Button>
                               <Button
                                 asChild
                                 className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
                               >
                                 <Link
-                                  to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                                  to={withLocalePrefix(`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
                                 >
-                                  View Clinic
+                                  {t("viewClinic")}
                                 </Link>
                               </Button>
                             </div>
@@ -640,14 +645,14 @@ export default function ClinicListing() {
                           <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
                             {clinic.is_featured ? (
                               <Badge className="bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg">
-                                Featured
+                                {t("featured")}
                               </Badge>
                             ) : <div />}
-                            
+
                             {clinic.is_verified && (
                               <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
                                 <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
-                                <span className="text-xs font-medium text-foreground/80">Verified</span>
+                                <span className="text-xs font-medium text-foreground/80">{t("verified")}</span>
                               </div>
                             )}
                           </div>
@@ -737,7 +742,7 @@ export default function ClinicListing() {
                           <div className="flex flex-col items-stretch gap-2.5">
                             <div className="self-center inline-flex items-baseline gap-2 px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
                               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                                Starting from
+                                {t("startingFrom")}
                               </span>
                               <span className="text-xl font-extrabold text-primary leading-tight">
                                 {getClinicPrice(clinic)}
@@ -747,16 +752,16 @@ export default function ClinicListing() {
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
                               className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
                             >
-                              Quick Apply
+                              {t("quickApply")}
                             </Button>
                             <Button
                               asChild
                               className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
                             >
                               <Link
-                                to={`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`}
+                                to={withLocalePrefix(`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
                               >
-                                View Clinic
+                                {t("viewClinic")}
                               </Link>
                             </Button>
                           </div>
@@ -770,13 +775,13 @@ export default function ClinicListing() {
                       >
                         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Apply to {clinic.name}</DialogTitle>
+                            <DialogTitle>{t("applyDialog.titlePrefix")} {clinic.name}</DialogTitle>
                           </DialogHeader>
                           <ContactClinicForm
                             clinicId={clinic.id}
                             initialTreatment={selectedTreatmentName || ""}
                             onSuccess={handleApplySuccess}
-                            submitLabel="Send Application"
+                            submitLabel={tCommon("contactForm.sendApplication")}
                           />
                         </DialogContent>
                       </Dialog>
@@ -791,15 +796,15 @@ export default function ClinicListing() {
               <div className="text-center py-16">
                 <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-8 shadow-card border border-white/20 max-w-md mx-auto">
                   <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-xl font-semibold text-foreground mb-4">No Clinics Found</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-4">{t("noResults.title")}</h3>
                   <p className="text-foreground/70 mb-6">
-                    No clinics match your selected criteria. Try changing your filters.
+                    {t("noResults.description")}
                   </p>
-                  <Button 
+                  <Button
                     onClick={clearFilters}
                     className="bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl px-6 py-2"
                   >
-                    Clear Filters
+                    {t("noResults.clearFilters")}
                   </Button>
                 </div>
               </div>

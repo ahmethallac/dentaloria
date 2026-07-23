@@ -33,5 +33,28 @@
   },
   "common": {
     "search": "Search"
+  },
+  "contactForm": {
+    "fullName": "Full Name *",
+    "phone": "Phone *",
+    "email": "Email *",
+    "treatment": "Treatment (optional)",
+    "message": "Your message (optional)",
+    "sending": "Sending...",
+    "sendRequest": "Send Request",
+    "sendApplication": "Send Application",
+    "invalidPhone": "Please enter a valid phone number.",
+    "nameTooShort": "Please enter your full name.",
+    "phoneRequired": "Please enter your phone number.",
+    "invalidEmail": "Please enter a valid email.",
+    "invalidClinicIdDesc": "Invalid clinic id.",
+    "invalidEmailToastDesc": "Please enter a valid email address.",
+    "blockedTitle": "Message blocked",
+    "blockedDesc": "Your message contains content that is not allowed. Please revise and try again.",
+    "successTitle": "Inquiry received",
+    "successDesc": "The clinic will contact you soon.",
+    "rateLimitTitle": "Too many requests",
+    "rateLimitDesc": "Please wait before submitting another request.",
+    "genericErrorDesc": "Submission failed. Please try again."
   }
 }

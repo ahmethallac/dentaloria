@@ -33,5 +33,28 @@
   },
   "common": {
     "search": "Szukaj"
+  },
+  "contactForm": {
+    "fullName": "Imię i Nazwisko *",
+    "phone": "Telefon *",
+    "email": "E-mail *",
+    "treatment": "Zabieg (opcjonalnie)",
+    "message": "Twoja wiadomość (opcjonalnie)",
+    "sending": "Wysyłanie...",
+    "sendRequest": "Wyślij Zapytanie",
+    "sendApplication": "Wyślij Zgłoszenie",
+    "invalidPhone": "Podaj prawidłowy numer telefonu.",
+    "nameTooShort": "Podaj swoje imię i nazwisko.",
+    "phoneRequired": "Podaj swój numer telefonu.",
+    "invalidEmail": "Podaj prawidłowy adres e-mail.",
+    "invalidClinicIdDesc": "Nieprawidłowy identyfikator kliniki.",
+    "invalidEmailToastDesc": "Podaj prawidłowy adres e-mail.",
+    "blockedTitle": "Wiadomość zablokowana",
+    "blockedDesc": "Twoja wiadomość zawiera niedozwoloną treść. Popraw ją i spróbuj ponownie.",
+    "successTitle": "Zapytanie otrzymane",
+    "successDesc": "Klinika wkrótce się z Tobą skontaktuje.",
+    "rateLimitTitle": "Zbyt wiele żądań",
+    "rateLimitDesc": "Poczekaj przed wysłaniem kolejnego zapytania.",
+    "genericErrorDesc": "Wysyłanie nie powiodło się. Spróbuj ponownie."
   }
 }

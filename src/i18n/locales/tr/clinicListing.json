@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Diş Klinikleri | Dentaloria",
+    "description": "Dünya çapındaki diş kliniklerine göz atın ve karşılaştırın. Onaylı yorumlar ve şeffaf fiyatlandırmayla tedaviniz için en uygun kliniği bulun."
+  },
+  "tryAgain": "Tekrar Dene",
+  "hero": {
+    "title": "Dünyanın En İyi Sağlık Klinikleri",
+    "subtitle": "Uzman doktorlar, modern teknoloji ve güvenilir hizmetle size en uygun sağlık çözümünü bulun"
+  },
+  "loading": "Yükleniyor...",
+  "clinicsFound": "{{count}} Klinik Bulundu",
+  "discoverSubtitle": "Dünyanın en iyi sağlık kliniklerini keşfedin",
+  "sort": {
+    "recommended": "Önerilen",
+    "highestRated": "En Yüksek Puanlı",
+    "priceLowToHigh": "Fiyat: Düşükten Yükseğe",
+    "priceHighToLow": "Fiyat: Yüksekten Düşüğe"
+  },
+  "featured": "Öne Çıkan",
+  "verified": "Onaylı",
+  "quickApply": "Hızlı Başvuru",
+  "viewClinic": "Kliniği Görüntüle",
+  "startingFrom": "Başlangıç fiyatı",
+  "contactForPricing": "Fiyat için iletişime geçin",
+  "noResults": {
+    "title": "Klinik Bulunamadı",
+    "description": "Seçtiğiniz kriterlere uyan klinik yok. Filtrelerinizi değiştirmeyi deneyin.",
+    "clearFilters": "Filtreleri Temizle"
+  },
+  "applyDialog": {
+    "titlePrefix": "Başvuru:"
+  },
+  "filters": {
+    "title": "Filtreler",
+    "active": "aktif",
+    "treatments": "Tedaviler",
+    "allTreatments": "Tüm Tedaviler",
+    "countries": "Ülkeler",
+    "allCountries": "Tüm Ülkeler",
+    "cities": "Şehirler",
+    "allCities": "Tüm Şehirler",
+    "languages": "Diller",
+    "clearFilters": "Filtreleri Temizle",
+    "applyFilters": "Filtreleri Uygula",
+    "filterClinics": "Klinikleri Filtrele"
+  }
+}

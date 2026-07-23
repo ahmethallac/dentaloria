@@ -33,5 +33,28 @@
   },
   "common": {
     "search": "Caută"
+  },
+  "contactForm": {
+    "fullName": "Nume Complet *",
+    "phone": "Telefon *",
+    "email": "E-mail *",
+    "treatment": "Tratament (opțional)",
+    "message": "Mesajul tău (opțional)",
+    "sending": "Se trimite...",
+    "sendRequest": "Trimite Cererea",
+    "sendApplication": "Trimite Aplicația",
+    "invalidPhone": "Te rugăm să introduci un număr de telefon valid.",
+    "nameTooShort": "Te rugăm să introduci numele complet.",
+    "phoneRequired": "Te rugăm să introduci numărul de telefon.",
+    "invalidEmail": "Te rugăm să introduci o adresă de e-mail validă.",
+    "invalidClinicIdDesc": "ID de clinică invalid.",
+    "invalidEmailToastDesc": "Te rugăm să introduci o adresă de e-mail validă.",
+    "blockedTitle": "Mesaj blocat",
+    "blockedDesc": "Mesajul tău conține conținut care nu este permis. Te rugăm să îl revizuiești și să încerci din nou.",
+    "successTitle": "Cerere primită",
+    "successDesc": "Clinica te va contacta în curând.",
+    "rateLimitTitle": "Prea multe cereri",
+    "rateLimitDesc": "Te rugăm să aștepți înainte de a trimite o altă cerere.",
+    "genericErrorDesc": "Trimiterea a eșuat. Te rugăm să încerci din nou."
   }
 }
