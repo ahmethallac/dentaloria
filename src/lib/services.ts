@@ -66,6 +66,8 @@ interface Doctor {
   image_url?: string
   experience_years?: number
   created_at: string
+  title_translations?: Record<string, string>
+  specialization_translations?: Record<string, string>
 }
 
 export interface GoogleReview {
@@ -81,6 +83,8 @@ export interface Clinic {
   id: string
   name: string
   description?: string
+  description_translations?: Record<string, string>
+  description_translated_at?: string
   address: string
   city_id: string
   phone?: string

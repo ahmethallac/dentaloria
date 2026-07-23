@@ -22,6 +22,7 @@ import {
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
+import { localizedField } from "@/lib/i18nContent";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUserRole, type AppRole } from "@/lib/roleService";
@@ -96,6 +97,7 @@ const mapClinic = (db: any) => {
     images: images.length ? images : ["/placeholder.svg"],
     specialties,
     description: db.description || "",
+    descriptionTranslations: db.description_translations || {},
     experience: db.experience_years || 0,
     patientCount: db.patient_count || 0,
     isVerified: !!db.is_verified,
@@ -268,7 +270,7 @@ const ExpandableDescription = ({ html }: { html: string }) => {
 
 /* ───────── component ───────── */
 const ClinicDetail = () => {
-  const { id } = useParams();
+  const { id, lang } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { user, userRole, loading: authLoading } = useAuth();
@@ -742,7 +744,11 @@ const ClinicDetail = () => {
                 {clinic.description && (
                   <div>
                     <h2 className="text-lg font-semibold mb-3">About the Clinic</h2>
-                    <ExpandableDescription html={sanitizeRichText(clinic.description)} />
+                    <ExpandableDescription
+                      html={sanitizeRichText(
+                        localizedField(clinic.description, clinic.descriptionTranslations, lang || "en")
+                      )}
+                    />
                   </div>
                 )}
 

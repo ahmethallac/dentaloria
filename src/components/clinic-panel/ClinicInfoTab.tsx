@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { type Clinic, getCountries, getCities, updateClinic, type Country, type City } from "@/lib/services";
 import ClinicImagesManager from "./ClinicImagesManager";
 import ClinicTreatmentsManager, { type ClinicTreatmentsHandle } from "./ClinicTreatmentsManager";
@@ -134,6 +135,31 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
       }
       toast({ title: "Success", description: "Clinic information updated." });
       onUpdated?.(updated);
+
+      // Translate the description in the background — never blocks the save
+      // above. Only re-translates when the text actually changed, to avoid
+      // burning OpenAI calls on saves that only touch other fields.
+      if (form.description && form.description !== clinic.description) {
+        supabase.functions
+          .invoke("translate-content", { body: { text: form.description, isHtml: true } })
+          .then(({ data, error }) => {
+            if (error || !data?.translations) return;
+            const sanitized: Record<string, string> = {};
+            for (const [locale, html] of Object.entries(data.translations as Record<string, string>)) {
+              sanitized[locale] = sanitizeRichText(html);
+            }
+            return updateClinic(clinic.id, {
+              // @ts-ignore
+              description_translations: sanitized,
+              // @ts-ignore
+              description_translated_at: new Date().toISOString(),
+            } as any);
+          })
+          .then((patched) => {
+            if (patched) onUpdated?.(patched);
+          })
+          .catch((e) => console.error("Background description translation failed:", e));
+      }
     } catch (e: any) {
       console.error("Could not update clinic:", e);
       toast({ title: "Error", description: "An error occurred while saving the clinic information.", variant: "destructive" });
