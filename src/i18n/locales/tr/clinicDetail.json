@@ -87,5 +87,9 @@
   "loadError": {
     "title": "Hata",
     "description": "Klinik verileri yüklenemedi."
+  },
+  "googleReviews": {
+    "title": "Hastalar Google'da ne diyor",
+    "subtitle": "Bu kliniğin Google İşletme profilinden otomatik olarak çekilen gerçek yorumlar."
   }
 }

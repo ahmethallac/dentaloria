@@ -87,5 +87,9 @@
   "loadError": {
     "title": "Erreur",
     "description": "Échec du chargement des données de la clinique."
+  },
+  "googleReviews": {
+    "title": "Ce que disent les patients sur Google",
+    "subtitle": "Avis authentiques récupérés automatiquement depuis le profil Google Business de cette clinique."
   }
 }

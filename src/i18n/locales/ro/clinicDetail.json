@@ -87,5 +87,9 @@
   "loadError": {
     "title": "Eroare",
     "description": "Nu s-au putut încărca datele clinicii."
+  },
+  "googleReviews": {
+    "title": "Ce spun pacienții pe Google",
+    "subtitle": "Recenzii reale preluate automat din profilul Google Business al acestei clinici."
   }
 }

@@ -1,7 +1,9 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoogleReview } from "@/lib/services";
+import { localizedField } from "@/lib/i18nContent";
 
 const shuffle = <T,>(arr: T[]): T[] => {
   const copy = [...arr];
@@ -23,9 +25,11 @@ const getInitials = (name: string) =>
 
 interface GoogleReviewsCarouselProps {
   reviews: GoogleReview[];
+  lang?: string;
 }
 
-export default function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
+export default function GoogleReviewsCarousel({ reviews, lang }: GoogleReviewsCarouselProps) {
+  const { t } = useTranslation("clinicDetail");
   // Re-shuffled on every mount (page load), so the same clinic shows its
   // handful of reviews in a different order each visit.
   const shuffled = useMemo(() => shuffle(reviews), [reviews]);
@@ -34,9 +38,9 @@ export default function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarousel
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-1">What patients say on Google</h2>
+      <h2 className="text-lg font-semibold mb-1">{t("googleReviews.title")}</h2>
       <p className="text-xs text-muted-foreground mb-3">
-        Real reviews pulled automatically from this clinic's Google Business profile.
+        {t("googleReviews.subtitle")}
       </p>
       <div className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 w-12 md:w-24 bg-gradient-to-r from-background to-transparent z-10" />
@@ -74,7 +78,9 @@ export default function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarousel
                     />
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground line-clamp-4">{r.text}</p>
+                <p className="text-sm text-muted-foreground line-clamp-4">
+                  {localizedField(r.text, r.translations, lang || "en")}
+                </p>
               </CardContent>
             </Card>
           ))}

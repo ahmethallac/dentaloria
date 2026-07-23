@@ -4,6 +4,39 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { updateClinic, type Clinic, type GoogleReview } from "@/lib/services";
+
+// Translates each review's text into all 6 locales via a background,
+// non-blocking OpenAI call per review (never during a visitor's page load —
+// only right after a clinic admin links/refreshes their Google rating), then
+// patches google_reviews with the translations attached. Silently no-ops on
+// failure so a broken translation never disrupts the rating save itself.
+async function translateReviewsInBackground(
+  clinicId: string,
+  reviews: GoogleReview[],
+  onUpdated?: (updated: Clinic) => void
+) {
+  if (!reviews.length) return;
+  try {
+    const translated = await Promise.all(
+      reviews.map(async (review) => {
+        if (!review.text?.trim()) return review;
+        try {
+          const { data, error } = await supabase.functions.invoke("translate-content", {
+            body: { text: review.text, isHtml: false },
+          });
+          if (error || !data?.translations) return review;
+          return { ...review, translations: data.translations as Record<string, string> };
+        } catch {
+          return review;
+        }
+      })
+    );
+    const patched = await updateClinic(clinicId, { google_reviews: translated });
+    onUpdated?.(patched);
+  } catch (e) {
+    console.error("Background review translation failed:", e);
+  }
+}
 import { useToast } from "@/hooks/use-toast";
 
 const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_BROWSER_KEY as string;
@@ -122,6 +155,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
       onUpdated?.(updated);
       setPreview(null);
       setSearching(false);
+      void translateReviewsInBackground(clinic.id, preview.reviews, onUpdated);
     } catch (e) {
       console.error("Could not save Google rating:", e);
       toast({ title: t('googleBusiness.toasts.fetchErrorTitle'), description: t('googleBusiness.toasts.saveErrorDesc'), variant: "destructive" });
@@ -146,6 +180,7 @@ export default function GoogleBusinessLink({ clinic, onUpdated }: GoogleBusiness
       });
       toast({ title: t('googleBusiness.toasts.refreshedTitle'), description: t('googleBusiness.toasts.refreshedDesc') });
       onUpdated?.(updated);
+      void translateReviewsInBackground(clinic.id, data.reviews ?? [], onUpdated);
     } catch (e) {
       console.error("Could not refresh Google rating:", e);
       toast({ title: t('googleBusiness.toasts.fetchErrorTitle'), description: t('googleBusiness.toasts.refreshErrorDesc'), variant: "destructive" });

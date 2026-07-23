@@ -948,7 +948,7 @@ const ClinicDetail = () => {
 
             {/* ── Google Reviews ── */}
             {clinic.googleReviews && clinic.googleReviews.length > 0 && (
-              <GoogleReviewsCarousel reviews={clinic.googleReviews} />
+              <GoogleReviewsCarousel reviews={clinic.googleReviews} lang={lang} />
             )}
 
             {/* ── Doctors ── */}

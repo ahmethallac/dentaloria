@@ -77,6 +77,7 @@ export interface GoogleReview {
   relativeTimeDescription: string
   profilePhotoUrl?: string | null
   time?: number | null
+  translations?: Record<string, string>
 }
 
 export interface Clinic {

@@ -87,5 +87,9 @@
   "loadError": {
     "title": "Fehler",
     "description": "Klinikdaten konnten nicht geladen werden."
+  },
+  "googleReviews": {
+    "title": "Was Patienten auf Google sagen",
+    "subtitle": "Echte Bewertungen, automatisch aus dem Google-Unternehmensprofil dieser Klinik übernommen."
   }
 }
