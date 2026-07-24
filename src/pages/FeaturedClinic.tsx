@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { getFeaturedClinics } from "@/lib/services";
-import { withLocalePrefix } from "@/lib/localePath";
+import { withLocalePrefix, clinicPath } from "@/lib/localePath";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 
@@ -19,7 +19,7 @@ export default function FeaturedClinic() {
         const clinics = await getFeaturedClinics(1);
         if (!mounted) return;
         if (clinics && clinics.length > 0) {
-          navigate(withLocalePrefix(`/clinic/${clinics[0].id}`, lang), { replace: true });
+          navigate(withLocalePrefix(clinicPath(clinics[0]), lang), { replace: true });
         } else {
           navigate(withLocalePrefix('/clinic-listing', lang), { replace: true });
         }

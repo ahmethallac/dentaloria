@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useHeadMeta } from "@/hooks/useHeadMeta";
-import { withLocalePrefix } from "@/lib/localePath";
+import { withLocalePrefix, clinicPath } from "@/lib/localePath";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -627,7 +627,7 @@ export default function ClinicListing() {
                                 className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
                               >
                                 <Link
-                                  to={withLocalePrefix(`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
+                                  to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
                                 >
                                   {t("viewClinic")}
                                 </Link>
@@ -759,7 +759,7 @@ export default function ClinicListing() {
                               className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
                             >
                               <Link
-                                to={withLocalePrefix(`/clinic/${clinic.id}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
+                                to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
                               >
                                 {t("viewClinic")}
                               </Link>

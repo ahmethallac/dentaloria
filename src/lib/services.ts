@@ -13,6 +13,7 @@ export interface Country {
 export interface City {
   id: string
   name: string
+  slug: string
   country_id: string
   created_at: string
   countries?: Country
@@ -83,6 +84,7 @@ export interface GoogleReview {
 export interface Clinic {
   id: string
   name: string
+  slug: string
   description?: string
   description_translations?: Record<string, string>
   description_translated_at?: string
@@ -152,9 +154,21 @@ export const getCities = async (countryId?: string): Promise<City[]> => {
   }
   
   const { data, error } = await query
-  
+
   if (error) throw error
   return data || []
+}
+
+// Used to resolve pretty city URLs (/clinic/:citySlug) back to a city id.
+export const getCityBySlug = async (citySlug: string): Promise<City | null> => {
+  const { data, error } = await supabase
+    .from('cities')
+    .select(`*, countries (*)`)
+    .eq('slug', citySlug)
+    .maybeSingle()
+
+  if (error) throw error
+  return data
 }
 
 // Treatment Categories and Treatments
@@ -489,6 +503,25 @@ export const getClinicById = async (id: string): Promise<Clinic | null> => {
   }
   
   return enrichedClinic
+}
+
+// Resolves the canonical /clinic/:citySlug/:clinicSlug URL to a clinic, then
+// reuses getClinicById for the exact same enrichment (images/treatments/doctors/etc).
+export const getClinicBySlug = async (citySlug: string, clinicSlug: string): Promise<Clinic | null> => {
+  const city = await getCityBySlug(citySlug)
+  if (!city) return null
+
+  const { data: clinicRow, error } = await supabase
+    .from('clinics_public')
+    .select('id')
+    .eq('city_id', city.id)
+    .eq('slug', clinicSlug)
+    .maybeSingle()
+
+  if (error) throw error
+  if (!clinicRow) return null
+
+  return getClinicById(clinicRow.id)
 }
 
 export const getFeaturedClinics = async (limit: number = 6): Promise<Clinic[]> => {

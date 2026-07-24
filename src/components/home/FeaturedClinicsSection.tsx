@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { withLocalePrefix } from "@/lib/localePath";
+import { withLocalePrefix, clinicPath } from "@/lib/localePath";
 import {
   Carousel,
   CarouselContent,
@@ -125,7 +125,7 @@ export const ShowcaseCard = ({
           asChild
           className="mt-3 w-full h-10 rounded-xl font-semibold"
         >
-          <Link to={withLocalePrefix(`/clinic/${clinic.id}`, lang)}>{t("featured.viewClinic")}</Link>
+          <Link to={withLocalePrefix(clinicPath(clinic), lang)}>{t("featured.viewClinic")}</Link>
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Index from "@/pages/Index";
 import ClinicDetail from "@/pages/ClinicDetail";
+import ClinicTokenRoute from "@/pages/ClinicTokenRoute";
 import ClinicPanel from "@/pages/ClinicPanel";
 import ClinicListing from "@/pages/ClinicListing";
 import FeaturedClinic from "@/pages/FeaturedClinic";
@@ -32,7 +33,10 @@ export const ROUTE_DEFS: RouteDef[] = [
   { path: "/admin", element: <Admin /> },
   { path: "/admin/approve-clinic", element: <AdminApproveClinic /> },
   { path: "/clinic", element: <FeaturedClinic /> },
-  { path: "/clinic/:id", element: <ClinicDetail /> },
+  { path: "/clinic/:citySlug/:clinicSlug", element: <ClinicDetail /> },
+  // Single-segment /clinic/:token is ambiguous (old numeric-id links vs a
+  // pretty city slug) — ClinicTokenRoute decides which at render time.
+  { path: "/clinic/:token", element: <ClinicTokenRoute /> },
   { path: "/clinic/:id/panel", element: <ClinicPanel /> },
   { path: "/clinic/:id/panel/balance", element: <BalanceTopupPage /> },
   { path: "/clinic/:id/panel/purchase-leads", element: <PurchaseLeadsPage /> },

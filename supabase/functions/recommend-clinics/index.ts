@@ -48,7 +48,7 @@ serve(async (req) => {
     }) => {
       let q = supabase
         .from("clinics_public")
-        .select("id, name, rating, languages, city_id, balance_cents")
+        .select("id, name, slug, rating, languages, city_id, balance_cents")
         .limit(Math.max(opts.limit * 4, 12));
 
       if (opts.requireBalance) q = q.gt("balance_cents", 0);
@@ -125,7 +125,7 @@ serve(async (req) => {
         .select("clinic_id, image_url, is_primary")
         .in("clinic_id", ids),
       cityIds.length > 0
-        ? supabase.from("cities").select("id, name").in("id", cityIds)
+        ? supabase.from("cities").select("id, name, slug").in("id", cityIds)
         : Promise.resolve({ data: [] as any[] }),
     ]);
 
@@ -135,15 +135,17 @@ serve(async (req) => {
         imgByClinic.set(img.clinic_id, img.image_url);
       }
     }
-    const cityById = new Map<string, string>();
-    for (const c of cities || []) cityById.set(c.id, c.name);
+    const cityById = new Map<string, { name: string; slug: string }>();
+    for (const c of cities || []) cityById.set(c.id, { name: c.name, slug: c.slug });
 
     const result = picks.map((c) => ({
       id: c.id,
       name: c.name,
+      slug: c.slug,
       image_url: imgByClinic.get(c.id) || null,
       rating: c.rating ?? null,
-      city: c.city_id ? cityById.get(c.city_id) || null : null,
+      city: c.city_id ? cityById.get(c.city_id)?.name || null : null,
+      citySlug: c.city_id ? cityById.get(c.city_id)?.slug || null : null,
       languages: Array.isArray(c.languages) ? c.languages : [],
     }));
 

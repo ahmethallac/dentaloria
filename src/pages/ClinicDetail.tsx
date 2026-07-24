@@ -22,7 +22,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { getClinicById, getClinicByIdPrivate } from "@/lib/services";
+import { getClinicById, getClinicByIdPrivate, getClinicBySlug } from "@/lib/services";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { localizedField } from "@/lib/i18nContent";
 import { useAuth } from "@/contexts/AuthContext";
@@ -273,8 +273,11 @@ const ExpandableDescription = ({ html }: { html: string }) => {
 };
 
 /* ───────── component ───────── */
-const ClinicDetail = () => {
-  const { id, lang } = useParams();
+// idProp is passed by ClinicLegacyRedirect when rendering the old /clinic/:id
+// route (whose match only provides a "token" param, not "id" — see ClinicTokenRoute).
+const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
+  const { id: routeId, citySlug, clinicSlug, lang } = useParams();
+  const id = idProp ?? routeId;
   const { t } = useTranslation("clinicDetail");
   const { t: tCommon } = useTranslation("common");
   const [searchParams] = useSearchParams();
@@ -309,11 +312,15 @@ const ClinicDetail = () => {
     setMobileOpen(false);
   };
 
+  // Resolved DB clinic id — works whether we arrived via the legacy /clinic/:id
+  // route or the canonical /clinic/:citySlug/:clinicSlug route.
+  const clinicId: string | undefined = clinic?.id ?? id;
+
   // Stable reference so PostFormRecommendationsDialog's fetch effect only reruns
   // when a new submission actually happens, not on every unrelated re-render.
   const recoDialogValues = useMemo(
-    () => (recoValues ? { ...recoValues, clinicId: id! } : null),
-    [recoValues, id]
+    () => (recoValues ? { ...recoValues, clinicId: clinicId! } : null),
+    [recoValues, clinicId]
   );
 
   useEffect(() => {
@@ -377,8 +384,10 @@ const ClinicDetail = () => {
   const isPreview = previewRequested && previewAccess === 'granted';
 
   /* fetch clinic */
+  const hasSlugRoute = !!citySlug && !!clinicSlug;
+
   useEffect(() => {
-    if (!id) return;
+    if (!id && !hasSlugRoute) return;
 
     if (previewRequested && previewAccess !== 'granted') {
       if (previewAccess === 'denied') {
@@ -391,13 +400,17 @@ const ClinicDetail = () => {
     (async () => {
       try {
         setLoading(true);
-        if (previewRequested) {
+        if (previewRequested && id) {
           const data = await getClinicByIdPrivate(id);
           console.log('[ClinicDetail] mode=preview role=', resolvedPreviewRole, 'result=', data ? 'found' : 'null');
           setClinic(data ? mapClinic(data) : null);
-        } else {
+        } else if (hasSlugRoute) {
+          const data = await getClinicBySlug(citySlug!, clinicSlug!);
+          console.log('[ClinicDetail] mode=public(slug) result=', data ? 'found' : 'null');
+          setClinic(data ? mapClinic(data) : null);
+        } else if (id) {
           const data = await getClinicById(id);
-          console.log('[ClinicDetail] mode=public result=', data ? 'found' : 'null');
+          console.log('[ClinicDetail] mode=public(id) result=', data ? 'found' : 'null');
           setClinic(data ? mapClinic(data) : null);
         }
       } catch (e) {
@@ -407,7 +420,7 @@ const ClinicDetail = () => {
         setLoading(false);
       }
     })();
-  }, [id, previewRequested, previewAccess, resolvedPreviewRole, toast]);
+  }, [id, citySlug, clinicSlug, hasSlugRoute, previewRequested, previewAccess, resolvedPreviewRole, toast]);
 
   /* scroll‑spy */
   useEffect(() => {
@@ -1001,7 +1014,7 @@ const ClinicDetail = () => {
             <div className="scroll-mt-32 lg:hidden">
               <h2 className="text-xl font-bold mb-4">{t("contact.mobileTitle")}</h2>
               <div className="rounded-xl border border-border/50 p-6">
-                <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} onSuccess={handleFormSuccess} />
+                <ContactClinicForm clinicId={clinicId!} initialTreatment={initialTreatment} onSuccess={handleFormSuccess} />
               </div>
             </div>
           </div>
@@ -1036,7 +1049,7 @@ const ClinicDetail = () => {
 
                 <div className="border-t border-border/40 pt-4">
                   <ContactClinicForm
-                    clinicId={id!}
+                    clinicId={clinicId!}
                     initialTreatment={initialTreatment}
                     submitLabel={t("contact.requestFreeQuote")}
                     onSuccess={handleFormSuccess}
@@ -1078,7 +1091,7 @@ const ClinicDetail = () => {
             <DialogTitle>{t("contact.sidebarTitle")}</DialogTitle>
           </DialogHeader>
           <ContactClinicForm
-            clinicId={id!}
+            clinicId={clinicId!}
             initialTreatment={initialTreatment}
             onSuccess={handleFormSuccess}
             submitLabel={t("contact.requestFreeQuote")}

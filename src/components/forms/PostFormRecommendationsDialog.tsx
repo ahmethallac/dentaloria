@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getClinicCardImageUrl } from "@/lib/imageUtils";
 import { getLanguage } from "@/lib/clinicMeta";
-import { withLocalePrefix } from "@/lib/localePath";
+import { withLocalePrefix, clinicPath } from "@/lib/localePath";
 
 export interface SubmittedFormValues {
   clinicId: string;
@@ -22,9 +22,11 @@ export interface SubmittedFormValues {
 interface RecommendedClinic {
   id: string;
   name: string;
+  slug?: string;
   image_url: string | null;
   rating: number | null;
   city: string | null;
+  citySlug?: string | null;
   languages: string[];
 }
 
@@ -184,7 +186,7 @@ export default function PostFormRecommendationsDialog({ open, onOpenChange, valu
                       </div>
                     )}
                     <div className="flex flex-row sm:flex-col gap-2 mt-1 sm:mt-auto sm:pt-2">
-                      <Link to={withLocalePrefix(`/clinic/${c.id}`, lang)} target="_blank" rel="noopener noreferrer" className="flex-1 sm:w-full">
+                      <Link to={withLocalePrefix(clinicPath({ id: c.id, slug: c.slug, cities: { slug: c.citySlug ?? undefined } }), lang)} target="_blank" rel="noopener noreferrer" className="flex-1 sm:w-full">
                         <Button size="sm" variant="outline" className="w-full">
                           <ExternalLink className="w-3.5 h-3.5 mr-1" /> {t("postFormRecommendations.visit")}
                         </Button>
