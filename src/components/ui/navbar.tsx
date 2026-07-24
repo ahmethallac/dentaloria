@@ -67,23 +67,34 @@ export const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Hysteresis (enter "scrolled" past 24px, only exit once back under 4px)
+    // Hysteresis (enter "scrolled" past 40px, only exit once back under 8px)
     // instead of a single shared threshold — the navbar's own height change
     // when `scrolled` flips shifts the page's layout by a few pixels, which
     // otherwise pushes scrollY back across a single threshold and makes the
     // header flicker on/off in a feedback loop right around that point.
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        setScrolled((prev) => (prev ? window.scrollY > 4 : window.scrollY > 24));
-        ticking = false;
-      });
+    // On top of that, a short settle delay means the state only commits
+    // once scrolling has actually paused, so residual momentum/rubber-band
+    // scroll (common on trackpads and touchscreens even when the finger/
+    // mouse looks perfectly still) can never flip it back and forth while
+    // the page is mid-transition.
+    let settleTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    const SETTLE_MS = 120;
+
+    const commit = () => {
+      setScrolled((prev) => (prev ? window.scrollY > 8 : window.scrollY > 40));
     };
-    onScroll();
+
+    const onScroll = () => {
+      if (settleTimeoutId) clearTimeout(settleTimeoutId);
+      settleTimeoutId = setTimeout(commit, SETTLE_MS);
+    };
+
+    commit();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (settleTimeoutId) clearTimeout(settleTimeoutId);
+    };
   }, []);
 
   const handleSignOut = async () => {
