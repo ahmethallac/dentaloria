@@ -4,12 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { updateClinic, type Clinic, type GoogleReview } from "@/lib/services";
+import { SITE_LOCALES } from "@/i18n/siteLocales";
 
-// Translates each review's text into all 6 locales via a background,
-// non-blocking OpenAI call per review (never during a visitor's page load —
-// only right after a clinic admin links/refreshes their Google rating), then
-// patches google_reviews with the translations attached. Silently no-ops on
-// failure so a broken translation never disrupts the rating save itself.
+// Translates each review's text into every site locale (including English —
+// Google reviews, unlike clinic descriptions, are often NOT originally in
+// English, so we can't assume the stored text is already the English
+// version) via a background, non-blocking OpenAI call per review (never
+// during a visitor's page load — only right after a clinic admin
+// links/refreshes their Google rating), then patches google_reviews with the
+// translations attached. Silently no-ops on failure so a broken translation
+// never disrupts the rating save itself.
+const ALL_LOCALE_CODES = SITE_LOCALES.map((l) => l.code);
+
 async function translateReviewsInBackground(
   clinicId: string,
   reviews: GoogleReview[],
@@ -22,7 +28,7 @@ async function translateReviewsInBackground(
         if (!review.text?.trim()) return review;
         try {
           const { data, error } = await supabase.functions.invoke("translate-content", {
-            body: { text: review.text, isHtml: false },
+            body: { text: review.text, isHtml: false, targetLocales: ALL_LOCALE_CODES },
           });
           if (error || !data?.translations) return review;
           return { ...review, translations: data.translations as Record<string, string> };

@@ -18,7 +18,14 @@
   "aiSearch": {
     "badge": "Căutare cu inteligență artificială",
     "hint": "Scrie mai jos ce cauți",
-    "search": "Caută"
+    "search": "Caută",
+    "examples": [
+      "Cele mai ieftine clinici de implant dentar din Antalya",
+      "Cele mai bine cotate clinici Hollywood Smile din Istanbul",
+      "Clinici dentare din Antalya care vorbesc poloneză",
+      "Cele mai bune clinici de fațete dentare din Izmir",
+      "Albire dentară accesibilă în Istanbul"
+    ]
   },
   "featured": {
     "title": "Clinici Recomandate",
@@ -56,21 +63,57 @@
     "badge": "De ce Dentaloria",
     "title": "O singură platformă. Toate clinicile comparate.",
     "subtitle": "Dentaloria înlocuiește contactarea clinicilor una câte una cu un singur loc unde poți compara, aplica și primi răspuns.",
-    "compare": { "title": "Compară, nu alerga după oferte", "description": "Vezi toate clinicile potrivite pentru tratamentul și locația ta, una lângă alta, în loc să scrii separat fiecăreia." },
-    "verified": { "title": "Doar clinici verificate", "description": "Fiecare clinică de pe Dentaloria este verificată înainte de publicare, așa că nu trebuie să ghicești în cine să ai încredere." },
-    "pricing": { "title": "Prețuri transparente", "description": "Prețuri reale și recenzii reale ale pacienților, vizibile de la început — fără oferte-surpriză la sosire." },
-    "application": { "title": "O singură cerere, răspunsuri reale", "description": "Completează datele o singură dată. Doar clinicile care ți se potrivesc cu adevărat te vor contacta." }
+    "compare": {
+      "title": "Compară, nu alerga după oferte",
+      "description": "Vezi toate clinicile potrivite pentru tratamentul și locația ta, una lângă alta, în loc să scrii separat fiecăreia."
+    },
+    "verified": {
+      "title": "Doar clinici verificate",
+      "description": "Fiecare clinică de pe Dentaloria este verificată înainte de publicare, așa că nu trebuie să ghicești în cine să ai încredere."
+    },
+    "pricing": {
+      "title": "Prețuri transparente",
+      "description": "Prețuri reale și recenzii reale ale pacienților, vizibile de la început — fără oferte-surpriză la sosire."
+    },
+    "application": {
+      "title": "O singură cerere, răspunsuri reale",
+      "description": "Completează datele o singură dată. Doar clinicile care ți se potrivesc cu adevărat te vor contacta."
+    }
   },
   "testimonials": {
     "title": "Ce spun pacienții despre Dentaloria",
     "subtitle": "Păreri reale de la pacienți care și-au găsit clinica prin Dentaloria",
     "list": [
-      { "name": "Sarah M.", "location": "Marea Britanie", "quote": "Nu am vrut să scriu la zece clinici diferite și să-mi repet povestea de fiecare dată. Pe Dentaloria am comparat totul într-un singur loc și am contactat clinica abia după ce am știut exact pe care o vreau." },
-      { "name": "Michael R.", "location": "Irlanda", "quote": "Ce mi-a plăcut cel mai mult a fost că nu a trebuit să negociez singur cu fiecare clinică. Am completat un singur formular și doar clinicile potrivite mi-au răspuns." },
-      { "name": "Anna K.", "location": "Germania", "quote": "Eram copleșită de câte clinici pretindeau că sunt cele mai bune. Dentaloria m-a lăsat să compar chiar prețurile și recenziile una lângă alta, în loc să ghicesc." },
-      { "name": "James T.", "location": "Statele Unite", "quote": "Găsirea unei clinici dentare în străinătate mi se părea riscantă până am descoperit acest site. Recenziile verificate și prețurile reale, vizibile de la început, au făcut decizia mult mai simplă." },
-      { "name": "Emma L.", "location": "Țările de Jos", "quote": "Am găsit exact ce căutam într-o singură zi. Fără du-te-vino cu zece clinici — o singură platformă care a făcut comparația în locul meu." },
-      { "name": "David P.", "location": "Marea Britanie", "quote": "Dentaloria mi-a economisit ore întregi de căutări. Am putut filtra după tratament și limbă, iar clinica aleasă a corespuns exact nevoilor mele." }
+      {
+        "name": "Sarah M.",
+        "location": "Marea Britanie",
+        "quote": "Nu am vrut să scriu la zece clinici diferite și să-mi repet povestea de fiecare dată. Pe Dentaloria am comparat totul într-un singur loc și am contactat clinica abia după ce am știut exact pe care o vreau."
+      },
+      {
+        "name": "Michael R.",
+        "location": "Irlanda",
+        "quote": "Ce mi-a plăcut cel mai mult a fost că nu a trebuit să negociez singur cu fiecare clinică. Am completat un singur formular și doar clinicile potrivite mi-au răspuns."
+      },
+      {
+        "name": "Anna K.",
+        "location": "Germania",
+        "quote": "Eram copleșită de câte clinici pretindeau că sunt cele mai bune. Dentaloria m-a lăsat să compar chiar prețurile și recenziile una lângă alta, în loc să ghicesc."
+      },
+      {
+        "name": "James T.",
+        "location": "Statele Unite",
+        "quote": "Găsirea unei clinici dentare în străinătate mi se părea riscantă până am descoperit acest site. Recenziile verificate și prețurile reale, vizibile de la început, au făcut decizia mult mai simplă."
+      },
+      {
+        "name": "Emma L.",
+        "location": "Țările de Jos",
+        "quote": "Am găsit exact ce căutam într-o singură zi. Fără du-te-vino cu zece clinici — o singură platformă care a făcut comparația în locul meu."
+      },
+      {
+        "name": "David P.",
+        "location": "Marea Britanie",
+        "quote": "Dentaloria mi-a economisit ore întregi de căutări. Am putut filtra după tratament și limbă, iar clinica aleasă a corespuns exact nevoilor mele."
+      }
     ]
   },
   "cta": {

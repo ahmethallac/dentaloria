@@ -18,7 +18,14 @@
   "aiSearch": {
     "badge": "Recherche par intelligence artificielle",
     "hint": "Écrivez simplement ce que vous cherchez ci-dessous",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "examples": [
+      "Cliniques d'implants dentaires les moins chères à Antalya",
+      "Cliniques Hollywood Smile les mieux notées à Istanbul",
+      "Cliniques dentaires à Antalya parlant polonais",
+      "Meilleures cliniques de facettes à Izmir",
+      "Blanchiment dentaire abordable à Istanbul"
+    ]
   },
   "featured": {
     "title": "Cliniques en Vedette",
@@ -56,21 +63,57 @@
     "badge": "Pourquoi Dentaloria",
     "title": "Une seule plateforme. Toutes les cliniques comparées.",
     "subtitle": "Dentaloria remplace les échanges individuels avec chaque clinique par un seul endroit pour comparer, postuler et obtenir une réponse.",
-    "compare": { "title": "Comparez, ne courez plus après", "description": "Consultez côte à côte toutes les cliniques correspondant à votre traitement et à votre localisation, au lieu d'écrire à chacune séparément." },
-    "verified": { "title": "Uniquement des cliniques vérifiées", "description": "Chaque clinique sur Dentaloria est examinée avant sa mise en ligne, vous n'avez donc jamais à deviner en qui faire confiance." },
-    "pricing": { "title": "Tarification transparente", "description": "Des prix réels et de vraies notes de patients affichés dès le départ — aucune surprise une fois sur place." },
-    "application": { "title": "Une seule demande, de vraies réponses", "description": "Renseignez vos informations une seule fois. Seules les cliniques qui correspondent réellement à vos besoins vous répondront." }
+    "compare": {
+      "title": "Comparez, ne courez plus après",
+      "description": "Consultez côte à côte toutes les cliniques correspondant à votre traitement et à votre localisation, au lieu d'écrire à chacune séparément."
+    },
+    "verified": {
+      "title": "Uniquement des cliniques vérifiées",
+      "description": "Chaque clinique sur Dentaloria est examinée avant sa mise en ligne, vous n'avez donc jamais à deviner en qui faire confiance."
+    },
+    "pricing": {
+      "title": "Tarification transparente",
+      "description": "Des prix réels et de vraies notes de patients affichés dès le départ — aucune surprise une fois sur place."
+    },
+    "application": {
+      "title": "Une seule demande, de vraies réponses",
+      "description": "Renseignez vos informations une seule fois. Seules les cliniques qui correspondent réellement à vos besoins vous répondront."
+    }
   },
   "testimonials": {
     "title": "Ce que disent les patients à propos de Dentaloria",
     "subtitle": "De vrais témoignages de patients qui ont trouvé leur clinique grâce à Dentaloria",
     "list": [
-      { "name": "Sarah M.", "location": "Royaume-Uni", "quote": "Je ne voulais pas écrire à dix cliniques différentes et répéter mon histoire à chaque fois. Sur Dentaloria, j'ai tout comparé au même endroit et je n'ai contacté une clinique que lorsque je savais exactement laquelle je voulais." },
-      { "name": "Michael R.", "location": "Irlande", "quote": "Ce que j'ai le plus apprécié, c'est de ne pas avoir à négocier moi-même avec chaque clinique. J'ai rempli un seul formulaire et seules les cliniques qui correspondaient à mes besoins m'ont répondu." },
-      { "name": "Anna K.", "location": "Allemagne", "quote": "J'étais submergée par le nombre de cliniques qui prétendaient être les meilleures. Dentaloria m'a permis de vraiment comparer les prix et les avis côte à côte, au lieu de deviner." },
-      { "name": "James T.", "location": "États-Unis", "quote": "Trouver une clinique dentaire à l'étranger me semblait risqué jusqu'à ce que je trouve ce site. Voir des avis vérifiés et de vrais prix dès le départ a rendu la décision bien plus facile." },
-      { "name": "Emma L.", "location": "Pays-Bas", "quote": "J'ai trouvé exactement ce que je cherchais en une journée. Plus d'allers-retours avec dix cliniques — une seule plateforme a fait la comparaison à ma place." },
-      { "name": "David P.", "location": "Royaume-Uni", "quote": "Dentaloria m'a fait gagner des heures de recherche. J'ai pu filtrer par traitement et par langue, et la clinique choisie correspondait exactement à mes besoins." }
+      {
+        "name": "Sarah M.",
+        "location": "Royaume-Uni",
+        "quote": "Je ne voulais pas écrire à dix cliniques différentes et répéter mon histoire à chaque fois. Sur Dentaloria, j'ai tout comparé au même endroit et je n'ai contacté une clinique que lorsque je savais exactement laquelle je voulais."
+      },
+      {
+        "name": "Michael R.",
+        "location": "Irlande",
+        "quote": "Ce que j'ai le plus apprécié, c'est de ne pas avoir à négocier moi-même avec chaque clinique. J'ai rempli un seul formulaire et seules les cliniques qui correspondaient à mes besoins m'ont répondu."
+      },
+      {
+        "name": "Anna K.",
+        "location": "Allemagne",
+        "quote": "J'étais submergée par le nombre de cliniques qui prétendaient être les meilleures. Dentaloria m'a permis de vraiment comparer les prix et les avis côte à côte, au lieu de deviner."
+      },
+      {
+        "name": "James T.",
+        "location": "États-Unis",
+        "quote": "Trouver une clinique dentaire à l'étranger me semblait risqué jusqu'à ce que je trouve ce site. Voir des avis vérifiés et de vrais prix dès le départ a rendu la décision bien plus facile."
+      },
+      {
+        "name": "Emma L.",
+        "location": "Pays-Bas",
+        "quote": "J'ai trouvé exactement ce que je cherchais en une journée. Plus d'allers-retours avec dix cliniques — une seule plateforme a fait la comparaison à ma place."
+      },
+      {
+        "name": "David P.",
+        "location": "Royaume-Uni",
+        "quote": "Dentaloria m'a fait gagner des heures de recherche. J'ai pu filtrer par traitement et par langue, et la clinique choisie correspondait exactement à mes besoins."
+      }
     ]
   },
   "cta": {

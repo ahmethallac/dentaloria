@@ -3,7 +3,15 @@ import { useTranslation } from "react-i18next";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoogleReview } from "@/lib/services";
-import { localizedField } from "@/lib/i18nContent";
+
+// Unlike clinic descriptions (always authored in English), a Google review's
+// stored text is whatever language the reviewer actually wrote in — so,
+// unlike localizedField(), we can't assume the "en" case means the stored
+// text IS the English version. Always prefer a matching translation
+// (translate-content requests one for every locale including English) and
+// only fall back to the raw original text if none exists yet.
+const localizedReviewText = (review: GoogleReview, locale: string): string =>
+  review.translations?.[locale] || review.text;
 
 const shuffle = <T,>(arr: T[]): T[] => {
   const copy = [...arr];
@@ -79,7 +87,7 @@ export default function GoogleReviewsCarousel({ reviews, lang }: GoogleReviewsCa
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground line-clamp-4">
-                  {localizedField(r.text, r.translations, lang || "en")}
+                  {localizedReviewText(r, lang || "en")}
                 </p>
               </CardContent>
             </Card>

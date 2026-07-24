@@ -299,6 +299,7 @@ const ClinicDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [highlightForm, setHighlightForm] = useState(false);
   const [recoOpen, setRecoOpen] = useState(false);
   const [recoValues, setRecoValues] = useState<ContactClinicSubmittedValues | null>(null);
 
@@ -435,6 +436,20 @@ const ClinicDetail = () => {
     const el = sectionRefs.current[sectionId];
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
+
+  // On mobile the sidebar contact form is hidden (it lives in the desktop
+  // aside), so "Get Quote" opens the quote dialog directly instead of
+  // scrolling to a hidden element. On desktop it scrolls to the sticky
+  // sidebar form and briefly shakes it so it's obvious where the quote goes.
+  const handleGetQuote = useCallback(() => {
+    if (isMobile) {
+      setMobileOpen(true);
+      return;
+    }
+    scrollTo("contact");
+    setHighlightForm(true);
+    window.setTimeout(() => setHighlightForm(false), 600);
+  }, [isMobile, scrollTo]);
 
   const wrapIndex = useCallback((index: number) => {
     const len = clinic?.images?.length ?? 1;
@@ -868,7 +883,7 @@ const ClinicDetail = () => {
                               size="sm"
                               variant="ghost"
                               className="text-xs text-primary hover:text-primary"
-                              onClick={() => scrollTo("contact")}
+                              onClick={handleGetQuote}
                             >
                               {t("treatmentPrices.getQuote")}
                             </Button>
@@ -983,10 +998,7 @@ const ClinicDetail = () => {
             )}
 
             {/* ── Contact anchor (mobile) ── */}
-            <div
-              ref={(el) => (sectionRefs.current["contact"] = el)}
-              className="scroll-mt-32 lg:hidden"
-            >
+            <div className="scroll-mt-32 lg:hidden">
               <h2 className="text-xl font-bold mb-4">{t("contact.mobileTitle")}</h2>
               <div className="rounded-xl border border-border/50 p-6">
                 <ContactClinicForm clinicId={id!} initialTreatment={initialTreatment} onSuccess={handleFormSuccess} />
@@ -1000,7 +1012,7 @@ const ClinicDetail = () => {
               ref={(el) => (sectionRefs.current["contact"] = el)}
               className="sticky top-36 scroll-mt-32"
             >
-              <div className="glass-sidebar rounded-2xl p-6 space-y-5 shadow-card">
+              <div className={`glass-sidebar rounded-2xl p-6 space-y-5 shadow-card ${highlightForm ? "animate-shake" : ""}`}>
                 <div>
                   <h3 className="text-lg font-bold">{t("contact.sidebarTitle")}</h3>
                   <p className="text-xs text-muted-foreground mt-1">

@@ -105,6 +105,13 @@ export default {
 				'marquee': {
 					'0%': { transform: 'translateX(0)' },
 					'100%': { transform: 'translateX(-50%)' }
+				},
+				'shake': {
+					'0%, 100%': { transform: 'translateX(0)' },
+					'20%': { transform: 'translateX(-6px)' },
+					'40%': { transform: 'translateX(6px)' },
+					'60%': { transform: 'translateX(-4px)' },
+					'80%': { transform: 'translateX(4px)' }
 				}
 			},
 			animation: {
@@ -114,7 +121,8 @@ export default {
 				'slide-up': 'slide-up 0.6s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
 				'float': 'float 6s ease-in-out infinite',
-				'marquee': 'marquee 45s linear infinite'
+				'marquee': 'marquee 45s linear infinite',
+				'shake': 'shake 0.5s ease-in-out'
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',

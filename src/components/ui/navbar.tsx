@@ -67,7 +67,20 @@ export const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    // Hysteresis (enter "scrolled" past 24px, only exit once back under 4px)
+    // instead of a single shared threshold — the navbar's own height change
+    // when `scrolled` flips shifts the page's layout by a few pixels, which
+    // otherwise pushes scrollY back across a single threshold and makes the
+    // header flicker on/off in a feedback loop right around that point.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled((prev) => (prev ? window.scrollY > 4 : window.scrollY > 24));
+        ticking = false;
+      });
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

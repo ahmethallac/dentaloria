@@ -104,6 +104,7 @@ const RegisterClinic = () => {
           healthTourismDocUrl: healthUrl,
           agencyCertificateUrl: agencyUrl,
           appliedAsHealthcareFacility: form.isHealthcareFacility,
+          locale: lang || 'en',
         },
       })
 

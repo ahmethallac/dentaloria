@@ -18,7 +18,14 @@
   "aiSearch": {
     "badge": "AI-powered search",
     "hint": "Just type what you're looking for below",
-    "search": "Search"
+    "search": "Search",
+    "examples": [
+      "Cheapest dental implant clinics in Antalya",
+      "Highest rated Hollywood Smile clinics in Istanbul",
+      "Dental clinics in Antalya that speak Polish",
+      "Best veneers clinics in Izmir",
+      "Affordable teeth whitening in Istanbul"
+    ]
   },
   "featured": {
     "title": "Featured Clinics",
@@ -56,21 +63,57 @@
     "badge": "Why Dentaloria",
     "title": "One platform. Every clinic compared.",
     "subtitle": "Dentaloria replaces messaging clinics one by one with a single place to compare, apply, and hear back.",
-    "compare": { "title": "Compare, don't chase", "description": "See every clinic that matches your treatment and location side by side, instead of messaging each one separately." },
-    "verified": { "title": "Verified clinics only", "description": "Every clinic on Dentaloria is reviewed before it goes live, so you're never guessing who to trust." },
-    "pricing": { "title": "Transparent pricing", "description": "Real prices and real patient ratings upfront — no surprise quotes once you arrive." },
-    "application": { "title": "One application, real replies", "description": "Submit your details once. Only the clinics that actually fit your needs get back to you." }
+    "compare": {
+      "title": "Compare, don't chase",
+      "description": "See every clinic that matches your treatment and location side by side, instead of messaging each one separately."
+    },
+    "verified": {
+      "title": "Verified clinics only",
+      "description": "Every clinic on Dentaloria is reviewed before it goes live, so you're never guessing who to trust."
+    },
+    "pricing": {
+      "title": "Transparent pricing",
+      "description": "Real prices and real patient ratings upfront — no surprise quotes once you arrive."
+    },
+    "application": {
+      "title": "One application, real replies",
+      "description": "Submit your details once. Only the clinics that actually fit your needs get back to you."
+    }
   },
   "testimonials": {
     "title": "What patients say about Dentaloria",
     "subtitle": "Real feedback from patients who found their clinic through Dentaloria",
     "list": [
-      { "name": "Sarah M.", "location": "United Kingdom", "quote": "I didn't want to message ten different clinics and repeat my story every time. On Dentaloria I compared everything in one place and only reached out once I knew exactly who I wanted." },
-      { "name": "Michael R.", "location": "Ireland", "quote": "What I liked most was not having to negotiate with every clinic myself. I filled in one form and only the clinics that matched what I needed got back to me." },
-      { "name": "Anna K.", "location": "Germany", "quote": "I was overwhelmed by how many clinics claim to be the best. Dentaloria let me actually compare prices and reviews side by side instead of guessing." },
-      { "name": "James T.", "location": "United States", "quote": "Finding a dental clinic abroad felt risky until I found this site. Seeing verified reviews and real prices upfront made the decision so much easier." },
-      { "name": "Emma L.", "location": "Netherlands", "quote": "I found exactly what I was looking for within a day. No back and forth with ten clinics — just one platform that did the comparing for me." },
-      { "name": "David P.", "location": "United Kingdom", "quote": "Dentaloria saved me hours of research. I could filter by treatment and language, and the clinic I chose matched everything I needed." }
+      {
+        "name": "Sarah M.",
+        "location": "United Kingdom",
+        "quote": "I didn't want to message ten different clinics and repeat my story every time. On Dentaloria I compared everything in one place and only reached out once I knew exactly who I wanted."
+      },
+      {
+        "name": "Michael R.",
+        "location": "Ireland",
+        "quote": "What I liked most was not having to negotiate with every clinic myself. I filled in one form and only the clinics that matched what I needed got back to me."
+      },
+      {
+        "name": "Anna K.",
+        "location": "Germany",
+        "quote": "I was overwhelmed by how many clinics claim to be the best. Dentaloria let me actually compare prices and reviews side by side instead of guessing."
+      },
+      {
+        "name": "James T.",
+        "location": "United States",
+        "quote": "Finding a dental clinic abroad felt risky until I found this site. Seeing verified reviews and real prices upfront made the decision so much easier."
+      },
+      {
+        "name": "Emma L.",
+        "location": "Netherlands",
+        "quote": "I found exactly what I was looking for within a day. No back and forth with ten clinics — just one platform that did the comparing for me."
+      },
+      {
+        "name": "David P.",
+        "location": "United Kingdom",
+        "quote": "Dentaloria saved me hours of research. I could filter by treatment and language, and the clinic I chose matched everything I needed."
+      }
     ]
   },
   "cta": {

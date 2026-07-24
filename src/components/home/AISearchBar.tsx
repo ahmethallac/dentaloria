@@ -7,14 +7,6 @@ import { getTreatments, getCountries, getCities, type Treatment, type Country, t
 import { parseSearchQuery, type SearchableData } from "@/lib/aiSearchParser";
 import { withLocalePrefix } from "@/lib/localePath";
 
-const EXAMPLE_QUERIES = [
-  "Cheapest dental implant clinics in Antalya",
-  "Highest rated Hollywood Smile clinics in Istanbul",
-  "Dental clinics in Antalya that speak Polish",
-  "Best veneers clinics in Izmir",
-  "Affordable teeth whitening in Istanbul",
-];
-
 interface AISearchBarProps {
   className?: string;
   onResults?: (params: URLSearchParams) => void;
@@ -28,6 +20,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
   const [placeholder, setPlaceholder] = useState("");
   const [data, setData] = useState<SearchableData | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const exampleQueries = t("aiSearch.examples", { returnObjects: true }) as string[];
 
   useEffect(() => {
     (async () => {
@@ -56,7 +49,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const tick = () => {
-      const current = EXAMPLE_QUERIES[exampleIndex];
+      const current = exampleQueries[exampleIndex];
       if (!deleting) {
         charIndex++;
         setPlaceholder(current.slice(0, charIndex) + (charIndex < current.length ? "|" : ""));
@@ -71,7 +64,7 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
         setPlaceholder(current.slice(0, charIndex) + "|");
         if (charIndex === 0) {
           deleting = false;
-          exampleIndex = (exampleIndex + 1) % EXAMPLE_QUERIES.length;
+          exampleIndex = (exampleIndex + 1) % exampleQueries.length;
           timeoutId = setTimeout(tick, 400);
           return;
         }
@@ -81,7 +74,10 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
 
     timeoutId = setTimeout(tick, 600);
     return () => clearTimeout(timeoutId);
-  }, []);
+    // Restarts cleanly whenever the site language changes (same component
+    // instance across a locale switch — react-router doesn't remount it).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exampleQueries.join("|")]);
 
   const buildParams = () => {
     if (!data) return null;

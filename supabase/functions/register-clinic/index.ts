@@ -22,7 +22,14 @@ Deno.serve(async (req) => {
       healthTourismDocUrl,
       agencyCertificateUrl,
       appliedAsHealthcareFacility,
+      locale,
     } = body || {}
+
+    // Whichever site locale the registrant was browsing in — used later to
+    // send them transactional emails in their own language. Falls back to
+    // English for anything unrecognized rather than rejecting the request.
+    const SUPPORTED_LOCALES = ['en', 'tr', 'ro', 'pl', 'ru', 'de', 'fr']
+    const resolvedLocale = SUPPORTED_LOCALES.includes(locale) ? locale : 'en'
 
     // Basic validation
     const missing: string[] = []
@@ -71,6 +78,7 @@ Deno.serve(async (req) => {
         is_published: false,
         approval_status: 'pending',
         page_status: 'incomplete',
+        locale: resolvedLocale,
       })
       .select('id')
       .single()

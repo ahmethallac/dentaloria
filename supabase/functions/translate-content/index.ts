@@ -9,6 +9,7 @@ const corsHeaders = {
 }
 
 const LOCALE_NAMES: Record<string, string> = {
+  en: 'English',
   tr: 'Turkish',
   ro: 'Romanian',
   pl: 'Polish',
