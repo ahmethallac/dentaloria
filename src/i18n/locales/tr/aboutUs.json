@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Şeffaf Fiyatlandırma",
-      "description": "Net, baştan belirlenmiş tedavi fiyatları — sürpriz ek ücret yok."
+      "description": "Her klinik, başvurmadan önce karşılaştırabilmeniz için baştan bir başlangıç fiyat aralığı gösterir."
     },
     "multilingual": {
       "title": "Çok Dilli Destek",
       "description": "7 farklı dilde göz atın ve kendi dilinizde iletişime geçin."
     },
-    "coordination": {
-      "title": "Kişisel Koordinasyon",
-      "description": "İlk temastan tedaviye kadar her adımda yanınızdayız."
+    "directApplications": {
+      "title": "Doğrudan Başvuru",
+      "description": "Klinikleri karşılaştırın, ardından birkaç tıkla talebinizi gönderin. Sonrasında seçtiğiniz klinikle doğrudan görüşürsünüz."
     }
   },
   "privacy": {

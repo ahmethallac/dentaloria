@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Przejrzyste Ceny",
-      "description": "Jasne, ustalone z góry ceny zabiegów — bez ukrytych niespodzianek."
+      "description": "Każda klinika podaje z góry orientacyjny przedział cenowy, dzięki czemu możesz porównać oferty przed złożeniem zgłoszenia."
     },
     "multilingual": {
       "title": "Wsparcie Wielojęzyczne",
       "description": "Przeglądaj i kontaktuj się w swoim języku, w 7 językach."
     },
-    "coordination": {
-      "title": "Osobista Koordynacja",
-      "description": "Od pierwszego kontaktu aż po zabieg, pomagamy na każdym kroku."
+    "directApplications": {
+      "title": "Bezpośrednie Zgłoszenia",
+      "description": "Porównaj kliniki, a następnie wyślij zgłoszenie kilkoma kliknięciami. Od tego momentu kontaktujesz się bezpośrednio z wybraną kliniką."
     }
   },
   "privacy": {

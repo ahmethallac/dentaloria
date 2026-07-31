@@ -8,7 +8,7 @@ const WHAT_WE_DO = [
   { icon: ShieldCheck, key: "verifiedClinics" },
   { icon: Tag, key: "transparentPricing" },
   { icon: LanguagesIcon, key: "multilingual" },
-  { icon: UserCheck, key: "coordination" },
+  { icon: UserCheck, key: "directApplications" },
 ];
 
 export default function AboutUs() {

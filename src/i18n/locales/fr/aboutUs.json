@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Prix Transparents",
-      "description": "Des prix de traitement clairs, fixés à l'avance — sans mauvaises surprises."
+      "description": "Chaque clinique indique à l'avance une fourchette de prix de départ, afin que vous puissiez comparer avant de faire une demande."
     },
     "multilingual": {
       "title": "Support Multilingue",
       "description": "Naviguez et contactez-nous dans votre propre langue, parmi 7 langues disponibles."
     },
-    "coordination": {
-      "title": "Coordination Personnalisée",
-      "description": "Du premier contact jusqu'au traitement, nous vous accompagnons à chaque étape."
+    "directApplications": {
+      "title": "Demandes Directes",
+      "description": "Comparez les cliniques, puis envoyez votre demande en quelques clics. Vous échangez ensuite directement avec la clinique choisie."
     }
   },
   "privacy": {

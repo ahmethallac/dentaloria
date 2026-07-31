@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Transparent Pricing",
-      "description": "Clear, upfront treatment prices — no hidden surprises."
+      "description": "Each clinic lists a starting price range up front, so you can compare before you apply."
     },
     "multilingual": {
       "title": "Multilingual Support",
       "description": "Browse and get in touch in your own language, in 7 languages."
     },
-    "coordination": {
-      "title": "Personal Coordination",
-      "description": "From first contact to treatment, we help you every step of the way."
+    "directApplications": {
+      "title": "Direct Applications",
+      "description": "Compare clinics, then send your request in a few clicks. From there, you deal directly with the clinic you chose."
     }
   },
   "privacy": {

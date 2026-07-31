@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Transparente Preise",
-      "description": "Klare, von Anfang an festgelegte Behandlungspreise — ohne versteckte Überraschungen."
+      "description": "Jede Klinik gibt vorab eine ungefähre Preisspanne an, damit Sie vor der Anfrage vergleichen können."
     },
     "multilingual": {
       "title": "Mehrsprachiger Support",
       "description": "Stöbern und kontaktieren Sie uns in Ihrer eigenen Sprache — in 7 Sprachen verfügbar."
     },
-    "coordination": {
-      "title": "Persönliche Betreuung",
-      "description": "Vom ersten Kontakt bis zur Behandlung begleiten wir Sie bei jedem Schritt."
+    "directApplications": {
+      "title": "Direkte Anfragen",
+      "description": "Vergleichen Sie Kliniken und senden Sie Ihre Anfrage mit wenigen Klicks. Danach stehen Sie in direktem Kontakt mit der gewählten Klinik."
     }
   },
   "privacy": {

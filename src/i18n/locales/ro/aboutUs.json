@@ -16,15 +16,15 @@
     },
     "transparentPricing": {
       "title": "Prețuri Transparente",
-      "description": "Prețuri clare, stabilite din start — fără surprize ascunse."
+      "description": "Fiecare clinică afișează din start un interval de preț de pornire, pentru a putea compara înainte de a aplica."
     },
     "multilingual": {
       "title": "Suport Multilingv",
       "description": "Navigați și luați legătura în limba dumneavoastră, în 7 limbi."
     },
-    "coordination": {
-      "title": "Coordonare Personală",
-      "description": "De la primul contact până la tratament, vă ajutăm la fiecare pas."
+    "directApplications": {
+      "title": "Aplicații Directe",
+      "description": "Comparați clinicile, apoi trimiteți cererea în câteva clicuri. De acolo, discutați direct cu clinica aleasă."
     }
   },
   "privacy": {
