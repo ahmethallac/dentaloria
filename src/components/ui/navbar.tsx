@@ -21,8 +21,8 @@ const NAV_LINK_DEFS: NavLinkDef[] = [
   { to: "/", key: "nav.home" },
   { to: "/clinic-listing", key: "nav.clinics" },
   { to: "/clinic", key: "nav.featuredClinic" },
-  { href: "#treatments", key: "nav.treatments" },
-  { href: "#about", key: "nav.aboutUs" },
+  { to: "/treatments", key: "nav.treatments" },
+  { to: "/about-us", key: "nav.aboutUs" },
 ];
 
 const getInitials = (name: string) =>

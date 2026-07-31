@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "title": "Diş Tedavileri | Dentaloria",
+    "description": "Dentaloria'nın anlaşmalı kliniklerinin sunduğu tüm diş tedavilerini keşfedin — implant, kaplama, beyazlatma, ortodonti ve daha fazlası, şeffaf başlangıç fiyatlarıyla."
+  },
+  "hero": {
+    "title": "Diş Tedavileri",
+    "subtitle": "Anlaşmalı kliniklerimizin sunduğu tüm tedavileri keşfedin. Bir tedaviye dokunarak ilgili klinikleri ve fiyatları görün."
+  },
+  "loading": "Tedaviler yükleniyor...",
+  "featuredSectionTitle": "Popüler Tedaviler",
+  "moreSectionTitle": "Diğer Tedaviler",
+  "defaultDescription": "Bu tedavi hakkında detaylı bilgi için anlaşmalı bir kliniğe danışın.",
+  "priceFrom": "€{{price}}'dan itibaren"
+}

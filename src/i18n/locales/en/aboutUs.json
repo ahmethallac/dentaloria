@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "About Us | Dentaloria",
+    "description": "Learn about Dentaloria's mission to connect patients with trusted dental clinics abroad, with transparent pricing and a strong commitment to privacy."
+  },
+  "hero": {
+    "title": "About Dentaloria",
+    "subtitle": "Making it simple to find trusted dental care abroad."
+  },
+  "intro": "Dentaloria connects patients from around the world with carefully selected dental clinics abroad, making high-quality, affordable dental care simple to find and easy to trust. We believe getting treatment abroad shouldn't mean navigating it alone — so we built a platform where you can compare real clinics, see transparent pricing, and reach out directly, all in your own language.",
+  "whatWeDo": {
+    "title": "What We Do",
+    "verifiedClinics": {
+      "title": "Verified Clinics",
+      "description": "Every partner clinic is reviewed before it appears on Dentaloria."
+    },
+    "transparentPricing": {
+      "title": "Transparent Pricing",
+      "description": "Clear, upfront treatment prices — no hidden surprises."
+    },
+    "multilingual": {
+      "title": "Multilingual Support",
+      "description": "Browse and get in touch in your own language, in 7 languages."
+    },
+    "coordination": {
+      "title": "Personal Coordination",
+      "description": "From first contact to treatment, we help you every step of the way."
+    }
+  },
+  "privacy": {
+    "title": "Your Privacy Matters",
+    "description": "Any information you share through Dentaloria — including personal and treatment details — is handled with strict confidentiality and used only to connect you with the clinic you choose. We never sell your data."
+  },
+  "operatedBy": "Dentaloria is designed and operated by Digimoria."
+}

@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "title": "Dental Treatments | Dentaloria",
+    "description": "Browse every dental treatment offered by Dentaloria's partner clinics — implants, veneers, whitening, orthodontics and more, with transparent starting prices."
+  },
+  "hero": {
+    "title": "Dental Treatments",
+    "subtitle": "Explore every treatment our partner clinics offer. Tap any treatment to see matching clinics and prices."
+  },
+  "loading": "Loading treatments...",
+  "featuredSectionTitle": "Popular Treatments",
+  "moreSectionTitle": "More Treatments",
+  "defaultDescription": "Ask a partner clinic for full details on this treatment.",
+  "priceFrom": "From €{{price}}"
+}

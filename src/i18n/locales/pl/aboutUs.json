@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "O Nas | Dentaloria",
+    "description": "Poznaj misję Dentaloria — łączenie pacjentów ze sprawdzonymi klinikami stomatologicznymi za granicą, z przejrzystymi cenami i mocnym naciskiem na prywatność."
+  },
+  "hero": {
+    "title": "O Dentaloria",
+    "subtitle": "Ułatwiamy znalezienie sprawdzonej opieki stomatologicznej za granicą."
+  },
+  "intro": "Dentaloria łączy pacjentów z całego świata ze starannie wybranymi klinikami stomatologicznymi za granicą, dzięki czemu wysokiej jakości, przystępna cenowo opieka stomatologiczna jest łatwa do znalezienia i godna zaufania. Wierzymy, że leczenie za granicą nie powinno oznaczać radzenia sobie samemu — dlatego stworzyliśmy platformę, na której możesz porównać prawdziwe kliniki, zobaczyć przejrzyste ceny i skontaktować się bezpośrednio, we własnym języku.",
+  "whatWeDo": {
+    "title": "Co Robimy",
+    "verifiedClinics": {
+      "title": "Zweryfikowane Kliniki",
+      "description": "Każda klinika partnerska jest sprawdzana, zanim pojawi się w Dentaloria."
+    },
+    "transparentPricing": {
+      "title": "Przejrzyste Ceny",
+      "description": "Jasne, ustalone z góry ceny zabiegów — bez ukrytych niespodzianek."
+    },
+    "multilingual": {
+      "title": "Wsparcie Wielojęzyczne",
+      "description": "Przeglądaj i kontaktuj się w swoim języku, w 7 językach."
+    },
+    "coordination": {
+      "title": "Osobista Koordynacja",
+      "description": "Od pierwszego kontaktu aż po zabieg, pomagamy na każdym kroku."
+    }
+  },
+  "privacy": {
+    "title": "Twoja Prywatność Ma Znaczenie",
+    "description": "Wszelkie informacje udostępniane za pośrednictwem Dentaloria — w tym dane osobowe i medyczne — są traktowane z zachowaniem ścisłej poufności i wykorzystywane wyłącznie do połączenia Cię z wybraną kliniką. Nigdy nie sprzedajemy Twoich danych."
+  },
+  "operatedBy": "Dentaloria jest projektowana i prowadzona przez Digimoria."
+}

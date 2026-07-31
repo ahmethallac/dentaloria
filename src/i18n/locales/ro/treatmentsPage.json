@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "title": "Tratamente Dentare | Dentaloria",
+    "description": "Explorați toate tratamentele dentare oferite de clinicile partenere Dentaloria — implanturi, fațete, albire, ortodonție și multe altele, cu prețuri de pornire transparente."
+  },
+  "hero": {
+    "title": "Tratamente Dentare",
+    "subtitle": "Explorați toate tratamentele oferite de clinicile noastre partenere. Atingeți un tratament pentru a vedea clinicile și prețurile corespunzătoare."
+  },
+  "loading": "Se încarcă tratamentele...",
+  "featuredSectionTitle": "Tratamente Populare",
+  "moreSectionTitle": "Alte Tratamente",
+  "defaultDescription": "Cereți detalii complete despre acest tratament unei clinici partenere.",
+  "priceFrom": "De la €{{price}}"
+}

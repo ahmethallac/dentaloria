@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Über Uns | Dentaloria",
+    "description": "Erfahren Sie mehr über die Mission von Dentaloria, Patienten mit vertrauenswürdigen Zahnkliniken im Ausland zu verbinden — mit transparenten Preisen und einem starken Bekenntnis zum Datenschutz."
+  },
+  "hero": {
+    "title": "Über Dentaloria",
+    "subtitle": "Wir machen es einfach, vertrauenswürdige Zahnmedizin im Ausland zu finden."
+  },
+  "intro": "Dentaloria verbindet Patienten aus aller Welt mit sorgfältig ausgewählten Zahnkliniken im Ausland und macht hochwertige, erschwingliche Zahnmedizin leicht auffindbar und vertrauenswürdig. Wir glauben, dass eine Behandlung im Ausland nicht bedeuten sollte, sie allein anzugehen — deshalb haben wir eine Plattform geschaffen, auf der Sie echte Kliniken vergleichen, transparente Preise einsehen und direkt Kontakt aufnehmen können, in Ihrer eigenen Sprache.",
+  "whatWeDo": {
+    "title": "Was Wir Tun",
+    "verifiedClinics": {
+      "title": "Geprüfte Kliniken",
+      "description": "Jede Partnerklinik wird geprüft, bevor sie bei Dentaloria erscheint."
+    },
+    "transparentPricing": {
+      "title": "Transparente Preise",
+      "description": "Klare, von Anfang an festgelegte Behandlungspreise — ohne versteckte Überraschungen."
+    },
+    "multilingual": {
+      "title": "Mehrsprachiger Support",
+      "description": "Stöbern und kontaktieren Sie uns in Ihrer eigenen Sprache — in 7 Sprachen verfügbar."
+    },
+    "coordination": {
+      "title": "Persönliche Betreuung",
+      "description": "Vom ersten Kontakt bis zur Behandlung begleiten wir Sie bei jedem Schritt."
+    }
+  },
+  "privacy": {
+    "title": "Ihre Privatsphäre Ist Uns Wichtig",
+    "description": "Alle Informationen, die Sie über Dentaloria teilen — einschließlich persönlicher und medizinischer Angaben — werden streng vertraulich behandelt und nur verwendet, um Sie mit der von Ihnen gewählten Klinik zu verbinden. Wir verkaufen Ihre Daten niemals."
+  },
+  "operatedBy": "Dentaloria wird von Digimoria entwickelt und betrieben."
+}

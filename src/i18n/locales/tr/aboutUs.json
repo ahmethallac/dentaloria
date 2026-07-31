@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Hakkımızda | Dentaloria",
+    "description": "Dentaloria'nın hastaları güvenilir kliniklerle buluşturma misyonunu, şeffaf fiyatlandırmayı ve gizliliğe verdiğimiz önemi keşfedin."
+  },
+  "hero": {
+    "title": "Dentaloria Hakkında",
+    "subtitle": "Yurt dışında güvenilir diş tedavisi bulmayı kolaylaştırıyoruz."
+  },
+  "intro": "Dentaloria, dünyanın dört bir yanından hastaları özenle seçilmiş yurt dışı diş kliniğiyle buluşturarak kaliteli ve uygun fiyatlı diş tedavisine ulaşmayı kolay ve güvenilir hale getirir. Yurt dışında tedavi görmenin tek başına göze alınacak bir süreç olmaması gerektiğine inanıyoruz — bu yüzden gerçek klinikleri karşılaştırabileceğiniz, şeffaf fiyatları görebileceğiniz ve kendi dilinizde doğrudan iletişime geçebileceğiniz bir platform kurduk.",
+  "whatWeDo": {
+    "title": "Neler Yapıyoruz",
+    "verifiedClinics": {
+      "title": "Onaylı Klinikler",
+      "description": "Dentaloria'da yer alan her klinik, yayınlanmadan önce incelenir."
+    },
+    "transparentPricing": {
+      "title": "Şeffaf Fiyatlandırma",
+      "description": "Net, baştan belirlenmiş tedavi fiyatları — sürpriz ek ücret yok."
+    },
+    "multilingual": {
+      "title": "Çok Dilli Destek",
+      "description": "7 farklı dilde göz atın ve kendi dilinizde iletişime geçin."
+    },
+    "coordination": {
+      "title": "Kişisel Koordinasyon",
+      "description": "İlk temastan tedaviye kadar her adımda yanınızdayız."
+    }
+  },
+  "privacy": {
+    "title": "Gizliliğiniz Bizim İçin Önemli",
+    "description": "Dentaloria üzerinden paylaştığınız her bilgi — kişisel bilgiler ve tedavi detayları dahil — sıkı bir gizlilik anlayışıyla işlenir ve yalnızca seçtiğiniz klinikle sizi buluşturmak için kullanılır. Verilerinizi asla satmayız."
+  },
+  "operatedBy": "Dentaloria, Digimoria tarafından geliştirilip işletilmektedir."
+}

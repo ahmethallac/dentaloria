@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "À Propos | Dentaloria",
+    "description": "Découvrez la mission de Dentaloria : connecter les patients à des cliniques dentaires de confiance à l'étranger, avec des prix transparents et un fort engagement envers la confidentialité."
+  },
+  "hero": {
+    "title": "À Propos de Dentaloria",
+    "subtitle": "Nous simplifions la recherche de soins dentaires fiables à l'étranger."
+  },
+  "intro": "Dentaloria connecte des patients du monde entier à des cliniques dentaires soigneusement sélectionnées à l'étranger, rendant les soins dentaires de qualité et abordables faciles à trouver et dignes de confiance. Nous pensons qu'un traitement à l'étranger ne devrait pas se faire seul — c'est pourquoi nous avons créé une plateforme où vous pouvez comparer de vraies cliniques, voir des prix transparents et nous contacter directement, dans votre propre langue.",
+  "whatWeDo": {
+    "title": "Ce Que Nous Faisons",
+    "verifiedClinics": {
+      "title": "Cliniques Vérifiées",
+      "description": "Chaque clinique partenaire est vérifiée avant d'apparaître sur Dentaloria."
+    },
+    "transparentPricing": {
+      "title": "Prix Transparents",
+      "description": "Des prix de traitement clairs, fixés à l'avance — sans mauvaises surprises."
+    },
+    "multilingual": {
+      "title": "Support Multilingue",
+      "description": "Naviguez et contactez-nous dans votre propre langue, parmi 7 langues disponibles."
+    },
+    "coordination": {
+      "title": "Coordination Personnalisée",
+      "description": "Du premier contact jusqu'au traitement, nous vous accompagnons à chaque étape."
+    }
+  },
+  "privacy": {
+    "title": "Votre Confidentialité Compte",
+    "description": "Toute information que vous partagez via Dentaloria — y compris vos données personnelles et médicales — est traitée en toute confidentialité et utilisée uniquement pour vous mettre en relation avec la clinique de votre choix. Nous ne vendons jamais vos données."
+  },
+  "operatedBy": "Dentaloria est conçue et exploitée par Digimoria."
+}

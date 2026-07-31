@@ -32,6 +32,8 @@ export interface Treatment {
   name: string
   category_id: string
   description?: string
+  min_price?: number
+  max_price?: number
   created_at: string
   treatment_categories?: TreatmentCategory
 }

@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Despre Noi | Dentaloria",
+    "description": "Aflați despre misiunea Dentaloria de a conecta pacienții cu clinici dentare de încredere din străinătate, cu prețuri transparente și un angajament ferm față de confidențialitate."
+  },
+  "hero": {
+    "title": "Despre Dentaloria",
+    "subtitle": "Facem simplă găsirea unei clinici dentare de încredere în străinătate."
+  },
+  "intro": "Dentaloria conectează pacienți din întreaga lume cu clinici dentare atent selecționate din străinătate, făcând ca îngrijirea dentară de calitate și accesibilă să fie ușor de găsit și de încredere. Credem că tratamentul în străinătate nu ar trebui abordat singur — de aceea am construit o platformă unde puteți compara clinici reale, vedea prețuri transparente și lua legătura direct, totul în limba dumneavoastră.",
+  "whatWeDo": {
+    "title": "Ce Facem",
+    "verifiedClinics": {
+      "title": "Clinici Verificate",
+      "description": "Fiecare clinică parteneră este verificată înainte de a apărea pe Dentaloria."
+    },
+    "transparentPricing": {
+      "title": "Prețuri Transparente",
+      "description": "Prețuri clare, stabilite din start — fără surprize ascunse."
+    },
+    "multilingual": {
+      "title": "Suport Multilingv",
+      "description": "Navigați și luați legătura în limba dumneavoastră, în 7 limbi."
+    },
+    "coordination": {
+      "title": "Coordonare Personală",
+      "description": "De la primul contact până la tratament, vă ajutăm la fiecare pas."
+    }
+  },
+  "privacy": {
+    "title": "Confidențialitatea Dumneavoastră Contează",
+    "description": "Orice informație pe care o distribuiți prin Dentaloria — inclusiv detalii personale și medicale — este tratată cu strictă confidențialitate și folosită doar pentru a vă conecta cu clinica aleasă. Nu vindem niciodată datele dumneavoastră."
+  },
+  "operatedBy": "Dentaloria este proiectată și operată de Digimoria."
+}

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import Index from "@/pages/Index";
+import Treatments from "@/pages/Treatments";
+import AboutUs from "@/pages/AboutUs";
 import ClinicDetail from "@/pages/ClinicDetail";
 import ClinicTokenRoute from "@/pages/ClinicTokenRoute";
 import ClinicPanel from "@/pages/ClinicPanel";
@@ -25,6 +27,8 @@ export interface RouteDef {
 // means adding a route automatically makes it reachable at every locale.
 export const ROUTE_DEFS: RouteDef[] = [
   { path: "/", element: <Index /> },
+  { path: "/treatments", element: <Treatments /> },
+  { path: "/about-us", element: <AboutUs /> },
   { path: "/auth", element: <Auth /> },
   { path: "/register-clinic", element: <RegisterClinic /> },
   { path: "/reset-password", element: <ResetPassword /> },
