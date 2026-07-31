@@ -29,14 +29,14 @@
     "agreeCheckbox": "Confirm că reprezint această clinică și că documentele furnizate sunt autentice. Înregistrarea va fi analizată de Dentaloria înainte de activare.",
     "submitButton": "Înregistrează Clinica",
     "alreadyApproved": "Deja aprobat?",
-    "signIn": "Autentificare"
+    "signIn": "Autentificare",
+    "optional": "opțional"
   },
   "errors": {
     "title": "Eroare",
     "passwordMismatch": "Parolele nu se potrivesc.",
     "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere.",
     "healthDocRequired": "Vă rugăm să încărcați Certificatul de Autorizare Turism Medical.",
-    "agencyDocRequired": "Vă rugăm să încărcați Certificatul de Agenție sau bifați \"Aplic ca unitate medicală\".",
     "agreeRequired": "Vă rugăm să acceptați termenii.",
     "registrationErrorTitle": "Eroare de Înregistrare",
     "genericError": "A apărut o eroare.",

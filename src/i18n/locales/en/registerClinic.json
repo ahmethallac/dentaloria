@@ -29,14 +29,14 @@
     "agreeCheckbox": "I confirm I represent this clinic and the documents provided are authentic. The registration will be reviewed by Dentaloria before activation.",
     "submitButton": "Register Clinic",
     "alreadyApproved": "Already approved?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "optional": "optional"
   },
   "errors": {
     "title": "Error",
     "passwordMismatch": "Passwords do not match.",
     "passwordTooShort": "Password must be at least 6 characters.",
     "healthDocRequired": "Please upload the Health Tourism Authorization Certificate.",
-    "agencyDocRequired": "Please upload the Agency Certificate, or check \"I am applying as a healthcare facility\".",
     "agreeRequired": "Please accept the terms.",
     "registrationErrorTitle": "Registration Error",
     "genericError": "An error occurred.",

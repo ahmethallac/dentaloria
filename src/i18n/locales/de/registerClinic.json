@@ -29,14 +29,14 @@
     "agreeCheckbox": "Ich bestätige, dass ich diese Klinik vertrete und die bereitgestellten Dokumente authentisch sind. Die Registrierung wird von Dentaloria vor der Aktivierung geprüft.",
     "submitButton": "Klinik Registrieren",
     "alreadyApproved": "Bereits genehmigt?",
-    "signIn": "Anmelden"
+    "signIn": "Anmelden",
+    "optional": "optional"
   },
   "errors": {
     "title": "Fehler",
     "passwordMismatch": "Die Passwörter stimmen nicht überein.",
     "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
     "healthDocRequired": "Bitte laden Sie das Gesundheitstourismus-Genehmigungszertifikat hoch.",
-    "agencyDocRequired": "Bitte laden Sie das Agenturzertifikat hoch oder aktivieren Sie \"Ich bewerbe mich als Gesundheitseinrichtung\".",
     "agreeRequired": "Bitte akzeptieren Sie die Bedingungen.",
     "registrationErrorTitle": "Registrierungsfehler",
     "genericError": "Ein Fehler ist aufgetreten.",

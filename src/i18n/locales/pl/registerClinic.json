@@ -29,14 +29,14 @@
     "agreeCheckbox": "Potwierdzam, że reprezentuję tę klinikę, a dostarczone dokumenty są autentyczne. Rejestracja zostanie sprawdzona przez Dentaloria przed aktywacją.",
     "submitButton": "Zarejestruj Klinikę",
     "alreadyApproved": "Już zatwierdzone?",
-    "signIn": "Zaloguj się"
+    "signIn": "Zaloguj się",
+    "optional": "opcjonalne"
   },
   "errors": {
     "title": "Błąd",
     "passwordMismatch": "Hasła nie są zgodne.",
     "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków.",
     "healthDocRequired": "Prześlij Certyfikat Autoryzacji Turystyki Medycznej.",
-    "agencyDocRequired": "Prześlij Certyfikat Agencji lub zaznacz \"Ubiegam się jako placówka medyczna\".",
     "agreeRequired": "Zaakceptuj warunki.",
     "registrationErrorTitle": "Błąd Rejestracji",
     "genericError": "Wystąpił błąd.",

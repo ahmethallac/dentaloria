@@ -70,9 +70,6 @@ const RegisterClinic = () => {
     if (!form.healthTourismDoc) {
       toast({ title: t('errors.title'), description: t('errors.healthDocRequired'), variant: 'destructive' }); return
     }
-    if (!form.isHealthcareFacility && !form.agencyCertificate) {
-      toast({ title: t('errors.title'), description: t('errors.agencyDocRequired'), variant: 'destructive' }); return
-    }
     if (!form.agree) {
       toast({ title: t('errors.title'), description: t('errors.agreeRequired'), variant: 'destructive' }); return
     }
@@ -258,12 +255,12 @@ const RegisterClinic = () => {
                   </div>
                 </div>
 
-                {/* Agency Certificate — conditionally required */}
+                {/* Agency Certificate — optional */}
                 <div className="space-y-2">
                   <Label className="text-sm flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     {t('form.agencyCertificateLabel')}
-                    {!form.isHealthcareFacility && <span className="text-destructive">*</span>}
+                    <span className="text-muted-foreground font-normal">({t('form.optional')})</span>
                   </Label>
                   <input
                     ref={agencyInputRef}

@@ -39,8 +39,7 @@ Deno.serve(async (req) => {
     if (!cityId) missing.push('cityId')
     if (!phone) missing.push('phone')
     if (!healthTourismDocUrl) missing.push('healthTourismDocUrl')
-    // agencyCertificateUrl is required only when not applying as a healthcare facility
-    if (!appliedAsHealthcareFacility && !agencyCertificateUrl) missing.push('agencyCertificateUrl')
+    // agencyCertificateUrl (TÜRSAB certificate) is fully optional.
     if (missing.length) {
       return json({ error: `Missing required fields: ${missing.join(', ')}` }, 400)
     }
