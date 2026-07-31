@@ -40,6 +40,7 @@
     "agreeRequired": "Vă rugăm să acceptați termenii.",
     "registrationErrorTitle": "Eroare de Înregistrare",
     "genericError": "A apărut o eroare.",
-    "registrationFailed": "Înregistrarea a eșuat"
+    "registrationFailed": "Înregistrarea a eșuat",
+    "emailAlreadyRegistered": "Această adresă de email este deja înregistrată. Dacă clinica dvs. a fost deja aprobată, vă rugăm să vă autentificați."
   }
 }

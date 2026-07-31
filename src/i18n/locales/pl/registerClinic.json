@@ -40,6 +40,7 @@
     "agreeRequired": "Zaakceptuj warunki.",
     "registrationErrorTitle": "Błąd Rejestracji",
     "genericError": "Wystąpił błąd.",
-    "registrationFailed": "Rejestracja nie powiodła się"
+    "registrationFailed": "Rejestracja nie powiodła się",
+    "emailAlreadyRegistered": "Ten adres e-mail jest już zarejestrowany. Jeśli Twoja klinika została już zatwierdzona, zaloguj się."
   }
 }

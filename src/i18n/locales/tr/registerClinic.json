@@ -40,6 +40,7 @@
     "agreeRequired": "Lütfen şartları kabul edin.",
     "registrationErrorTitle": "Kayıt Hatası",
     "genericError": "Bir hata oluştu.",
-    "registrationFailed": "Kayıt başarısız oldu"
+    "registrationFailed": "Kayıt başarısız oldu",
+    "emailAlreadyRegistered": "Bu e-posta adresi zaten kayıtlı. Kliniğiniz daha önce onaylandıysa lütfen giriş yapın."
   }
 }

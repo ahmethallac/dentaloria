@@ -109,7 +109,24 @@ const RegisterClinic = () => {
       })
 
       if (error || (data as any)?.error) {
-        throw new Error((data as any)?.error || error?.message || t('errors.registrationFailed'))
+        // supabase-js only puts a generic "Edge Function returned a non-2xx
+        // status code" on `error.message` — the real reason we sent back
+        // (e.g. "email already registered") is in the raw response body.
+        let serverMessage: string | undefined = (data as any)?.error
+        if (!serverMessage && error?.context?.json) {
+          try {
+            const body = await error.context.json()
+            serverMessage = body?.error
+          } catch {
+            // response body wasn't JSON — fall through to the generic message
+          }
+        }
+        // The edge function returns a stable machine key for known cases so
+        // we can show a localized, actionable message instead of raw text.
+        if (serverMessage === 'email_already_registered') {
+          serverMessage = t('errors.emailAlreadyRegistered')
+        }
+        throw new Error(serverMessage || error?.message || t('errors.registrationFailed'))
       }
 
       setSubmitted(true)

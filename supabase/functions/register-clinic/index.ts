@@ -56,7 +56,16 @@ Deno.serve(async (req) => {
       user_metadata: { user_type: 'clinic_admin', full_name: clinicName, clinic_name: clinicName },
     })
     if (createErr || !created?.user) {
-      return json({ error: createErr?.message || 'Failed to create user' }, 400)
+      // Surface a stable, machine-readable key for "this email is already
+      // registered" so the frontend can show a localized, actionable message
+      // (point the user to log in) instead of Supabase's raw English text.
+      const isDuplicateEmail =
+        (createErr as any)?.code === 'email_exists' ||
+        /already.*registered|already.*exists/i.test(createErr?.message || '')
+      return json(
+        { error: isDuplicateEmail ? 'email_already_registered' : (createErr?.message || 'Failed to create user') },
+        400
+      )
     }
     const userId = created.user.id
 

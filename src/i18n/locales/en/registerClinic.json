@@ -40,6 +40,7 @@
     "agreeRequired": "Please accept the terms.",
     "registrationErrorTitle": "Registration Error",
     "genericError": "An error occurred.",
-    "registrationFailed": "Registration failed"
+    "registrationFailed": "Registration failed",
+    "emailAlreadyRegistered": "This email is already registered. If your clinic was already approved, please sign in instead."
   }
 }

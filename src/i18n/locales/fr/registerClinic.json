@@ -40,6 +40,7 @@
     "agreeRequired": "Veuillez accepter les conditions.",
     "registrationErrorTitle": "Erreur d'Inscription",
     "genericError": "Une erreur s'est produite.",
-    "registrationFailed": "L'inscription a échoué"
+    "registrationFailed": "L'inscription a échoué",
+    "emailAlreadyRegistered": "Cette adresse e-mail est déjà enregistrée. Si votre clinique a déjà été approuvée, veuillez vous connecter."
   }
 }
