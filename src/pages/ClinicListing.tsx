@@ -773,7 +773,7 @@ export default function ClinicListing() {
                         open={applyOpenForClinicId === clinic.id}
                         onOpenChange={(open) => !open && setApplyOpenForClinicId(null)}
                       >
-                        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                           <DialogHeader>
                             <DialogTitle>{t("applyDialog.titlePrefix")} {clinic.name}</DialogTitle>
                           </DialogHeader>

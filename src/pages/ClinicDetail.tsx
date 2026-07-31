@@ -1086,7 +1086,7 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
 
       {/* Mobile Dialog */}
       <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>{t("contact.sidebarTitle")}</DialogTitle>
           </DialogHeader>
