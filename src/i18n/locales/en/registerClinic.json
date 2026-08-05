@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Photos & Doctors",
-    "subtitle": "Add a few photos of your clinic and introduce your doctors."
+    "subtitle": "Add a few photos of your clinic and introduce your doctors.",
+    "beforeAfterTitle": "Before & After Photos",
+    "videosTitle": "Videos",
+    "optionalHint": "Optional — you can add this later from your clinic panel.",
+    "addNow": "Add now",
+    "doLater": "I'll do this later"
   },
   "documents": {
     "title": "Verification documents",

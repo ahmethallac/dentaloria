@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Fotografii & Medici",
-    "subtitle": "Adaugă câteva fotografii ale clinicii și prezintă-ți medicii."
+    "subtitle": "Adaugă câteva fotografii ale clinicii și prezintă-ți medicii.",
+    "beforeAfterTitle": "Fotografii Înainte & După",
+    "videosTitle": "Videoclipuri",
+    "optionalHint": "Opțional — puteți adăuga asta mai târziu din panoul clinicii.",
+    "addNow": "Adaugă acum",
+    "doLater": "Voi face asta mai târziu"
   },
   "documents": {
     "title": "Documente de verificare",

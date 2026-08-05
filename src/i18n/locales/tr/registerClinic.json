@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Görseller & Hekimler",
-    "subtitle": "Kliniğinizden birkaç fotoğraf ve doktorlarınızı ekleyin."
+    "subtitle": "Kliniğinizden birkaç fotoğraf ve doktorlarınızı ekleyin.",
+    "beforeAfterTitle": "Öncesi & Sonrası Fotoğrafları",
+    "videosTitle": "Videolar",
+    "optionalHint": "Opsiyonel — bunu daha sonra klinik panelinizden de ekleyebilirsiniz.",
+    "addNow": "Şimdi ekle",
+    "doLater": "Bunu daha sonra yapacağım"
   },
   "documents": {
     "title": "Doğrulama belgeleri",

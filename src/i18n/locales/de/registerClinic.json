@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Fotos & Ärzte",
-    "subtitle": "Fügen Sie einige Fotos Ihrer Klinik hinzu und stellen Sie Ihre Ärzte vor."
+    "subtitle": "Fügen Sie einige Fotos Ihrer Klinik hinzu und stellen Sie Ihre Ärzte vor.",
+    "beforeAfterTitle": "Vorher-Nachher-Fotos",
+    "videosTitle": "Videos",
+    "optionalHint": "Optional — Sie können dies später über Ihr Klinik-Panel hinzufügen.",
+    "addNow": "Jetzt hinzufügen",
+    "doLater": "Das mache ich später"
   },
   "documents": {
     "title": "Verifizierungsdokumente",

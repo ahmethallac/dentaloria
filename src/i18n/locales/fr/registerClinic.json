@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Photos & Médecins",
-    "subtitle": "Ajoutez quelques photos de votre clinique et présentez vos médecins."
+    "subtitle": "Ajoutez quelques photos de votre clinique et présentez vos médecins.",
+    "beforeAfterTitle": "Photos Avant & Après",
+    "videosTitle": "Vidéos",
+    "optionalHint": "Optionnel — vous pouvez ajouter ceci plus tard depuis votre panneau clinique.",
+    "addNow": "Ajouter maintenant",
+    "doLater": "Je ferai cela plus tard"
   },
   "documents": {
     "title": "Documents de vérification",

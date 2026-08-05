@@ -47,7 +47,12 @@
   },
   "teamMedia": {
     "title": "Zdjęcia i Lekarze",
-    "subtitle": "Dodaj kilka zdjęć swojej kliniki i przedstaw swoich lekarzy."
+    "subtitle": "Dodaj kilka zdjęć swojej kliniki i przedstaw swoich lekarzy.",
+    "beforeAfterTitle": "Zdjęcia Przed i Po",
+    "videosTitle": "Filmy",
+    "optionalHint": "Opcjonalne — możesz to dodać później z panelu kliniki.",
+    "addNow": "Dodaj teraz",
+    "doLater": "Zrobię to później"
   },
   "documents": {
     "title": "Dokumenty weryfikacyjne",
