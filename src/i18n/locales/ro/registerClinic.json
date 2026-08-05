@@ -32,7 +32,11 @@
     "selectCity": "Selectează orașul",
     "selectCountryFirst": "Selectează mai întâi țara",
     "phoneLabel": "Număr de Telefon",
-    "websiteLabel": "Website"
+    "websiteLabel": "Website",
+    "emailLabel": "Adresă de Email",
+    "googleTitle": "Conectează-ți Profilul Google Business",
+    "googleSubtitle": "Caută-ți clinica pe Google — ratingul și recenziile vor fi preluate automat și menținute la zi.",
+    "skipGoogle": "Omite pentru moment"
   },
   "profile": {
     "title": "Descrie-ți clinica",
@@ -42,8 +46,8 @@
     "addressLabel": "Adresă Completă"
   },
   "teamMedia": {
-    "title": "Echipă & fotografii",
-    "subtitle": "Adaugă medicii tăi și câteva fotografii ale clinicii."
+    "title": "Fotografii & Medici",
+    "subtitle": "Adaugă câteva fotografii ale clinicii și prezintă-ți medicii."
   },
   "documents": {
     "title": "Documente de verificare",

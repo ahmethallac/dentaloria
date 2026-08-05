@@ -32,7 +32,11 @@
     "selectCity": "Şehir seçin",
     "selectCountryFirst": "Önce ülke seçin",
     "phoneLabel": "Telefon Numarası",
-    "websiteLabel": "Web Sitesi"
+    "websiteLabel": "Web Sitesi",
+    "emailLabel": "E-posta Adresi",
+    "googleTitle": "Google İşletme Profilinizi Bağlayın",
+    "googleSubtitle": "Kliniğinizi Google'da arayın — puanınız ve yorumlarınız otomatik olarak çekilip güncel tutulacak.",
+    "skipGoogle": "Şimdilik atla"
   },
   "profile": {
     "title": "Kliniğinizi tanıtın",
@@ -42,8 +46,8 @@
     "addressLabel": "Açık Adres"
   },
   "teamMedia": {
-    "title": "Ekip & fotoğraflar",
-    "subtitle": "Doktorlarınızı ve kliniğinizden birkaç fotoğraf ekleyin."
+    "title": "Görseller & Hekimler",
+    "subtitle": "Kliniğinizden birkaç fotoğraf ve doktorlarınızı ekleyin."
   },
   "documents": {
     "title": "Doğrulama belgeleri",

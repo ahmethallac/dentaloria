@@ -32,7 +32,11 @@
     "selectCity": "Select city",
     "selectCountryFirst": "Select country first",
     "phoneLabel": "Phone Number",
-    "websiteLabel": "Website"
+    "websiteLabel": "Website",
+    "emailLabel": "Email Address",
+    "googleTitle": "Link your Google Business Profile",
+    "googleSubtitle": "Search for your clinic on Google — your rating and reviews will be pulled in automatically and kept in sync.",
+    "skipGoogle": "Skip for now"
   },
   "profile": {
     "title": "Describe your clinic",
@@ -42,8 +46,8 @@
     "addressLabel": "Full Address"
   },
   "teamMedia": {
-    "title": "Team & photos",
-    "subtitle": "Add your doctors and a few photos of your clinic."
+    "title": "Photos & Doctors",
+    "subtitle": "Add a few photos of your clinic and introduce your doctors."
   },
   "documents": {
     "title": "Verification documents",

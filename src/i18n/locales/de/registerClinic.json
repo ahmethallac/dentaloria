@@ -32,7 +32,11 @@
     "selectCity": "Stadt auswählen",
     "selectCountryFirst": "Zuerst Land auswählen",
     "phoneLabel": "Telefonnummer",
-    "websiteLabel": "Webseite"
+    "websiteLabel": "Webseite",
+    "emailLabel": "E-Mail-Adresse",
+    "googleTitle": "Verknüpfen Sie Ihr Google-Unternehmensprofil",
+    "googleSubtitle": "Suchen Sie Ihre Klinik bei Google — Ihre Bewertung und Rezensionen werden automatisch übernommen und aktuell gehalten.",
+    "skipGoogle": "Vorerst überspringen"
   },
   "profile": {
     "title": "Beschreiben Sie Ihre Klinik",
@@ -42,8 +46,8 @@
     "addressLabel": "Vollständige Adresse"
   },
   "teamMedia": {
-    "title": "Team & Fotos",
-    "subtitle": "Fügen Sie Ihre Ärzte und einige Fotos Ihrer Klinik hinzu."
+    "title": "Fotos & Ärzte",
+    "subtitle": "Fügen Sie einige Fotos Ihrer Klinik hinzu und stellen Sie Ihre Ärzte vor."
   },
   "documents": {
     "title": "Verifizierungsdokumente",

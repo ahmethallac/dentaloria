@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCountries, getCities, type Clinic, type Country, type City } from "@/lib/services";
+import GoogleBusinessLink from "@/components/clinic-panel/GoogleBusinessLink";
 
 interface Props {
   lang?: string;
@@ -28,8 +29,15 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
   const [countryId, setCountryId] = useState(initialClinic?.cities?.countries?.id || "");
   const [submitting, setSubmitting] = useState(false);
 
+  // Saved clinic is held here (rather than jumping straight to onDone) so we
+  // can show the Google Business linking step right after the clinic is
+  // created — this is the earliest point a clinic row (and therefore a
+  // google_place_id to attach) exists at all.
+  const [savedClinic, setSavedClinic] = useState<Clinic | null>(initialClinic && clinicId ? initialClinic : null);
+
   const [form, setForm] = useState({
     clinicName: initialClinic?.name || "",
+    email: initialClinic?.email || user?.email || "",
     cityId: initialClinic?.city_id || "",
     phone: initialClinic?.phone || "",
     website: initialClinic?.website || "",
@@ -60,6 +68,7 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
       const payload = {
         name: form.clinicName.trim().toUpperCase(),
         display_name: form.clinicName.trim(),
+        email: form.email,
         city_id: form.cityId,
         phone: form.phone,
         website: form.website || null,
@@ -76,7 +85,6 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
           .insert({
             ...payload,
             user_id: user.id,
-            email: user.email,
             approval_status: "pending",
             page_status: "incomplete",
             is_published: false,
@@ -88,13 +96,35 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
         saved = data as Clinic;
       }
 
-      onDone(saved.id, saved);
+      setSavedClinic(saved);
     } catch (err: any) {
       toast({ title: t("errors.registrationErrorTitle"), description: err.message || t("errors.genericError"), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (savedClinic) {
+    return (
+      <Card className="shadow-lg border-border/60 backdrop-blur-sm bg-card/95">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">{t("basics.googleTitle")}</CardTitle>
+          <CardDescription>{t("basics.googleSubtitle")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <GoogleBusinessLink clinic={savedClinic} onUpdated={setSavedClinic} />
+          <Button
+            type="button"
+            className="w-full bg-gradient-primary hover:opacity-90"
+            onClick={() => onDone(savedClinic.id, savedClinic)}
+          >
+            {savedClinic.google_place_id ? t("wizard.nextButton") : t("basics.skipGoogle")}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-lg border-border/60 backdrop-blur-sm bg-card/95">
@@ -136,9 +166,14 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
               <Input id="phone" value={form.phone} onChange={(e) => upd("phone", e.target.value)} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="website">{t("basics.websiteLabel")}</Label>
-              <Input id="website" placeholder="https://" value={form.website} onChange={(e) => upd("website", e.target.value)} />
+              <Label htmlFor="email">{t("basics.emailLabel")}</Label>
+              <Input id="email" type="email" value={form.email} onChange={(e) => upd("email", e.target.value)} required />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="website">{t("basics.websiteLabel")}</Label>
+            <Input id="website" placeholder="https://" value={form.website} onChange={(e) => upd("website", e.target.value)} />
           </div>
 
           <Button type="submit" className="w-full bg-gradient-primary hover:opacity-90" disabled={submitting}>
