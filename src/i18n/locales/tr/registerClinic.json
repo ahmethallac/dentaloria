@@ -1,46 +1,72 @@
 {
-  "submitted": {
-    "title": "Kayıt Gönderildi",
-    "subtitle": "Süper Admin onayı bekleniyor",
-    "description": "Kliniğinizi kaydettiğiniz için teşekkür ederiz. Ekibimiz başvurunuzu ve belgelerinizi inceleyecek. Başvurunuz onaylandıktan sonra giriş yapıp klinik sayfanızı tamamlayabileceksiniz.",
-    "backHome": "Ana Sayfaya Dön"
-  },
-  "form": {
+  "wizard": {
     "title": "Kliniğinizi Kaydedin",
-    "description": "Kliniğinizin resmi bilgilerini girin. Onaydan sonra genel sayfanızı tamamlayabileceksiniz.",
-    "accountSection": "Hesap",
+    "subtitle": "Hesabınızı oluşturun ve birkaç kolay adımda klinik sayfanızı hazırlayın.",
+    "stepBasics": "Temel Bilgiler",
+    "stepProfile": "Profil",
+    "stepTeam": "Ekip & Medya",
+    "stepDocuments": "Belgeler",
+    "nextButton": "İleri",
+    "backButton": "Geri",
+    "revisionsTitle": "Düzeltme talep edildi"
+  },
+  "auth": {
+    "title": "Hesabınızı oluşturun",
+    "subtitle": "Klinik sayfanızı hazırlamaya başlamak için kayıt olun.",
+    "continueWithGoogle": "Google ile devam et",
+    "orDivider": "veya",
     "emailLabel": "E-posta Adresi",
     "passwordLabel": "Şifre",
-    "confirmPasswordLabel": "Şifreyi Onayla",
-    "clinicSection": "Klinik",
-    "legalNameLabel": "Resmi Şirket Adı (Yasal Ad)",
+    "confirmPasswordLabel": "Şifre (Tekrar)",
+    "submitButton": "Devam Et",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "signIn": "Giriş yapın"
+  },
+  "basics": {
+    "title": "Kliniğinizden bahsedin",
+    "subtitle": "Temel bilgiler — detayları sonraki adımlarda ekleyeceksiniz.",
+    "clinicNameLabel": "Klinik Adı",
     "countryLabel": "Ülke",
     "selectCountry": "Ülke seçin",
     "cityLabel": "Şehir",
     "selectCity": "Şehir seçin",
     "selectCountryFirst": "Önce ülke seçin",
     "phoneLabel": "Telefon Numarası",
-    "websiteLabel": "Web Sitesi",
-    "documentsSection": "Gerekli Belgeler",
+    "websiteLabel": "Web Sitesi"
+  },
+  "profile": {
+    "title": "Kliniğinizi tanıtın",
+    "subtitle": "Hastaların genel sayfanızda göreceği içerik budur.",
+    "descriptionLabel": "Kliniğiniz hakkında",
+    "descriptionPlaceholder": "Kliniğinizi öne çıkaran özellikleri anlatın...",
+    "addressLabel": "Açık Adres"
+  },
+  "teamMedia": {
+    "title": "Ekip & fotoğraflar",
+    "subtitle": "Doktorlarınızı ve kliniğinizden birkaç fotoğraf ekleyin."
+  },
+  "documents": {
+    "title": "Doğrulama belgeleri",
+    "subtitle": "Onay için gereklidir — sayfanız yayına alınmadan önce ekibimizin incelemesi gereken tek şey budur.",
     "healthTourismDocLabel": "Sağlık Turizmi Yetki Belgesi",
     "agencyCertificateLabel": "Acente Sertifikası",
     "uploadFile": "Dosya Yükle",
+    "alreadyUploaded": "Zaten yüklendi",
+    "optional": "opsiyonel",
     "healthcareFacilityCheckbox": "Sağlık kuruluşu olarak başvuruyorum",
-    "agreeCheckbox": "Bu kliniği temsil ettiğimi ve sağlanan belgelerin gerçek olduğunu onaylıyorum. Kayıt, etkinleştirilmeden önce Dentaloria tarafından incelenecektir.",
-    "submitButton": "Kliniği Kaydet",
-    "alreadyApproved": "Zaten onaylandı mı?",
-    "signIn": "Giriş yap",
-    "optional": "opsiyonel"
+    "agreeCheckbox": "Bu kliniği temsil ettiğimi ve sağlanan belgelerin gerçek olduğunu onaylıyorum. Kayıt, aktivasyondan önce Dentaloria tarafından incelenecektir.",
+    "submitButton": "İncelemeye Gönder"
   },
   "errors": {
     "title": "Hata",
     "passwordMismatch": "Şifreler eşleşmiyor.",
     "passwordTooShort": "Şifre en az 6 karakter olmalıdır.",
+    "cityRequired": "Lütfen bir şehir seçin.",
     "healthDocRequired": "Lütfen Sağlık Turizmi Yetki Belgesini yükleyin.",
     "agreeRequired": "Lütfen şartları kabul edin.",
     "registrationErrorTitle": "Kayıt Hatası",
     "genericError": "Bir hata oluştu.",
     "registrationFailed": "Kayıt başarısız oldu",
-    "emailAlreadyRegistered": "Bu e-posta adresi zaten kayıtlı. Kliniğiniz daha önce onaylandıysa lütfen giriş yapın."
+    "emailAlreadyRegistered": "Bu e-posta zaten kayıtlı. Kliniğiniz zaten onaylandıysa lütfen giriş yapın."
   }
 }

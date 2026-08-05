@@ -31,7 +31,9 @@
     "editAgainNote": "Editați informațiile clinicii și retrimiteți din pagina Informații Clinică.",
     "pendingDesc": "Puteți continua să editați — clinica dvs. va deveni activă odată aprobată.",
     "completeDesc": "Adăugați fotografii, medici, tratamente și o descriere, apoi trimiteți pagina pentru aprobare din pagina Informații Clinică.",
-    "pendingBadge": "Aprobare pagină în așteptare"
+    "pendingBadge": "Aprobare pagină în așteptare",
+    "applicationPendingTitle": "Cererea dvs. este în curs de examinare",
+    "applicationPendingDesc": "Vă mulțumim că ați completat profilul clinicii. Echipa noastră analizează documentele și conținutul paginii împreună — pagina dvs. va deveni activă imediat ce este aprobată. Între timp, puteți continua să editați totul mai jos."
   },
   "balance": {
     "emptyTitle": "Sold gol",

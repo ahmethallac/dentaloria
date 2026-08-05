@@ -1,41 +1,67 @@
 {
-  "submitted": {
-    "title": "Zgłoszenie Wysłane",
-    "subtitle": "Oczekiwanie na zatwierdzenie przez Super Administratora",
-    "description": "Dziękujemy za zarejestrowanie kliniki. Nasz zespół sprawdzi zgłoszenie i dokumenty. Po zatwierdzeniu wniosku będziesz mógł się zalogować i uzupełnić stronę kliniki.",
-    "backHome": "Powrót do Strony Głównej"
-  },
-  "form": {
+  "wizard": {
     "title": "Zarejestruj Swoją Klinikę",
-    "description": "Podaj oficjalne dane swojej kliniki. Po zatwierdzeniu będziesz mógł uzupełnić swoją publiczną stronę.",
-    "accountSection": "Konto",
-    "emailLabel": "Adres E-mail",
+    "subtitle": "Załóż konto i skonfiguruj stronę swojej kliniki w kilku prostych krokach.",
+    "stepBasics": "Podstawy",
+    "stepProfile": "Profil",
+    "stepTeam": "Zespół i Media",
+    "stepDocuments": "Dokumenty",
+    "nextButton": "Dalej",
+    "backButton": "Wstecz",
+    "revisionsTitle": "Poproszono o poprawki"
+  },
+  "auth": {
+    "title": "Załóż konto",
+    "subtitle": "Zarejestruj się, aby rozpocząć konfigurację strony swojej kliniki.",
+    "continueWithGoogle": "Kontynuuj z Google",
+    "orDivider": "lub",
+    "emailLabel": "Adres e-mail",
     "passwordLabel": "Hasło",
-    "confirmPasswordLabel": "Potwierdź Hasło",
-    "clinicSection": "Klinika",
-    "legalNameLabel": "Oficjalna Nazwa Firmy (Nazwa Prawna)",
+    "confirmPasswordLabel": "Potwierdź hasło",
+    "submitButton": "Kontynuuj",
+    "alreadyHaveAccount": "Masz już konto?",
+    "signIn": "Zaloguj się"
+  },
+  "basics": {
+    "title": "Opowiedz nam o swojej klinice",
+    "subtitle": "Najważniejsze informacje — więcej szczegółów dodasz w kolejnych krokach.",
+    "clinicNameLabel": "Nazwa Kliniki",
     "countryLabel": "Kraj",
     "selectCountry": "Wybierz kraj",
     "cityLabel": "Miasto",
     "selectCity": "Wybierz miasto",
     "selectCountryFirst": "Najpierw wybierz kraj",
-    "phoneLabel": "Numer Telefonu",
-    "websiteLabel": "Strona internetowa",
-    "documentsSection": "Wymagane Dokumenty",
+    "phoneLabel": "Numer telefonu",
+    "websiteLabel": "Strona internetowa"
+  },
+  "profile": {
+    "title": "Opisz swoją klinikę",
+    "subtitle": "To właśnie zobaczą pacjenci na Twojej publicznej stronie.",
+    "descriptionLabel": "O Twojej klinice",
+    "descriptionPlaceholder": "Opowiedz pacjentom, co wyróżnia Twoją klinikę...",
+    "addressLabel": "Pełny adres"
+  },
+  "teamMedia": {
+    "title": "Zespół i zdjęcia",
+    "subtitle": "Dodaj swoich lekarzy oraz kilka zdjęć kliniki."
+  },
+  "documents": {
+    "title": "Dokumenty weryfikacyjne",
+    "subtitle": "Wymagane do zatwierdzenia — to jedyna rzecz, którą nasz zespół musi sprawdzić, zanim Twoja strona zostanie opublikowana.",
     "healthTourismDocLabel": "Certyfikat Autoryzacji Turystyki Medycznej",
     "agencyCertificateLabel": "Certyfikat Agencji",
-    "uploadFile": "Prześlij Plik",
-    "healthcareFacilityCheckbox": "Ubiegam się jako placówka medyczna",
-    "agreeCheckbox": "Potwierdzam, że reprezentuję tę klinikę, a dostarczone dokumenty są autentyczne. Rejestracja zostanie sprawdzona przez Dentaloria przed aktywacją.",
-    "submitButton": "Zarejestruj Klinikę",
-    "alreadyApproved": "Już zatwierdzone?",
-    "signIn": "Zaloguj się",
-    "optional": "opcjonalne"
+    "uploadFile": "Prześlij plik",
+    "alreadyUploaded": "Już przesłano",
+    "optional": "opcjonalne",
+    "healthcareFacilityCheckbox": "Aplikuję jako placówka medyczna",
+    "agreeCheckbox": "Potwierdzam, że reprezentuję tę klinikę, a dostarczone dokumenty są autentyczne. Rejestracja zostanie zweryfikowana przez Dentaloria przed aktywacją.",
+    "submitButton": "Wyślij do weryfikacji"
   },
   "errors": {
     "title": "Błąd",
     "passwordMismatch": "Hasła nie są zgodne.",
     "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków.",
+    "cityRequired": "Wybierz miasto.",
     "healthDocRequired": "Prześlij Certyfikat Autoryzacji Turystyki Medycznej.",
     "agreeRequired": "Zaakceptuj warunki.",
     "registrationErrorTitle": "Błąd Rejestracji",

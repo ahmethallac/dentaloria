@@ -1,46 +1,72 @@
 {
-  "submitted": {
-    "title": "Inscription Envoyée",
-    "subtitle": "En attente d'approbation du Super Administrateur",
-    "description": "Merci d'avoir inscrit votre clinique. Notre équipe examinera votre soumission et vos documents. Une fois votre demande approuvée, vous pourrez vous connecter et compléter la page de votre clinique.",
-    "backHome": "Retour à l'Accueil"
-  },
-  "form": {
+  "wizard": {
     "title": "Inscrivez Votre Clinique",
-    "description": "Fournissez les informations officielles de votre clinique. Après approbation, vous pourrez compléter votre page publique.",
-    "accountSection": "Compte",
-    "emailLabel": "Adresse E-mail",
+    "subtitle": "Créez votre compte et configurez la page de votre clinique en quelques étapes guidées.",
+    "stepBasics": "Informations de base",
+    "stepProfile": "Profil",
+    "stepTeam": "Équipe & Médias",
+    "stepDocuments": "Documents",
+    "nextButton": "Suivant",
+    "backButton": "Retour",
+    "revisionsTitle": "Modifications demandées"
+  },
+  "auth": {
+    "title": "Créez votre compte",
+    "subtitle": "Inscrivez-vous pour commencer à configurer la page de votre clinique.",
+    "continueWithGoogle": "Continuer avec Google",
+    "orDivider": "ou",
+    "emailLabel": "Adresse e-mail",
     "passwordLabel": "Mot de passe",
-    "confirmPasswordLabel": "Confirmer le Mot de Passe",
-    "clinicSection": "Clinique",
-    "legalNameLabel": "Nom Officiel de l'Entreprise (Nom Légal)",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "submitButton": "Continuer",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter"
+  },
+  "basics": {
+    "title": "Parlez-nous de votre clinique",
+    "subtitle": "L'essentiel — vous pourrez ajouter plus de détails aux étapes suivantes.",
+    "clinicNameLabel": "Nom de la Clinique",
     "countryLabel": "Pays",
     "selectCountry": "Sélectionner le pays",
     "cityLabel": "Ville",
     "selectCity": "Sélectionner la ville",
     "selectCountryFirst": "Sélectionnez d'abord le pays",
-    "phoneLabel": "Numéro de Téléphone",
-    "websiteLabel": "Site Web",
-    "documentsSection": "Documents Requis",
+    "phoneLabel": "Numéro de téléphone",
+    "websiteLabel": "Site web"
+  },
+  "profile": {
+    "title": "Décrivez votre clinique",
+    "subtitle": "C'est ce que les patients verront sur votre page publique.",
+    "descriptionLabel": "À propos de votre clinique",
+    "descriptionPlaceholder": "Dites aux patients ce qui distingue votre clinique...",
+    "addressLabel": "Adresse complète"
+  },
+  "teamMedia": {
+    "title": "Équipe & photos",
+    "subtitle": "Ajoutez vos médecins et quelques photos de votre clinique."
+  },
+  "documents": {
+    "title": "Documents de vérification",
+    "subtitle": "Requis pour l'approbation — c'est la seule chose que notre équipe doit examiner avant la mise en ligne de votre page.",
     "healthTourismDocLabel": "Certificat d'Autorisation de Tourisme Médical",
     "agencyCertificateLabel": "Certificat d'Agence",
-    "uploadFile": "Télécharger le Fichier",
+    "uploadFile": "Téléverser un fichier",
+    "alreadyUploaded": "Déjà téléversé",
+    "optional": "optionnel",
     "healthcareFacilityCheckbox": "Je postule en tant qu'établissement de santé",
-    "agreeCheckbox": "Je confirme que je représente cette clinique et que les documents fournis sont authentiques. L'inscription sera examinée par Dentaloria avant activation.",
-    "submitButton": "Inscrire la Clinique",
-    "alreadyApproved": "Déjà approuvé ?",
-    "signIn": "Se connecter",
-    "optional": "facultatif"
+    "agreeCheckbox": "Je confirme que je représente cette clinique et que les documents fournis sont authentiques. L'inscription sera examinée par Dentaloria avant l'activation.",
+    "submitButton": "Soumettre pour examen"
   },
   "errors": {
     "title": "Erreur",
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
     "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères.",
-    "healthDocRequired": "Veuillez télécharger le Certificat d'Autorisation de Tourisme Médical.",
+    "cityRequired": "Veuillez sélectionner une ville.",
+    "healthDocRequired": "Veuillez téléverser le Certificat d'Autorisation de Tourisme Médical.",
     "agreeRequired": "Veuillez accepter les conditions.",
     "registrationErrorTitle": "Erreur d'Inscription",
     "genericError": "Une erreur s'est produite.",
     "registrationFailed": "L'inscription a échoué",
-    "emailAlreadyRegistered": "Cette adresse e-mail est déjà enregistrée. Si votre clinique a déjà été approuvée, veuillez vous connecter."
+    "emailAlreadyRegistered": "Cet e-mail est déjà enregistré. Si votre clinique a déjà été approuvée, veuillez vous connecter."
   }
 }

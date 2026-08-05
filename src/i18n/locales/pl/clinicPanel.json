@@ -31,7 +31,9 @@
     "editAgainNote": "Edytuj informacje o klinice i prześlij ponownie ze strony Informacje o Klinice.",
     "pendingDesc": "Możesz kontynuować edycję — Twoja klinika zostanie opublikowana po zatwierdzeniu.",
     "completeDesc": "Dodaj zdjęcia, lekarzy, zabiegi i opis, a następnie prześlij stronę do zatwierdzenia ze strony Informacje o Klinice.",
-    "pendingBadge": "Oczekuje na zatwierdzenie strony"
+    "pendingBadge": "Oczekuje na zatwierdzenie strony",
+    "applicationPendingTitle": "Twój wniosek jest w trakcie weryfikacji",
+    "applicationPendingDesc": "Dziękujemy za uzupełnienie profilu kliniki. Nasz zespół sprawdza teraz Twoje dokumenty i treść strony razem — strona zostanie opublikowana zaraz po zatwierdzeniu. W międzyczasie możesz nadal edytować wszystko poniżej."
   },
   "balance": {
     "emptyTitle": "Saldo puste",

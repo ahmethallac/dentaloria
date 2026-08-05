@@ -79,24 +79,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const handleSignIn = async (email: string, password: string) => {
     try {
       await signIn(email, password)
-      // Pending-approval gate: clinic_admins can only sign in once approved
-      const { supabase } = await import('@/integrations/supabase/client')
-      const { data: { user: signedIn } } = await supabase.auth.getUser()
-      if (signedIn) {
-        const { data: roleRow } = await supabase
-          .from('user_roles').select('role').eq('user_id', signedIn.id)
-        const roles = (roleRow || []).map((r: any) => r.role)
-        const isAdmin = roles.includes('admin') || roles.includes('sub_admin')
-        if (!isAdmin && roles.includes('clinic_admin')) {
-          const { data: clinic } = await supabase
-            .from('clinics').select('approval_status, deleted_at')
-            .eq('user_id', signedIn.id).maybeSingle()
-          if (!clinic || clinic.deleted_at || clinic.approval_status !== 'approved') {
-            await signOut()
-            throw new Error('Your clinic registration is awaiting Super Admin approval.')
-          }
-        }
-      }
+      // NOTE: clinic_admins used to be force-signed-out here until their
+      // application was approved. Admin approval now only gates whether the
+      // clinic's page goes live publicly — it no longer blocks the clinic
+      // admin from signing in and using their own panel/onboarding wizard.
     } catch (error) {
       console.error('Sign in error:', error)
       throw error

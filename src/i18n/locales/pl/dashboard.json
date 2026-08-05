@@ -1,17 +1,3 @@
 {
-  "noClinic": {
-    "title": "Brak kliniki na tym koncie",
-    "description": "To konto nie jest powiązane z żadną kliniką. Zarejestruj nową klinikę lub skontaktuj się z pomocą techniczną.",
-    "cta": "Zarejestruj Klinikę"
-  },
-  "status": {
-    "subtitle": "Status Rejestracji Kliniki",
-    "pendingTitle": "Oczekiwanie na Zatwierdzenie",
-    "pendingDesc": "Rejestracja Twojej kliniki jest w trakcie weryfikacji. Zostaniesz powiadomiony po jej zatwierdzeniu.",
-    "rejectedTitle": "Rejestracja Odrzucona",
-    "rejectedDesc": "Niestety, rejestracja Twojej kliniki nie została zatwierdzona. Skontaktuj się z pomocą techniczną, aby uzyskać więcej informacji.",
-    "approvedTitle": "Zatwierdzono!",
-    "approvedDesc": "Twoja klinika jest zatwierdzona i aktywna.",
-    "goToPanel": "Przejdź do Panelu Kliniki"
-  }
+  "loadError": "Wystąpił problem podczas ładowania Twojego konta. Odśwież stronę."
 }

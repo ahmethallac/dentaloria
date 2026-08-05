@@ -1,41 +1,67 @@
 {
-  "submitted": {
-    "title": "Registration Submitted",
-    "subtitle": "Awaiting Super Admin approval",
-    "description": "Thank you for registering your clinic. Our team will review your submission and documents. Once your application is approved, you'll be able to sign in and complete your clinic page.",
-    "backHome": "Back to Home"
-  },
-  "form": {
+  "wizard": {
     "title": "Register Your Clinic",
-    "description": "Provide your clinic's official details. After approval you'll be able to complete your public page.",
-    "accountSection": "Account",
+    "subtitle": "Create your account and set up your clinic page in a few guided steps.",
+    "stepBasics": "Basics",
+    "stepProfile": "Profile",
+    "stepTeam": "Team & Media",
+    "stepDocuments": "Documents",
+    "nextButton": "Next",
+    "backButton": "Back",
+    "revisionsTitle": "Changes requested"
+  },
+  "auth": {
+    "title": "Create your account",
+    "subtitle": "Sign up to start setting up your clinic page.",
+    "continueWithGoogle": "Continue with Google",
+    "orDivider": "or",
     "emailLabel": "Email Address",
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Confirm Password",
-    "clinicSection": "Clinic",
-    "legalNameLabel": "Official Company Name (Legal Name)",
+    "submitButton": "Continue",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "basics": {
+    "title": "Tell us about your clinic",
+    "subtitle": "The essentials — you can add more detail in the next steps.",
+    "clinicNameLabel": "Clinic Name",
     "countryLabel": "Country",
     "selectCountry": "Select country",
     "cityLabel": "City",
     "selectCity": "Select city",
     "selectCountryFirst": "Select country first",
     "phoneLabel": "Phone Number",
-    "websiteLabel": "Website",
-    "documentsSection": "Required Documents",
+    "websiteLabel": "Website"
+  },
+  "profile": {
+    "title": "Describe your clinic",
+    "subtitle": "This is what patients will see on your public page.",
+    "descriptionLabel": "About your clinic",
+    "descriptionPlaceholder": "Tell patients what makes your clinic stand out...",
+    "addressLabel": "Full Address"
+  },
+  "teamMedia": {
+    "title": "Team & photos",
+    "subtitle": "Add your doctors and a few photos of your clinic."
+  },
+  "documents": {
+    "title": "Verification documents",
+    "subtitle": "Required for approval — this is the only thing our team needs to review before your page goes live.",
     "healthTourismDocLabel": "Health Tourism Authorization Certificate",
     "agencyCertificateLabel": "Agency Certificate",
     "uploadFile": "Upload File",
+    "alreadyUploaded": "Already uploaded",
+    "optional": "optional",
     "healthcareFacilityCheckbox": "I am applying as a healthcare facility",
     "agreeCheckbox": "I confirm I represent this clinic and the documents provided are authentic. The registration will be reviewed by Dentaloria before activation.",
-    "submitButton": "Register Clinic",
-    "alreadyApproved": "Already approved?",
-    "signIn": "Sign in",
-    "optional": "optional"
+    "submitButton": "Submit for Review"
   },
   "errors": {
     "title": "Error",
     "passwordMismatch": "Passwords do not match.",
     "passwordTooShort": "Password must be at least 6 characters.",
+    "cityRequired": "Please select a city.",
     "healthDocRequired": "Please upload the Health Tourism Authorization Certificate.",
     "agreeRequired": "Please accept the terms.",
     "registrationErrorTitle": "Registration Error",

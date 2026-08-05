@@ -1,5 +1,8 @@
-// Atomic clinic registration: creates auth user + clinic + approval + role.
-// Rolls back the auth user if any subsequent step fails so we never leave orphans.
+// Clinic-admin account bootstrap: creates the auth user (password mode) or
+// verifies an existing session (oauth mode), then grants the clinic_admin
+// role. Nothing else — the clinic profile itself is created and filled in
+// client-side, step by step, once the user has a session (RLS covers those
+// writes because clinics.user_id = auth.uid()).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
 
 const corsHeaders = {
@@ -16,43 +19,43 @@ Deno.serve(async (req) => {
     const admin = createClient(supabaseUrl, serviceKey)
 
     const body = await req.json().catch(() => ({}))
-    const {
-      email, password,
-      clinicName, cityId, phone, website,
-      healthTourismDocUrl,
-      agencyCertificateUrl,
-      appliedAsHealthcareFacility,
-      locale,
-    } = body || {}
+    const mode = body?.mode === 'oauth' ? 'oauth' : 'password'
 
-    // Whichever site locale the registrant was browsing in — used later to
-    // send them transactional emails in their own language. Falls back to
-    // English for anything unrecognized rather than rejecting the request.
-    const SUPPORTED_LOCALES = ['en', 'tr', 'ro', 'pl', 'ru', 'de', 'fr']
-    const resolvedLocale = SUPPORTED_LOCALES.includes(locale) ? locale : 'en'
-
-    // Basic validation
-    const missing: string[] = []
-    if (!email) missing.push('email')
-    if (!password) missing.push('password')
-    if (!clinicName) missing.push('clinicName')
-    if (!cityId) missing.push('cityId')
-    if (!phone) missing.push('phone')
-    if (!healthTourismDocUrl) missing.push('healthTourismDocUrl')
-    // agencyCertificateUrl (TÜRSAB certificate) is fully optional.
-    if (missing.length) {
-      return json({ error: `Missing required fields: ${missing.join(', ')}` }, 400)
+    const grantClinicAdminRole = async (userId: string) => {
+      await admin.from('user_roles').upsert(
+        { user_id: userId, role: 'clinic_admin' },
+        { onConflict: 'user_id,role', ignoreDuplicates: true } as any
+      )
     }
+
+    if (mode === 'oauth') {
+      // Caller already has a Supabase session (e.g. just completed Google
+      // sign-in). supabase-js sends it as a Bearer token automatically when
+      // functions.invoke() is called with an active session.
+      const authHeader = req.headers.get('Authorization') || ''
+      const token = authHeader.replace(/^Bearer\s+/i, '')
+      if (!token) return json({ error: 'Missing session' }, 401)
+
+      const { data: userData, error: userErr } = await admin.auth.getUser(token)
+      if (userErr || !userData?.user) return json({ error: 'Invalid session' }, 401)
+
+      await grantClinicAdminRole(userData.user.id)
+      return json({ success: true, userId: userData.user.id })
+    }
+
+    // mode === 'password'
+    const { email, password } = body || {}
+    if (!email) return json({ error: 'Missing required fields: email' }, 400)
+    if (!password) return json({ error: 'Missing required fields: password' }, 400)
     if (typeof password !== 'string' || password.length < 6) {
       return json({ error: 'Password must be at least 6 characters' }, 400)
     }
 
-    // 1) Create auth user
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { user_type: 'clinic_admin', full_name: clinicName, clinic_name: clinicName },
+      user_metadata: { user_type: 'clinic_admin' },
     })
     if (createErr || !created?.user) {
       // Surface a stable, machine-readable key for "this email is already
@@ -66,65 +69,9 @@ Deno.serve(async (req) => {
         400
       )
     }
-    const userId = created.user.id
 
-    const rollback = async (reason: string) => {
-      try { await admin.auth.admin.deleteUser(userId) } catch (_) {}
-      return json({ error: reason }, 500)
-    }
-
-    // 2) Insert clinic (pending application + incomplete page)
-    const { data: clinicRow, error: clinicErr } = await admin
-      .from('clinics')
-      .insert({
-        name: String(clinicName).toUpperCase(),
-        email,
-        user_id: userId,
-        city_id: cityId,
-        phone,
-        website: website || null,
-        is_published: false,
-        approval_status: 'pending',
-        page_status: 'incomplete',
-        locale: resolvedLocale,
-      })
-      .select('id')
-      .single()
-    if (clinicErr || !clinicRow) return await rollback(`Failed to create clinic: ${clinicErr?.message}`)
-
-    // 3) Approval row with documents.
-    //    NOTE: existing column tax_certificate_url is reused to store the agency certificate URL
-    //    (kept for backwards compatibility — no schema rename needed).
-    const { error: apprErr } = await admin
-      .from('clinic_approvals')
-      .insert({
-        clinic_id: clinicRow.id,
-        status: 'pending',
-        health_tourism_doc_url: healthTourismDocUrl,
-        tax_certificate_url: appliedAsHealthcareFacility ? null : agencyCertificateUrl,
-        applied_as_healthcare_facility: !!appliedAsHealthcareFacility,
-      })
-    if (apprErr) return await rollback(`Failed to create approval: ${apprErr.message}`)
-
-    // 4) Ensure user_role = clinic_admin
-    await admin.from('user_roles').upsert(
-      { user_id: userId, role: 'clinic_admin' },
-      { onConflict: 'user_id,role', ignoreDuplicates: true } as any
-    )
-
-    // 5) Fire-and-forget notification emails (clinic confirmation + admin alert)
-    try {
-      await admin.functions.invoke('send-clinic-notification', {
-        body: { type: 'application_received', clinicId: clinicRow.id },
-      })
-    } catch (_) { /* non-fatal */ }
-    try {
-      await admin.functions.invoke('send-clinic-notification', {
-        body: { type: 'admin_new_application', clinicId: clinicRow.id },
-      })
-    } catch (_) { /* non-fatal */ }
-
-    return json({ success: true, clinicId: clinicRow.id, userId })
+    await grantClinicAdminRole(created.user.id)
+    return json({ success: true, userId: created.user.id })
   } catch (e: any) {
     return json({ error: e?.message || 'Server error' }, 500)
   }

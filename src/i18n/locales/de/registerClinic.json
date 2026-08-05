@@ -1,46 +1,72 @@
 {
-  "submitted": {
-    "title": "Registrierung Eingereicht",
-    "subtitle": "Warten auf Genehmigung des Super-Admins",
-    "description": "Vielen Dank für die Registrierung Ihrer Klinik. Unser Team wird Ihre Einreichung und Dokumente prüfen. Nach Genehmigung Ihres Antrags können Sie sich anmelden und Ihre Klinikseite vervollständigen.",
-    "backHome": "Zurück zur Startseite"
-  },
-  "form": {
+  "wizard": {
     "title": "Registrieren Sie Ihre Klinik",
-    "description": "Geben Sie die offiziellen Angaben Ihrer Klinik an. Nach der Genehmigung können Sie Ihre öffentliche Seite vervollständigen.",
-    "accountSection": "Konto",
+    "subtitle": "Erstellen Sie Ihr Konto und richten Sie Ihre Klinikseite in wenigen geführten Schritten ein.",
+    "stepBasics": "Grunddaten",
+    "stepProfile": "Profil",
+    "stepTeam": "Team & Medien",
+    "stepDocuments": "Dokumente",
+    "nextButton": "Weiter",
+    "backButton": "Zurück",
+    "revisionsTitle": "Änderungen angefordert"
+  },
+  "auth": {
+    "title": "Konto erstellen",
+    "subtitle": "Registrieren Sie sich, um mit der Einrichtung Ihrer Klinikseite zu beginnen.",
+    "continueWithGoogle": "Mit Google fortfahren",
+    "orDivider": "oder",
     "emailLabel": "E-Mail-Adresse",
     "passwordLabel": "Passwort",
-    "confirmPasswordLabel": "Passwort Bestätigen",
-    "clinicSection": "Klinik",
-    "legalNameLabel": "Offizieller Firmenname (Rechtlicher Name)",
+    "confirmPasswordLabel": "Passwort bestätigen",
+    "submitButton": "Weiter",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "signIn": "Anmelden"
+  },
+  "basics": {
+    "title": "Erzählen Sie uns von Ihrer Klinik",
+    "subtitle": "Die wichtigsten Angaben — weitere Details folgen in den nächsten Schritten.",
+    "clinicNameLabel": "Klinikname",
     "countryLabel": "Land",
     "selectCountry": "Land auswählen",
     "cityLabel": "Stadt",
     "selectCity": "Stadt auswählen",
     "selectCountryFirst": "Zuerst Land auswählen",
     "phoneLabel": "Telefonnummer",
-    "websiteLabel": "Webseite",
-    "documentsSection": "Erforderliche Dokumente",
-    "healthTourismDocLabel": "Gesundheitstourismus-Genehmigungszertifikat",
+    "websiteLabel": "Webseite"
+  },
+  "profile": {
+    "title": "Beschreiben Sie Ihre Klinik",
+    "subtitle": "Das sehen Patienten auf Ihrer öffentlichen Seite.",
+    "descriptionLabel": "Über Ihre Klinik",
+    "descriptionPlaceholder": "Erzählen Sie Patienten, was Ihre Klinik besonders macht...",
+    "addressLabel": "Vollständige Adresse"
+  },
+  "teamMedia": {
+    "title": "Team & Fotos",
+    "subtitle": "Fügen Sie Ihre Ärzte und einige Fotos Ihrer Klinik hinzu."
+  },
+  "documents": {
+    "title": "Verifizierungsdokumente",
+    "subtitle": "Für die Genehmigung erforderlich — das ist das Einzige, was unser Team vor der Veröffentlichung Ihrer Seite prüfen muss.",
+    "healthTourismDocLabel": "Genehmigungszertifikat für Gesundheitstourismus",
     "agencyCertificateLabel": "Agenturzertifikat",
-    "uploadFile": "Datei Hochladen",
+    "uploadFile": "Datei hochladen",
+    "alreadyUploaded": "Bereits hochgeladen",
+    "optional": "optional",
     "healthcareFacilityCheckbox": "Ich bewerbe mich als Gesundheitseinrichtung",
     "agreeCheckbox": "Ich bestätige, dass ich diese Klinik vertrete und die bereitgestellten Dokumente authentisch sind. Die Registrierung wird von Dentaloria vor der Aktivierung geprüft.",
-    "submitButton": "Klinik Registrieren",
-    "alreadyApproved": "Bereits genehmigt?",
-    "signIn": "Anmelden",
-    "optional": "optional"
+    "submitButton": "Zur Prüfung einreichen"
   },
   "errors": {
     "title": "Fehler",
     "passwordMismatch": "Die Passwörter stimmen nicht überein.",
     "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
-    "healthDocRequired": "Bitte laden Sie das Gesundheitstourismus-Genehmigungszertifikat hoch.",
+    "cityRequired": "Bitte wählen Sie eine Stadt aus.",
+    "healthDocRequired": "Bitte laden Sie das Genehmigungszertifikat für Gesundheitstourismus hoch.",
     "agreeRequired": "Bitte akzeptieren Sie die Bedingungen.",
     "registrationErrorTitle": "Registrierungsfehler",
     "genericError": "Ein Fehler ist aufgetreten.",
     "registrationFailed": "Registrierung fehlgeschlagen",
-    "emailAlreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert. Wenn Ihre Klinik bereits genehmigt wurde, melden Sie sich bitte an."
+    "emailAlreadyRegistered": "Diese E-Mail ist bereits registriert. Wenn Ihre Klinik bereits genehmigt wurde, melden Sie sich bitte an."
   }
 }

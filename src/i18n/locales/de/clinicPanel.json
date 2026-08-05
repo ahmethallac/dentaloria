@@ -31,7 +31,9 @@
     "editAgainNote": "Bearbeiten Sie Ihre Klinikinformationen und senden Sie sie erneut über die Seite Klinikinformationen.",
     "pendingDesc": "Sie können weiter bearbeiten — Ihre Klinik wird nach Genehmigung veröffentlicht.",
     "completeDesc": "Fügen Sie Fotos, Ärzte, Behandlungen und eine Beschreibung hinzu und reichen Sie Ihre Seite dann zur Genehmigung über die Seite Klinikinformationen ein.",
-    "pendingBadge": "Seitengenehmigung ausstehend"
+    "pendingBadge": "Seitengenehmigung ausstehend",
+    "applicationPendingTitle": "Ihr Antrag wird geprüft",
+    "applicationPendingDesc": "Vielen Dank, dass Sie Ihr Klinikprofil vervollständigt haben. Unser Team prüft Ihre Dokumente und den Seiteninhalt gemeinsam — Ihre Seite geht live, sobald sie genehmigt ist. In der Zwischenzeit können Sie unten alles weiter bearbeiten."
   },
   "balance": {
     "emptyTitle": "Guthaben leer",

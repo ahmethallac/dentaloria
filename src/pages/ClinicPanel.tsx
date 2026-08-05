@@ -271,6 +271,22 @@ const ClinicPanel = () => {
         </div>
       )}
 
+      {/* Unified review banner: the clinic submitted its full profile + documents
+          together via the onboarding wizard and is waiting on a single admin
+          review (no separate document-then-content stages anymore). The rest
+          of the panel stays fully usable while this is pending. */}
+      {approvalStatus === 'pending' && pageStatus === 'pending_page_approval' && (
+        <Card className="mb-6 border border-yellow-500/50 bg-yellow-500/5">
+          <CardContent className="pt-6 flex flex-col md:flex-row md:items-start justify-between gap-3">
+            <div className="space-y-1">
+              <p className="font-semibold">{t('pageBanner.applicationPendingTitle')}</p>
+              <p className="text-sm text-muted-foreground">{t('pageBanner.applicationPendingDesc')}</p>
+            </div>
+            <Badge variant="secondary" className="self-start md:self-center">{t('pageBanner.pendingBadge')}</Badge>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Page status banner — informational only. The "Submit for Approval"
           button now lives at the bottom of the Clinic Information editor. */}
       {approvalStatus === 'approved' && pageStatus !== 'live' && (

@@ -31,7 +31,9 @@
     "editAgainNote": "Klinik bilgilerinizi düzenleyin ve Klinik Bilgileri sayfasından tekrar gönderin.",
     "pendingDesc": "Düzenlemeye devam edebilirsiniz — onaylandığında kliniğiniz yayına girecek.",
     "completeDesc": "Fotoğraflar, doktorlar, tedaviler ve bir açıklama ekleyin, ardından sayfanızı Klinik Bilgileri sayfasından onay için gönderin.",
-    "pendingBadge": "Sayfa onayı bekleniyor"
+    "pendingBadge": "Sayfa onayı bekleniyor",
+    "applicationPendingTitle": "Başvurunuz inceleniyor",
+    "applicationPendingDesc": "Klinik profilinizi tamamladığınız için teşekkürler. Ekibimiz belgelerinizi ve sayfa içeriğinizi birlikte inceliyor — onaylanır onaylanmaz sayfanız yayına alınacak. Bu sırada aşağıdaki tüm bilgileri düzenlemeye devam edebilirsiniz."
   },
   "balance": {
     "emptyTitle": "Bakiye boş",

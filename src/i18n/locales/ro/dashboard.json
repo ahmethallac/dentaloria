@@ -1,17 +1,3 @@
 {
-  "noClinic": {
-    "title": "Nicio clinică pe acest cont",
-    "description": "Acest cont nu este asociat cu nicio clinică. Vă rugăm să înregistrați o clinică nouă sau să contactați asistența.",
-    "cta": "Înregistrează o Clinică"
-  },
-  "status": {
-    "subtitle": "Starea Înregistrării Clinicii",
-    "pendingTitle": "În Așteptarea Aprobării",
-    "pendingDesc": "Înregistrarea clinicii dvs. este în curs de analiză. Veți fi notificat odată ce este aprobată.",
-    "rejectedTitle": "Înregistrare Respinsă",
-    "rejectedDesc": "Din păcate, înregistrarea clinicii dvs. nu a fost aprobată. Vă rugăm să contactați asistența pentru mai multe informații.",
-    "approvedTitle": "Aprobat!",
-    "approvedDesc": "Clinica dvs. este aprobată și activă.",
-    "goToPanel": "Mergi la Panoul Clinicii"
-  }
+  "loadError": "A apărut o problemă la încărcarea contului dvs. Vă rugăm să reîmprospătați pagina."
 }

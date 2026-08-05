@@ -31,7 +31,9 @@
     "editAgainNote": "Edit your clinic information and submit it again from the Clinic Information page.",
     "pendingDesc": "You can keep editing — your clinic will go live once approved.",
     "completeDesc": "Add photos, doctors, treatments and a description, then submit your page for approval from the Clinic Information page.",
-    "pendingBadge": "Pending page approval"
+    "pendingBadge": "Pending page approval",
+    "applicationPendingTitle": "Your application is under review",
+    "applicationPendingDesc": "Thanks for completing your clinic profile. Our team is reviewing your documents and page content together — your page will go live as soon as it's approved. You can keep editing everything below in the meantime."
   },
   "balance": {
     "emptyTitle": "Balance empty",

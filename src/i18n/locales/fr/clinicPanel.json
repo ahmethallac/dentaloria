@@ -31,7 +31,9 @@
     "editAgainNote": "Modifiez les informations de votre clinique et soumettez-les à nouveau depuis la page Informations sur la Clinique.",
     "pendingDesc": "Vous pouvez continuer à modifier — votre clinique sera mise en ligne une fois approuvée.",
     "completeDesc": "Ajoutez des photos, des médecins, des traitements et une description, puis soumettez votre page pour approbation depuis la page Informations sur la Clinique.",
-    "pendingBadge": "Approbation de page en attente"
+    "pendingBadge": "Approbation de page en attente",
+    "applicationPendingTitle": "Votre demande est en cours d'examen",
+    "applicationPendingDesc": "Merci d'avoir complété le profil de votre clinique. Notre équipe examine vos documents et le contenu de la page ensemble — votre page sera mise en ligne dès son approbation. En attendant, vous pouvez continuer à tout modifier ci-dessous."
   },
   "balance": {
     "emptyTitle": "Solde vide",

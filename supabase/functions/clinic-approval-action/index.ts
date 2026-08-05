@@ -66,10 +66,17 @@ serve(async (req) => {
 
     if (updateApprovalError) throw updateApprovalError;
 
-    // Update clinics.approval_status
+    // Single unified review: approving here also takes the clinic's page
+    // live (no separate content-review step), rejecting sends the profile
+    // back to "incomplete" with the rejection reason surfaced as revision
+    // notes so the clinic admin sees exactly what to fix.
+    const clinicUpdate = action === 'approve'
+      ? { approval_status: newStatus, page_status: 'live', is_published: true, page_revision_notes: null }
+      : { approval_status: newStatus, page_status: 'incomplete', is_published: false, page_revision_notes: rejectionReason || null };
+
     const { error: updateClinicError } = await supabase
       .from('clinics')
-      .update({ approval_status: newStatus })
+      .update(clinicUpdate)
       .eq('id', clinicId);
 
     if (updateClinicError) throw updateClinicError;

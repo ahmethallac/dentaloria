@@ -1,329 +1,168 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { useToast } from '@/hooks/use-toast'
-import { Loader2, Upload, CheckCircle, Clock, FileText } from 'lucide-react'
-import { supabase } from '@/integrations/supabase/client'
-import { withLocalePrefix } from '@/lib/localePath'
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { getUserClinics, type Clinic } from "@/lib/services";
+import { withLocalePrefix } from "@/lib/localePath";
+import OnboardingStepper from "@/components/onboarding/OnboardingStepper";
+import StepAuth from "@/components/onboarding/StepAuth";
+import StepBasics from "@/components/onboarding/StepBasics";
+import StepProfile from "@/components/onboarding/StepProfile";
+import StepTeamMedia from "@/components/onboarding/StepTeamMedia";
+import StepDocuments from "@/components/onboarding/StepDocuments";
 
-interface Country { id: string; name: string; code: string }
-interface City { id: string; name: string; country_id: string }
+type WizardStep = 0 | 1 | 2 | 3 | 4;
+
+// Resumes the wizard where a clinic admin left off, without a dedicated
+// progress column: infer it from what's already been saved.
+const resumeStep = (clinic: any): WizardStep => {
+  const hasProfile = !!(clinic.description || clinic.address || clinic.clinic_treatments?.length);
+  const hasTeamMedia = !!(clinic.doctors?.length || clinic.clinic_images?.length);
+  if (!hasProfile) return 2;
+  if (!hasTeamMedia) return 3;
+  return 4;
+};
 
 const RegisterClinic = () => {
-  const navigate = useNavigate()
-  const { lang } = useParams()
-  const { t } = useTranslation('registerClinic')
-  const { toast } = useToast()
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { lang } = useParams();
+  const { t } = useTranslation("registerClinic");
 
-  const [countries, setCountries] = useState<Country[]>([])
-  const [cities, setCities] = useState<City[]>([])
-  const [countryId, setCountryId] = useState('')
+  const [initializing, setInitializing] = useState(true);
+  const [step, setStep] = useState<WizardStep>(0);
+  const [clinicId, setClinicId] = useState<string | null>(null);
+  const [clinic, setClinic] = useState<Clinic | null>(null);
+  const [revisionNotes, setRevisionNotes] = useState<string | null>(null);
 
-  const healthInputRef = useRef<HTMLInputElement>(null)
-  const agencyInputRef = useRef<HTMLInputElement>(null)
-
-  const [form, setForm] = useState({
-    clinicName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    cityId: '',
-    phone: '',
-    website: '',
-    healthTourismDoc: null as File | null,
-    agencyCertificate: null as File | null,
-    isHealthcareFacility: false,
-    agree: false,
-  })
+  const resolveState = useCallback(async () => {
+    if (!user) {
+      setStep(0);
+      setInitializing(false);
+      return;
+    }
+    // Only grant clinic_admin here when this session came back from the
+    // "Continue with Google" button in StepAuth (flagged before the
+    // redirect) — an unrelated already-authenticated user (patient, admin)
+    // landing on this page must never get the role just by visiting it.
+    // Password signup already grants the role synchronously in StepAuth.
+    if (sessionStorage.getItem("clinic_onboarding_oauth") === "1") {
+      sessionStorage.removeItem("clinic_onboarding_oauth");
+      try {
+        await supabase.functions.invoke("register-clinic", { body: { mode: "oauth" } });
+      } catch {
+        // non-fatal — surfaced later if the clinic insert fails under RLS
+      }
+    }
+    try {
+      const clinics = await getUserClinics(user.id);
+      const existing = clinics[0] as any;
+      if (!existing) {
+        setStep(1);
+        setInitializing(false);
+        return;
+      }
+      if (existing.page_status !== "incomplete") {
+        navigate(withLocalePrefix(`/clinic/${existing.id}/panel`, lang), { replace: true });
+        return;
+      }
+      setClinicId(existing.id);
+      setClinic(existing);
+      setRevisionNotes(existing.page_revision_notes || null);
+      setStep(resumeStep(existing));
+    } catch (e) {
+      console.error("Onboarding resume error:", e);
+      setStep(1);
+    } finally {
+      setInitializing(false);
+    }
+  }, [user, navigate, lang]);
 
   useEffect(() => {
-    (async () => {
-      const [{ data: c }, { data: ct }] = await Promise.all([
-        supabase.from('countries').select('*').order('name'),
-        supabase.from('cities').select('*').order('name'),
-      ])
-      setCountries(c || [])
-      setCities(ct || [])
-    })()
-  }, [])
+    if (authLoading) return;
+    resolveState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user?.id]);
 
-  const filteredCities = countryId ? cities.filter(c => c.country_id === countryId) : []
+  const goToPanel = () => {
+    if (clinicId) navigate(withLocalePrefix(`/clinic/${clinicId}/panel`, lang), { replace: true });
+  };
 
-  const upd = (k: string, v: any) => setForm(prev => ({ ...prev, [k]: v }))
+  const steps = [t("wizard.stepBasics"), t("wizard.stepProfile"), t("wizard.stepTeam"), t("wizard.stepDocuments")];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (form.password !== form.confirmPassword) {
-      toast({ title: t('errors.title'), description: t('errors.passwordMismatch'), variant: 'destructive' }); return
-    }
-    if (form.password.length < 6) {
-      toast({ title: t('errors.title'), description: t('errors.passwordTooShort'), variant: 'destructive' }); return
-    }
-    if (!form.healthTourismDoc) {
-      toast({ title: t('errors.title'), description: t('errors.healthDocRequired'), variant: 'destructive' }); return
-    }
-    if (!form.agree) {
-      toast({ title: t('errors.title'), description: t('errors.agreeRequired'), variant: 'destructive' }); return
-    }
-
-    setSubmitting(true)
-    try {
-      const folder = `pending/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-      const uploadDoc = async (file: File, name: string) => {
-        const ext = file.name.split('.').pop()
-        const path = `${folder}/${name}-${Date.now()}.${ext}`
-        const { error } = await supabase.storage.from('clinic-documents').upload(path, file)
-        if (error) throw error
-        return path
-      }
-
-      const healthUrl = await uploadDoc(form.healthTourismDoc!, 'health-tourism-doc')
-      const agencyUrl = !form.isHealthcareFacility && form.agencyCertificate
-        ? await uploadDoc(form.agencyCertificate, 'agency-certificate')
-        : null
-
-      const { data, error } = await supabase.functions.invoke('register-clinic', {
-        body: {
-          email: form.email,
-          password: form.password,
-          clinicName: form.clinicName,
-          cityId: form.cityId,
-          phone: form.phone,
-          website: form.website || null,
-          healthTourismDocUrl: healthUrl,
-          agencyCertificateUrl: agencyUrl,
-          appliedAsHealthcareFacility: form.isHealthcareFacility,
-          locale: lang || 'en',
-        },
-      })
-
-      if (error || (data as any)?.error) {
-        // supabase-js only puts a generic "Edge Function returned a non-2xx
-        // status code" on `error.message` — the real reason we sent back
-        // (e.g. "email already registered") is in the raw response body.
-        let serverMessage: string | undefined = (data as any)?.error
-        if (!serverMessage && error?.context?.json) {
-          try {
-            const body = await error.context.json()
-            serverMessage = body?.error
-          } catch {
-            // response body wasn't JSON — fall through to the generic message
-          }
-        }
-        // The edge function returns a stable machine key for known cases so
-        // we can show a localized, actionable message instead of raw text.
-        if (serverMessage === 'email_already_registered') {
-          serverMessage = t('errors.emailAlreadyRegistered')
-        }
-        throw new Error(serverMessage || error?.message || t('errors.registrationFailed'))
-      }
-
-      setSubmitted(true)
-    } catch (err: any) {
-      toast({ title: t('errors.registrationErrorTitle'), description: err.message || t('errors.genericError'), variant: 'destructive' })
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  if (submitted) {
+  if (authLoading || initializing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <Clock className="w-12 h-12 mx-auto text-primary mb-2" />
-            <CardTitle>{t('submitted.title')}</CardTitle>
-            <CardDescription>{t('submitted.subtitle')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t('submitted.description')}
-            </p>
-            <Button className="w-full" onClick={() => navigate(withLocalePrefix('/', lang))}>{t('submitted.backHome')}</Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted py-10 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">{t('form.title')}</CardTitle>
-            <CardDescription>
-              {t('form.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Account */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80">{t('form.accountSection')}</h3>
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('form.emailLabel')}</Label>
-                  <Input id="email" type="email" value={form.email} onChange={(e) => upd('email', e.target.value)} required />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="password">{t('form.passwordLabel')}</Label>
-                    <Input id="password" type="password" value={form.password} onChange={(e) => upd('password', e.target.value)} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm">{t('form.confirmPasswordLabel')}</Label>
-                    <Input id="confirm" type="password" value={form.confirmPassword} onChange={(e) => upd('confirmPassword', e.target.value)} required />
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-subtle">
+      <div className="absolute inset-0 bg-gradient-mesh pointer-events-none" />
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-gradient-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-gradient-accent/10 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Clinic */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80">{t('form.clinicSection')}</h3>
-                <div className="space-y-2">
-                  <Label htmlFor="clinicName">{t('form.legalNameLabel')}</Label>
-                  <Input id="clinicName" value={form.clinicName} onChange={(e) => upd('clinicName', e.target.value)} required />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label>{t('form.countryLabel')}</Label>
-                    <Select value={countryId} onValueChange={(v) => { setCountryId(v); upd('cityId', '') }}>
-                      <SelectTrigger><SelectValue placeholder={t('form.selectCountry')} /></SelectTrigger>
-                      <SelectContent>
-                        {countries.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('form.cityLabel')}</Label>
-                    <Select value={form.cityId} onValueChange={(v) => upd('cityId', v)} disabled={!countryId}>
-                      <SelectTrigger><SelectValue placeholder={countryId ? t('form.selectCity') : t('form.selectCountryFirst')} /></SelectTrigger>
-                      <SelectContent>
-                        {filteredCities.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">{t('form.phoneLabel')}</Label>
-                    <Input id="phone" value={form.phone} onChange={(e) => upd('phone', e.target.value)} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="website">{t('form.websiteLabel')}</Label>
-                    <Input id="website" placeholder="https://" value={form.website} onChange={(e) => upd('website', e.target.value)} />
-                  </div>
-                </div>
-              </div>
+      <div className="relative max-w-2xl mx-auto px-4 py-10 sm:py-14">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            {t("wizard.title")}
+          </h1>
+          <p className="text-muted-foreground mt-2">{t("wizard.subtitle")}</p>
+        </div>
 
-              {/* Documents */}
-              <div className="space-y-4 p-4 bg-muted rounded-lg">
-                <h3 className="text-sm font-semibold">{t('form.documentsSection')}</h3>
+        {step > 0 && <OnboardingStepper steps={steps} currentStep={step} />}
 
-                {/* Health Tourism Authorization Certificate — always required */}
-                <div className="space-y-2">
-                  <Label className="text-sm flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    {t('form.healthTourismDocLabel')}
-                    <span className="text-destructive">*</span>
-                  </Label>
-                  <input
-                    ref={healthInputRef}
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => upd('healthTourismDoc', e.target.files?.[0] || null)}
-                  />
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Button type="button" variant="outline" size="sm" onClick={() => healthInputRef.current?.click()}>
-                      <Upload className="w-4 h-4 mr-1" /> {t('form.uploadFile')}
-                    </Button>
-                    {form.healthTourismDoc && (
-                      <span className="text-sm flex items-center gap-1 text-green-600 truncate">
-                        <CheckCircle className="w-4 h-4 shrink-0" />
-                        <span className="truncate max-w-[260px]">{form.healthTourismDoc.name}</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
+        {revisionNotes && step > 0 && (
+          <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+            <p className="font-semibold text-destructive text-sm">{t("wizard.revisionsTitle")}</p>
+            <p className="text-sm whitespace-pre-wrap mt-1">{revisionNotes}</p>
+          </div>
+        )}
 
-                {/* Agency Certificate — optional */}
-                <div className="space-y-2">
-                  <Label className="text-sm flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    {t('form.agencyCertificateLabel')}
-                    <span className="text-muted-foreground font-normal">({t('form.optional')})</span>
-                  </Label>
-                  <input
-                    ref={agencyInputRef}
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => upd('agencyCertificate', e.target.files?.[0] || null)}
-                  />
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => agencyInputRef.current?.click()}
-                      disabled={form.isHealthcareFacility}
-                    >
-                      <Upload className="w-4 h-4 mr-1" /> {t('form.uploadFile')}
-                    </Button>
-                    {form.agencyCertificate && !form.isHealthcareFacility && (
-                      <span className="text-sm flex items-center gap-1 text-green-600 truncate">
-                        <CheckCircle className="w-4 h-4 shrink-0" />
-                        <span className="truncate max-w-[260px]">{form.agencyCertificate.name}</span>
-                      </span>
-                    )}
-                  </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {step === 0 && <StepAuth lang={lang} onAuthenticated={resolveState} />}
 
-                  <div className="flex items-start gap-2 pt-2">
-                    <Checkbox
-                      id="healthcare"
-                      checked={form.isHealthcareFacility}
-                      onCheckedChange={(v) => {
-                        upd('isHealthcareFacility', !!v)
-                        if (v) upd('agencyCertificate', null)
-                      }}
-                    />
-                    <Label htmlFor="healthcare" className="text-sm text-muted-foreground leading-snug">
-                      {t('form.healthcareFacilityCheckbox')}
-                    </Label>
-                  </div>
-                </div>
-              </div>
+            {step === 1 && (
+              <StepBasics
+                lang={lang}
+                clinicId={clinicId}
+                initialClinic={clinic}
+                onDone={(id, updated) => {
+                  setClinicId(id);
+                  setClinic(updated);
+                  setStep(2);
+                }}
+              />
+            )}
 
-              <div className="flex items-start gap-2">
-                <Checkbox id="agree" checked={form.agree} onCheckedChange={(v) => upd('agree', !!v)} />
-                <Label htmlFor="agree" className="text-sm text-muted-foreground leading-snug">
-                  {t('form.agreeCheckbox')}
-                </Label>
-              </div>
+            {step === 2 && clinicId && (
+              <StepProfile clinicId={clinicId} initialClinic={clinic} onBack={() => setStep(1)} onDone={() => setStep(3)} />
+            )}
 
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('form.submitButton')}
-              </Button>
+            {step === 3 && clinicId && (
+              <StepTeamMedia clinicId={clinicId} initialClinic={clinic} onBack={() => setStep(2)} onDone={() => setStep(4)} />
+            )}
 
-              <p className="text-center text-sm text-muted-foreground">
-                {t('form.alreadyApproved')} <Link to={withLocalePrefix('/auth', lang)} className="text-primary hover:underline">{t('form.signIn')}</Link>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
+            {step === 4 && clinicId && (
+              <StepDocuments clinicId={clinicId} onBack={() => setStep(3)} onSubmitted={goToPanel} />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterClinic
+export default RegisterClinic;

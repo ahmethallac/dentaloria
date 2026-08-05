@@ -191,10 +191,13 @@ const Admin = () => {
   const handleApproval = async (clinicId: string, action: 'approve' | 'reject', reason?: string) => {
     try {
       const newStatus = action === 'approve' ? 'approved' : 'rejected'
-      // On application approval the clinic becomes approved + published, but the public page only goes live
-      // once page_status is set to 'live' (via the Page Approvals tab).
-      const clinicUpdate: any = { approval_status: newStatus, is_published: action === 'approve' }
-      if (action === 'approve') clinicUpdate.page_status = 'incomplete'
+      // Single unified review: the clinic now arrives here with both the
+      // documents AND the full profile already filled in (onboarding wizard
+      // submits both together), so one approve click takes the page live
+      // instead of only unlocking a second, separate content review.
+      const clinicUpdate: any = action === 'approve'
+        ? { approval_status: newStatus, is_published: true, page_status: 'live', page_revision_notes: null }
+        : { approval_status: newStatus, is_published: false, page_status: 'incomplete', page_revision_notes: reason || null }
       await Promise.all([
         supabase.from('clinic_approvals').update({
           status: newStatus, rejection_reason: reason,
@@ -826,6 +829,9 @@ const Admin = () => {
                       </div>
 
                       <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={withLocalePrefix(`/clinic/${approval.clinic_id}?preview=1`, lang)}>{t('approvals.reviewPage')}</Link>
+                        </Button>
                         <Button size="sm" variant="outline" onClick={() => openDocument(approval.health_tourism_doc_url)} disabled={!approval.health_tourism_doc_url}>
                           <FileCheck className="w-4 h-4 mr-1" /> {t('approvals.healthDoc')}
                         </Button>
