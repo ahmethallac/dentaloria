@@ -78,12 +78,12 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
       if (clinicId) {
         const { data, error } = await supabase.from("clinics").update(payload).eq("id", clinicId).select("*").single();
         if (error) throw error;
-        saved = data as Clinic;
+        saved = data as unknown as Clinic;
       } else {
         const { data, error } = await supabase
           .from("clinics")
           .insert({
-            ...payload,
+            ...(payload as any),
             user_id: user.id,
             approval_status: "pending",
             page_status: "incomplete",
@@ -93,7 +93,7 @@ export default function StepBasics({ lang, clinicId, initialClinic, onDone }: Pr
           .select("*")
           .single();
         if (error) throw error;
-        saved = data as Clinic;
+        saved = data as unknown as Clinic;
       }
 
       setSavedClinic(saved);
