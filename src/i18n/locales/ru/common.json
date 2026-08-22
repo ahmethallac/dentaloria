@@ -7,7 +7,9 @@
     "aboutUs": "О Нас",
     "registerClinic": "Зарегистрировать Клинику",
     "dashboard": "Панель Управления",
-    "signOut": "Выйти"
+    "signOut": "Выйти",
+    "destinations": "Направления",
+    "howItWorks": "Как это работает"
   },
   "footer": {
     "tagline": "Самая надёжная платформа для сравнения стоматологических клиник в Турции. Мы помогаем найти лучшее лечение по самой выгодной цене.",
@@ -22,14 +24,20 @@
     "newsletterTitle": "Подпишитесь на Рассылку",
     "newsletterPlaceholder": "Ваш адрес электронной почты",
     "subscribe": "Подписаться",
-    "newsletterNote": "Будьте в курсе последних акций и предложений.",
+    "newsletterNote": "Подпишитесь, чтобы получать советы и специальные предложения.",
     "designedBy": "Разработано DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
     "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Все права защищены 2026",
     "privacyPolicy": "Политика Конфиденциальности",
     "termsOfService": "Условия Использования",
     "cookiePolicy": "Политика Использования Cookie",
     "gdpr": "GDPR",
-    "securedWithTrustpilot": "Защищено Trustpilot"
+    "securedWithTrustpilot": "Защищено Trustpilot",
+    "explore": "Обзор",
+    "support": "Поддержка",
+    "helpCenter": "Центр помощи",
+    "newsletterHeading": "Эксклюзивные новости",
+    "weAccept": "Мы принимаем",
+    "sslSecured": "Защита SSL"
   },
   "common": {
     "search": "Поиск",

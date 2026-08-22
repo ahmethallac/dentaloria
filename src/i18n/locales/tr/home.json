@@ -4,16 +4,29 @@
     "description": "Dentaloria; fiyat, tedavi seçenekleri, konum ve hasta yorumlarına göre diş kliniklerini karşılaştırmanıza yardımcı olur — yurt dışındaki en iyi kliniği güvenle seçmenizi kolaylaştırır."
   },
   "hero": {
-    "titleLine1": "En İyi",
-    "titleLine2": "Diş Kliniğini Bulun",
-    "subtitle": "Dünya standartlarında diş tedavisi parmaklarınızın ucunda",
+    "titleLine1": "Mükemmel Gülüşünüz",
+    "titleLine2": "Burada Başlıyor",
+    "subtitle": "Doğrulanmış diş kliniklerini, gerçek fiyatları ve hasta yorumlarını tek bir yerde karşılaştırın.",
     "orFilters": "ya da filtrelerle arayın",
-    "selectTreatment": "Tedavi türü seçin",
-    "selectCountry": "Ülke seçin",
-    "searchClinics": "Klinikleri Ara",
+    "selectTreatment": "Tedavi Seçin",
+    "selectCountry": "Ülke Seçin",
+    "searchClinics": "Klinik Ara",
     "verifiedClinics": "Onaylı Klinik",
     "happyPatients": "Memnun Hasta",
-    "averageRating": "Ortalama Puan"
+    "averageRating": "Ortalama Puan",
+    "badgeVerified": "Doğrulanmış Klinikler",
+    "badgeTransparent": "Şeffaf Fiyatlar",
+    "badgeReviews": "Gerçek Hasta Yorumları",
+    "tabFindBy": "Tedavi ve Ülkeye Göre Bul",
+    "tabAiSearch": "AI Arama",
+    "badgeNew": "Yeni",
+    "popularSearches": "Popüler aramalar:",
+    "popularSearchItems": [
+      "İstanbul'da All-on-6",
+      "Antalya'da Hollywood Smile",
+      "İzmir'de Zirkonyum Kron",
+      "Bodrum'da Diş Beyazlatma"
+    ]
   },
   "aiSearch": {
     "badge": "Yapay zeka destekli arama",
@@ -34,91 +47,149 @@
   },
   "popularClinics": {
     "title": "Popüler Klinikler",
-    "subtitle": "En yüksek puanlı ve en güvenilir diş kliniklerini keşfedin",
-    "empty": "Henüz klinik bulunmuyor"
+    "subtitle": "En yüksek puanlı ve en güvenilir diş kliniklerini keşfedin.",
+    "empty": "Henüz klinik bulunmuyor",
+    "viewAll": "Tüm Klinikler",
+    "reviews": "yorum",
+    "verified": "Doğrulanmış Klinik"
   },
   "popularCities": {
-    "title": "Popüler Şehirler",
-    "subtitle": "En çok tercih edilen destinasyonları keşfedin",
-    "istanbul": "Türkiye'nin en büyük şehri",
-    "antalya": "Akdeniz'in incisi",
-    "izmir": "Ege'nin parlayan yıldızı"
+    "title": "Popüler Destinasyonlar",
+    "subtitle": "Türkiye'nin en çok tercih edilen diş turizmi destinasyonlarını keşfedin",
+    "istanbul": "Doğu ile Batı'nın Buluştuğu Yer",
+    "antalya": "Akdeniz'in İncisi",
+    "izmir": "Ege'nin İncisi",
+    "viewAll": "Tüm Destinasyonlar",
+    "bodrum": "Mavi Yolculuk ve Güzel Gülüşler"
   },
   "howItWorks": {
-    "title": "Nasıl Çalışır?",
-    "subtitle": "3 basit adımda size en uygun kliniği bulun",
-    "step1Title": "1. Karşılaştırın",
-    "step1Desc": "Klinikleri karşılaştırın ve sizin için en iyi seçeneği bulun",
-    "step2Title": "2. Doğru Kliniği Bulun",
-    "step2Desc": "İhtiyaçlarınıza en uygun kliniği seçin",
-    "step3Title": "3. Başvurun",
-    "step3Desc": "Kolayca randevu alın ve tedavinize başlayın"
+    "title": "Dentaloria Nasıl Çalışır",
+    "subtitle": "Doğru kliniği bulmak kolay. Sadece 3 basit adım.",
+    "step1Title": "1. Karşılaştır",
+    "step1Desc": "Tedavi ve ülkeye göre arayın. Klinikleri, fiyatları ve yorumları karşılaştırın.",
+    "step2Title": "2. Seç",
+    "step2Desc": "İhtiyaçlarınıza en uygun kliniği seçin.",
+    "step3Title": "3. Başvur ve Yanıt Al",
+    "step3Desc": "Talebinizi gönderin, teklif alın veya randevunuzu oluşturun."
   },
   "treatmentOptions": {
-    "title": "Tedavi Seçenekleri",
-    "subtitle": "En popüler diş tedavilerini keşfedin",
-    "defaultDescription": "Bu tedaviyi sunan klinikleri keşfetmek için tıklayın"
+    "title": "Popüler Tedaviler",
+    "subtitle": "En popüler diş tedavilerini keşfedin.",
+    "defaultDescription": "Bu tedaviyi sunan klinikleri keşfetmek için tıklayın",
+    "viewAll": "Tüm Tedaviler"
   },
   "whyDentaloria": {
     "badge": "Neden Dentaloria",
-    "title": "Tek platform. Karşılaştırılmış tüm klinikler.",
+    "title": "Neden Dentaloria?",
     "subtitle": "Dentaloria, kliniklerle tek tek yazışmak yerine karşılaştırma, başvuru ve geri dönüş alabileceğiniz tek bir yer sunar.",
     "compare": {
       "title": "Kovalamayın, karşılaştırın",
       "description": "Tek tek her klinikle yazışmak yerine, tedavinize ve konumunuza uygun tüm klinikleri yan yana görün."
     },
     "verified": {
-      "title": "Sadece onaylı klinikler",
-      "description": "Dentaloria'daki her klinik yayına girmeden önce incelenir, kime güveneceğinizi tahmin etmek zorunda kalmazsınız."
+      "title": "Sadece Doğrulanmış Klinikler",
+      "description": "Her klinik platformumuzda yayına girmeden önce incelenir."
     },
     "pricing": {
-      "title": "Şeffaf fiyatlandırma",
-      "description": "Gerçek fiyatlar ve gerçek hasta puanları baştan önünüzde — yerinde sürpriz teklif yok."
+      "title": "Şeffaf Fiyatlandırma",
+      "description": "Gerçek fiyatlar ve gerçek hasta yorumları — gizli maliyet yok."
     },
     "application": {
       "title": "Tek başvuru, gerçek yanıtlar",
       "description": "Bilgilerinizi bir kez girin. Sadece ihtiyacınıza gerçekten uyan klinikler size geri dönsün."
+    },
+    "aiMatch": {
+      "title": "AI Eşleştirme",
+      "description": "Yapay zekâmız ihtiyacınıza en uygun kliniği bulmanıza yardım eder."
+    },
+    "directContact": {
+      "title": "Doğrudan İletişim",
+      "description": "Kliniklerle doğrudan yazışın, hızlı yanıt alın."
     }
   },
   "testimonials": {
-    "title": "Hastalar Dentaloria hakkında ne diyor",
-    "subtitle": "Dentaloria üzerinden kliniğini bulan hastalardan gerçek yorumlar",
+    "title": "Hastalar Ne Diyor",
+    "subtitle": "Kliniğini Dentaloria üzerinden bulan hastaların gerçek yorumları.",
     "list": [
       {
         "name": "Sarah M.",
         "location": "Birleşik Krallık",
-        "quote": "On farklı klinikle yazışıp her seferinde aynı hikayeyi anlatmak istemiyordum. Dentaloria'da her şeyi tek yerde karşılaştırdım ve ancak kimi istediğimi netleştirdikten sonra iletişime geçtim."
-      },
-      {
-        "name": "Michael R.",
-        "location": "İrlanda",
-        "quote": "En çok beğendiğim şey her klinikle tek tek pazarlık etmek zorunda kalmamamdı. Tek bir form doldurdum ve ihtiyacıma uyan klinikler bana döndü."
-      },
-      {
-        "name": "Anna K.",
-        "location": "Almanya",
-        "quote": "Kendini en iyi ilan eden o kadar çok klinik vardı ki kararsız kalmıştım. Dentaloria sayesinde tahmin etmek yerine fiyatları ve yorumları yan yana gerçekten karşılaştırabildim."
+        "quote": "Dentaloria sayesinde Antalya'da mükemmel kliniği buldum. Süreç çok kolay ve şeffaftı."
       },
       {
         "name": "James T.",
         "location": "Amerika Birleşik Devletleri",
-        "quote": "Bu siteyi bulana kadar yurt dışında diş kliniği bulmak riskli hissettiriyordu. Onaylı yorumları ve gerçek fiyatları baştan görmek kararı çok kolaylaştırdı."
+        "quote": "Bir günde 8 kliniği karşılaştırdım ve binlerce dolar tasarruf ettim. Kesinlikle tavsiye ederim!"
       },
       {
         "name": "Emma L.",
         "location": "Hollanda",
-        "quote": "Aradığımı bir gün içinde tam olarak buldum. On klinikle uğraşmak yerine karşılaştırmayı benim için yapan tek bir platform yeterli oldu."
+        "quote": "Platformun kullanımı çok kolay ve klinikler çok hızlı dönüş yapıyor."
       },
       {
         "name": "David P.",
-        "location": "Birleşik Krallık",
-        "quote": "Dentaloria saatlerce araştırma yapmamı gereksiz kıldı. Tedavi ve dile göre filtreleyebildim, seçtiğim klinik tüm ihtiyaçlarımı karşıladı."
+        "location": "Almanya",
+        "quote": "Gerçek fiyatları ve yorumları önceden görebilmek harika. Hiç sürpriz yok!"
       }
-    ]
+    ],
+    "viewAll": "Tüm Yorumlar"
   },
   "cta": {
     "title": "Hayalinizdeki Gülüşe Bugün Başlayın!",
     "subtitle": "Binlerce hasta platformumuz sayesinde hayalindeki gülüşe kavuştu. Sıra sizde!",
     "getStarted": "Hemen Başlayın"
+  },
+  "stats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Doğrulanmış Klinik",
+    "patientsValue": "10.000+",
+    "patientsLabel": "Mutlu Hasta",
+    "priceValue": "En İyi Fiyat Garantisi",
+    "priceLabel": "Şeffaf ve Adil",
+    "reviewsValue": "Gerçek Hasta Yorumları",
+    "reviewsLabel": "Gerçek deneyimleri görün"
+  },
+  "trending": {
+    "label": "Popüler Aramalar",
+    "items": [
+      "Antalya All-on-6",
+      "İstanbul Hollywood Smile",
+      "İzmir Zirkonyum Kron",
+      "Antalya Diş Beyazlatma",
+      "Türkiye Veneer"
+    ]
+  },
+  "getOffers": {
+    "badge": "YENİ",
+    "titleAccent": "Teklif Alın",
+    "titleRest": "Kliniklerden",
+    "subtitle": "Talebinizi paylaşın, klinikler size en iyi tekliflerini göndersin.",
+    "check1": "Röntgeninizi yükleyin (isteğe bağlı)",
+    "check2": "Talebinizi anlatın",
+    "check3": "Doğrulanmış kliniklerden teklif alın",
+    "check4": "Karşılaştırın ve en iyisini seçin",
+    "uploadTitle": "Röntgen Yükle (İsteğe Bağlı)",
+    "uploadHint": "JPG, PNG veya DICOM dosyaları",
+    "describePlaceholder": "Tedavi talebinizi anlatın…",
+    "submit": "Talebi Gönder",
+    "howTitle": "Nasıl çalışır?",
+    "step1Title": "Talebinizi gönderin",
+    "step1Desc": "Röntgeninizi yükleyin ve ihtiyacınızı anlatın.",
+    "step2Title": "Klinikler teklif gönderir",
+    "step2Desc": "Doğrulanmış klinikler talebinizi inceler ve en iyi tekliflerini gönderir.",
+    "step3Title": "Karşılaştır ve seç",
+    "step3Desc": "Teklifleri karşılaştırın, soru sorun ve en iyisini seçin.",
+    "comingSoonTitle": "Çok yakında",
+    "comingSoonBody": "Talepler henüz alınmıyor. Şimdilik lütfen doğrudan bir klinikle iletişime geçin."
+  },
+  "bottomStats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Doğrulanmış Klinik",
+    "destinationsValue": "20+",
+    "destinationsLabel": "Popüler Destinasyon",
+    "patientsValue": "10.000+",
+    "patientsLabel": "Mutlu Hasta",
+    "ratingValue": "4,8/5",
+    "ratingLabel": "Ortalama Puan"
   }
 }

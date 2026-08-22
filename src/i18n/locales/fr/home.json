@@ -4,16 +4,29 @@
     "description": "Dentaloria vous aide à comparer les cliniques dentaires selon le prix, les types de traitement, la localisation et les avis des patients — pour choisir en toute confiance la meilleure clinique à l'étranger."
   },
   "hero": {
-    "titleLine1": "Trouvez la Meilleure",
-    "titleLine2": "Clinique Dentaire",
-    "subtitle": "Des soins dentaires de classe mondiale à portée de main",
+    "titleLine1": "Votre sourire parfait",
+    "titleLine2": "Commence ici",
+    "subtitle": "Comparez des cliniques dentaires vérifiées, des prix réels et des avis de patients — le tout au même endroit.",
     "orFilters": "ou recherchez avec des filtres",
-    "selectTreatment": "Sélectionnez le type de traitement",
-    "selectCountry": "Sélectionnez le pays",
-    "searchClinics": "Rechercher des Cliniques",
+    "selectTreatment": "Choisir un traitement",
+    "selectCountry": "Choisir un pays",
+    "searchClinics": "Rechercher des cliniques",
     "verifiedClinics": "Cliniques Vérifiées",
     "happyPatients": "Patients Satisfaits",
-    "averageRating": "Note Moyenne"
+    "averageRating": "Note Moyenne",
+    "badgeVerified": "Cliniques vérifiées",
+    "badgeTransparent": "Prix transparents",
+    "badgeReviews": "Avis réels de patients",
+    "tabFindBy": "Rechercher par traitement et pays",
+    "tabAiSearch": "Recherche IA",
+    "badgeNew": "Nouveau",
+    "popularSearches": "Recherches populaires :",
+    "popularSearchItems": [
+      "All-on-6 à Istanbul",
+      "Hollywood Smile à Antalya",
+      "Couronne en zircone à Izmir",
+      "Blanchiment dentaire à Bodrum"
+    ]
   },
   "aiSearch": {
     "badge": "Recherche par intelligence artificielle",
@@ -34,91 +47,149 @@
   },
   "popularClinics": {
     "title": "Cliniques Populaires",
-    "subtitle": "Découvrez les cliniques dentaires les mieux notées et les plus fiables",
-    "empty": "Aucune clinique disponible pour le moment"
+    "subtitle": "Découvrez les cliniques dentaires les mieux notées et les plus fiables.",
+    "empty": "Aucune clinique disponible pour le moment",
+    "viewAll": "Toutes les cliniques",
+    "reviews": "avis",
+    "verified": "Clinique vérifiée"
   },
   "popularCities": {
-    "title": "Villes Populaires",
-    "subtitle": "Découvrez les destinations les plus prisées",
-    "istanbul": "La plus grande ville de Turquie",
+    "title": "Destinations populaires",
+    "subtitle": "Explorez les destinations de tourisme dentaire les plus prisées de Turquie",
+    "istanbul": "Là où l'Orient rencontre l'Occident",
     "antalya": "La perle de la Méditerranée",
-    "izmir": "L'étoile brillante de la mer Égée"
+    "izmir": "La perle de la mer Égée",
+    "viewAll": "Toutes les destinations",
+    "bodrum": "Croisière bleue et beaux sourires"
   },
   "howItWorks": {
-    "title": "Comment Ça Marche ?",
-    "subtitle": "Trouvez la clinique idéale en 3 étapes simples",
-    "step1Title": "1. Comparez",
-    "step1Desc": "Comparez les cliniques et trouvez la meilleure option pour vous",
-    "step2Title": "2. Trouvez la Clinique Idéale",
-    "step2Desc": "Choisissez la clinique qui correspond le mieux à vos besoins",
-    "step3Title": "3. Postulez",
-    "step3Desc": "Prenez facilement rendez-vous et commencez votre traitement"
+    "title": "Comment fonctionne Dentaloria",
+    "subtitle": "Trouver la bonne clinique est simple : 3 étapes.",
+    "step1Title": "1. Comparer",
+    "step1Desc": "Recherchez par traitement et pays. Comparez cliniques, prix et avis.",
+    "step2Title": "2. Choisir",
+    "step2Desc": "Sélectionnez la clinique qui correspond le mieux à vos besoins.",
+    "step3Title": "3. Postuler et recevoir une réponse",
+    "step3Desc": "Envoyez votre demande, recevez des offres ou réservez."
   },
   "treatmentOptions": {
-    "title": "Options de Traitement",
-    "subtitle": "Découvrez les traitements dentaires les plus populaires",
-    "defaultDescription": "Cliquez pour découvrir les cliniques proposant ce traitement"
+    "title": "Traitements populaires",
+    "subtitle": "Découvrez les traitements dentaires les plus demandés.",
+    "defaultDescription": "Cliquez pour découvrir les cliniques proposant ce traitement",
+    "viewAll": "Tous les traitements"
   },
   "whyDentaloria": {
     "badge": "Pourquoi Dentaloria",
-    "title": "Une seule plateforme. Toutes les cliniques comparées.",
+    "title": "Pourquoi Dentaloria ?",
     "subtitle": "Dentaloria remplace les échanges individuels avec chaque clinique par un seul endroit pour comparer, postuler et obtenir une réponse.",
     "compare": {
       "title": "Comparez, ne courez plus après",
       "description": "Consultez côte à côte toutes les cliniques correspondant à votre traitement et à votre localisation, au lieu d'écrire à chacune séparément."
     },
     "verified": {
-      "title": "Uniquement des cliniques vérifiées",
-      "description": "Chaque clinique sur Dentaloria est examinée avant sa mise en ligne, vous n'avez donc jamais à deviner en qui faire confiance."
+      "title": "Cliniques vérifiées uniquement",
+      "description": "Chaque clinique est vérifiée avant sa mise en ligne."
     },
     "pricing": {
-      "title": "Tarification transparente",
-      "description": "Des prix réels et de vraies notes de patients affichés dès le départ — aucune surprise une fois sur place."
+      "title": "Prix transparents",
+      "description": "Prix réels et avis réels — sans frais cachés."
     },
     "application": {
       "title": "Une seule demande, de vraies réponses",
       "description": "Renseignez vos informations une seule fois. Seules les cliniques qui correspondent réellement à vos besoins vous répondront."
+    },
+    "aiMatch": {
+      "title": "Correspondance IA",
+      "description": "Notre IA vous aide à trouver la clinique idéale."
+    },
+    "directContact": {
+      "title": "Contact direct",
+      "description": "Échangez directement avec les cliniques et obtenez des réponses rapides."
     }
   },
   "testimonials": {
-    "title": "Ce que disent les patients à propos de Dentaloria",
-    "subtitle": "De vrais témoignages de patients qui ont trouvé leur clinique grâce à Dentaloria",
+    "title": "Ce que disent les patients",
+    "subtitle": "Avis réels de patients ayant trouvé leur clinique via Dentaloria.",
     "list": [
       {
         "name": "Sarah M.",
         "location": "Royaume-Uni",
-        "quote": "Je ne voulais pas écrire à dix cliniques différentes et répéter mon histoire à chaque fois. Sur Dentaloria, j'ai tout comparé au même endroit et je n'ai contacté une clinique que lorsque je savais exactement laquelle je voulais."
-      },
-      {
-        "name": "Michael R.",
-        "location": "Irlande",
-        "quote": "Ce que j'ai le plus apprécié, c'est de ne pas avoir à négocier moi-même avec chaque clinique. J'ai rempli un seul formulaire et seules les cliniques qui correspondaient à mes besoins m'ont répondu."
-      },
-      {
-        "name": "Anna K.",
-        "location": "Allemagne",
-        "quote": "J'étais submergée par le nombre de cliniques qui prétendaient être les meilleures. Dentaloria m'a permis de vraiment comparer les prix et les avis côte à côte, au lieu de deviner."
+        "quote": "Grâce à Dentaloria, j'ai trouvé la clinique idéale à Antalya. Le processus a été simple et transparent."
       },
       {
         "name": "James T.",
         "location": "États-Unis",
-        "quote": "Trouver une clinique dentaire à l'étranger me semblait risqué jusqu'à ce que je trouve ce site. Voir des avis vérifiés et de vrais prix dès le départ a rendu la décision bien plus facile."
+        "quote": "J'ai comparé 8 cliniques en une journée et économisé des milliers d'euros. Je recommande !"
       },
       {
         "name": "Emma L.",
         "location": "Pays-Bas",
-        "quote": "J'ai trouvé exactement ce que je cherchais en une journée. Plus d'allers-retours avec dix cliniques — une seule plateforme a fait la comparaison à ma place."
+        "quote": "La plateforme est très simple à utiliser et les cliniques sont très réactives."
       },
       {
         "name": "David P.",
-        "location": "Royaume-Uni",
-        "quote": "Dentaloria m'a fait gagner des heures de recherche. J'ai pu filtrer par traitement et par langue, et la clinique choisie correspondait exactement à mes besoins."
+        "location": "Allemagne",
+        "quote": "J'adore voir les vrais prix et avis dès le départ. Aucune surprise !"
       }
-    ]
+    ],
+    "viewAll": "Tous les avis"
   },
   "cta": {
     "title": "Commencez Dès Aujourd'hui Votre Parcours vers le Sourire Parfait !",
     "subtitle": "Des milliers de patients ont obtenu le sourire de leurs rêves grâce à notre plateforme. À vous de jouer !",
     "getStarted": "Commencer"
+  },
+  "stats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Cliniques vérifiées",
+    "patientsValue": "10 000+",
+    "patientsLabel": "Patients satisfaits",
+    "priceValue": "Meilleur prix garanti",
+    "priceLabel": "Transparent et équitable",
+    "reviewsValue": "Avis réels de patients",
+    "reviewsLabel": "Des expériences authentiques"
+  },
+  "trending": {
+    "label": "Recherches tendance",
+    "items": [
+      "All-on-6 Antalya",
+      "Hollywood Smile Istanbul",
+      "Couronne zircone Izmir",
+      "Blanchiment Antalya",
+      "Facettes Turquie"
+    ]
+  },
+  "getOffers": {
+    "badge": "NOUVEAU",
+    "titleAccent": "Recevez des offres",
+    "titleRest": "des cliniques",
+    "subtitle": "Publiez votre demande, les cliniques vous enverront leurs meilleures offres.",
+    "check1": "Téléversez votre radiographie (facultatif)",
+    "check2": "Décrivez votre demande",
+    "check3": "Recevez des offres de cliniques vérifiées",
+    "check4": "Comparez et choisissez la meilleure",
+    "uploadTitle": "Téléverser une radiographie (facultatif)",
+    "uploadHint": "Fichiers JPG, PNG ou DICOM",
+    "describePlaceholder": "Décrivez votre demande de traitement…",
+    "submit": "Envoyer la demande",
+    "howTitle": "Comment ça marche ?",
+    "step1Title": "Vous envoyez votre demande",
+    "step1Desc": "Téléversez votre radiographie et décrivez vos besoins.",
+    "step2Title": "Les cliniques vous font des offres",
+    "step2Desc": "Les cliniques vérifiées étudient votre demande et envoient leurs meilleures offres.",
+    "step3Title": "Comparer et choisir",
+    "step3Desc": "Comparez les offres, posez vos questions et choisissez.",
+    "comingSoonTitle": "Bientôt disponible",
+    "comingSoonBody": "Les demandes ne sont pas encore acceptées. Contactez directement une clinique pour le moment."
+  },
+  "bottomStats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Cliniques vérifiées",
+    "destinationsValue": "20+",
+    "destinationsLabel": "Destinations populaires",
+    "patientsValue": "10 000+",
+    "patientsLabel": "Patients satisfaits",
+    "ratingValue": "4,8/5",
+    "ratingLabel": "Note moyenne"
   }
 }

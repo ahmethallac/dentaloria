@@ -7,7 +7,9 @@
     "aboutUs": "About Us",
     "registerClinic": "Register Clinic",
     "dashboard": "Dashboard",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "destinations": "Destinations",
+    "howItWorks": "How It Works"
   },
   "footer": {
     "tagline": "Turkey's most trusted dental clinic comparison platform. We help you find the best treatment at the most affordable price.",
@@ -22,14 +24,20 @@
     "newsletterTitle": "Subscribe to Our Newsletter",
     "newsletterPlaceholder": "Your email address",
     "subscribe": "Subscribe",
-    "newsletterNote": "Stay informed about the latest campaigns and opportunities.",
+    "newsletterNote": "Subscribe to get the latest dental tips and special offers.",
     "designedBy": "Designed by DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
     "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY All rights reserved 2026",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "cookiePolicy": "Cookie Policy",
     "gdpr": "GDPR",
-    "securedWithTrustpilot": "Secured with Trustpilot"
+    "securedWithTrustpilot": "Secured with Trustpilot",
+    "explore": "Explore",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "newsletterHeading": "Get Exclusive Updates",
+    "weAccept": "We accept",
+    "sslSecured": "SSL Secured"
   },
   "common": {
     "search": "Search",

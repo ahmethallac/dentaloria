@@ -14,7 +14,7 @@ All colors MUST be HSL.
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 220 91% 56%;
+    --primary: 220.7 96.8% 51.0%;   /* #0957fb — corrected to the Figma reference */
     --primary-foreground: 210 20% 98%;
     --secondary: 220 91% 85%;
     --secondary-foreground: 220 91% 20%;
@@ -26,8 +26,24 @@ All colors MUST be HSL.
     --destructive-foreground: 210 20% 98%;
     --border: 220 91% 90%;
     --input: 220 91% 95%;
-    --ring: 220 91% 56%;
+    --ring: 220.7 96.8% 51.0%;
     --radius: 1rem;
+
+    /* ---------------------------------------------------------------------
+     * Brand palette — sampled from the Figma reference (node 2:2) and
+     * converted HSL-exact. See .claude/skills/dentaloria-ui-fidelity.
+     * ------------------------------------------------------------------ */
+    --brand-navy: 227.2 33.8% 27.3%;        /* #2e385d  hero H1 line 1      */
+    --brand-blue: 220.7 96.8% 51.0%;        /* #0957fb  primary action      */
+    --brand-blue-bright: 222.9 87.9% 54.7%; /* #2660f1  "Starts Here"       */
+    --stats-navy: 219.2 86.2% 17.1%;        /* #062051  stats bar ground    */
+    /* The reference is a screenshot, not an accessibility audit, and two of its
+     * greys fail WCAG AA. Both are darkened to the lightest tone that passes
+     * 4.5:1 against the tinted panels they sit on, keeping hue and saturation.
+     *   nav links     #848a9c 3.44:1  ->  #6c7286 4.50:1
+     *   hero subtitle #8fa1b9 2.64:1  ->  #5f7899 4.53:1                    */
+    --nav-muted: 225.0 10.8% 47.4%;         /* #6c7286  header nav links    */
+    --hero-subtitle: 214.3 23.1% 48.7%;     /* #5f7899  hero body copy      */
 
     /* Medical accent colors */
     --medical-green: 152 68% 38%;

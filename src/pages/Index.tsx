@@ -17,6 +17,16 @@ import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
 import { AISearchBar } from "@/components/home/AISearchBar";
 import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatmentMeta";
+import { HomeHero } from "@/components/home/HomeHero";
+import { StatsBar } from "@/components/home/StatsBar";
+import { TrendingSearches } from "@/components/home/TrendingSearches";
+import { PopularClinicsSection } from "@/components/home/PopularClinicsSection";
+import { PopularDestinations } from "@/components/home/PopularDestinations";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
+import { GetOffersSection } from "@/components/home/GetOffersSection";
+import { PopularTreatmentsSection } from "@/components/home/PopularTreatmentsSection";
+import { WhyChooseSection } from "@/components/home/WhyChooseSection";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 
 // Helper function to map clinic data for ClinicCard component
 const mapClinicForCard = (clinic: Clinic) => ({
@@ -45,6 +55,7 @@ const POPULAR_CITIES_META: Record<string, { image: string; key: string }> = {
   "Istanbul": { image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80", key: "istanbul" },
   "Antalya": { image: "/lovable-uploads/4ffdb0f9-b2c0-4e60-9169-f1512aaeef5b.png", key: "antalya" },
   "Izmir": { image: "/lovable-uploads/589c94a5-9387-4e65-962f-cb011bfc5bfa.png", key: "izmir" },
+  "Bodrum": { image: "https://images.unsplash.com/photo-1596394723269-b2cbca4e6313?w=800&q=80", key: "bodrum" },
 };
 
 // Why Dentaloria — core value props of the comparison platform itself.
@@ -144,334 +155,55 @@ const Index = () => {
     twitterTitle: t("meta.title"),
     twitterDescription: t("meta.description"),
   });
-  return <div className="min-h-screen bg-background">
+  return (
+    <div className="min-h-screen bg-background">
       <Navbar />
-      
-      {/* Hero Section with Video Background */}
-      <section className="relative min-h-screen flex items-center justify-center">
-        {/* Background Video (extends up behind the sticky header so the header's fade reveals it even at rest) */}
-        <div className="absolute -top-20 left-0 right-0 bottom-0">
-          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-            <source src="https://videos.pexels.com/video-files/4490548/4490548-uhd_2560_1440_25fps.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/70 via-blue-700/60 to-indigo-800/70"></div>
-        </div>
-        
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
-              {t("hero.titleLine1")}
-              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-gray-50">
-                {t("hero.titleLine2")}
-              </span>
-            </h1>
-            <p className="text-xl text-white/90 mb-12 animate-fade-in">
-              {t("hero.subtitle")}
-            </p>
 
-            {/* AI Search Bar */}
-            <AISearchBar className="max-w-2xl mx-auto animate-scale-in mb-6" />
+      <HomeHero
+        treatments={treatments}
+        countries={countries}
+        selectedTreatment={selectedTreatment}
+        onTreatmentChange={setSelectedTreatment}
+        selectedCountry={selectedCountry}
+        onCountryChange={setSelectedCountry}
+        onSearch={handleSearch}
+      />
+      <StatsBar tone="dark" />
 
-            <div className="flex items-center gap-4 max-w-2xl mx-auto mb-6">
-              <div className="h-px flex-1 bg-white/30" />
-              <span className="text-white/80 text-sm font-medium">{t("hero.orFilters")}</span>
-              <div className="h-px flex-1 bg-white/30" />
-            </div>
+      <TrendingSearches />
 
-            {/* Search Bar */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto animate-scale-in">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder={t("hero.selectTreatment")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {treatments.map((treatment) => (
-                      <SelectItem key={treatment.id} value={treatment.id}>
-                        {treatment.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder={t("hero.selectCountry")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country.id} value={country.id}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="w-full">
-                <Button onClick={handleSearch} className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                  <Search className="h-5 w-5 mr-2" />
-                  {t("hero.searchClinics")}
-                </Button>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-3 gap-8 mt-16 text-white">
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">500+</div>
-                <div className="text-white/80">{t("hero.verifiedClinics")}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">10,000+</div>
-                <div className="text-white/80">{t("hero.happyPatients")}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold mb-2">4.8/5</div>
-                <div className="text-white/80">{t("hero.averageRating")}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Admin-curated Featured Clinics (Homepage Showcase) */}
+      {/* Admin-curated paid placement. Not part of the Figma reference, kept
+          because it is a monetised feature; renders null when uncurated. */}
       <FeaturedClinicsSection />
 
-      {/* Popular Clinics */}
-      <section className="py-16 bg-gradient-to-br from-medical-light/50 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("popularClinics.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("popularClinics.subtitle")}
-            </p>
-          </div>
+      <PopularClinicsSection clinics={featuredClinics} loading={loading} />
 
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl overflow-hidden border border-border/60 bg-white"
-                >
-                  <div className="aspect-[4/3] bg-muted animate-pulse" />
-                  <div className="p-3 lg:p-4 space-y-2">
-                    <div className="h-4 bg-muted rounded animate-pulse" />
-                    <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
-                    <div className="h-10 bg-muted rounded-xl animate-pulse mt-3" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : featuredClinics.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5">
-              {featuredClinics.map((clinic, idx) => (
-                <ShowcaseCard key={clinic.id} clinic={clinic} cardIndex={idx} />
-              ))}
-            </div>
-          ) : (
-            <Card className="h-40 flex items-center justify-center">
-              <CardContent className="text-center">
-                <p className="text-muted-foreground">{t("popularClinics.empty")}</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+      <PopularDestinations
+        cities={popularCities.map((c) => ({
+          id: c.id,
+          name: c.name,
+          image: c.image,
+          key: c.key,
+          countryId: c.country_id,
+        }))}
+        onSelect={(cityId, countryId) => handleCityClick(cityId, countryId ?? "")}
+      />
 
-      </section>
+      <HowItWorksSection />
 
-      {/* Popular Cities */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("popularCities.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("popularCities.subtitle")}
-            </p>
-          </div>
+      <GetOffersSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {popularCities.map((city, index) => <Card key={city.id} className="group relative overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-elegant animate-fade-in" style={{
-            animationDelay: `${index * 0.1}s`
-          }} onClick={() => handleCityClick(city.id, city.country_id)}>
-                <div className="relative h-64">
-                  <img src={city.image} alt={city.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 text-white">
-                    <h3 className="text-2xl font-bold mb-2">{city.name}</h3>
-                    <p className="text-white/90">{t(`popularCities.${city.key}`)}</p>
-                  </div>
-                </div>
-              </Card>)}
-          </div>
-        </div>
-      </section>
+      <PopularTreatmentsSection treatments={treatments} onSelect={handleTreatmentClick} />
 
-      {/* How It Works */}
-      <section className="py-16 bg-gradient-to-br from-medical-light/30 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("howItWorks.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("howItWorks.subtitle")}
-            </p>
-          </div>
+      <WhyChooseSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center group">
-              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Search className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">{t("howItWorks.step1Title")}</h3>
-              <p className="text-muted-foreground">{t("howItWorks.step1Desc")}</p>
-            </div>
+      <TestimonialsSection />
 
-            <div className="text-center group relative">
-              <ArrowRight className="hidden md:block absolute -left-8 top-8 h-6 w-6 text-muted-foreground" />
-              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <UserCheck className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">{t("howItWorks.step2Title")}</h3>
-              <p className="text-muted-foreground">{t("howItWorks.step2Desc")}</p>
-              <ArrowRight className="hidden md:block absolute -right-8 top-8 h-6 w-6 text-muted-foreground" />
-            </div>
-
-            <div className="text-center group">
-              <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <CheckCircle className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">{t("howItWorks.step3Title")}</h3>
-              <p className="text-muted-foreground">{t("howItWorks.step3Desc")}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Treatments Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("treatmentOptions.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("treatmentOptions.subtitle")}
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {treatments.filter((treatment) => HOMEPAGE_SHOWCASE_TREATMENTS.includes(treatment.name)).map((treatment, index) => (
-              <Card key={treatment.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300 hover:scale-105 animate-fade-in" style={{
-            animationDelay: `${index * 0.1}s`
-          }} onClick={() => handleTreatmentClick(treatment.id)}>
-                <CardContent className="p-6 text-center">
-                  <div className="rounded-full w-24 h-24 mx-auto mb-4 overflow-hidden ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300">
-                    <img
-                      src={getTreatmentImage(treatment.name)}
-                      alt={treatment.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <h3 className="font-semibold mb-2">{treatment.name}</h3>
-                  <p className="text-sm text-muted-foreground">{treatment.description || t("treatmentOptions.defaultDescription")}</p>
-                </CardContent>
-              </Card>))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Dentaloria */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge variant="secondary" className="mb-4">{t("whyDentaloria.badge")}</Badge>
-            <h2 className="text-3xl font-bold mb-4">{t("whyDentaloria.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("whyDentaloria.subtitle")}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {WHY_DENTALORIA.map((item, index) => (
-              <div
-                key={item.key}
-                className="text-center group animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <item.icon className="h-8 w-8" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{t(`whyDentaloria.${item.key}.title`)}</h3>
-                <p className="text-muted-foreground text-sm">{t(`whyDentaloria.${item.key}.description`)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 bg-gradient-to-br from-medical-light/30 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("testimonials.title")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("testimonials.subtitle")}
-            </p>
-          </div>
-
-          <div className="relative overflow-hidden">
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-medical-light/30 to-transparent z-10" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-medical-light/30 to-transparent z-10" />
-
-            <div className="flex w-max gap-6 animate-marquee hover:[animation-play-state:paused]">
-              {[...testimonials, ...testimonials].map((testimonial, i) => (
-                <Card
-                  key={`${testimonial.name}-${i}`}
-                  className="w-80 shrink-0 border-primary/10 bg-gradient-to-br from-white to-primary/5 shadow-card hover:shadow-elegant transition-shadow duration-300"
-                >
-                  <CardContent className="p-6 flex flex-col h-full">
-                    <div className="flex gap-1 mb-4">
-                      {Array.from({ length: 5 }).map((_, idx) => (
-                        <Star key={idx} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                      ))}
-                    </div>
-                    <p className="text-muted-foreground mb-6 flex-1">"{testimonial.quote}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                        {getInitials(testimonial.name)}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-sm">{testimonial.name}</div>
-                        <div className="text-xs text-muted-foreground">{testimonial.location}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-primary to-blue-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("cta.title")}
-            </h2>
-            <p className="text-xl mb-8 text-white/90">
-              {t("cta.subtitle")}
-            </p>
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3" onClick={() => navigate(withLocalePrefix('/clinic-listing', lang))}>
-              {t("cta.getStarted")}
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </section>
+      <StatsBar tone="light" />
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

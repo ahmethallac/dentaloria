@@ -7,7 +7,9 @@
     "aboutUs": "À Propos",
     "registerClinic": "Inscrire Votre Clinique",
     "dashboard": "Tableau de Bord",
-    "signOut": "Déconnexion"
+    "signOut": "Déconnexion",
+    "destinations": "Destinations",
+    "howItWorks": "Comment ça marche"
   },
   "footer": {
     "tagline": "La plateforme de comparaison de cliniques dentaires la plus fiable de Turquie. Nous vous aidons à trouver le meilleur traitement au meilleur prix.",
@@ -22,14 +24,20 @@
     "newsletterTitle": "Abonnez-vous à Notre Newsletter",
     "newsletterPlaceholder": "Votre adresse e-mail",
     "subscribe": "S'abonner",
-    "newsletterNote": "Restez informé des dernières offres et campagnes.",
+    "newsletterNote": "Abonnez-vous pour recevoir conseils dentaires et offres spéciales.",
     "designedBy": "Conçu par DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
     "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Tous droits réservés 2026",
     "privacyPolicy": "Politique de Confidentialité",
     "termsOfService": "Conditions d'Utilisation",
     "cookiePolicy": "Politique de Cookies",
     "gdpr": "RGPD",
-    "securedWithTrustpilot": "Sécurisé par Trustpilot"
+    "securedWithTrustpilot": "Sécurisé par Trustpilot",
+    "explore": "Explorer",
+    "support": "Assistance",
+    "helpCenter": "Centre d'aide",
+    "newsletterHeading": "Offres exclusives",
+    "weAccept": "Nous acceptons",
+    "sslSecured": "Sécurisé SSL"
   },
   "common": {
     "search": "Rechercher",
