@@ -135,11 +135,12 @@ export const HomeHero = ({
       {/* Full-bleed behind everything on desktop; on mobile it is anchored to
           the right beside the headline instead.
 
-          It cannot stay full-bleed at 375px: the box is 375x875 while the
-          source is 863x415, so object-cover scales it 2.1x to fill the height
-          and crops 1445px horizontally — only the middle 20% survives, and the
-          subject is in the right third, so she disappears entirely. Anchoring
-          the box to the right at roughly her own aspect keeps her in frame.
+          It cannot stay full-bleed at 375px: the box is far taller than it is
+          wide while the source is landscape, so object-cover scales to fill the
+          height and crops most of the width away — and the subject sits in the
+          right third, so a centred crop loses her entirely. Anchoring the box
+          to the right at roughly her own aspect keeps her in frame; the crop
+          window then lands on the right half, where she is.
 
           Both variants start 80px above the section so the parallax never
           exposes a gap: the strip it uncovers is scrollY * PHOTO_RATE tall,
@@ -150,7 +151,7 @@ export const HomeHero = ({
           src={heroImage}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover object-[91%_center] will-change-transform lg:object-center"
+          className="h-full w-full object-cover object-right will-change-transform lg:object-center"
         />
         {/* Feather the cut edges into the page rather than ending on a line. */}
         <div className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-background via-background/60 to-transparent lg:hidden" />
