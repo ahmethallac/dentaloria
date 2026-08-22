@@ -43,6 +43,21 @@
     "languages": "Języki",
     "clearFilters": "Wyczyść Filtry",
     "applyFilters": "Zastosuj Filtry",
-    "filterClinics": "Filtruj Kliniki"
+    "filterClinics": "Filtruj Kliniki",
+    "clearAll": "Wyczyść wszystko",
+    "allLanguages": "Wszystkie języki",
+    "showMore": "Pokaż więcej",
+    "showLess": "Pokaż mniej"
+  },
+  "aiPanel": {
+    "badge": "Wyszukiwanie z AI",
+    "new": "Nowość",
+    "tryExamples": "Wypróbuj przykłady",
+    "examples": [
+      "All-on-6 w Stambule",
+      "Hollywood Smile w Antalyi",
+      "Korona cyrkonowa w Izmirze",
+      "Wybielanie zębów w Bodrum"
+    ]
   }
 }

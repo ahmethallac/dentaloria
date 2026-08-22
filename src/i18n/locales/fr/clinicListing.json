@@ -43,6 +43,21 @@
     "languages": "Langues",
     "clearFilters": "Effacer les Filtres",
     "applyFilters": "Appliquer les Filtres",
-    "filterClinics": "Filtrer les Cliniques"
+    "filterClinics": "Filtrer les Cliniques",
+    "clearAll": "Tout effacer",
+    "allLanguages": "Toutes les langues",
+    "showMore": "Voir plus",
+    "showLess": "Voir moins"
+  },
+  "aiPanel": {
+    "badge": "Recherche par IA",
+    "new": "Nouveau",
+    "tryExamples": "Essayez des exemples",
+    "examples": [
+      "All-on-6 à Istanbul",
+      "Hollywood Smile à Antalya",
+      "Couronne en zircone à Izmir",
+      "Blanchiment dentaire à Bodrum"
+    ]
   }
 }

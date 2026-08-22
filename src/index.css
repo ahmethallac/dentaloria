@@ -46,7 +46,10 @@ All colors MUST be HSL.
     --hero-subtitle: 214.3 23.1% 48.7%;     /* #5f7899  hero body copy      */
 
     /* Medical accent colors */
-    --medical-green: 152 68% 38%;
+    /* White on the old #1fa365 was 3.24:1 and failed AA — this is the primary
+     * CTA on the listing page. Darkened to the lightest tone that clears
+     * 4.5:1; the other uses are icons and text, which only get crisper. */
+    --medical-green: 152 68% 31.6%;         /* #1a8754  4.53:1 on white */
     --medical-green-light: 152 60% 92%;
 
     /* Modern gradient color palette */

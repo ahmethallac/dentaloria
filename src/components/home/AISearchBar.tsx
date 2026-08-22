@@ -9,10 +9,15 @@ import { withLocalePrefix } from "@/lib/localePath";
 
 interface AISearchBarProps {
   className?: string;
+  /**
+   * "bare" drops the badge, hint and arrow so a surrounding panel can supply
+   * its own heading — the clinic-listing page does. Defaults to "full".
+   */
+  variant?: "full" | "bare";
   onResults?: (params: URLSearchParams) => void;
 }
 
-export function AISearchBar({ className, onResults }: AISearchBarProps) {
+export function AISearchBar({ className, onResults, variant = "full" }: AISearchBarProps) {
   const navigate = useNavigate();
   const { lang } = useParams();
   const { t } = useTranslation("home");
@@ -109,19 +114,23 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
 
   return (
     <div className={className}>
-      <div className="flex justify-center mb-3">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-primary shadow-sm text-xs font-semibold tracking-wide">
-          <Sparkles className="h-3.5 w-3.5" />
-          {t("aiSearch.badge")}
-        </span>
-      </div>
-      <p className="text-center mb-3 px-2">
-        <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
-          {t("aiSearch.hint")}
-        </span>
-      </p>
+      {variant === "full" && (
+        <>
+          <div className="flex justify-center mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-primary shadow-sm text-xs font-semibold tracking-wide">
+              <Sparkles className="h-3.5 w-3.5" />
+              {t("aiSearch.badge")}
+            </span>
+          </div>
+          <p className="text-center mb-3 px-2">
+            <span className="inline-block bg-white/90 text-foreground text-sm sm:text-base font-medium px-4 py-1.5 rounded-full shadow-sm">
+              {t("aiSearch.hint")}
+            </span>
+          </p>
+        </>
+      )}
       <div className="relative">
-        <svg
+        {variant === "full" && <svg
           viewBox="0 0 60 60"
           className="absolute -top-7 left-2 sm:left-10 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
@@ -142,8 +151,15 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        </svg>
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-2xl flex items-start gap-2">
+        </svg>}
+        <div className={`flex gap-2 rounded-2xl p-3 ${
+          variant === "bare"
+            // stacked under sm so the field is not squeezed to ~200px beside the button
+            ? "flex-col items-stretch border border-border bg-white shadow-sm sm:flex-row sm:items-start"
+            : "items-start bg-white/95 backdrop-blur-sm shadow-2xl"
+        }`}>
+          {/* icon + field stay on one row even when the button drops below */}
+          <div className="flex min-w-0 flex-1 items-start gap-2">
           <Search className="h-5 w-5 text-muted-foreground ml-2 mt-2.5 shrink-0" />
           <textarea
             rows={2}
@@ -158,10 +174,11 @@ export function AISearchBar({ className, onResults }: AISearchBarProps) {
             placeholder={placeholder}
             className="flex-1 py-2 bg-transparent outline-none resize-none text-base sm:text-lg text-foreground placeholder:text-muted-foreground/70 min-w-0"
           />
+          </div>
           <Button
             onClick={handleSubmit}
             disabled={submitting || !query.trim() || !data}
-            className="self-center h-12 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold shrink-0"
+            className={`h-12 shrink-0 rounded-xl px-6 font-semibold ${variant === "bare" ? "w-full bg-primary hover:bg-primary/90 sm:w-auto sm:self-center" : "self-center bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700"}`}
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("aiSearch.search")}
           </Button>

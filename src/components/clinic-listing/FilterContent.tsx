@@ -1,7 +1,21 @@
-import { Button } from "@/components/ui/button";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Filter, Circle, CheckCircle2 } from "lucide-react";
+import { Check, ChevronDown, Filter, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { LANGUAGES } from "@/lib/clinicMeta";
+
+/*
+ * Sidebar filters. Sections collapse, long lists cut off after VISIBLE items
+ * behind a "Show more", and the whole thing is a single column of radio-style
+ * rows.
+ *
+ * Treatment / Country / City are single-select, so they get radio circles.
+ * Language is multi-select — the reference draws the same circle for it, but a
+ * radio that accepts several answers is a lie, so it gets a check mark
+ * instead. Same size and position; only the glyph differs.
+ */
+
+const VISIBLE = 4;
 
 interface FilterContentProps {
   treatments: any[];
@@ -19,6 +33,84 @@ interface FilterContentProps {
   onApply?: () => void;
   showHeader?: boolean;
 }
+
+const Section = ({ title, children }: { title: string; children: ReactNode }) => {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className="border-b border-border pb-5 last:border-0 last:pb-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between py-1 text-left"
+      >
+        <span className="text-sm font-semibold text-brand-navy">{title}</span>
+        <ChevronDown
+          className={`h-4 w-4 text-nav-muted transition-transform ${open ? "" : "-rotate-90"}`}
+          aria-hidden="true"
+        />
+      </button>
+      {open && <div className="mt-3 space-y-1">{children}</div>}
+    </div>
+  );
+};
+
+const Option = ({
+  selected,
+  multi,
+  onSelect,
+  children,
+}: {
+  selected: boolean;
+  multi?: boolean;
+  onSelect: () => void;
+  children: ReactNode;
+}) => (
+  <button
+    type="button"
+    onClick={onSelect}
+    role={multi ? "checkbox" : "radio"}
+    aria-checked={selected}
+    className="flex w-full items-center gap-3 rounded-lg py-1.5 text-left transition-colors hover:text-primary"
+  >
+    <span
+      className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
+        multi ? "rounded-[4px]" : "rounded-full"
+      } ${selected ? "border-primary bg-primary" : "border-nav-muted/50 bg-white"}`}
+      aria-hidden="true"
+    >
+      {selected &&
+        (multi ? (
+          <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />
+        ) : (
+          <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+        ))}
+    </span>
+    <span className={`text-sm ${selected ? "font-medium text-primary" : "text-nav-muted"}`}>
+      {children}
+    </span>
+  </button>
+);
+
+/** Renders the first VISIBLE children, the rest behind a "Show more" toggle. */
+const Collapsed = ({ children }: { children: ReactNode[] }) => {
+  const { t } = useTranslation("clinicListing");
+  const [expanded, setExpanded] = useState(false);
+  const items = children.filter(Boolean);
+  if (items.length <= VISIBLE) return <>{items}</>;
+  return (
+    <>
+      {expanded ? items : items.slice(0, VISIBLE)}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="pt-1 text-sm font-medium text-primary hover:underline"
+      >
+        {expanded ? t("filters.showLess") : t("filters.showMore")}
+      </button>
+    </>
+  );
+};
 
 export const FilterContent = ({
   treatments,
@@ -38,214 +130,146 @@ export const FilterContent = ({
 }: FilterContentProps) => {
   const { t } = useTranslation("clinicListing");
   const { t: tCommon } = useTranslation("common");
-  const activeFiltersCount = [
-    selectedTreatment !== "all",
-    selectedCountry !== "all",
-    selectedCity !== "all",
-    selectedLanguages.length > 0,
-  ].filter(Boolean).length;
 
-  const toggleLanguage = (code: string) => {
-    if (selectedLanguages.includes(code)) {
-      setSelectedLanguages(selectedLanguages.filter((c) => c !== code));
-    } else {
-      setSelectedLanguages([...selectedLanguages, code]);
-    }
-  };
+  const toggleLanguage = (code: string) =>
+    setSelectedLanguages(
+      selectedLanguages.includes(code)
+        ? selectedLanguages.filter((c) => c !== code)
+        : [...selectedLanguages, code],
+    );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {showHeader && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
-              {t("filters.title")}
-            </h3>
-          </div>
-          {activeFiltersCount > 0 && (
-            <span className="text-xs bg-primary text-white px-2 py-1 rounded-full">
-              {activeFiltersCount} {t("filters.active")}
-            </span>
-          )}
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <span className="flex items-center gap-2 text-base font-bold text-brand-navy">
+            <Filter className="h-4 w-4 text-primary" aria-hidden="true" />
+            {t("filters.title")}
+          </span>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+          >
+            {t("filters.clearAll")}
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
         </div>
       )}
 
-      {/* Treatments Filter */}
-      <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.treatments")}</h4>
-        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-          <div
-            onClick={() => setSelectedTreatment("all")}
-            className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-          >
-            <div className="relative">
-              {selectedTreatment === "all" ? (
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground" />
-              )}
-            </div>
-            <span className={`text-sm ${selectedTreatment === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-              {t("filters.allTreatments")}
-            </span>
-          </div>
-          {treatments.map((treatment) => (
-            <div
-              key={treatment.id}
-              onClick={() => setSelectedTreatment(treatment.id)}
-              className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+      <Section title={t("filters.treatments")}>
+        <Collapsed>
+          {[
+            <Option
+              key="all"
+              selected={selectedTreatment === "all"}
+              onSelect={() => setSelectedTreatment("all")}
             >
-              <div className="relative">
-                {selectedTreatment === treatment.id ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <span className={`text-sm ${selectedTreatment === treatment.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+              {t("filters.allTreatments")}
+            </Option>,
+            ...treatments.map((treatment) => (
+              <Option
+                key={treatment.id}
+                selected={selectedTreatment === treatment.id}
+                onSelect={() => setSelectedTreatment(treatment.id)}
+              >
                 {treatment.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+              </Option>
+            )),
+          ]}
+        </Collapsed>
+      </Section>
 
-      {/* Countries Filter */}
-      <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.countries")}</h4>
-        <div className="space-y-2 max-h-[150px] overflow-y-auto pr-2">
-          <div
-            onClick={() => {
-              setSelectedCountry("all");
-              setSelectedCity("all");
-            }}
-            className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-          >
-            <div className="relative">
-              {selectedCountry === "all" ? (
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground" />
-              )}
-            </div>
-            <span className={`text-sm ${selectedCountry === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-              {t("filters.allCountries")}
-            </span>
-          </div>
-          {countries.map((country) => (
-            <div
-              key={country.id}
-              onClick={() => {
-                setSelectedCountry(country.id);
+      <Section title={t("filters.countries")}>
+        <Collapsed>
+          {[
+            <Option
+              key="all"
+              selected={selectedCountry === "all"}
+              onSelect={() => {
+                setSelectedCountry("all");
                 setSelectedCity("all");
               }}
-              className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
             >
-              <div className="relative">
-                {selectedCountry === country.id ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <span className={`text-sm ${selectedCountry === country.id ? "text-primary font-medium" : "text-foreground/70"}`}>
-                {country.flag_url} {country.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cities Filter */}
-      {selectedCountry !== "all" && cities.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.cities")}</h4>
-          <div className="space-y-2 max-h-[150px] overflow-y-auto pr-2">
-            <div
-              onClick={() => setSelectedCity("all")}
-              className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
-            >
-              <div className="relative">
-                {selectedCity === "all" ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <span className={`text-sm ${selectedCity === "all" ? "text-primary font-medium" : "text-foreground/70"}`}>
-                {t("filters.allCities")}
-              </span>
-            </div>
-            {cities.map((city) => (
-              <div
-                key={city.id}
-                onClick={() => setSelectedCity(city.id)}
-                className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+              {t("filters.allCountries")}
+            </Option>,
+            ...countries.map((country) => (
+              <Option
+                key={country.id}
+                selected={selectedCountry === country.id}
+                onSelect={() => {
+                  setSelectedCountry(country.id);
+                  setSelectedCity("all");
+                }}
               >
-                <div className="relative">
-                  {selectedCity === city.id ? (
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <span className={`text-sm ${selectedCity === city.id ? "text-primary font-medium" : "text-foreground/70"}`}>
+                {country.name}
+              </Option>
+            )),
+          ]}
+        </Collapsed>
+      </Section>
+
+      {/* Cities are loaded per country, so this only has anything to show once
+          a country is picked. */}
+      {selectedCountry !== "all" && cities.length > 0 && (
+        <Section title={t("filters.cities")}>
+          <Collapsed>
+            {[
+              <Option
+                key="all"
+                selected={selectedCity === "all"}
+                onSelect={() => setSelectedCity("all")}
+              >
+                {t("filters.allCities")}
+              </Option>,
+              ...cities.map((city) => (
+                <Option
+                  key={city.id}
+                  selected={selectedCity === city.id}
+                  onSelect={() => setSelectedCity(city.id)}
+                >
                   {city.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+                </Option>
+              )),
+            ]}
+          </Collapsed>
+        </Section>
       )}
 
-      {/* Languages Filter */}
-      <div>
-        <h4 className="text-sm font-semibold mb-4 text-foreground/80">{t("filters.languages")}</h4>
-        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-          {LANGUAGES.map((lang) => {
-            const active = selectedLanguages.includes(lang.code);
-            return (
-              <div
-                key={lang.code}
-                onClick={() => toggleLanguage(lang.code)}
-                className="flex items-center gap-3 cursor-pointer hover:bg-white/30 p-2 rounded-lg transition-colors"
+      <Section title={t("filters.languages")}>
+        <Collapsed>
+          {[
+            <Option
+              key="all"
+              selected={selectedLanguages.length === 0}
+              onSelect={() => setSelectedLanguages([])}
+            >
+              {t("filters.allLanguages")}
+            </Option>,
+            ...LANGUAGES.map((language) => (
+              <Option
+                key={language.code}
+                multi
+                selected={selectedLanguages.includes(language.code)}
+                onSelect={() => toggleLanguage(language.code)}
               >
-                <div className="relative">
-                  {active ? (
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <span className={`text-sm flex items-center gap-2 ${active ? "text-primary font-medium" : "text-foreground/70"}`}>
-                  <span aria-hidden>{lang.flag}</span>
-                  {tCommon(`languageNames.${lang.code}`)}
+                <span className="flex items-center gap-2">
+                  {tCommon(`languageNames.${language.code}`)}
+                  <span aria-hidden="true">{language.flag}</span>
                 </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+              </Option>
+            )),
+          ]}
+        </Collapsed>
+      </Section>
 
-      {/* Action Buttons */}
-      <div className="space-y-3 pt-2">
-        <Button
-          onClick={clearFilters}
-          variant="outline"
-          className="w-full bg-white/50 border-white/30 hover:bg-white/70 rounded-xl"
-        >
-          {t("filters.clearFilters")}
-        </Button>
-        {onApply && (
-          <Button
-            onClick={onApply}
-            className="w-full bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl"
-          >
-            {t("filters.applyFilters")}
-          </Button>
-        )}
-      </div>
+      <Button
+        onClick={onApply}
+        className="h-11 w-full rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
+      >
+        {t("filters.applyFilters")}
+        <SlidersHorizontal className="ml-2 h-4 w-4" aria-hidden="true" />
+      </Button>
     </div>
   );
 };

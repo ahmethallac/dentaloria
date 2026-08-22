@@ -43,6 +43,21 @@
     "languages": "Languages",
     "clearFilters": "Clear Filters",
     "applyFilters": "Apply Filters",
-    "filterClinics": "Filter Clinics"
+    "filterClinics": "Filter Clinics",
+    "clearAll": "Clear All",
+    "allLanguages": "All Languages",
+    "showMore": "Show More",
+    "showLess": "Show Less"
+  },
+  "aiPanel": {
+    "badge": "AI-Powered Search",
+    "new": "New",
+    "tryExamples": "Try example searches",
+    "examples": [
+      "All-on-6 in Istanbul",
+      "Hollywood Smile in Antalya",
+      "Zirconium Crown in Izmir",
+      "Teeth Whitening in Bodrum"
+    ]
   }
 }
