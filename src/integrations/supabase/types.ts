@@ -71,18 +71,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          slug: string
         }
         Insert: {
           country_id: string
           created_at?: string
           id?: string
           name: string
+          slug: string
         }
         Update: {
           country_id?: string
           created_at?: string
           id?: string
           name?: string
+          slug?: string
         }
         Relationships: [
           {
@@ -329,10 +332,15 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          description_translated_at: string | null
+          description_translations: Json
           display_name: string | null
           email: string | null
           experience_years: number | null
           facilities: string[]
+          google_place_id: string | null
+          google_rating_synced_at: string | null
+          google_reviews: Json
           homepage_showcase: boolean
           id: string
           is_featured: boolean | null
@@ -340,6 +348,7 @@ export type Database = {
           is_verified: boolean | null
           languages: string[]
           latitude: number | null
+          locale: string
           longitude: number | null
           name: string
           page_revision_notes: string | null
@@ -348,6 +357,7 @@ export type Database = {
           phone: string | null
           rating: number | null
           review_count: number | null
+          slug: string
           trustpilot_rating: number | null
           trustpilot_url: string | null
           updated_at: string
@@ -362,10 +372,15 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          description_translated_at?: string | null
+          description_translations?: Json
           display_name?: string | null
           email?: string | null
           experience_years?: number | null
           facilities?: string[]
+          google_place_id?: string | null
+          google_rating_synced_at?: string | null
+          google_reviews?: Json
           homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
@@ -373,6 +388,7 @@ export type Database = {
           is_verified?: boolean | null
           languages?: string[]
           latitude?: number | null
+          locale?: string
           longitude?: number | null
           name: string
           page_revision_notes?: string | null
@@ -381,6 +397,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           review_count?: number | null
+          slug: string
           trustpilot_rating?: number | null
           trustpilot_url?: string | null
           updated_at?: string
@@ -395,10 +412,15 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          description_translated_at?: string | null
+          description_translations?: Json
           display_name?: string | null
           email?: string | null
           experience_years?: number | null
           facilities?: string[]
+          google_place_id?: string | null
+          google_rating_synced_at?: string | null
+          google_reviews?: Json
           homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
@@ -406,6 +428,7 @@ export type Database = {
           is_verified?: boolean | null
           languages?: string[]
           latitude?: number | null
+          locale?: string
           longitude?: number | null
           name?: string
           page_revision_notes?: string | null
@@ -414,6 +437,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           review_count?: number | null
+          slug?: string
           trustpilot_rating?: number | null
           trustpilot_url?: string | null
           updated_at?: string
@@ -437,8 +461,10 @@ export type Database = {
           city_id: string | null
           created_at: string | null
           description: string | null
+          description_translations: Json
           experience_years: number | null
           facilities: string[]
+          google_reviews: Json
           homepage_showcase: boolean
           id: string
           is_featured: boolean | null
@@ -450,6 +476,7 @@ export type Database = {
           patient_count: number | null
           rating: number | null
           review_count: number | null
+          slug: string | null
           trustpilot_rating: number | null
           website: string | null
         }
@@ -459,8 +486,10 @@ export type Database = {
           city_id?: string | null
           created_at?: string | null
           description?: string | null
+          description_translations?: Json
           experience_years?: number | null
           facilities?: string[]
+          google_reviews?: Json
           homepage_showcase?: boolean
           id: string
           is_featured?: boolean | null
@@ -472,6 +501,7 @@ export type Database = {
           patient_count?: number | null
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           trustpilot_rating?: number | null
           website?: string | null
         }
@@ -481,8 +511,10 @@ export type Database = {
           city_id?: string | null
           created_at?: string | null
           description?: string | null
+          description_translations?: Json
           experience_years?: number | null
           facilities?: string[]
+          google_reviews?: Json
           homepage_showcase?: boolean
           id?: string
           is_featured?: boolean | null
@@ -494,6 +526,7 @@ export type Database = {
           patient_count?: number | null
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           trustpilot_rating?: number | null
           website?: string | null
         }
@@ -676,7 +709,9 @@ export type Database = {
           name: string
           profile_image_url: string | null
           specialization: string | null
+          specialization_translations: Json
           title: string | null
+          title_translations: Json
         }
         Insert: {
           clinic_id: string
@@ -687,7 +722,9 @@ export type Database = {
           name: string
           profile_image_url?: string | null
           specialization?: string | null
+          specialization_translations?: Json
           title?: string | null
+          title_translations?: Json
         }
         Update: {
           clinic_id?: string
@@ -698,7 +735,9 @@ export type Database = {
           name?: string
           profile_image_url?: string | null
           specialization?: string | null
+          specialization_translations?: Json
           title?: string | null
+          title_translations?: Json
         }
         Relationships: [
           {
@@ -964,6 +1003,7 @@ export type Database = {
         }
         Returns: Json
       }
+      slugify: { Args: { input: string }; Returns: string }
       validate_discount_code: {
         Args: { p_amount_cents: number; p_code: string }
         Returns: Json
