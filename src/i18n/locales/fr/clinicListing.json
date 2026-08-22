@@ -47,7 +47,13 @@
     "clearAll": "Tout effacer",
     "allLanguages": "Toutes les langues",
     "showMore": "Voir plus",
-    "showLess": "Voir moins"
+    "showLess": "Voir moins",
+    "reset": "Réinitialiser",
+    "close": "Fermer les filtres",
+    "searchTreatments": "Rechercher un traitement...",
+    "searchCountries": "Rechercher un pays...",
+    "searchCities": "Rechercher une ville...",
+    "searchLanguages": "Rechercher une langue..."
   },
   "aiPanel": {
     "badge": "Recherche par IA",
@@ -59,5 +65,11 @@
       "Couronne en zircone à Izmir",
       "Blanchiment dentaire à Bodrum"
     ]
+  },
+  "clinicsFoundShort": "cliniques trouvées",
+  "pagination": {
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "page": "Page"
   }
 }

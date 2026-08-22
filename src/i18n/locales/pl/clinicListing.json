@@ -47,7 +47,13 @@
     "clearAll": "Wyczyść wszystko",
     "allLanguages": "Wszystkie języki",
     "showMore": "Pokaż więcej",
-    "showLess": "Pokaż mniej"
+    "showLess": "Pokaż mniej",
+    "reset": "Resetuj",
+    "close": "Zamknij filtry",
+    "searchTreatments": "Szukaj zabiegów...",
+    "searchCountries": "Szukaj krajów...",
+    "searchCities": "Szukaj miast...",
+    "searchLanguages": "Szukaj języków..."
   },
   "aiPanel": {
     "badge": "Wyszukiwanie z AI",
@@ -59,5 +65,11 @@
       "Korona cyrkonowa w Izmirze",
       "Wybielanie zębów w Bodrum"
     ]
+  },
+  "clinicsFoundShort": "klinik znaleziono",
+  "pagination": {
+    "previous": "Poprzednia strona",
+    "next": "Następna strona",
+    "page": "Strona"
   }
 }

@@ -47,7 +47,13 @@
     "clearAll": "Șterge tot",
     "allLanguages": "Toate limbile",
     "showMore": "Arată mai mult",
-    "showLess": "Arată mai puțin"
+    "showLess": "Arată mai puțin",
+    "reset": "Resetează",
+    "close": "Închide filtrele",
+    "searchTreatments": "Caută tratamente...",
+    "searchCountries": "Caută țări...",
+    "searchCities": "Caută orașe...",
+    "searchLanguages": "Caută limbi..."
   },
   "aiPanel": {
     "badge": "Căutare cu AI",
@@ -59,5 +65,11 @@
       "Coroană din zirconiu în Izmir",
       "Albire dentară în Bodrum"
     ]
+  },
+  "clinicsFoundShort": "clinici găsite",
+  "pagination": {
+    "previous": "Pagina anterioară",
+    "next": "Pagina următoare",
+    "page": "Pagina"
   }
 }

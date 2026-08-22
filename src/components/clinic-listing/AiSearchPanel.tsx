@@ -41,12 +41,14 @@ export const AiSearchPanel = ({
   return (
     <section
       data-fid="listing.aipanel"
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/8 via-accent/10 to-primary/8 p-5 lg:p-6"
+      className="relative overflow-hidden rounded-2xl lg:bg-gradient-to-r lg:from-primary/8 lg:via-accent/10 lg:to-primary/8 lg:p-6"
     >
       <Motif />
 
       <div className="relative lg:max-w-[74%]">
-        <div className="flex items-center gap-2">
+        {/* On mobile the reference is just the field — no tinted panel, no
+            badge, no example chips. */}
+        <div className="hidden items-center gap-2 lg:flex">
           <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
           <span className="text-sm font-semibold text-brand-navy">{t("aiPanel.badge")}</span>
           <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -54,9 +56,9 @@ export const AiSearchPanel = ({
           </span>
         </div>
 
-        <AISearchBar className="mt-3" variant="bare" onResults={onResults} />
+        <AISearchBar className="lg:mt-3" variant="bare" onResults={onResults} />
 
-        <div className="mt-4">
+        <div className="mt-4 hidden lg:block">
           <span className="text-sm font-medium text-primary">{t("aiPanel.tryExamples")}</span>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2.5">
             {examples.map((label) => (

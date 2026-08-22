@@ -13,6 +13,7 @@ import { Footer } from "@/components/ui/footer";
 import { FilterContent } from "@/components/clinic-listing/FilterContent";
 import { MobileFilterDrawer } from "@/components/clinic-listing/MobileFilterDrawer";
 import { ClinicCardSkeletonGrid } from "@/components/clinic-listing/ClinicCardSkeleton";
+import { ResultsPagination } from "@/components/clinic-listing/ResultsPagination";
 import { getCountries, getCities, getTreatments, getTreatmentCategories } from "@/lib/services";
 import { useClinicSearch } from "@/hooks/useClinicSearch";
 import { GoogleRating } from "@/components/ui/google-rating";
@@ -395,8 +396,9 @@ export default function ClinicListing() {
       </div>
 
       <div className="mx-auto w-full max-w-[1264px] px-5 py-8 sm:px-8">
-        {/* Mobile Filter Button */}
-        <div className="lg:hidden mb-6">
+        {/* Mobile toolbar — the reference puts filters, sort and the count on
+            one row and drops the page heading entirely. */}
+        <div className="mb-6 flex items-center gap-3 lg:hidden">
           <MobileFilterDrawer
             treatments={treatments}
             countries={countries}
@@ -411,6 +413,24 @@ export default function ClinicListing() {
             setSelectedLanguages={setSelectedLanguages}
             clearFilters={clearFilters}
           />
+
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+            <SelectTrigger className="h-11 min-w-0 flex-1 gap-2 rounded-xl border-border bg-white px-3">
+              <ArrowUpDown className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="balance">{t("sort.recommended")}</SelectItem>
+              <SelectItem value="rating">{t("sort.highestRated")}</SelectItem>
+              <SelectItem value="price_asc">{t("sort.priceLowToHigh")}</SelectItem>
+              <SelectItem value="price_desc">{t("sort.priceHighToLow")}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <span className="shrink-0 whitespace-nowrap text-right text-sm text-nav-muted">
+            <span className="font-bold text-brand-navy">{totalClinics}</span>{" "}
+            {t("clinicsFoundShort")}
+          </span>
         </div>
 
         <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
@@ -442,7 +462,7 @@ export default function ClinicListing() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Header */}
-            <div id="clinic-results" className="mb-6 flex scroll-mt-24 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div id="clinic-results" className="mb-6 hidden scroll-mt-24 flex-col gap-4 lg:flex lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-brand-navy">
                   {showSkeleton ? (
@@ -621,7 +641,7 @@ export default function ClinicListing() {
 
                             <Button
                               onClick={() => setApplyOpenForClinicId(clinic.id)}
-                              className="h-10 w-full rounded-xl bg-medical-green text-sm font-semibold text-white hover:bg-medical-green/90"
+                              className="h-10 w-full rounded-xl bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                             >
                               {t("quickApply")}
                             </Button>
@@ -642,40 +662,41 @@ export default function ClinicListing() {
 
                       {/* Mobile Layout */}
                       <div className="lg:hidden">
-                        <div className="relative h-44">
+                        <div className="relative h-48">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
-                          
-                          <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
-                            {clinic.is_featured ? (
-                              <Badge className="bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg">
+
+                          {/* rating rides the image top-left, as the reference has it */}
+                          <div className="absolute left-3 top-3 z-10 flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1 rounded-lg bg-white px-2 py-1 text-sm font-semibold text-brand-navy shadow-sm">
+                              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                              {Number(clinic.rating ?? 0).toFixed(1)}
+                            </span>
+                            {clinic.is_featured && (
+                              <Badge className="rounded-lg border-0 bg-primary px-2 py-1 text-xs font-medium text-white shadow-sm">
                                 {t("featured")}
                               </Badge>
-                            ) : <div />}
-
-                            {clinic.is_verified && (
-                              <div className="flex items-center gap-1 rounded-lg border border-border bg-white px-2 py-1">
-                                <BadgeCheck className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                                <span className="text-xs font-medium text-brand-navy">{t("verified")}</span>
-                              </div>
                             )}
-                          </div>
-
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-8 pb-3 px-3">
-                            <div className="flex items-center gap-1.5 text-white">
-                              <MapPin className="h-3.5 w-3.5" />
-                              <span className="text-sm font-medium">{getClinicLocation(clinic)}</span>
-                            </div>
                           </div>
                         </div>
 
                         <div className="p-4 space-y-3">
-                          {/* Name + Rating */}
-                          <div className="flex items-start justify-between gap-3">
-                            <h3 className="flex-1 text-base font-bold leading-tight text-brand-navy">
+                          {/* Name + verified tick, location under it */}
+                          <div className="flex items-center gap-2">
+                            <h3 className="min-w-0 truncate text-base font-bold leading-tight text-brand-navy">
                               {clinic.name}
                             </h3>
-                            <GoogleRating rating={clinic.rating} variant="prominent" showLabel={true} />
+                            {clinic.is_verified && (
+                              <BadgeCheck
+                                className="h-4 w-4 shrink-0 text-primary"
+                                aria-label={t("verified")}
+                              />
+                            )}
                           </div>
+
+                          <p className="flex items-center gap-1.5 text-sm text-nav-muted">
+                            <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                            <span className="truncate">{getClinicLocation(clinic)}</span>
+                          </p>
 
                           {/* Languages */}
                           {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
@@ -703,19 +724,19 @@ export default function ClinicListing() {
                           {/* Facilities */}
                           {Array.isArray(clinic.facilities) && clinic.facilities.length > 0 && (
                             <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-foreground/70 min-w-0">
-                              {sortFacilitiesForCard(clinic.facilities).slice(0, 3).map((key: string) => {
+                              {sortFacilitiesForCard(clinic.facilities).slice(0, 2).map((key: string) => {
                                 const f = getFacility(key);
                                 if (!f) return null;
                                 const Icon = f.icon;
                                 return (
-                                  <span key={key} className="inline-flex items-center gap-1 shrink-0">
-                                    <Icon className="w-3 h-3 text-primary" />
-                                    <span>{tCommon(`facilityLabels.${f.key}`)}</span>
+                                  <span key={key} className="inline-flex min-w-0 items-center gap-1">
+                                    <Icon className="h-3 w-3 shrink-0 text-primary" />
+                                    <span className="truncate">{tCommon(`facilityLabels.${f.key}`)}</span>
                                   </span>
                                 );
                               })}
-                              {clinic.facilities.length > 3 && (
-                                <span className="text-primary shrink-0">+{clinic.facilities.length - 3}</span>
+                              {clinic.facilities.length > 2 && (
+                                <span className="shrink-0 text-primary">+{clinic.facilities.length - 2}</span>
                               )}
                             </div>
                           )}
@@ -745,26 +766,21 @@ export default function ClinicListing() {
 
                           <div className="h-px bg-border/50" />
 
-                          {/* Price badge + stacked CTAs */}
-                          <div className="flex flex-col items-stretch gap-2.5">
-                            <div className="self-center inline-flex items-baseline gap-2 px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
-                              <span className="text-[10px] font-semibold uppercase tracking-wider text-nav-muted">
+                          {/* Price on the left, the two actions on the right */}
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="shrink-0">
+                              <div className="text-[11px] font-medium text-nav-muted">
                                 {t("startingFrom")}
-                              </span>
-                              <span className="text-2xl font-bold leading-tight text-primary">
+                              </div>
+                              <div className="text-xl font-bold leading-tight text-primary">
                                 {getClinicPrice(clinic)}
-                              </span>
+                              </div>
                             </div>
-                            <Button
-                              onClick={() => setApplyOpenForClinicId(clinic.id)}
-                              className="w-full h-11 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
-                            >
-                              {t("quickApply")}
-                            </Button>
+                            <div className="flex min-w-0 flex-1 justify-end gap-2">
                             <Button
                               asChild
                               variant="outline"
-                              className="h-11 w-full rounded-xl border-primary/40 font-semibold text-primary hover:bg-primary/5"
+                              className="h-11 flex-1 rounded-xl border-primary/40 text-sm font-semibold text-primary hover:bg-primary/5"
                             >
                               <Link
                                 to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
@@ -772,6 +788,13 @@ export default function ClinicListing() {
                                 {t("viewClinic")}
                               </Link>
                             </Button>
+                            <Button
+                              onClick={() => setApplyOpenForClinicId(clinic.id)}
+                              className="h-11 flex-1 rounded-xl bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                            >
+                              {t("quickApply")}
+                            </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -797,6 +820,10 @@ export default function ClinicListing() {
                   </Card>
                 ))}
               </div>
+            )}
+
+            {!showSkeleton && clinics.length > 0 && (
+              <ResultsPagination page={page} total={totalClinics} perPage={12} onChange={setPage} />
             )}
 
             {/* No Results */}

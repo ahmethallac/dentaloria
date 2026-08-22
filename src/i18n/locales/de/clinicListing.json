@@ -47,7 +47,13 @@
     "clearAll": "Alle löschen",
     "allLanguages": "Alle Sprachen",
     "showMore": "Mehr anzeigen",
-    "showLess": "Weniger anzeigen"
+    "showLess": "Weniger anzeigen",
+    "reset": "Zurücksetzen",
+    "close": "Filter schließen",
+    "searchTreatments": "Behandlungen suchen...",
+    "searchCountries": "Länder suchen...",
+    "searchCities": "Städte suchen...",
+    "searchLanguages": "Sprachen suchen..."
   },
   "aiPanel": {
     "badge": "KI-gestützte Suche",
@@ -59,5 +65,11 @@
       "Zirkonkrone in Izmir",
       "Zahnaufhellung in Bodrum"
     ]
+  },
+  "clinicsFoundShort": "Kliniken gefunden",
+  "pagination": {
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "page": "Seite"
   }
 }

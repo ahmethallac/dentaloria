@@ -47,7 +47,13 @@
     "clearAll": "Clear All",
     "allLanguages": "All Languages",
     "showMore": "Show More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "reset": "Reset",
+    "close": "Close filters",
+    "searchTreatments": "Search treatments...",
+    "searchCountries": "Search countries...",
+    "searchCities": "Search cities...",
+    "searchLanguages": "Search languages..."
   },
   "aiPanel": {
     "badge": "AI-Powered Search",
@@ -59,5 +65,11 @@
       "Zirconium Crown in Izmir",
       "Teeth Whitening in Bodrum"
     ]
+  },
+  "clinicsFoundShort": "Clinics Found",
+  "pagination": {
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page"
   }
 }

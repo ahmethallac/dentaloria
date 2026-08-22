@@ -47,7 +47,13 @@
     "clearAll": "Tümünü Temizle",
     "allLanguages": "Tüm Diller",
     "showMore": "Daha Fazla",
-    "showLess": "Daha Az"
+    "showLess": "Daha Az",
+    "reset": "Sıfırla",
+    "close": "Filtreleri kapat",
+    "searchTreatments": "Tedavi ara...",
+    "searchCountries": "Ülke ara...",
+    "searchCities": "Şehir ara...",
+    "searchLanguages": "Dil ara..."
   },
   "aiPanel": {
     "badge": "Yapay Zekâ Destekli Arama",
@@ -59,5 +65,11 @@
       "İzmir'de Zirkonyum Kron",
       "Bodrum'da Diş Beyazlatma"
     ]
+  },
+  "clinicsFoundShort": "Klinik Bulundu",
+  "pagination": {
+    "previous": "Önceki sayfa",
+    "next": "Sonraki sayfa",
+    "page": "Sayfa"
   }
 }
