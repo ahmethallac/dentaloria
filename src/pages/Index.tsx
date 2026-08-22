@@ -16,6 +16,7 @@ import { getFeaturedClinics, getTreatments, getCountries, getCities, type Clinic
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
 import { AISearchBar } from "@/components/home/AISearchBar";
+import HeroSection from "@/components/home/HeroSection";
 import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatmentMeta";
 
 // Helper function to map clinic data for ClinicCard component
