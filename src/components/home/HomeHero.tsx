@@ -161,8 +161,16 @@ export const HomeHero = ({
 
       <div className="relative mx-auto w-full max-w-[1100px] px-5 pb-14 pt-12 sm:px-8 lg:pt-16">
         <h1 data-fid="hero.title" className="text-3xl/[1.12] font-bold tracking-tight sm:text-4xl/[1.12] lg:text-5xl/[1.12]">
-          <span className="block text-brand-navy">{t("hero.titleLine1")}</span>
-          <span className="block text-brand-blue-bright">{t("hero.titleLine2")}</span>
+          {/* The break moves between widths: below lg the noun drops to line two
+              ("Your Perfect / Smile Starts Here"), at lg it stays up
+              ("Your Perfect Smile / Starts Here"). Hence three parts rather
+              than two — the split point is chosen per locale in home.json, so
+              the word that drops is the natural one in each language. */}
+          <span className="text-brand-navy">{t("hero.titleLead")}</span>
+          <br className="lg:hidden" />{" "}
+          <span className="text-brand-navy">{t("hero.titleWord")}</span>
+          <br className="hidden lg:inline" />{" "}
+          <span className="text-brand-blue-bright">{t("hero.titleLine2")}</span>
         </h1>
 
         <p

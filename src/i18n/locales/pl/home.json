@@ -4,7 +4,8 @@
     "description": "Dentaloria pomaga porównywać kliniki dentystyczne pod względem ceny, rodzaju zabiegów, lokalizacji i opinii pacjentów — dzięki czemu łatwo i pewnie wybierzesz najlepszą klinikę za granicą."
   },
   "hero": {
-    "titleLine1": "Twój idealny uśmiech",
+    "titleLead": "Twój idealny",
+    "titleWord": "uśmiech",
     "titleLine2": "Zaczyna się tutaj",
     "subtitle": "Porównaj zweryfikowane kliniki stomatologiczne, prawdziwe ceny i opinie pacjentów — wszystko w jednym miejscu.",
     "orFilters": "lub szukaj z filtrami",

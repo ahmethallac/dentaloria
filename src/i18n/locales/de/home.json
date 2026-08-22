@@ -4,7 +4,8 @@
     "description": "Dentaloria hilft Ihnen, Zahnkliniken nach Preis, Behandlungsarten, Standort und Patientenbewertungen zu vergleichen — damit Sie die beste Klinik im Ausland mit Vertrauen auswählen können."
   },
   "hero": {
-    "titleLine1": "Ihr perfektes Lächeln",
+    "titleLead": "Ihr perfektes",
+    "titleWord": "Lächeln",
     "titleLine2": "Beginnt hier",
     "subtitle": "Vergleichen Sie geprüfte Zahnkliniken, echte Preise und Patientenbewertungen — alles an einem Ort.",
     "orFilters": "oder mit Filtern suchen",

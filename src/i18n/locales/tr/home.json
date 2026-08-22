@@ -4,7 +4,8 @@
     "description": "Dentaloria; fiyat, tedavi seçenekleri, konum ve hasta yorumlarına göre diş kliniklerini karşılaştırmanıza yardımcı olur — yurt dışındaki en iyi kliniği güvenle seçmenizi kolaylaştırır."
   },
   "hero": {
-    "titleLine1": "Mükemmel Gülüşünüz",
+    "titleLead": "Mükemmel",
+    "titleWord": "Gülüşünüz",
     "titleLine2": "Burada Başlıyor",
     "subtitle": "Doğrulanmış diş kliniklerini, gerçek fiyatları ve hasta yorumlarını tek bir yerde karşılaştırın.",
     "orFilters": "ya da filtrelerle arayın",

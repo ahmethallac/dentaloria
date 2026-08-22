@@ -4,7 +4,8 @@
     "description": "Dentaloria vous aide à comparer les cliniques dentaires selon le prix, les types de traitement, la localisation et les avis des patients — pour choisir en toute confiance la meilleure clinique à l'étranger."
   },
   "hero": {
-    "titleLine1": "Votre sourire parfait",
+    "titleLead": "Votre sourire",
+    "titleWord": "parfait",
     "titleLine2": "Commence ici",
     "subtitle": "Comparez des cliniques dentaires vérifiées, des prix réels et des avis de patients — le tout au même endroit.",
     "orFilters": "ou recherchez avec des filtres",
