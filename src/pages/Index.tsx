@@ -16,7 +16,6 @@ import { getFeaturedClinics, getTreatments, getCountries, getCities, type Clinic
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
 import { AISearchBar } from "@/components/home/AISearchBar";
-import HeroSection from "@/components/home/HeroSection";
 import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatmentMeta";
 
 // Helper function to map clinic data for ClinicCard component
@@ -148,9 +147,94 @@ const Index = () => {
   return <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <HeroSection treatments={treatments} countries={countries} />
+      {/* Hero Section with Video Background */}
+      <section className="relative min-h-screen flex items-center justify-center">
+        {/* Background Video (extends up behind the sticky header so the header's fade reveals it even at rest) */}
+        <div className="absolute -top-20 left-0 right-0 bottom-0">
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <source src="https://videos.pexels.com/video-files/4490548/4490548-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/70 via-blue-700/60 to-indigo-800/70"></div>
+        </div>
+        
+        {/* Hero Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
+              {t("hero.titleLine1")}
+              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-gray-50">
+                {t("hero.titleLine2")}
+              </span>
+            </h1>
+            <p className="text-xl text-white/90 mb-12 animate-fade-in">
+              {t("hero.subtitle")}
+            </p>
 
+            {/* AI Search Bar */}
+            <AISearchBar className="max-w-2xl mx-auto animate-scale-in mb-6" />
+
+            <div className="flex items-center gap-4 max-w-2xl mx-auto mb-6">
+              <div className="h-px flex-1 bg-white/30" />
+              <span className="text-white/80 text-sm font-medium">{t("hero.orFilters")}</span>
+              <div className="h-px flex-1 bg-white/30" />
+            </div>
+
+            {/* Search Bar */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto animate-scale-in">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder={t("hero.selectTreatment")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {treatments.map((treatment) => (
+                      <SelectItem key={treatment.id} value={treatment.id}>
+                        {treatment.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder={t("hero.selectCountry")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.id} value={country.id}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="w-full">
+                <Button onClick={handleSearch} className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Search className="h-5 w-5 mr-2" />
+                  {t("hero.searchClinics")}
+                </Button>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-3 gap-8 mt-16 text-white">
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">500+</div>
+                <div className="text-white/80">{t("hero.verifiedClinics")}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">10,000+</div>
+                <div className="text-white/80">{t("hero.happyPatients")}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">4.8/5</div>
+                <div className="text-white/80">{t("hero.averageRating")}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Admin-curated Featured Clinics (Homepage Showcase) */}
       <FeaturedClinicsSection />
