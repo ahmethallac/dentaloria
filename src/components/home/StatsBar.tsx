@@ -83,8 +83,8 @@ export const StatsBar = ({ tone }: { tone: keyof typeof TONES }) => {
             )}
 
             <div className="min-w-0">
-              <div className={`${s.value} text-lg lg:text-xl`}>{t(valueKey)}</div>
-              <div className={`${s.label} text-xs lg:text-sm`}>{t(labelKey)}</div>
+              <div className={`${s.value} text-sm leading-snug lg:text-xl`}>{t(valueKey)}</div>
+              <div className={`${s.label} text-[11px] leading-snug lg:text-sm`}>{t(labelKey)}</div>
             </div>
           </div>
         ))}

@@ -65,7 +65,9 @@ const useHeroParallax = () => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // below lg the photo box starts under the header, where the uncovered
+    // strip would be visible — so parallax is desktop-only
+    const query = window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 1023px)");
     let raf = 0;
 
     const paint = () => {
@@ -130,19 +132,31 @@ export const HomeHero = ({
     <section data-fid="hero" className="relative">
       {/* The photo runs up behind the sticky header, as it does in the design
           (the image node spans the full 415px band, header included). */}
-      <div className="absolute -top-20 inset-x-0 bottom-0 overflow-hidden">
+      {/* Full-bleed behind everything on desktop; on mobile it is anchored to
+          the right beside the headline instead.
+
+          It cannot stay full-bleed at 375px: the box is 375x875 while the
+          source is 863x415, so object-cover scales it 2.1x to fill the height
+          and crops 1445px horizontally — only the middle 20% survives, and the
+          subject is in the right third, so she disappears entirely. Anchoring
+          the box to the right at roughly her own aspect keeps her in frame.
+
+          Both variants start 80px above the section so the parallax never
+          exposes a gap: the strip it uncovers is scrollY * PHOTO_RATE tall,
+          which with a rate below 1 always sits above the fold. */}
+      <div className="absolute right-0 top-0 h-[240px] w-[58%] overflow-hidden lg:-top-20 lg:inset-x-0 lg:bottom-0 lg:h-auto lg:w-auto">
         <img
           ref={photoRef}
           src={heroImage}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover will-change-transform"
+          className="h-full w-full object-cover object-[91%_center] will-change-transform lg:object-center"
         />
-        {/* Keeps the headline legible over the photo's brighter left third. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/20 to-transparent" />
-        {/* The stats bar overhangs the photo by 50px. Without this the photo's
-            bottom edge cut a hard line across the page either side of the bar. */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+        {/* Feather the cut edges into the page rather than ending on a line. */}
+        <div className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-background via-background/60 to-transparent lg:hidden" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-background lg:h-40" />
+        {/* Desktop only — there the photo does sit under the headline. */}
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-white/55 via-white/20 to-transparent lg:block" />
       </div>
 
       <div className="relative mx-auto w-full max-w-[1100px] px-5 pb-14 pt-12 sm:px-8 lg:pt-16">
@@ -158,9 +172,9 @@ export const HomeHero = ({
           {t("hero.subtitle")}
         </p>
 
-        <ul data-fid="hero.badges" className="mt-5 grid grid-cols-3 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-x-11">
+        <ul data-fid="hero.badges" className="mt-16 grid grid-cols-3 gap-2 lg:mt-5 lg:flex lg:flex-wrap lg:items-center lg:gap-x-11">
           {TRUST_BADGES.map(({ icon: Icon, key }) => (
-            <li key={key} className="flex items-start gap-1.5 lg:items-center lg:gap-2">
+            <li key={key} className="flex items-start gap-1.5 border-l border-border pl-3 first:border-0 first:pl-0 lg:items-center lg:gap-2 lg:border-0 lg:pl-0">
               <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary lg:mt-0" aria-hidden="true" />
               <span className="text-[11px] leading-tight text-brand-navy lg:text-sm">{t(key)}</span>
             </li>
