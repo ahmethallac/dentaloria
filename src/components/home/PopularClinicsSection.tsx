@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import { BadgeCheck, MapPin, Star } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowRight, BadgeCheck, MapPin, Star } from "lucide-react";
 import { withLocalePrefix } from "@/lib/localePath";
+import { getLanguage } from "@/lib/clinicMeta";
 import type { Clinic } from "@/lib/services";
 import { SectionShell, SectionHeading } from "./SectionShell";
 
@@ -54,7 +55,7 @@ export const PopularClinicsSection = ({
 
       <div
         data-fid="clinics.grid"
-        className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5"
       >
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <ClinicCardSkeleton key={i} />)
@@ -77,12 +78,12 @@ export const PopularClinicsSection = ({
                   </span>
                 </div>
 
-                <div className="p-5">
-                  <h3 className="truncate text-base font-semibold text-brand-navy">
+                <div className="p-3 lg:p-5">
+                  <h3 className="truncate text-sm font-semibold text-brand-navy lg:text-base">
                     {clinic.name}
                   </h3>
 
-                  <p className="mt-2 flex items-center gap-1.5 text-sm text-nav-muted">
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-nav-muted lg:text-sm">
                     <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                     <span className="truncate">
                       {[clinic.cities?.name, clinic.cities?.countries?.name]
@@ -91,7 +92,26 @@ export const PopularClinicsSection = ({
                     </span>
                   </p>
 
-                  <p className="mt-2 flex items-center gap-1.5 text-sm">
+                  {clinic.languages && clinic.languages.length > 0 && (
+                    <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 lg:hidden">
+                      {clinic.languages.slice(0, 3).map((code) => {
+                        const meta = getLanguage(code);
+                        return (
+                          <span
+                            key={code}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-nav-muted"
+                            title={meta?.name ?? code}
+                          >
+                            {/* no flag invented for a code we do not know */}
+                            {meta && <span aria-hidden="true">{meta.flag}</span>}
+                            {code.toUpperCase()}
+                          </span>
+                        );
+                      })}
+                    </p>
+                  )}
+
+                  <p className="mt-2 hidden items-center gap-1.5 text-sm lg:flex">
                     <Star
                       className="h-4 w-4 shrink-0 fill-medical-green text-medical-green"
                       aria-hidden="true"
@@ -105,13 +125,23 @@ export const PopularClinicsSection = ({
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1.5 border-t border-border px-5 py-3 text-sm text-nav-muted">
-                  <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <div className="flex items-center gap-1.5 border-t border-border px-3 py-2.5 text-xs text-nav-muted lg:px-5 lg:py-3 lg:text-sm">
+                  <BadgeCheck className="h-4 w-4 shrink-0 text-medical-green" aria-hidden="true" />
                   {t("popularClinics.verified")}
                 </div>
               </button>
             ))}
       </div>
+
+      {!loading && clinics.length > 0 && (
+        <Link
+          to={withLocalePrefix("/clinic-listing", lang)}
+          className="mt-5 flex items-center justify-center gap-1.5 text-sm font-medium text-primary lg:hidden"
+        >
+          {t("popularClinics.viewAll")}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      )}
 
       {!loading && clinics.length === 0 && (
         <p className="mt-6 rounded-2xl border border-border bg-white p-10 text-center text-sm text-nav-muted">

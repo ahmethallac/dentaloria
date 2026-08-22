@@ -4,7 +4,8 @@
     "description": "Dentaloria; fiyat, tedavi seçenekleri, konum ve hasta yorumlarına göre diş kliniklerini karşılaştırmanıza yardımcı olur — yurt dışındaki en iyi kliniği güvenle seçmenizi kolaylaştırır."
   },
   "hero": {
-    "titleLine1": "Mükemmel Gülüşünüz",
+    "titleLead": "Mükemmel",
+    "titleWord": "Gülüşünüz",
     "titleLine2": "Burada Başlıyor",
     "subtitle": "Doğrulanmış diş kliniklerini, gerçek fiyatları ve hasta yorumlarını tek bir yerde karşılaştırın.",
     "orFilters": "ya da filtrelerle arayın",
@@ -26,7 +27,8 @@
       "Antalya'da Hollywood Smile",
       "İzmir'de Zirkonyum Kron",
       "Bodrum'da Diş Beyazlatma"
-    ]
+    ],
+    "selectLanguage": "Dil (opsiyonel)"
   },
   "aiSearch": {
     "badge": "Yapay zeka destekli arama",
@@ -135,9 +137,9 @@
     "viewAll": "Tüm Yorumlar"
   },
   "cta": {
-    "title": "Hayalinizdeki Gülüşe Bugün Başlayın!",
-    "subtitle": "Binlerce hasta platformumuz sayesinde hayalindeki gülüşe kavuştu. Sıra sizde!",
-    "getStarted": "Hemen Başlayın"
+    "title": "Gülüş Yolculuğunuza Başlamaya Hazır mısınız?",
+    "subtitle": "Dentaloria ile mükemmel kliniğini bulan binlerce hastaya katılın.",
+    "getStarted": "Hemen Başla"
   },
   "stats": {
     "clinicsValue": "500+",
@@ -191,5 +193,14 @@
     "patientsLabel": "Mutlu Hasta",
     "ratingValue": "4,8/5",
     "ratingLabel": "Ortalama Puan"
+  },
+  "exampleOffers": {
+    "title": "Örnek Teklifler (Temsili)",
+    "watermark": "Örnek",
+    "treatment": "All-on-6 Tedavisi",
+    "clinic1": "Dental Turkey Clinic",
+    "clinic2": "Istanbul Smile Center",
+    "clinic3": "Izmir Dental Hub",
+    "disclaimer": "* Yalnızca temsili örnek tekliflerdir — gerçek fiyat teklifi değildir."
   }
 }

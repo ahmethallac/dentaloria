@@ -67,24 +67,24 @@ export const StatsBar = ({ tone }: { tone: keyof typeof TONES }) => {
     <SectionShell className={s.shell}>
       <div
         data-fid={s.fid}
-        className={`grid grid-cols-1 gap-y-6 rounded-2xl px-5 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 ${s.bar}`}
+        className={`grid grid-cols-2 gap-x-4 gap-y-6 rounded-2xl px-5 sm:px-10 lg:grid-cols-4 ${s.bar}`}
       >
         {s.items.map(({ icon: Icon, valueKey, labelKey }, i) => (
           <div
             key={valueKey}
-            className={`flex items-center gap-4 ${i > 0 ? `lg:border-l lg:pl-8 ${s.divider}` : ""}`}
+            className={`flex items-center gap-3 lg:gap-4 ${i > 0 ? `lg:border-l lg:pl-8 ${s.divider}` : ""}`}
           >
             {s.disc ? (
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 lg:h-11 lg:w-11">
                 <Icon className={`h-5 w-5 ${s.icon}`} aria-hidden="true" />
               </span>
             ) : (
-              <Icon className={`h-7 w-7 shrink-0 ${s.icon}`} aria-hidden="true" />
+              <Icon className={`h-6 w-6 shrink-0 lg:h-7 lg:w-7 ${s.icon}`} aria-hidden="true" />
             )}
 
             <div className="min-w-0">
-              <div className={s.value}>{t(valueKey)}</div>
-              <div className={`truncate ${s.label}`}>{t(labelKey)}</div>
+              <div className={`${s.value} text-sm leading-snug lg:text-xl`}>{t(valueKey)}</div>
+              <div className={`${s.label} text-[11px] leading-snug lg:text-sm`}>{t(labelKey)}</div>
             </div>
           </div>
         ))}

@@ -102,6 +102,8 @@ export interface Clinic {
   google_reviews?: GoogleReview[]
   is_verified: boolean
   is_featured: boolean
+  /** ISO codes of languages spoken, e.g. ['en','de']. Exposed by clinics_public. */
+  languages?: string[]
   is_published?: boolean
   created_at: string
   updated_at: string
