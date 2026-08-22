@@ -1,0 +1,270 @@
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { BadgeCheck, ChevronRight, Globe, Search, Sparkles, Stethoscope, Tag, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AISearchBar } from "@/components/home/AISearchBar";
+import heroImage from "@/assets/hero-home.webp";
+
+/*
+ * Built from the Figma reference, node 2:2 (see .claude/skills/dentaloria-ui-fidelity).
+ *
+ * That file is a screenshot traced into vectors, not a design source: it has no
+ * variables, no auto-layout, and its frame is 863px wide. Every measurement below
+ * is the traced value scaled by 1440/863 and snapped to the 4px grid — the
+ * derivation lives in the skill's SKILL.md. Where the trace disagreed with itself
+ * (six different greys for six nav links, a 3px card misalignment) the design
+ * intent won.
+ */
+
+type Option = { id: string; name: string };
+
+interface HomeHeroProps {
+  treatments: Option[];
+  countries: Option[];
+  selectedTreatment: string;
+  onTreatmentChange: (value: string) => void;
+  selectedCountry: string;
+  onCountryChange: (value: string) => void;
+  onSearch: () => void;
+}
+
+/** Trust markers under the subtitle. 27px apart at 863 -> 44px here. */
+const TRUST_BADGES = [
+  { icon: BadgeCheck, key: "hero.badgeVerified" },
+  { icon: Tag, key: "hero.badgeTransparent" },
+  { icon: Star, key: "hero.badgeReviews" },
+] as const;
+
+
+/*
+ * Scroll parallax between the hero photo and the search card.
+ *
+ * The photo is translated DOWN as the page scrolls, so it drifts upward more
+ * slowly than the page — the classic lag. It needs no extra image height: the
+ * strip it uncovers at the container's top is `scrollY * PHOTO_RATE` tall,
+ * which with a rate below 1 is always above the fold, and the bottom is
+ * clipped by the container's overflow. The card gets a small negative rate so
+ * it runs slightly ahead, widening the gap between the two layers.
+ *
+ * Only `transform` is written, so this stays on the compositor. Updates are
+ * coalesced into one rAF per frame and clamped once the hero has scrolled
+ * past, and the whole thing is skipped for readers who ask for reduced motion
+ * — drifting layers are a common vestibular trigger.
+ */
+const PHOTO_RATE = 0.25;
+const CARD_RATE = -0.05;
+const HERO_RANGE = 900;
+
+const useHeroParallax = () => {
+  const photoRef = useRef<HTMLImageElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let raf = 0;
+
+    const paint = () => {
+      raf = 0;
+      const y = Math.min(window.scrollY, HERO_RANGE);
+      if (photoRef.current) {
+        photoRef.current.style.transform = `translate3d(0, ${y * PHOTO_RATE}px, 0)`;
+      }
+      if (cardRef.current) {
+        cardRef.current.style.transform = `translate3d(0, ${y * CARD_RATE}px, 0)`;
+      }
+    };
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+
+    const reset = () => {
+      if (photoRef.current) photoRef.current.style.transform = "";
+      if (cardRef.current) cardRef.current.style.transform = "";
+    };
+
+    const sync = () => {
+      window.removeEventListener("scroll", onScroll);
+      if (query.matches) {
+        reset();
+        return;
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      paint();
+    };
+
+    sync();
+    query.addEventListener("change", sync);
+    return () => {
+      query.removeEventListener("change", sync);
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return { photoRef, cardRef };
+};
+
+export const HomeHero = ({
+  treatments,
+  countries,
+  selectedTreatment,
+  onTreatmentChange,
+  selectedCountry,
+  onCountryChange,
+  onSearch,
+}: HomeHeroProps) => {
+  const { t } = useTranslation("home");
+  const [tab, setTab] = useState<"filters" | "ai">("filters");
+  const { photoRef, cardRef } = useHeroParallax();
+
+  return (
+    <section data-fid="hero" className="relative">
+      {/* The photo runs up behind the sticky header, as it does in the design
+          (the image node spans the full 415px band, header included). */}
+      <div className="absolute -top-20 inset-x-0 bottom-0 overflow-hidden">
+        <img
+          ref={photoRef}
+          src={heroImage}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover will-change-transform"
+        />
+        {/* Keeps the headline legible over the photo's brighter left third. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/20 to-transparent" />
+        {/* The stats bar overhangs the photo by 50px. Without this the photo's
+            bottom edge cut a hard line across the page either side of the bar. */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-[1100px] px-5 pb-14 pt-12 sm:px-8 lg:pt-16">
+        <h1 data-fid="hero.title" className="text-3xl/[1.12] font-bold tracking-tight sm:text-4xl/[1.12] lg:text-5xl/[1.12]">
+          <span className="block text-brand-navy">{t("hero.titleLine1")}</span>
+          <span className="block text-brand-blue-bright">{t("hero.titleLine2")}</span>
+        </h1>
+
+        <p
+          data-fid="hero.subtitle"
+          className="mt-4 max-w-[420px] text-base/relaxed text-hero-subtitle lg:text-lg/relaxed"
+        >
+          {t("hero.subtitle")}
+        </p>
+
+        <ul data-fid="hero.badges" className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 lg:gap-x-11">
+          {TRUST_BADGES.map(({ icon: Icon, key }) => (
+            <li key={key} className="flex items-center gap-2">
+              <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+              <span className="text-sm text-brand-navy">{t(key)}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Search card — 622x142 at 863 -> 1036x236 here. */}
+        <div
+          ref={cardRef}
+          data-fid="hero.card"
+          className="mt-8 w-full rounded-2xl bg-white shadow-card will-change-transform"
+        >
+          <div className="flex items-center gap-4 overflow-x-auto border-b border-border px-5 pt-7 sm:px-10 lg:gap-8">
+            <button
+              type="button"
+              onClick={() => setTab("filters")}
+              aria-pressed={tab === "filters"}
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition-colors ${
+                tab === "filters"
+                  ? "border-primary font-medium text-primary"
+                  : "border-transparent font-normal text-nav-muted hover:text-primary"
+              }`}
+            >
+              <Search className="h-4 w-4" aria-hidden="true" />
+              {t("hero.tabFindBy")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("ai")}
+              aria-pressed={tab === "ai"}
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition-colors ${
+                tab === "ai"
+                  ? "border-primary font-medium text-primary"
+                  : "border-transparent font-normal text-nav-muted hover:text-primary"
+              }`}
+            >
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              {t("hero.tabAiSearch")}
+              <span className="rounded-md bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+                {t("hero.badgeNew")}
+              </span>
+            </button>
+          </div>
+
+          {tab === "filters" ? (
+            <>
+            <div className="flex flex-col gap-4 px-5 py-8 sm:px-10 md:flex-row md:items-center">
+              <Select value={selectedTreatment} onValueChange={onTreatmentChange}>
+                <SelectTrigger data-fid="hero.treatment" className="h-12 flex-1 rounded-xl">
+                  <span className="!flex items-center gap-3">
+                    <Stethoscope className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <SelectValue placeholder={t("hero.selectTreatment")} />
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {treatments.map((treatment) => (
+                    <SelectItem key={treatment.id} value={treatment.id}>
+                      {treatment.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedCountry} onValueChange={onCountryChange}>
+                <SelectTrigger data-fid="hero.country" className="h-12 flex-1 rounded-xl">
+                  <span className="!flex items-center gap-3">
+                    <Globe className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <SelectValue placeholder={t("hero.selectCountry")} />
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country.id} value={country.id}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button
+                data-fid="hero.search"
+                onClick={onSearch}
+                className="h-12 w-full rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90 md:w-[260px]"
+              >
+                <Search className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t("hero.searchClinics")}
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 px-5 pb-8 sm:px-10">
+              <span className="text-sm text-nav-muted">{t("hero.popularSearches")}</span>
+              {(t("hero.popularSearchItems", { returnObjects: true }) as string[]).map((label) => (
+                <span
+                  key={label}
+                  className="rounded-[6px] border border-border px-3 py-1.5 text-xs text-brand-navy"
+                >
+                  {label}
+                </span>
+              ))}
+              <ChevronRight className="h-4 w-4 text-primary" aria-hidden="true" />
+            </div>
+            </>
+          ) : (
+            /* The AI tab reuses the existing, already-wired AISearchBar —
+               no new backend, it just needed somewhere to render. */
+            <div className="px-5 py-8 sm:px-10">
+              <AISearchBar />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};

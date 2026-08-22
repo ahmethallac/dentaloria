@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, LogOut, Building2, LayoutDashboard, Globe } from "lucide-react";
+import { Menu, LogOut, Building2, LayoutDashboard, Globe, ChevronDown } from "lucide-react";
 import { Button } from "./button";
 import { useAuth } from "@/contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu";
@@ -14,15 +14,21 @@ import { LOCALE_CHOICE_KEY } from "@/components/i18n/GeoRedirectGate";
 interface NavLinkDef {
   to?: string;
   href?: string;
+  /** Section on the home page, e.g. "#destinations". */
+  hash?: string;
   key: string;
 }
 
+// Order and membership follow the Figma header (node 2:412). "Destinations"
+// and "How It Works" have no route of their own — they target sections on the
+// home page, so they are plain anchors that resolve from any page.
 const NAV_LINK_DEFS: NavLinkDef[] = [
   { to: "/", key: "nav.home" },
   { to: "/clinic-listing", key: "nav.clinics" },
-  { to: "/clinic", key: "nav.featuredClinic" },
   { to: "/treatments", key: "nav.treatments" },
+  { hash: "#destinations", key: "nav.destinations" },
   { to: "/about-us", key: "nav.aboutUs" },
+  { hash: "#how-it-works", key: "nav.howItWorks" },
 ];
 
 const getInitials = (name: string) =>
@@ -105,7 +111,7 @@ export const Navbar = () => {
   const closeMobile = () => setMobileOpen(false);
   const displayName = profile?.full_name || user?.email || "";
   const linkClass =
-    "px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200";
+    "text-sm font-normal text-nav-muted hover:text-primary transition-colors duration-200 whitespace-nowrap";
   const mobileLinkClass =
     "px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors";
 
@@ -131,11 +137,12 @@ export const Navbar = () => {
           className={
             mobile
               ? "flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors w-full"
-              : "flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200"
+              : "flex items-center gap-1.5 text-sm font-normal text-nav-muted hover:text-primary transition-colors duration-200"
           }
         >
           <Globe className="w-4 h-4" />
-          <span>{currentLocale?.flag} {currentLocale?.label}</span>
+          <span>{currentLocale?.label}</span>
+          {!mobile && <ChevronDown className="w-3 h-3" />}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={mobile ? "start" : "end"}>
@@ -161,8 +168,9 @@ export const Navbar = () => {
         maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
       }}
     >
-      <div className="container mx-auto px-6">
+      <div className="mx-auto w-full max-w-[1264px] px-5 sm:px-0">
         <div
+          data-fid="header.bar"
           className={`flex items-center justify-between transition-all duration-300 ${
             scrolled ? "h-16" : "h-20"
           }`}
@@ -172,17 +180,18 @@ export const Navbar = () => {
             <img
               src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png"
               alt="Dentaloria"
-              className={`w-auto transition-all duration-300 ${scrolled ? "h-8" : "h-10"}`}
+              data-fid="header.logo"
+              className={`w-auto transition-all duration-300 ${scrolled ? "h-7" : "h-8"}`}
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div data-fid="header.nav" className="hidden md:flex items-center gap-10">
             {NAV_LINK_DEFS.map((link) => (
               <NavLink
                 key={link.key}
                 to={link.to ? withLocalePrefix(link.to, lang) : undefined}
-                href={link.href}
+                href={link.hash ? withLocalePrefix("/", lang) + link.hash : link.href}
                 label={t(link.key)}
                 className={linkClass}
               />
@@ -190,7 +199,7 @@ export const Navbar = () => {
           </div>
 
           {/* Right Section: Auth */}
-          <div className="hidden md:flex items-center gap-2">
+          <div data-fid="header.actions" className="hidden md:flex items-center gap-5">
             <LanguageSwitcher />
             {user ? (
               <DropdownMenu>
@@ -218,10 +227,10 @@ export const Navbar = () => {
               </DropdownMenu>
             ) : (
               <Button
+                data-fid="header.cta"
                 onClick={() => navigate(withLocalePrefix("/auth", lang))}
-                className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 rounded-full shadow-md shadow-primary/20 transition-all duration-300"
+                className="h-11 w-40 rounded-xl bg-primary px-0 text-sm font-medium text-primary-foreground shadow-sm transition-colors duration-200 hover:bg-primary/90"
               >
-                <Building2 className="w-4 h-4 mr-2" />
                 {t("nav.registerClinic")}
               </Button>
             )}

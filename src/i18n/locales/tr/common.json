@@ -7,7 +7,9 @@
     "aboutUs": "Hakkımızda",
     "registerClinic": "Kliniğinizi Kaydedin",
     "dashboard": "Panel",
-    "signOut": "Çıkış Yap"
+    "signOut": "Çıkış Yap",
+    "destinations": "Destinasyonlar",
+    "howItWorks": "Nasıl Çalışır"
   },
   "footer": {
     "tagline": "Türkiye'nin en güvenilir diş kliniği karşılaştırma platformu. En uygun fiyata en iyi tedaviyi bulmanıza yardımcı oluyoruz.",
@@ -22,14 +24,20 @@
     "newsletterTitle": "Bültenimize Abone Olun",
     "newsletterPlaceholder": "E-posta adresiniz",
     "subscribe": "Abone Ol",
-    "newsletterNote": "En güncel kampanya ve fırsatlardan haberdar olun.",
+    "newsletterNote": "En yeni diş sağlığı ipuçları ve özel teklifler için abone olun.",
     "designedBy": "DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC tarafından tasarlanmıştır",
     "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Tüm hakları saklıdır 2026",
     "privacyPolicy": "Gizlilik Politikası",
     "termsOfService": "Kullanım Şartları",
     "cookiePolicy": "Çerez Politikası",
     "gdpr": "KVKK",
-    "securedWithTrustpilot": "Trustpilot ile güvence altında"
+    "securedWithTrustpilot": "Trustpilot ile güvence altında",
+    "explore": "Keşfet",
+    "support": "Destek",
+    "helpCenter": "Yardım Merkezi",
+    "newsletterHeading": "Özel Güncellemeler",
+    "weAccept": "Kabul edilen",
+    "sslSecured": "SSL Korumalı"
   },
   "common": {
     "search": "Ara",

@@ -4,16 +4,29 @@
     "description": "Dentaloria helps you compare dental clinics by price, treatment options, location, and patient reviews — making it easy to choose the best clinic abroad with confidence."
   },
   "hero": {
-    "titleLine1": "Find the Best",
-    "titleLine2": "Dental Clinic",
-    "subtitle": "World-class dental treatment at your fingertips",
+    "titleLine1": "Your Perfect Smile",
+    "titleLine2": "Starts Here",
+    "subtitle": "Compare verified dental clinics, real prices and patient reviews — all in one place.",
     "orFilters": "or search with filters",
-    "selectTreatment": "Select treatment type",
-    "selectCountry": "Select country",
+    "selectTreatment": "Select Treatment",
+    "selectCountry": "Select Country",
     "searchClinics": "Search Clinics",
     "verifiedClinics": "Verified Clinics",
     "happyPatients": "Happy Patients",
-    "averageRating": "Average Rating"
+    "averageRating": "Average Rating",
+    "badgeVerified": "Verified Clinics",
+    "badgeTransparent": "Transparent Prices",
+    "badgeReviews": "Real Patient Reviews",
+    "tabFindBy": "Find by Treatment & Country",
+    "tabAiSearch": "AI Search",
+    "badgeNew": "New",
+    "popularSearches": "Popular searches:",
+    "popularSearchItems": [
+      "All-on-6 in Istanbul",
+      "Hollywood Smile in Antalya",
+      "Zirconium Crown in Izmir",
+      "Teeth Whitening in Bodrum"
+    ]
   },
   "aiSearch": {
     "badge": "AI-powered search",
@@ -34,91 +47,149 @@
   },
   "popularClinics": {
     "title": "Popular Clinics",
-    "subtitle": "Discover the highest-rated and most trusted dental clinics",
-    "empty": "No clinics available yet"
+    "subtitle": "Discover the highest-rated and most trusted dental clinics.",
+    "empty": "No clinics available yet",
+    "viewAll": "View All Clinics",
+    "reviews": "reviews",
+    "verified": "Verified Clinic"
   },
   "popularCities": {
-    "title": "Popular Cities",
-    "subtitle": "Explore the most preferred destinations",
-    "istanbul": "Turkey's largest city",
+    "title": "Popular Destinations",
+    "subtitle": "Explore the most preferred dental tourism destinations in Turkey",
+    "istanbul": "Where East Meets West",
     "antalya": "Pearl of the Mediterranean",
-    "izmir": "Shining star of the Aegean"
+    "izmir": "The Pearl of the Aegean",
+    "viewAll": "View All Destinations",
+    "bodrum": "Blue Voyage & Beautiful Smiles"
   },
   "howItWorks": {
-    "title": "How It Works?",
-    "subtitle": "Find the perfect clinic in 3 simple steps",
+    "title": "How Dentaloria Works",
+    "subtitle": "Finding the right clinic is easy. Just 3 simple steps.",
     "step1Title": "1. Compare",
-    "step1Desc": "Compare clinics and find the best option for you",
-    "step2Title": "2. Find Perfect Clinic",
-    "step2Desc": "Choose the clinic that best suits your needs",
-    "step3Title": "3. Apply",
-    "step3Desc": "Easily book an appointment and start your treatment"
+    "step1Desc": "Search by treatment and country. Compare clinics, prices and reviews.",
+    "step2Title": "2. Choose",
+    "step2Desc": "Select the clinic that best matches your needs.",
+    "step3Title": "3. Apply & Get a Response",
+    "step3Desc": "Submit your request and get offers, or book your appointment."
   },
   "treatmentOptions": {
-    "title": "Treatment Options",
-    "subtitle": "Discover the most popular dental treatments",
-    "defaultDescription": "Click to explore clinics offering this treatment"
+    "title": "Popular Treatments",
+    "subtitle": "Explore the most popular dental treatments.",
+    "defaultDescription": "Click to explore clinics offering this treatment",
+    "viewAll": "View All Treatments"
   },
   "whyDentaloria": {
     "badge": "Why Dentaloria",
-    "title": "One platform. Every clinic compared.",
+    "title": "Why Choose Dentaloria?",
     "subtitle": "Dentaloria replaces messaging clinics one by one with a single place to compare, apply, and hear back.",
     "compare": {
       "title": "Compare, don't chase",
       "description": "See every clinic that matches your treatment and location side by side, instead of messaging each one separately."
     },
     "verified": {
-      "title": "Verified clinics only",
-      "description": "Every clinic on Dentaloria is reviewed before it goes live, so you're never guessing who to trust."
+      "title": "Verified Clinics Only",
+      "description": "Every clinic is reviewed before going live on our platform."
     },
     "pricing": {
-      "title": "Transparent pricing",
-      "description": "Real prices and real patient ratings upfront — no surprise quotes once you arrive."
+      "title": "Transparent Pricing",
+      "description": "Real prices and real patient reviews — no hidden costs."
     },
     "application": {
       "title": "One application, real replies",
       "description": "Submit your details once. Only the clinics that actually fit your needs get back to you."
+    },
+    "aiMatch": {
+      "title": "AI Match",
+      "description": "Our AI helps you find the best clinic for your needs."
+    },
+    "directContact": {
+      "title": "Direct Contact",
+      "description": "Chat directly with clinics and get quick answers."
     }
   },
   "testimonials": {
-    "title": "What patients say about Dentaloria",
-    "subtitle": "Real feedback from patients who found their clinic through Dentaloria",
+    "title": "What Patients Say",
+    "subtitle": "Real feedback from patients who found their clinic through Dentaloria.",
     "list": [
       {
         "name": "Sarah M.",
         "location": "United Kingdom",
-        "quote": "I didn't want to message ten different clinics and repeat my story every time. On Dentaloria I compared everything in one place and only reached out once I knew exactly who I wanted."
-      },
-      {
-        "name": "Michael R.",
-        "location": "Ireland",
-        "quote": "What I liked most was not having to negotiate with every clinic myself. I filled in one form and only the clinics that matched what I needed got back to me."
-      },
-      {
-        "name": "Anna K.",
-        "location": "Germany",
-        "quote": "I was overwhelmed by how many clinics claim to be the best. Dentaloria let me actually compare prices and reviews side by side instead of guessing."
+        "quote": "Thanks to Dentaloria, I found the perfect clinic in Antalya. The process was so easy and transparent."
       },
       {
         "name": "James T.",
         "location": "United States",
-        "quote": "Finding a dental clinic abroad felt risky until I found this site. Seeing verified reviews and real prices upfront made the decision so much easier."
+        "quote": "I compared 8 clinics in one day and saved thousands of dollars. Highly recommended!"
       },
       {
         "name": "Emma L.",
         "location": "Netherlands",
-        "quote": "I found exactly what I was looking for within a day. No back and forth with ten clinics — just one platform that did the comparing for me."
+        "quote": "The platform is so easy to use and the clinics are very responsive."
       },
       {
         "name": "David P.",
-        "location": "United Kingdom",
-        "quote": "Dentaloria saved me hours of research. I could filter by treatment and language, and the clinic I chose matched everything I needed."
+        "location": "Germany",
+        "quote": "I love how I can see real prices and reviews upfront. No surprises!"
       }
-    ]
+    ],
+    "viewAll": "View All Reviews"
   },
   "cta": {
     "title": "Start Your Perfect Smile Journey Today!",
     "subtitle": "Thousands of patients have achieved their dream smile through our platform. It's your turn!",
     "getStarted": "Get Started"
+  },
+  "stats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Verified Clinics",
+    "patientsValue": "10,000+",
+    "patientsLabel": "Happy Patients",
+    "priceValue": "Best Price Guarantee",
+    "priceLabel": "Transparent & Fair",
+    "reviewsValue": "Real Patient Reviews",
+    "reviewsLabel": "See authentic experiences"
+  },
+  "trending": {
+    "label": "Trending Searches",
+    "items": [
+      "All-on-6 Antalya",
+      "Hollywood Smile Istanbul",
+      "Zirconium Crown Izmir",
+      "Teeth Whitening Antalya",
+      "Veneers Turkey"
+    ]
+  },
+  "getOffers": {
+    "badge": "NEW",
+    "titleAccent": "Get Offers",
+    "titleRest": "From Clinics",
+    "subtitle": "Post your request, clinics will send you their best offers.",
+    "check1": "Upload your X-ray (optional)",
+    "check2": "Describe your request",
+    "check3": "Receive offers from verified clinics",
+    "check4": "Compare and choose the best one",
+    "uploadTitle": "Upload X-ray (Optional)",
+    "uploadHint": "JPG, PNG or DICOM files",
+    "describePlaceholder": "Describe your treatment request…",
+    "submit": "Send Request",
+    "howTitle": "How it works?",
+    "step1Title": "You send your request",
+    "step1Desc": "Upload your X-ray and describe what you need.",
+    "step2Title": "Clinics send you offers",
+    "step2Desc": "Verified clinics review your request and send their best offers.",
+    "step3Title": "Compare & choose",
+    "step3Desc": "Compare offers, ask questions and choose the best one.",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "Requests aren't being accepted yet. Please contact a clinic directly for now."
+  },
+  "bottomStats": {
+    "clinicsValue": "500+",
+    "clinicsLabel": "Verified Clinics",
+    "destinationsValue": "20+",
+    "destinationsLabel": "Popular Destinations",
+    "patientsValue": "10,000+",
+    "patientsLabel": "Happy Patients",
+    "ratingValue": "4.8/5",
+    "ratingLabel": "Average Rating"
   }
 }

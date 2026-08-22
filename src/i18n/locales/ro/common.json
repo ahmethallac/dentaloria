@@ -7,7 +7,9 @@
     "aboutUs": "Despre Noi",
     "registerClinic": "Înregistrează-ți Clinica",
     "dashboard": "Panou de Control",
-    "signOut": "Deconectare"
+    "signOut": "Deconectare",
+    "destinations": "Destinații",
+    "howItWorks": "Cum funcționează"
   },
   "footer": {
     "tagline": "Cea mai de încredere platformă de comparare a clinicilor dentare din Turcia. Te ajutăm să găsești cel mai bun tratament la cel mai avantajos preț.",
@@ -22,14 +24,20 @@
     "newsletterTitle": "Abonează-te la Newsletter",
     "newsletterPlaceholder": "Adresa ta de e-mail",
     "subscribe": "Abonează-te",
-    "newsletterNote": "Rămâi la curent cu cele mai recente campanii și oferte.",
+    "newsletterNote": "Abonează-te pentru sfaturi dentare și oferte speciale.",
     "designedBy": "Proiectat de DIGIMORIA GROUP INTELLIGENT ACQUISITION SYSTEMS LLC",
     "rightsReserved": "HALLAC HEALTH TOURISM TRAVEL AGENCY Toate drepturile rezervate 2026",
     "privacyPolicy": "Politica de Confidențialitate",
     "termsOfService": "Termeni și Condiții",
     "cookiePolicy": "Politica de Cookie-uri",
     "gdpr": "GDPR",
-    "securedWithTrustpilot": "Securizat cu Trustpilot"
+    "securedWithTrustpilot": "Securizat cu Trustpilot",
+    "explore": "Explorează",
+    "support": "Asistență",
+    "helpCenter": "Centru de ajutor",
+    "newsletterHeading": "Noutăți exclusive",
+    "weAccept": "Acceptăm",
+    "sslSecured": "Securizat SSL"
   },
   "common": {
     "search": "Caută",

@@ -26,9 +26,7 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))',
-					light: 'hsl(var(--primary-light))',
-					dark: 'hsl(var(--primary-dark))'
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -58,9 +56,19 @@ export default {
 					green: 'hsl(var(--medical-green))',
 					'green-light': 'hsl(var(--medical-green-light))'
 				},
-				trust: {
-					gold: 'hsl(var(--trust-gold))'
+				// Brand palette measured off the Figma reference (node 2:2).
+				brand: {
+					navy: 'hsl(var(--brand-navy))',
+					blue: 'hsl(var(--brand-blue))',
+					'blue-bright': 'hsl(var(--brand-blue-bright))'
 				},
+				stats: {
+					navy: 'hsl(var(--stats-navy))'
+				},
+				nav: {
+					muted: 'hsl(var(--nav-muted))'
+				},
+				'hero-subtitle': 'hsl(var(--hero-subtitle))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
