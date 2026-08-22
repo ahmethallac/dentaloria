@@ -26,7 +26,8 @@
       "Hollywood Smile à Antalya",
       "Couronne en zircone à Izmir",
       "Blanchiment dentaire à Bodrum"
-    ]
+    ],
+    "selectLanguage": "Langue (facultatif)"
   },
   "aiSearch": {
     "badge": "Recherche par intelligence artificielle",
@@ -135,8 +136,8 @@
     "viewAll": "Tous les avis"
   },
   "cta": {
-    "title": "Commencez Dès Aujourd'hui Votre Parcours vers le Sourire Parfait !",
-    "subtitle": "Des milliers de patients ont obtenu le sourire de leurs rêves grâce à notre plateforme. À vous de jouer !",
+    "title": "Prêt à commencer votre parcours sourire ?",
+    "subtitle": "Rejoignez des milliers de patients qui ont trouvé leur clinique idéale avec Dentaloria.",
     "getStarted": "Commencer"
   },
   "stats": {
@@ -191,5 +192,14 @@
     "patientsLabel": "Patients satisfaits",
     "ratingValue": "4,8/5",
     "ratingLabel": "Note moyenne"
+  },
+  "exampleOffers": {
+    "title": "Exemples d'offres (illustration)",
+    "watermark": "Exemple",
+    "treatment": "Traitement All-on-6",
+    "clinic1": "Dental Turkey Clinic",
+    "clinic2": "Istanbul Smile Center",
+    "clinic3": "Izmir Dental Hub",
+    "disclaimer": "* Offres données à titre d'illustration — ce ne sont pas de vrais devis."
   }
 }

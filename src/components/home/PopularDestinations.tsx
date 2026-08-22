@@ -41,14 +41,14 @@ export const PopularDestinations = ({
 
       <div
         data-fid="destinations.grid"
-        className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-6 grid grid-cols-3 gap-3 lg:grid-cols-4 lg:gap-5"
       >
         {cities.slice(0, 4).map((city) => (
           <button
             key={city.id}
             type="button"
             onClick={() => onSelect(city.id, city.countryId)}
-            className="group relative aspect-[16/10] overflow-hidden rounded-2xl text-left"
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl text-left sm:aspect-[16/10] lg:rounded-2xl"
           >
             <img
               src={city.image}
@@ -56,9 +56,9 @@ export const PopularDestinations = ({
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-              <div className="text-lg font-bold">{city.name}</div>
-              <div className="mt-0.5 text-sm text-white/85">
+            <div className="absolute inset-x-0 bottom-0 p-3 text-white lg:p-5">
+              <div className="text-sm font-bold lg:text-lg">{city.name}</div>
+              <div className="mt-0.5 text-[11px] leading-tight text-white/85 lg:text-sm">
                 {t(`popularCities.${city.key}`)}
               </div>
             </div>

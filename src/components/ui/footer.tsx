@@ -1,31 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { Facebook, Instagram, Linkedin, Lock, Mail, SendHorizontal, Twitter, Youtube } from "lucide-react";
+import { ChevronDown, Facebook, Instagram, Linkedin, Lock, Mail, SendHorizontal, Twitter, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getPopularTreatments, type Treatment } from "@/lib/services";
 import { withLocalePrefix } from "@/lib/localePath";
 
 /*
- * Figma node 2:10 — the navy footer. Five columns (brand, Explore, Popular
- * Treatments, Support, newsletter), a hairline, then a bottom row carrying the
- * copyright on the left and the payment / SSL marks on the right.
+ * Desktop reference node 2:10, mobile reference node 1:10.
  *
- * The card marks are rendered as type rather than brand artwork: the reference
- * shows real logos, but shipping Visa/Mastercard marks means shipping their
- * assets under their brand rules. Swap in licensed SVGs when you have them.
+ * Same five blocks either way; on mobile the three link columns collapse into
+ * accordions, as the mobile design shows (each header carries a chevron).
+ * The newsletter is deliberately NOT collapsible — the reference draws a
+ * chevron beside its heading but still shows the email field open beneath it,
+ * and burying a signup field behind a tap costs more than it saves.
+ *
+ * The card marks are rendered as type rather than brand artwork: shipping
+ * Visa/Mastercard logos means shipping their assets under their brand rules.
+ * Swap in licensed SVGs when you have them.
  */
 
 const SOCIALS = [
   { icon: Facebook, label: "Facebook" },
   { icon: Instagram, label: "Instagram" },
-  { icon: Twitter, label: "X" },
   { icon: Youtube, label: "YouTube" },
   { icon: Linkedin, label: "LinkedIn" },
 ] as const;
 
-const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const FooterLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <li>
     <a
       href={href}
@@ -36,9 +39,32 @@ const FooterLink = ({ href, children }: { href: string; children: React.ReactNod
   </li>
 );
 
-const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="mb-4 text-sm font-semibold text-primary-foreground">{children}</h3>
-);
+/** Collapsible below lg, a plain column at lg and up. */
+const FooterColumn = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b border-white/10 py-4 lg:border-0 lg:py-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={`footer-${id}`}
+        className="flex w-full items-center justify-between text-left lg:pointer-events-none lg:mb-4"
+      >
+        <span className="text-sm font-semibold text-primary-foreground">{title}</span>
+        <ChevronDown
+          className={`h-4 w-4 text-primary-foreground/65 transition-transform lg:hidden ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+
+      <ul id={`footer-${id}`} className={`space-y-2.5 pt-3 lg:block lg:pt-0 ${open ? "block" : "hidden"}`}>
+        {children}
+      </ul>
+    </div>
+  );
+};
 
 export const Footer = () => {
   const { t } = useTranslation("common");
@@ -54,16 +80,16 @@ export const Footer = () => {
   const p = (path: string) => withLocalePrefix(path, lang);
 
   return (
-    <footer className="bg-stats-navy px-5 pt-14 sm:px-8">
+    <footer className="bg-stats-navy px-5 pt-12 sm:px-8 lg:pt-14">
       <div className="mx-auto w-full max-w-[1264px]">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.3fr]">
+        <div className="grid grid-cols-1 gap-0 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.3fr] lg:gap-10">
           {/* Brand */}
-          <div>
+          <div className="pb-6 lg:pb-0">
             <div className="text-xl font-bold text-primary-foreground">dentaloria</div>
-            <p className="mt-4 max-w-[260px] text-sm leading-relaxed text-primary-foreground/65">
+            <p className="mt-4 max-w-[280px] text-sm leading-relaxed text-primary-foreground/65">
               {t("footer.tagline")}
             </p>
-            <div className="mt-6 flex gap-4">
+            <div className="mt-6 flex gap-5">
               {SOCIALS.map(({ icon: Icon, label }) => (
                 <a
                   key={label}
@@ -71,55 +97,45 @@ export const Footer = () => {
                   aria-label={label}
                   className="text-primary-foreground/65 transition-colors hover:text-primary-foreground"
                 >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <Icon className="h-5 w-5" aria-hidden="true" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Explore */}
-          <div>
-            <ColumnTitle>{t("footer.explore")}</ColumnTitle>
-            <ul className="space-y-2.5">
-              <FooterLink href={p("/clinic-listing")}>{t("footer.clinics")}</FooterLink>
-              <FooterLink href={p("/treatments")}>{t("nav.treatments")}</FooterLink>
-              <FooterLink href={`${p("/")}#destinations`}>{t("nav.destinations")}</FooterLink>
-              <FooterLink href={`${p("/")}#how-it-works`}>{t("nav.howItWorks")}</FooterLink>
-              <FooterLink href={p("/about-us")}>{t("nav.aboutUs")}</FooterLink>
-              <FooterLink href={p("/clinic")}>{t("footer.featuredClinic")}</FooterLink>
-            </ul>
-          </div>
+          <FooterColumn id="explore" title={t("footer.explore")}>
+            <FooterLink href={p("/clinic-listing")}>{t("footer.clinics")}</FooterLink>
+            <FooterLink href={p("/treatments")}>{t("nav.treatments")}</FooterLink>
+            <FooterLink href={`${p("/")}#destinations`}>{t("nav.destinations")}</FooterLink>
+            <FooterLink href={`${p("/")}#how-it-works`}>{t("nav.howItWorks")}</FooterLink>
+            <FooterLink href={p("/about-us")}>{t("nav.aboutUs")}</FooterLink>
+            <FooterLink href={p("/clinic")}>{t("footer.featuredClinic")}</FooterLink>
+          </FooterColumn>
 
-          {/* Popular treatments */}
-          <div>
-            <ColumnTitle>{t("footer.popularTreatments")}</ColumnTitle>
-            <ul className="space-y-2.5">
-              {popularTreatments.map((treatment) => (
-                <FooterLink
-                  key={treatment.id}
-                  href={p(`/clinic-listing?treatment=${encodeURIComponent(treatment.id)}`)}
-                >
-                  {treatment.name}
-                </FooterLink>
-              ))}
-            </ul>
-          </div>
+          <FooterColumn id="treatments" title={t("footer.popularTreatments")}>
+            {popularTreatments.map((treatment) => (
+              <FooterLink
+                key={treatment.id}
+                href={p(`/clinic-listing?treatment=${encodeURIComponent(treatment.id)}`)}
+              >
+                {treatment.name}
+              </FooterLink>
+            ))}
+          </FooterColumn>
 
-          {/* Support */}
-          <div>
-            <ColumnTitle>{t("footer.support")}</ColumnTitle>
-            <ul className="space-y-2.5">
-              <FooterLink href={p("/about-us")}>{t("footer.helpCenter")}</FooterLink>
-              <FooterLink href="#">{t("footer.privacyPolicy")}</FooterLink>
-              <FooterLink href="#">{t("footer.termsOfService")}</FooterLink>
-              <FooterLink href="#">{t("footer.cookiePolicy")}</FooterLink>
-              <FooterLink href="#">{t("footer.gdpr")}</FooterLink>
-            </ul>
-          </div>
+          <FooterColumn id="support" title={t("footer.support")}>
+            <FooterLink href={p("/about-us")}>{t("footer.helpCenter")}</FooterLink>
+            <FooterLink href="#">{t("footer.privacyPolicy")}</FooterLink>
+            <FooterLink href="#">{t("footer.termsOfService")}</FooterLink>
+            <FooterLink href="#">{t("footer.cookiePolicy")}</FooterLink>
+            <FooterLink href="#">{t("footer.gdpr")}</FooterLink>
+          </FooterColumn>
 
-          {/* Newsletter */}
-          <div>
-            <ColumnTitle>{t("footer.newsletterHeading")}</ColumnTitle>
+          {/* Newsletter — stays open on every width */}
+          <div className="py-6 lg:py-0">
+            <h3 className="mb-4 text-sm font-semibold text-primary-foreground">
+              {t("footer.newsletterHeading")}
+            </h3>
             <p className="text-sm leading-relaxed text-primary-foreground/65">
               {t("footer.newsletterNote")}
             </p>
@@ -136,12 +152,12 @@ export const Footer = () => {
                 id="footer-email"
                 type="email"
                 placeholder={t("footer.newsletterPlaceholder")}
-                className="h-11 flex-1 rounded-xl border-white/20 bg-white/10 text-sm text-primary-foreground placeholder:text-primary-foreground/45 focus-visible:ring-primary"
+                className="h-12 flex-1 rounded-xl border-white/20 bg-white/10 text-sm text-primary-foreground placeholder:text-primary-foreground/45 focus-visible:ring-primary"
               />
               <Button
                 type="submit"
                 aria-label={t("footer.subscribe")}
-                className="h-11 w-11 shrink-0 rounded-xl bg-primary p-0 hover:bg-primary/90"
+                className="h-12 w-12 shrink-0 rounded-xl bg-primary p-0 hover:bg-primary/90"
               >
                 <SendHorizontal className="h-4 w-4" aria-hidden="true" />
               </Button>
@@ -154,7 +170,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 py-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-8 flex flex-col gap-5 border-t border-white/10 py-6 lg:mt-12 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-xs leading-relaxed text-primary-foreground/55">
             {t("footer.designedBy")}
             <br />
@@ -163,7 +179,7 @@ export const Footer = () => {
 
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-xs text-primary-foreground/55">{t("footer.weAccept")}</span>
-            {["VISA", "Mastercard", "Amex"].map((brand) => (
+            {["VISA", "Mastercard", "AMEX"].map((brand) => (
               <span
                 key={brand}
                 className="rounded-md bg-white/10 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-primary-foreground/80"

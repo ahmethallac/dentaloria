@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BadgeCheck, ChevronRight, Globe, Search, Sparkles, Stethoscope, Tag, Star } from "lucide-react";
+import { BadgeCheck, ChevronRight, Globe, Languages, Search, Sparkles, Stethoscope, Tag, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AISearchBar } from "@/components/home/AISearchBar";
@@ -26,6 +26,10 @@ interface HomeHeroProps {
   onTreatmentChange: (value: string) => void;
   selectedCountry: string;
   onCountryChange: (value: string) => void;
+  /** Optional third filter, mobile reference node 1:402. */
+  languages: Option[];
+  selectedLanguage: string;
+  onLanguageChange: (value: string) => void;
   onSearch: () => void;
 }
 
@@ -113,6 +117,9 @@ export const HomeHero = ({
   onTreatmentChange,
   selectedCountry,
   onCountryChange,
+  languages,
+  selectedLanguage,
+  onLanguageChange,
   onSearch,
 }: HomeHeroProps) => {
   const { t } = useTranslation("home");
@@ -151,11 +158,11 @@ export const HomeHero = ({
           {t("hero.subtitle")}
         </p>
 
-        <ul data-fid="hero.badges" className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 lg:gap-x-11">
+        <ul data-fid="hero.badges" className="mt-5 grid grid-cols-3 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-x-11">
           {TRUST_BADGES.map(({ icon: Icon, key }) => (
-            <li key={key} className="flex items-center gap-2">
-              <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span className="text-sm text-brand-navy">{t(key)}</span>
+            <li key={key} className="flex items-start gap-1.5 lg:items-center lg:gap-2">
+              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary lg:mt-0" aria-hidden="true" />
+              <span className="text-[11px] leading-tight text-brand-navy lg:text-sm">{t(key)}</span>
             </li>
           ))}
         </ul>
@@ -166,12 +173,12 @@ export const HomeHero = ({
           data-fid="hero.card"
           className="mt-8 w-full rounded-2xl bg-white shadow-card will-change-transform"
         >
-          <div className="flex items-center gap-4 overflow-x-auto border-b border-border px-5 pt-7 sm:px-10 lg:gap-8">
+          <div className="flex items-center gap-3 overflow-x-auto border-b border-border px-4 pt-6 sm:px-10 lg:gap-8 lg:pt-7">
             <button
               type="button"
               onClick={() => setTab("filters")}
               aria-pressed={tab === "filters"}
-              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 pb-3 text-[11px] transition-colors lg:gap-2 lg:text-sm ${
                 tab === "filters"
                   ? "border-primary font-medium text-primary"
                   : "border-transparent font-normal text-nav-muted hover:text-primary"
@@ -184,7 +191,7 @@ export const HomeHero = ({
               type="button"
               onClick={() => setTab("ai")}
               aria-pressed={tab === "ai"}
-              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 pb-3 text-[11px] transition-colors lg:gap-2 lg:text-sm ${
                 tab === "ai"
                   ? "border-primary font-medium text-primary"
                   : "border-transparent font-normal text-nav-muted hover:text-primary"
@@ -192,7 +199,7 @@ export const HomeHero = ({
             >
               <Sparkles className="h-4 w-4" aria-hidden="true" />
               {t("hero.tabAiSearch")}
-              <span className="rounded-md bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+              <span className="rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground lg:px-2 lg:text-xs">
                 {t("hero.badgeNew")}
               </span>
             </button>
@@ -200,7 +207,7 @@ export const HomeHero = ({
 
           {tab === "filters" ? (
             <>
-            <div className="flex flex-col gap-4 px-5 py-8 sm:px-10 md:flex-row md:items-center">
+            <div className="flex flex-col gap-4 px-4 py-6 sm:px-10 md:flex-row md:items-center lg:py-8">
               <Select value={selectedTreatment} onValueChange={onTreatmentChange}>
                 <SelectTrigger data-fid="hero.treatment" className="h-12 flex-1 rounded-xl">
                   <span className="!flex items-center gap-3">
@@ -233,27 +240,45 @@ export const HomeHero = ({
                 </SelectContent>
               </Select>
 
+              <Select value={selectedLanguage} onValueChange={onLanguageChange}>
+                <SelectTrigger data-fid="hero.language" className="h-12 flex-1 rounded-xl">
+                  <span className="!flex items-center gap-3">
+                    <Languages className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <SelectValue placeholder={t("hero.selectLanguage")} />
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((language) => (
+                    <SelectItem key={language.id} value={language.id}>
+                      {language.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <Button
                 data-fid="hero.search"
                 onClick={onSearch}
-                className="h-12 w-full rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90 md:w-[260px]"
+                className="h-12 w-full rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90 lg:w-[220px]"
               >
                 <Search className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t("hero.searchClinics")}
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 px-5 pb-8 sm:px-10">
+            <div className="px-4 pb-8 sm:px-10">
               <span className="text-sm text-nav-muted">{t("hero.popularSearches")}</span>
+              <div className="mt-2 grid grid-cols-2 gap-2 lg:mt-0 lg:flex lg:flex-wrap lg:items-center lg:gap-3">
               {(t("hero.popularSearchItems", { returnObjects: true }) as string[]).map((label) => (
                 <span
                   key={label}
-                  className="rounded-[6px] border border-border px-3 py-1.5 text-xs text-brand-navy"
+                  className="rounded-[6px] border border-border px-2 py-1.5 text-center text-[11px] leading-snug text-brand-navy lg:px-3 lg:text-left lg:text-xs"
                 >
                   {label}
                 </span>
               ))}
-              <ChevronRight className="h-4 w-4 text-primary" aria-hidden="true" />
+                <ChevronRight className="hidden h-4 w-4 text-primary lg:block" aria-hidden="true" />
+              </div>
             </div>
             </>
           ) : (

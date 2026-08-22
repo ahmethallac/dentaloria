@@ -26,7 +26,8 @@
       "Hollywood Smile în Antalya",
       "Coroană din zirconiu în Izmir",
       "Albire dentară în Bodrum"
-    ]
+    ],
+    "selectLanguage": "Limbă (opțional)"
   },
   "aiSearch": {
     "badge": "Căutare cu inteligență artificială",
@@ -135,9 +136,9 @@
     "viewAll": "Toate recenziile"
   },
   "cta": {
-    "title": "Începe-ți Astăzi Călătoria Spre Zâmbetul Perfect!",
-    "subtitle": "Mii de pacienți și-au obținut zâmbetul visat prin platforma noastră. E rândul tău!",
-    "getStarted": "Începe Acum"
+    "title": "Gata să începi drumul spre zâmbetul tău?",
+    "subtitle": "Alătură-te miilor de pacienți care și-au găsit clinica prin Dentaloria.",
+    "getStarted": "Începe acum"
   },
   "stats": {
     "clinicsValue": "500+",
@@ -191,5 +192,14 @@
     "patientsLabel": "Pacienți mulțumiți",
     "ratingValue": "4,8/5",
     "ratingLabel": "Rating mediu"
+  },
+  "exampleOffers": {
+    "title": "Oferte exemplu (ilustrativ)",
+    "watermark": "Exemplu",
+    "treatment": "Tratament All-on-6",
+    "clinic1": "Dental Turkey Clinic",
+    "clinic2": "Istanbul Smile Center",
+    "clinic3": "Izmir Dental Hub",
+    "disclaimer": "* Oferte doar cu titlu ilustrativ — nu sunt cotații reale."
   }
 }

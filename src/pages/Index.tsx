@@ -17,8 +17,11 @@ import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
 import { AISearchBar } from "@/components/home/AISearchBar";
 import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatmentMeta";
+import { LANGUAGES } from "@/lib/clinicMeta";
 import { HomeHero } from "@/components/home/HomeHero";
 import { StatsBar } from "@/components/home/StatsBar";
+import { ExampleOffers } from "@/components/home/ExampleOffers";
+import { StartJourneyCta } from "@/components/home/StartJourneyCta";
 import { TrendingSearches } from "@/components/home/TrendingSearches";
 import { PopularClinicsSection } from "@/components/home/PopularClinicsSection";
 import { PopularDestinations } from "@/components/home/PopularDestinations";
@@ -82,6 +85,7 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [selectedTreatment, setSelectedTreatment] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [featuredClinics, setFeaturedClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -138,6 +142,7 @@ const Index = () => {
     const params = new URLSearchParams();
     if (selectedTreatment) params.set('treatment', selectedTreatment);
     if (selectedCountry) params.set('country', selectedCountry);
+    if (selectedLanguage) params.set('language', selectedLanguage);
     navigate(withLocalePrefix(`/clinic-listing?${params.toString()}`, lang));
   };
   const handleCityClick = (cityId: string, countryId: string) => {
@@ -166,6 +171,9 @@ const Index = () => {
         onTreatmentChange={setSelectedTreatment}
         selectedCountry={selectedCountry}
         onCountryChange={setSelectedCountry}
+        languages={LANGUAGES.map((l) => ({ id: l.code, name: `${l.flag} ${l.name}` }))}
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={setSelectedLanguage}
         onSearch={handleSearch}
       />
       <StatsBar tone="dark" />
@@ -193,11 +201,15 @@ const Index = () => {
 
       <GetOffersSection />
 
+      <ExampleOffers />
+
       <PopularTreatmentsSection treatments={treatments} onSelect={handleTreatmentClick} />
 
       <WhyChooseSection />
 
       <TestimonialsSection />
+
+      <StartJourneyCta />
 
       <StatsBar tone="light" />
 

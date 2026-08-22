@@ -26,7 +26,8 @@
       "Hollywood Smile w Antalyi",
       "Korona cyrkonowa w Izmirze",
       "Wybielanie zębów w Bodrum"
-    ]
+    ],
+    "selectLanguage": "Język (opcjonalnie)"
   },
   "aiSearch": {
     "badge": "Wyszukiwanie ze sztuczną inteligencją",
@@ -135,9 +136,9 @@
     "viewAll": "Wszystkie opinie"
   },
   "cta": {
-    "title": "Zacznij Swoją Podróż do Idealnego Uśmiechu Już Dziś!",
-    "subtitle": "Tysiące pacjentów spełniło marzenie o pięknym uśmiechu dzięki naszej platformie. Teraz Twoja kolej!",
-    "getStarted": "Zaczynamy"
+    "title": "Gotowy na swoją drogę do uśmiechu?",
+    "subtitle": "Dołącz do tysięcy pacjentów, którzy znaleźli swoją klinikę dzięki Dentaloria.",
+    "getStarted": "Zacznij teraz"
   },
   "stats": {
     "clinicsValue": "500+",
@@ -191,5 +192,14 @@
     "patientsLabel": "Zadowoleni pacjenci",
     "ratingValue": "4,8/5",
     "ratingLabel": "Średnia ocena"
+  },
+  "exampleOffers": {
+    "title": "Przykładowe oferty (ilustracja)",
+    "watermark": "Przykład",
+    "treatment": "Zabieg All-on-6",
+    "clinic1": "Dental Turkey Clinic",
+    "clinic2": "Istanbul Smile Center",
+    "clinic3": "Izmir Dental Hub",
+    "disclaimer": "* Oferty wyłącznie poglądowe — to nie są prawdziwe wyceny."
   }
 }
