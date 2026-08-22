@@ -318,7 +318,7 @@ const AddClinic = () => {
       const { data: clinicData, error: clinicError } = await supabase
         .from('clinics')
         .insert({
-          ...formData,
+          ...(formData as any),
           user_id: user?.id,
           is_published: false // Save as draft by default
         })

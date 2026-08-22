@@ -105,7 +105,7 @@ export const Navbar = () => {
   const closeMobile = () => setMobileOpen(false);
   const displayName = profile?.full_name || user?.email || "";
   const linkClass =
-    "px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200";
+    "px-3.5 py-2 rounded-lg text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200";
   const mobileLinkClass =
     "px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors";
 
@@ -131,11 +131,11 @@ export const Navbar = () => {
           className={
             mobile
               ? "flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors w-full"
-              : "flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200"
+              : "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors duration-200"
           }
         >
           <Globe className="w-4 h-4" />
-          <span>{currentLocale?.flag} {currentLocale?.label}</span>
+          <span>{currentLocale?.label}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={mobile ? "start" : "end"}>
@@ -154,17 +154,13 @@ export const Navbar = () => {
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-background/95 backdrop-blur-xl shadow-md shadow-primary/5"
-          : "bg-gradient-to-b from-background/95 to-background/75 backdrop-blur-md"
+          : "bg-background/85 backdrop-blur-md"
       }`}
-      style={{
-        WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
-        maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
-      }}
     >
       <div className="container mx-auto px-6">
         <div
           className={`flex items-center justify-between transition-all duration-300 ${
-            scrolled ? "h-16" : "h-20"
+            scrolled ? "h-16" : "h-[72px]"
           }`}
         >
           {/* Logo */}
@@ -177,7 +173,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {NAV_LINK_DEFS.map((link) => (
               <NavLink
                 key={link.key}
@@ -219,9 +215,8 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate(withLocalePrefix("/auth", lang))}
-                className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 rounded-full shadow-md shadow-primary/20 transition-all duration-300"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 h-10 rounded-lg shadow-sm transition-all duration-300"
               >
-                <Building2 className="w-4 h-4 mr-2" />
                 {t("nav.registerClinic")}
               </Button>
             )}
