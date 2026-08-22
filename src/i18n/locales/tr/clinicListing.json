@@ -43,6 +43,21 @@
     "languages": "Diller",
     "clearFilters": "Filtreleri Temizle",
     "applyFilters": "Filtreleri Uygula",
-    "filterClinics": "Klinikleri Filtrele"
+    "filterClinics": "Klinikleri Filtrele",
+    "clearAll": "Tümünü Temizle",
+    "allLanguages": "Tüm Diller",
+    "showMore": "Daha Fazla",
+    "showLess": "Daha Az"
+  },
+  "aiPanel": {
+    "badge": "Yapay Zekâ Destekli Arama",
+    "new": "Yeni",
+    "tryExamples": "Örnek aramaları deneyin",
+    "examples": [
+      "İstanbul'da All-on-6",
+      "Antalya'da Hollywood Smile",
+      "İzmir'de Zirkonyum Kron",
+      "Bodrum'da Diş Beyazlatma"
+    ]
   }
 }

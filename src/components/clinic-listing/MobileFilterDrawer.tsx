@@ -55,7 +55,7 @@ export const MobileFilterDrawer = ({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className="flex items-center gap-2 bg-white/80 backdrop-blur-glass border-white/30 hover:bg-white/90 rounded-xl shadow-card px-4 py-2.5"
+          className="flex h-11 items-center gap-2 rounded-xl border-border bg-white px-4"
         >
           <SlidersHorizontal className="h-4 w-4 text-primary" />
           <span className="font-medium">{t("filters.title")}</span>
@@ -66,11 +66,11 @@ export const MobileFilterDrawer = ({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl bg-white/95 backdrop-blur-xl border-t border-white/30">
+      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl border-t border-border bg-white">
         <SheetHeader className="pb-4 border-b border-border/20">
           <SheetTitle className="flex items-center gap-2 text-lg">
             <Filter className="h-5 w-5 text-primary" />
-            <span className="bg-gradient-primary bg-clip-text text-transparent font-semibold">
+            <span className="font-semibold text-brand-navy">
               {t("filters.filterClinics")}
             </span>
           </SheetTitle>

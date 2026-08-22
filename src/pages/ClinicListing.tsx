@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, CheckCircle, MapPin, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Star, BadgeCheck, CheckCircle, MapPin, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { FilterContent } from "@/components/clinic-listing/FilterContent";
@@ -20,7 +20,7 @@ import { LANGUAGES, FACILITIES, getLanguage, getFacility, sortFacilitiesForCard 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ContactClinicForm, type ContactClinicSubmittedValues } from "@/components/forms/ContactClinicForm";
 import PostFormRecommendationsDialog from "@/components/forms/PostFormRecommendationsDialog";
-import { AISearchBar } from "@/components/home/AISearchBar";
+import { AiSearchPanel } from "@/components/clinic-listing/AiSearchPanel";
 
 // Import clinic images as defaults
 import clinic1 from "@/assets/clinic-1.jpg";
@@ -373,7 +373,7 @@ export default function ClinicListing() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-mesh">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
@@ -387,25 +387,14 @@ export default function ClinicListing() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-mesh">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-primary/20 to-accent/20 py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-white/30"></div>
-        <div className="relative max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold mb-4 animate-fade-in text-foreground">
-            {t("hero.title")}
-          </h1>
-          <p className="text-lg opacity-80 max-w-2xl mx-auto animate-slide-up text-foreground/80 mb-8">
-            {t("hero.subtitle")}
-          </p>
 
-          <AISearchBar className="max-w-2xl mx-auto animate-scale-in" onResults={handleAISearchResults} />
-        </div>
+      <div className="mx-auto w-full max-w-[1264px] px-5 pt-6 sm:px-8">
+        <AiSearchPanel onResults={handleAISearchResults} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mx-auto w-full max-w-[1264px] px-5 py-8 sm:px-8">
         {/* Mobile Filter Button */}
         <div className="lg:hidden mb-6">
           <MobileFilterDrawer
@@ -424,10 +413,10 @@ export default function ClinicListing() {
           />
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
           {/* Sidebar Filters - Desktop Only */}
-          <div className="hidden lg:block lg:w-80">
-            <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-6 shadow-card border border-white/20 sticky top-8">
+          <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
+            <div className="sticky top-24 rounded-2xl border border-border bg-white p-5">
               <FilterContent
                 treatments={treatments}
                 countries={countries}
@@ -441,6 +430,11 @@ export default function ClinicListing() {
                 setSelectedCity={setSelectedCity}
                 setSelectedLanguages={setSelectedLanguages}
                 clearFilters={clearFilters}
+                onApply={() =>
+                  document
+                    .getElementById("clinic-results")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
               />
             </div>
           </div>
@@ -448,9 +442,9 @@ export default function ClinicListing() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div id="clinic-results" className="mb-6 flex scroll-mt-24 flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">
+                <h2 className="text-2xl font-bold text-brand-navy">
                   {showSkeleton ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -465,16 +459,16 @@ export default function ClinicListing() {
                     </span>
                   )}
                 </h2>
-                <p className="text-foreground/70">{t("discoverSubtitle")}</p>
+                <p className="mt-1 text-sm text-nav-muted">{t("discoverSubtitle")}</p>
               </div>
 
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-foreground/70" />
+                <ArrowUpDown className="h-4 w-4 text-nav-muted" aria-hidden="true" />
                 <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-                  <SelectTrigger className="w-56 bg-white/80 border-white/30 rounded-xl">
+                  <SelectTrigger className="h-11 w-56 rounded-xl border-border bg-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white/95 backdrop-blur-glass border-white/30">
+                  <SelectContent>
                     <SelectItem value="balance">{t("sort.recommended")}</SelectItem>
                     <SelectItem value="rating">{t("sort.highestRated")}</SelectItem>
                     <SelectItem value="price_asc">{t("sort.priceLowToHigh")}</SelectItem>
@@ -497,46 +491,42 @@ export default function ClinicListing() {
                 {clinics.map((clinic: any, index: number) => (
                   <Card 
                     key={clinic.id} 
-                    className={`overflow-hidden bg-white/90 backdrop-blur-glass border border-white/40 rounded-2xl shadow-card hover:shadow-elegant transition-shadow duration-300 animate-fade-in ${
-                      clinic.is_featured ? 'ring-2 ring-primary/20 shadow-colored' : ''
+                    className={`overflow-hidden rounded-2xl border border-border bg-white shadow-none transition-shadow duration-300 hover:shadow-card ${
+                      clinic.is_featured ? 'ring-1 ring-primary/30' : ''
                     }`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <CardContent className="p-0">
                       {/* Desktop Layout */}
-                      <div className="hidden lg:flex lg:flex-row">
+                      <div className="hidden lg:flex lg:flex-row lg:gap-5 lg:p-4">
                         {/* Image Section */}
-                        <div className="w-52 shrink-0 relative">
+                        <div className="relative w-56 shrink-0 overflow-hidden rounded-xl">
                           <ImageCarousel images={getClinicImages(clinic)} alt={clinic.name} />
                           {clinic.is_featured && (
-                            <Badge className="absolute top-3 left-3 bg-primary text-white border-0 px-2.5 py-1 rounded-full text-xs font-medium shadow-lg z-10">
+                            <Badge className="absolute left-3 top-3 z-10 rounded-full border-0 bg-primary px-2.5 py-1 text-xs font-medium text-white shadow-lg">
                               {t("featured")}
                             </Badge>
                           )}
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-2.5 px-3 z-10">
-                            <div className="flex items-center gap-1 text-white">
-                              <MapPin className="h-3.5 w-3.5" />
-                              <span className="text-xs font-medium">{getClinicLocation(clinic)}</span>
-                            </div>
-                          </div>
                         </div>
 
                         {/* Content + Action */}
-                        <div className="flex-1 flex p-4 gap-4 min-w-0">
-                          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                        <div className="flex min-w-0 flex-1 gap-5">
+                          <div className="flex min-w-0 flex-1 flex-col gap-2">
                             {/* Header */}
-                            <div className="flex items-start justify-between gap-3">
-                              <h3 className="text-lg font-bold text-foreground leading-tight">{clinic.name}</h3>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <GoogleRating rating={clinic.rating} variant="prominent" />
-                                {clinic.is_verified && (
-                                  <span className="inline-flex items-center gap-1 text-xs text-foreground/70">
-                                    <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
-                                    {t("verified")}
-                                  </span>
-                                )}
-                              </div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="truncate text-lg font-bold leading-tight text-brand-navy">{clinic.name}</h3>
+                              {clinic.is_verified && (
+                                <BadgeCheck
+                                  className="h-5 w-5 shrink-0 text-primary"
+                                  aria-label={t("verified")}
+                                />
+                              )}
                             </div>
+
+                            <p className="flex items-center gap-1.5 text-sm text-nav-muted">
+                              <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                              <span className="truncate">{getClinicLocation(clinic)}</span>
+                            </p>
 
                             {/* Languages */}
                             {Array.isArray(clinic.languages) && clinic.languages.length > 0 && (
@@ -545,9 +535,13 @@ export default function ClinicListing() {
                                   const l = getLanguage(code);
                                   if (!l) return null;
                                   return (
-                                    <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                    <span
+                                      key={code}
+                                      className="inline-flex shrink-0 items-center gap-1 font-medium"
+                                      title={tCommon(`languageNames.${l.code}`)}
+                                    >
                                       <span aria-hidden>{l.flag}</span>
-                                      <span>{tCommon(`languageNames.${l.code}`)}</span>
+                                      <span>{l.code.toUpperCase()}</span>
                                     </span>
                                   );
                                 })}
@@ -604,35 +598,44 @@ export default function ClinicListing() {
                             )}
                           </div>
 
-                          {/* Right column: price badge + stacked buttons */}
-                          <div className="w-40 shrink-0 flex flex-col justify-center border-l border-border/40 pl-4">
-                            <div className="flex flex-col items-stretch gap-2.5">
-                              {/* Price badge — pill above buttons */}
-                              <div className="self-center inline-flex flex-col items-center px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
-                                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-none">
-                                  {t("startingFrom")}
-                                </span>
-                                <span className="text-xl font-extrabold text-primary leading-tight mt-0.5">
-                                  {getClinicPrice(clinic)}
-                                </span>
-                              </div>
-                              <Button
-                                onClick={() => setApplyOpenForClinicId(clinic.id)}
-                                className="w-full h-10 bg-medical-green hover:bg-medical-green/90 text-white font-semibold rounded-xl shadow-sm"
-                              >
-                                {t("quickApply")}
-                              </Button>
-                              <Button
-                                asChild
-                                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
-                              >
-                                <Link
-                                  to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
-                                >
-                                  {t("viewClinic")}
-                                </Link>
-                              </Button>
+                          {/* Right column: rating, price, then the two actions */}
+                          <div className="flex w-48 shrink-0 flex-col justify-center gap-3 border-l border-border pl-5">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-sm font-semibold text-brand-navy">
+                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                                {Number(clinic.rating ?? 0).toFixed(1)}
+                              </span>
+                              <span className="text-xs text-nav-muted">
+                                ({clinic.review_count ?? 0})
+                              </span>
                             </div>
+
+                            <div>
+                              <div className="text-[10px] font-semibold uppercase tracking-wider text-nav-muted">
+                                {t("startingFrom")}
+                              </div>
+                              <div className="text-2xl font-bold leading-tight text-primary">
+                                {getClinicPrice(clinic)}
+                              </div>
+                            </div>
+
+                            <Button
+                              onClick={() => setApplyOpenForClinicId(clinic.id)}
+                              className="h-10 w-full rounded-xl bg-medical-green text-sm font-semibold text-white hover:bg-medical-green/90"
+                            >
+                              {t("quickApply")}
+                            </Button>
+                            <Button
+                              asChild
+                              variant="outline"
+                              className="h-10 w-full rounded-xl border-primary/40 text-sm font-semibold text-primary hover:bg-primary/5"
+                            >
+                              <Link
+                                to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
+                              >
+                                {t("viewClinic")}
+                              </Link>
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -650,9 +653,9 @@ export default function ClinicListing() {
                             ) : <div />}
 
                             {clinic.is_verified && (
-                              <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
-                                <CheckCircle className="h-3.5 w-3.5 text-medical-green" />
-                                <span className="text-xs font-medium text-foreground/80">{t("verified")}</span>
+                              <div className="flex items-center gap-1 rounded-lg border border-border bg-white px-2 py-1">
+                                <BadgeCheck className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                                <span className="text-xs font-medium text-brand-navy">{t("verified")}</span>
                               </div>
                             )}
                           </div>
@@ -668,7 +671,7 @@ export default function ClinicListing() {
                         <div className="p-4 space-y-3">
                           {/* Name + Rating */}
                           <div className="flex items-start justify-between gap-3">
-                            <h3 className="text-base font-bold text-foreground leading-tight flex-1">
+                            <h3 className="flex-1 text-base font-bold leading-tight text-brand-navy">
                               {clinic.name}
                             </h3>
                             <GoogleRating rating={clinic.rating} variant="prominent" showLabel={true} />
@@ -681,9 +684,13 @@ export default function ClinicListing() {
                                 const l = getLanguage(code);
                                 if (!l) return null;
                                 return (
-                                  <span key={code} className="inline-flex items-center gap-1 shrink-0">
+                                  <span
+                                    key={code}
+                                    className="inline-flex shrink-0 items-center gap-1 font-medium"
+                                    title={tCommon(`languageNames.${l.code}`)}
+                                  >
                                     <span aria-hidden>{l.flag}</span>
-                                    <span>{tCommon(`languageNames.${l.code}`)}</span>
+                                    <span>{l.code.toUpperCase()}</span>
                                   </span>
                                 );
                               })}
@@ -741,10 +748,10 @@ export default function ClinicListing() {
                           {/* Price badge + stacked CTAs */}
                           <div className="flex flex-col items-stretch gap-2.5">
                             <div className="self-center inline-flex items-baseline gap-2 px-4 py-1.5 rounded-full bg-white border border-primary/20 shadow-sm -mb-1">
-                              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                              <span className="text-[10px] font-semibold uppercase tracking-wider text-nav-muted">
                                 {t("startingFrom")}
                               </span>
-                              <span className="text-xl font-extrabold text-primary leading-tight">
+                              <span className="text-2xl font-bold leading-tight text-primary">
                                 {getClinicPrice(clinic)}
                               </span>
                             </div>
@@ -756,7 +763,8 @@ export default function ClinicListing() {
                             </Button>
                             <Button
                               asChild
-                              className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-sm"
+                              variant="outline"
+                              className="h-11 w-full rounded-xl border-primary/40 font-semibold text-primary hover:bg-primary/5"
                             >
                               <Link
                                 to={withLocalePrefix(`${clinicPath(clinic)}${selectedTreatmentName ? `?treatment=${encodeURIComponent(selectedTreatmentName)}` : ""}`, lang)}
@@ -794,7 +802,7 @@ export default function ClinicListing() {
             {/* No Results */}
             {!showSkeleton && clinics.length === 0 && (
               <div className="text-center py-16">
-                <div className="bg-white/80 backdrop-blur-glass rounded-2xl p-8 shadow-card border border-white/20 max-w-md mx-auto">
+                <div className="mx-auto max-w-md rounded-2xl border border-border bg-white p-8">
                   <div className="text-6xl mb-4">🔍</div>
                   <h3 className="text-xl font-semibold text-foreground mb-4">{t("noResults.title")}</h3>
                   <p className="text-foreground/70 mb-6">
@@ -802,7 +810,7 @@ export default function ClinicListing() {
                   </p>
                   <Button
                     onClick={clearFilters}
-                    className="bg-gradient-primary hover:opacity-90 text-white border-0 rounded-xl px-6 py-2"
+                    className="h-11 rounded-xl bg-primary px-6 text-primary-foreground hover:bg-primary/90"
                   >
                     {t("noResults.clearFilters")}
                   </Button>

@@ -43,6 +43,21 @@
     "languages": "Limbi",
     "clearFilters": "Șterge Filtrele",
     "applyFilters": "Aplică Filtrele",
-    "filterClinics": "Filtrează Clinicile"
+    "filterClinics": "Filtrează Clinicile",
+    "clearAll": "Șterge tot",
+    "allLanguages": "Toate limbile",
+    "showMore": "Arată mai mult",
+    "showLess": "Arată mai puțin"
+  },
+  "aiPanel": {
+    "badge": "Căutare cu AI",
+    "new": "Nou",
+    "tryExamples": "Încearcă exemple",
+    "examples": [
+      "All-on-6 în Istanbul",
+      "Hollywood Smile în Antalya",
+      "Coroană din zirconiu în Izmir",
+      "Albire dentară în Bodrum"
+    ]
   }
 }

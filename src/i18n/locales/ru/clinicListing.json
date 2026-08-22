@@ -43,6 +43,21 @@
     "languages": "Языки",
     "clearFilters": "Сбросить Фильтры",
     "applyFilters": "Применить Фильтры",
-    "filterClinics": "Фильтр Клиник"
+    "filterClinics": "Фильтр Клиник",
+    "clearAll": "Очистить всё",
+    "allLanguages": "Все языки",
+    "showMore": "Показать ещё",
+    "showLess": "Показать меньше"
+  },
+  "aiPanel": {
+    "badge": "Поиск с ИИ",
+    "new": "Новое",
+    "tryExamples": "Попробуйте примеры",
+    "examples": [
+      "All-on-6 в Стамбуле",
+      "Hollywood Smile в Анталье",
+      "Циркониевая коронка в Измире",
+      "Отбеливание зубов в Бодруме"
+    ]
   }
 }
