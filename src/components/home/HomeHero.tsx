@@ -145,7 +145,7 @@ export const HomeHero = ({
           Both variants start 80px above the section so the parallax never
           exposes a gap: the strip it uncovers is scrollY * PHOTO_RATE tall,
           which with a rate below 1 always sits above the fold. */}
-      <div className="absolute right-0 top-0 h-[240px] w-[58%] overflow-hidden lg:-top-20 lg:inset-x-0 lg:bottom-0 lg:h-auto lg:w-auto">
+      <div className="absolute -top-20 right-0 h-[320px] w-[58%] overflow-hidden lg:inset-x-0 lg:bottom-0 lg:h-auto lg:w-auto">
         <img
           ref={photoRef}
           src={heroImage}
