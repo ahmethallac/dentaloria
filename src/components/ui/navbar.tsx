@@ -188,7 +188,7 @@ export const Navbar = () => {
               src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png"
               alt="Dentaloria"
               data-fid="header.logo"
-              className={`w-auto transition-all duration-300 ${scrolled ? "h-5 md:h-7" : "h-5 md:h-8"}`}
+              className={`w-auto transition-all duration-300 ${scrolled ? "h-6 md:h-7" : "h-6 md:h-8"}`}
             />
           </Link>
 
@@ -243,19 +243,12 @@ export const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile: language, the register CTA, then the drawer trigger.
-              The six nav links cannot fit at 375px, so they stay in the sheet;
-              everything else the desktop header shows is here. */}
+          {/* Mobile: language, then the drawer trigger. The clinic-signup CTA
+              lives at the foot of the drawer instead — the site is for
+              patients, and the bar is too narrow to spend on a secondary
+              audience. */}
           <div className="flex items-center gap-1 md:hidden">
             <LanguageSwitcher compact />
-            {!user && (
-              <Button
-                onClick={() => navigate(withLocalePrefix("/auth", lang))}
-                className="h-9 shrink-0 rounded-lg bg-primary px-2 text-[11px] font-semibold leading-none text-primary-foreground hover:bg-primary/90"
-              >
-                {t("nav.registerClinic")}
-              </Button>
-            )}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-lg">
@@ -301,7 +294,7 @@ export const Navbar = () => {
                           closeMobile();
                         }}
                         variant="outline"
-                        className="w-full rounded-full"
+                        className="h-12 w-full rounded-xl"
                       >
                         {t("nav.dashboard")}
                       </Button>
@@ -311,7 +304,7 @@ export const Navbar = () => {
                           closeMobile();
                         }}
                         variant="ghost"
-                        className="w-full rounded-full"
+                        className="h-12 w-full rounded-xl"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
                         {t("nav.signOut")}
@@ -323,7 +316,7 @@ export const Navbar = () => {
                         navigate(withLocalePrefix("/auth", lang));
                         closeMobile();
                       }}
-                      className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-5 rounded-full shadow-md shadow-primary/20"
+                      className="h-12 w-full rounded-xl bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                     >
                       <Building2 className="w-4 h-4 mr-2" />
                       {t("nav.registerClinic")}
