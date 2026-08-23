@@ -1,7 +1,0 @@
-{
-  "title": "Choisissez votre langue",
-  "message": "Nous avons configuré le site en {{language}} car vous vous connectez depuis {{country}}. Vous pouvez changer de langue ci-dessous.",
-  "changeLanguage": "Changer de langue",
-  "dismiss": "Compris",
-  "current": "Actuelle"
-}

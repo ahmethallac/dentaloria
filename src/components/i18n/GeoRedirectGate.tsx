@@ -6,17 +6,10 @@ export const JUST_REDIRECTED_KEY = "dentaloria_just_geo_redirected";
 
 const GEO_TIMEOUT_MS = 1500;
 
+// Turkish is the only non-English locale, so Turkey is the only country with
+// somewhere to be sent; everyone else stays on the bare English path.
 const COUNTRY_TO_LOCALE: Record<string, string> = {
   TR: "tr",
-  RO: "ro",
-  PL: "pl",
-  RU: "ru",
-  DE: "de",
-  AT: "de",
-  CH: "de",
-  FR: "fr",
-  BE: "fr",
-  LU: "fr",
 };
 
 interface JustRedirected {

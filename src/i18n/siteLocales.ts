@@ -10,15 +10,21 @@ export interface SiteLocale {
 export const SITE_LOCALES: SiteLocale[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-  { code: "ro", label: "Română", flag: "🇷🇴" },
-  { code: "pl", label: "Polski", flag: "🇵🇱" },
-  { code: "ru", label: "Русский", flag: "🇷🇺" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
 ];
 
 // Codes that get a URL prefix (everything except English, which stays bare).
 export const PREFIXED_LOCALE_CODES = SITE_LOCALES.map((l) => l.code).filter((c) => c !== "en");
+
+/**
+ * Locales the site used to serve. They no longer have translations, but their
+ * URLs were live and indexed, so /de/clinic-listing must land on
+ * /clinic-listing rather than a 404. Only ever remove a code from here once
+ * you are content to lose whatever still links to it.
+ */
+export const RETIRED_LOCALE_CODES = ["ro", "pl", "ru", "de", "fr"] as const;
+
+export const isRetiredLocale = (code: string | undefined): boolean =>
+  !!code && (RETIRED_LOCALE_CODES as readonly string[]).includes(code);
 
 export const DEFAULT_LOCALE = "en";
 

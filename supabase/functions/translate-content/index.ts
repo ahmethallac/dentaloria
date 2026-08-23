@@ -1,5 +1,6 @@
 // Translates a piece of clinic-authored text (or small HTML fragment) into
-// all 6 non-English site locales in a single OpenAI call. Called once at
+// every non-English site locale — currently just Turkish — in a single
+// OpenAI call. Called once at
 // save/sync time (ClinicInfoTab, ClinicDoctorsManager, fetch-google-rating
 // callers) — never during a visitor's page load — so translation latency
 // never affects anyone browsing the site.
@@ -11,11 +12,6 @@ const corsHeaders = {
 const LOCALE_NAMES: Record<string, string> = {
   en: 'English',
   tr: 'Turkish',
-  ro: 'Romanian',
-  pl: 'Polish',
-  ru: 'Russian',
-  de: 'German',
-  fr: 'French',
 }
 
 // The rich-text editor only ever produces these tags with no attributes
