@@ -6,6 +6,7 @@
   "hero": {
     "titleLead": "Mükemmel",
     "titleWord": "Gülüşünüz",
+    "titleBreaksMobile": "1,2",
     "titleLine2": "Burada Başlıyor",
     "subtitle": "Doğrulanmış diş kliniklerini, gerçek fiyatları ve hasta yorumlarını tek bir yerde karşılaştırın.",
     "orFilters": "ya da filtrelerle arayın",

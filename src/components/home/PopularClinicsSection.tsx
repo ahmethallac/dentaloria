@@ -23,7 +23,7 @@ const clinicImage = (clinic: Clinic) =>
   FALLBACK_IMAGE;
 
 const ClinicCardSkeleton = () => (
-  <div className="overflow-hidden rounded-2xl border border-border bg-white">
+  <div className="overflow-hidden rounded-xl border border-border bg-white">
     <div className="aspect-[16/9] animate-pulse bg-muted" />
     <div className="space-y-3 p-5">
       <div className="h-4 animate-pulse rounded bg-muted" />
@@ -64,7 +64,7 @@ export const PopularClinicsSection = ({
                 key={clinic.id}
                 type="button"
                 onClick={() => navigate(withLocalePrefix(`/clinic/${clinic.id}`, lang))}
-                className="group overflow-hidden rounded-2xl border border-border bg-white text-left transition-shadow hover:shadow-card"
+                className="group overflow-hidden rounded-xl border border-border bg-white text-left transition-shadow hover:shadow-card"
               >
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <img
@@ -144,7 +144,7 @@ export const PopularClinicsSection = ({
       )}
 
       {!loading && clinics.length === 0 && (
-        <p className="mt-6 rounded-2xl border border-border bg-white p-10 text-center text-sm text-nav-muted">
+        <p className="mt-6 rounded-xl border border-border bg-white p-10 text-center text-sm text-nav-muted">
           {t("popularClinics.empty")}
         </p>
       )}

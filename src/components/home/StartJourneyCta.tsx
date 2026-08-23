@@ -24,7 +24,7 @@ export const StartJourneyCta = () => {
     <SectionShell className="pt-10">
       <div
         data-fid="cta"
-        className="grid overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-brand-blue-bright lg:grid-cols-2"
+        className="grid overflow-hidden rounded-xl bg-gradient-to-br from-primary to-brand-blue-bright lg:grid-cols-2"
       >
         <div className="h-48 w-full lg:h-full lg:min-h-[320px] lg:order-last">
           <img

@@ -35,7 +35,7 @@ export const ExampleOffers = () => {
 
       <div
         data-fid="example.offers"
-        className="relative mt-4 overflow-hidden rounded-2xl border border-border"
+        className="relative mt-4 overflow-hidden rounded-xl border border-border"
       >
         {/* Watermark — decorative, and the disclaimer below carries the meaning
             for anyone who cannot see it. */}

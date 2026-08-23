@@ -67,7 +67,7 @@ export const StatsBar = ({ tone }: { tone: keyof typeof TONES }) => {
     <SectionShell className={s.shell}>
       <div
         data-fid={s.fid}
-        className={`grid grid-cols-2 gap-x-4 gap-y-6 rounded-2xl px-5 sm:px-10 lg:grid-cols-4 ${s.bar}`}
+        className={`grid grid-cols-2 gap-x-4 gap-y-6 rounded-xl px-5 sm:px-10 lg:grid-cols-4 ${s.bar}`}
       >
         {s.items.map(({ icon: Icon, valueKey, labelKey }, i) => (
           <div

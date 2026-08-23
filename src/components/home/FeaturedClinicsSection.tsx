@@ -78,7 +78,7 @@ export const ShowcaseCard = ({
   const firstImageLoading = cardIndex < 2 ? "eager" : "lazy";
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+    <div className="group bg-white rounded-xl overflow-hidden border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
       {/* Image carousel */}
       <div className="relative">
         <Carousel opts={{ loop: images.length > 1, dragFree: false }} className="w-full">
@@ -171,7 +171,7 @@ export const FeaturedClinicsSection = () => {
             ? Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl overflow-hidden border border-border/60 bg-white"
+                  className="rounded-xl overflow-hidden border border-border/60 bg-white"
                 >
                   <div className="aspect-[4/3] bg-muted animate-pulse" />
                   <div className="p-3 lg:p-4 space-y-2">

@@ -436,7 +436,7 @@ export default function ClinicListing() {
         <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
           {/* Sidebar Filters - Desktop Only */}
           <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
-            <div className="sticky top-24 rounded-2xl border border-border bg-white p-5">
+            <div className="sticky top-24 rounded-xl border border-border bg-white p-5">
               <FilterContent
                 treatments={treatments}
                 countries={countries}
@@ -511,7 +511,7 @@ export default function ClinicListing() {
                 {clinics.map((clinic: any, index: number) => (
                   <Card 
                     key={clinic.id} 
-                    className={`overflow-hidden rounded-2xl border border-border bg-white shadow-none transition-shadow duration-300 hover:shadow-card ${
+                    className={`overflow-hidden rounded-xl border border-border bg-white shadow-none transition-shadow duration-300 hover:shadow-card ${
                       clinic.is_featured ? 'ring-1 ring-primary/30' : ''
                     }`}
                     style={{ animationDelay: `${index * 100}ms` }}
@@ -829,7 +829,7 @@ export default function ClinicListing() {
             {/* No Results */}
             {!showSkeleton && clinics.length === 0 && (
               <div className="text-center py-16">
-                <div className="mx-auto max-w-md rounded-2xl border border-border bg-white p-8">
+                <div className="mx-auto max-w-md rounded-xl border border-border bg-white p-8">
                   <div className="text-6xl mb-4">🔍</div>
                   <h3 className="text-xl font-semibold text-foreground mb-4">{t("noResults.title")}</h3>
                   <p className="text-foreground/70 mb-6">

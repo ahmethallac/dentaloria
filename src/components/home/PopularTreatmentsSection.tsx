@@ -44,7 +44,7 @@ export const PopularTreatmentsSection = ({
             key={treatment.id}
             type="button"
             onClick={() => onSelect(treatment.id)}
-            className="group flex flex-col items-center rounded-2xl border border-border bg-white p-5 transition-shadow hover:shadow-card"
+            className="group flex flex-col items-center rounded-xl border border-border bg-white p-5 transition-shadow hover:shadow-card"
           >
             <div className="h-24 w-24 overflow-hidden rounded-full ring-1 ring-border">
               <img

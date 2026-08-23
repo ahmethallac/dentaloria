@@ -41,7 +41,7 @@ export const AiSearchPanel = ({
   return (
     <section
       data-fid="listing.aipanel"
-      className="relative overflow-hidden rounded-2xl lg:bg-gradient-to-r lg:from-primary/8 lg:via-accent/10 lg:to-primary/8 lg:p-6"
+      className="relative overflow-hidden rounded-xl lg:bg-gradient-to-r lg:from-primary/8 lg:via-accent/10 lg:to-primary/8 lg:p-6"
     >
       <Motif />
 

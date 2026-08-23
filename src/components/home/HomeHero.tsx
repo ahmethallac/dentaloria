@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BadgeCheck, ChevronRight, Globe, Languages, Search, Sparkles, Stethoscope, Tag, Star } from "lucide-react";
+import { BadgeCheck, Globe, Languages, Search, Sparkles, Stethoscope, Tag, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AISearchBar } from "@/components/home/AISearchBar";
@@ -65,9 +65,7 @@ const useHeroParallax = () => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // below lg the photo box starts under the header, where the uncovered
-    // strip would be visible — so parallax is desktop-only
-    const query = window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 1023px)");
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
 
     const paint = () => {
@@ -127,6 +125,12 @@ export const HomeHero = ({
   const { t } = useTranslation("home");
   const [tab, setTab] = useState<"filters" | "ai">("filters");
   const { photoRef, cardRef } = useHeroParallax();
+  const mobileBreaks = new Set(
+    t("hero.titleBreaksMobile")
+      .split(",")
+      .map((n) => Number(n.trim()))
+      .filter(Boolean),
+  );
 
   return (
     <section data-fid="hero" className="relative">
@@ -162,16 +166,23 @@ export const HomeHero = ({
 
       <div className="relative mx-auto w-full max-w-[1100px] px-5 pb-14 pt-12 sm:px-8 lg:pt-16">
         <h1 data-fid="hero.title" className="text-3xl/[1.12] font-bold tracking-tight sm:text-4xl/[1.12] lg:text-5xl/[1.12]">
-          {/* The break moves between widths: below lg the noun drops to line two
-              ("Your Perfect / Smile Starts Here"), at lg it stays up
-              ("Your Perfect Smile / Starts Here"). Hence three parts rather
-              than two — the split point is chosen per locale in home.json, so
-              the word that drops is the natural one in each language. */}
-          <span className="text-brand-navy">{t("hero.titleLead")}</span>
-          <br className="lg:hidden" />{" "}
-          <span className="text-brand-navy">{t("hero.titleWord")}</span>
-          <br className="hidden lg:inline" />{" "}
-          <span className="text-brand-blue-bright">{t("hero.titleLine2")}</span>
+          {/* Three parts, and where the line breaks between them is a
+              typographic call that differs by language — so it comes from
+              home.json (hero.titleBreaksMobile) rather than a rule hardcoded
+              here. English breaks once ("Your Perfect / Smile Starts Here");
+              Turkish is longer and breaks twice, which keeps the third line
+              off the subject's face. Desktop always breaks after part two. */}
+          {[t("hero.titleLead"), t("hero.titleWord"), t("hero.titleLine2")].map((part, i) => (
+            <Fragment key={i}>
+              <span className={i === 2 ? "text-brand-blue-bright" : "text-brand-navy"}>{part}</span>
+              {i < 2 && (
+                <>
+                  {mobileBreaks.has(i + 1) && <br className="lg:hidden" />}
+                  {i === 1 && <br className="hidden lg:inline" />}{" "}
+                </>
+              )}
+            </Fragment>
+          ))}
         </h1>
 
         <p
@@ -183,8 +194,8 @@ export const HomeHero = ({
 
         <ul data-fid="hero.badges" className="mt-16 grid grid-cols-3 gap-2 lg:mt-5 lg:flex lg:flex-wrap lg:items-center lg:gap-x-11">
           {TRUST_BADGES.map(({ icon: Icon, key }) => (
-            <li key={key} className="flex items-start gap-1.5 border-l border-border pl-3 first:border-0 first:pl-0 lg:items-center lg:gap-2 lg:border-0 lg:pl-0">
-              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary lg:mt-0" aria-hidden="true" />
+            <li key={key} className="flex items-center gap-2 border-l border-border pl-3 first:border-0 first:pl-0 lg:border-0 lg:pl-0">
+              <Icon className="h-[18px] w-[18px] shrink-0 text-primary lg:h-5 lg:w-5" aria-hidden="true" />
               <span className="text-[11px] leading-tight text-brand-navy lg:text-sm">{t(key)}</span>
             </li>
           ))}
@@ -194,7 +205,7 @@ export const HomeHero = ({
         <div
           ref={cardRef}
           data-fid="hero.card"
-          className="mt-8 w-full rounded-2xl bg-white shadow-card will-change-transform"
+          className="mt-8 w-full rounded-xl bg-white shadow-card will-change-transform"
         >
           <div className="flex items-center gap-3 overflow-x-auto border-b border-border px-4 pt-6 sm:px-10 lg:gap-8 lg:pt-7">
             <button
@@ -289,18 +300,30 @@ export const HomeHero = ({
               </Button>
             </div>
 
-            <div className="px-4 pb-8 sm:px-10">
-              <span className="text-sm text-nav-muted">{t("hero.popularSearches")}</span>
-              <div className="mt-2 grid grid-cols-2 gap-2 lg:mt-0 lg:flex lg:flex-wrap lg:items-center lg:gap-3">
-              {(t("hero.popularSearchItems", { returnObjects: true }) as string[]).map((label) => (
-                <span
-                  key={label}
-                  className="rounded-[6px] border border-border px-2 py-1.5 text-center text-[11px] leading-snug text-brand-navy lg:px-3 lg:text-left lg:text-xs"
-                >
-                  {label}
-                </span>
-              ))}
-                <ChevronRight className="hidden h-4 w-4 text-primary lg:block" aria-hidden="true" />
+            {/* Label centred above the chips, which drift like the trending
+                strip. Four copies so half the track clears the card at every
+                width — the loop point sits at -50%, so an odd count would
+                show a seam. */}
+            <div className="pb-8">
+              <p className="text-center text-sm text-nav-muted">{t("hero.popularSearches")}</p>
+
+              <div className="relative mt-3 overflow-hidden">
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-white to-transparent" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-white to-transparent" />
+
+                <div className="flex w-max animate-marquee gap-2 hover:[animation-play-state:paused] motion-reduce:animate-none lg:gap-3">
+                  {Array.from({ length: 4 }).flatMap((_, copy) =>
+                    (t("hero.popularSearchItems", { returnObjects: true }) as string[]).map((label) => (
+                      <span
+                        key={`${copy}-${label}`}
+                        aria-hidden={copy > 0}
+                        className="shrink-0 whitespace-nowrap rounded-[6px] border border-border px-2 py-1.5 text-[11px] leading-snug text-brand-navy lg:px-3 lg:text-xs"
+                      >
+                        {label}
+                      </span>
+                    )),
+                  )}
+                </div>
               </div>
             </div>
             </>

@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const ClinicCardSkeleton = () => {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white">
+    <div className="overflow-hidden rounded-xl border border-border bg-white">
       {/* Desktop layout */}
       <div className="hidden lg:flex">
         <Skeleton className="w-52 h-44 shrink-0 rounded-none" />

@@ -48,7 +48,7 @@ export const TestimonialsSection = () => {
           <figure
             key={`${copy}-${item.name}`}
             aria-hidden={copy > 0}
-            className="flex w-[300px] shrink-0 flex-col rounded-2xl border border-border bg-white p-5"
+            className="flex w-[300px] shrink-0 flex-col rounded-xl border border-border bg-white p-5"
           >
             <div className="flex gap-0.5" aria-label="5 / 5">
               {Array.from({ length: 5 }).map((_, i) => (

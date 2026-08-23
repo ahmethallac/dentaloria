@@ -20,7 +20,7 @@ export const WhyChooseSection = () => {
 
   return (
     <SectionShell className="pt-10">
-      <div data-fid="why" className="rounded-2xl bg-stats-navy px-8 py-6 lg:px-10">
+      <div data-fid="why" className="rounded-xl bg-stats-navy px-8 py-6 lg:px-10">
         <h2 className="text-xl font-bold text-primary-foreground">{t("whyDentaloria.title")}</h2>
 
         <div className="mt-5 grid grid-cols-1 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">

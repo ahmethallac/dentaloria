@@ -37,7 +37,7 @@ export const GetOffersSection = () => {
     <SectionShell className="pt-10">
       <div
         data-fid="getoffers"
-        className="grid grid-cols-1 gap-8 rounded-2xl bg-muted/40 p-6 lg:grid-cols-[1fr_1.1fr_0.9fr] lg:gap-10 lg:p-8"
+        className="grid grid-cols-1 gap-8 rounded-xl bg-muted/40 p-6 lg:grid-cols-[1fr_1.1fr_0.9fr] lg:gap-10 lg:p-8"
       >
         {/* Pitch */}
         <div>
@@ -61,7 +61,7 @@ export const GetOffersSection = () => {
         </div>
 
         {/* Request card */}
-        <div className="rounded-2xl bg-white p-5 shadow-card">
+        <div className="rounded-xl bg-white p-5 shadow-card">
           <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border px-6 py-6 text-center">
             <CloudUpload className="mb-1 h-8 w-8 text-primary" aria-hidden="true" />
             <div className="text-sm font-medium text-brand-navy">{t("getOffers.uploadTitle")}</div>

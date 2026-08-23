@@ -48,7 +48,7 @@ export const PopularDestinations = ({
             key={city.id}
             type="button"
             onClick={() => onSelect(city.id, city.countryId)}
-            className="group relative aspect-[3/4] overflow-hidden rounded-xl text-left sm:aspect-[16/10] lg:rounded-2xl"
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl text-left sm:aspect-[16/10]"
           >
             <img
               src={city.image}

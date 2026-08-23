@@ -152,7 +152,7 @@ export function AISearchBar({ className, onResults, variant = "full" }: AISearch
             strokeLinejoin="round"
           />
         </svg>}
-        <div className={`flex gap-2 rounded-2xl p-3 ${
+        <div className={`flex gap-2 rounded-xl p-3 ${
           variant === "bare"
             // stacked under sm so the field is not squeezed to ~200px beside the button
             ? "flex-col items-stretch border border-border bg-white shadow-sm sm:flex-row sm:items-start"
