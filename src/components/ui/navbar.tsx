@@ -139,13 +139,17 @@ export const Navbar = () => {
             mobile
               ? "flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-foreground/80 hover:bg-primary/8 hover:text-primary transition-colors w-full"
               : compact
-                ? "flex h-10 w-10 items-center justify-center rounded-full text-foreground/70 hover:bg-primary/8 hover:text-primary transition-colors"
+                ? "flex h-9 shrink-0 items-center gap-1 rounded-lg px-1 text-nav-muted transition-colors hover:bg-primary/8 hover:text-primary"
                 : "flex items-center gap-1.5 text-sm font-normal text-nav-muted hover:text-primary transition-colors duration-200"
           }
         >
-          <Globe className="w-5 h-5 md:w-4 md:h-4" />
-          {!compact && <span>{currentLocale?.label}</span>}
-          {!mobile && !compact && <ChevronDown className="w-3 h-3" />}
+          <Globe className="h-4 w-4 shrink-0" />
+          {compact ? (
+            <span className="text-xs font-medium uppercase">{currentLocale?.code}</span>
+          ) : (
+            <span>{currentLocale?.label}</span>
+          )}
+          {!mobile && <ChevronDown className="h-3 w-3 shrink-0" />}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={mobile ? "start" : "end"}>
@@ -184,7 +188,7 @@ export const Navbar = () => {
               src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png"
               alt="Dentaloria"
               data-fid="header.logo"
-              className={`w-auto transition-all duration-300 ${scrolled ? "h-6 md:h-7" : "h-6 md:h-8"}`}
+              className={`w-auto transition-all duration-300 ${scrolled ? "h-5 md:h-7" : "h-5 md:h-8"}`}
             />
           </Link>
 
@@ -239,12 +243,22 @@ export const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile: hamburger opens a slide-in drawer */}
+          {/* Mobile: language, the register CTA, then the drawer trigger.
+              The six nav links cannot fit at 375px, so they stay in the sheet;
+              everything else the desktop header shows is here. */}
           <div className="flex items-center gap-1 md:hidden">
             <LanguageSwitcher compact />
+            {!user && (
+              <Button
+                onClick={() => navigate(withLocalePrefix("/auth", lang))}
+                className="h-9 shrink-0 rounded-lg bg-primary px-2 text-[11px] font-semibold leading-none text-primary-foreground hover:bg-primary/90"
+              >
+                {t("nav.registerClinic")}
+              </Button>
+            )}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-lg">
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
