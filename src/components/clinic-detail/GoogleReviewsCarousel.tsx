@@ -34,9 +34,10 @@ const getInitials = (name: string) =>
 interface GoogleReviewsCarouselProps {
   reviews: GoogleReview[];
   lang?: string;
+  googlePlaceId?: string;
 }
 
-export default function GoogleReviewsCarousel({ reviews, lang }: GoogleReviewsCarouselProps) {
+export default function GoogleReviewsCarousel({ reviews, lang, googlePlaceId }: GoogleReviewsCarouselProps) {
   const { t } = useTranslation("clinicDetail");
   // Re-shuffled on every mount (page load), so the same clinic shows its
   // handful of reviews in a different order each visit.
@@ -46,7 +47,19 @@ export default function GoogleReviewsCarousel({ reviews, lang }: GoogleReviewsCa
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-1">{t("googleReviews.title")}</h2>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h2 className="text-lg font-semibold text-brand-navy">{t("googleReviews.title")}</h2>
+        {googlePlaceId && (
+          <a
+            href={`https://search.google.com/local/reviews?placeid=${googlePlaceId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-sm font-medium text-primary hover:underline"
+          >
+            {t("googleReviews.viewAll")}
+          </a>
+        )}
+      </div>
       <p className="text-xs text-muted-foreground mb-3">
         {t("googleReviews.subtitle")}
       </p>

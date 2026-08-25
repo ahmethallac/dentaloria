@@ -25,19 +25,23 @@
   "tabs": {
     "overview": "Genel Bakış",
     "about": "Hakkında",
-    "photos": "Fotoğraflar",
     "treatments": "Tedaviler",
-    "doctors": "Doktorlar"
+    "doctors": "Doktorlar",
+    "photos": "Fotoğraflar",
+    "reviews": "Yorumlar",
+    "prices": "Fiyatlar",
+    "faq": "SSS"
   },
   "verified": "Onaylı",
   "beforeAfter": {
     "title": "Öncesi & Sonrası",
     "dialogTitle": "Öncesi ve sonrası fotoğrafları",
     "openImage": "Öncesi & sonrası görseli {{n}} aç",
-    "close": "Kapat"
+    "close": "Kapat",
+    "viewMore": "Daha Fazla Sonuç Gör"
   },
   "description": {
-    "title": "Klinik Hakkında",
+    "title": "{{name}} Hakkında",
     "showLess": "Daha az göster",
     "readMore": "Devamını oku"
   },
@@ -53,16 +57,24 @@
     "duration": "Süre",
     "startingFrom": "Başlangıç Fiyatı",
     "contactUs": "Bize ulaşın",
-    "getQuote": "Teklif Al"
+    "getQuote": "Teklif Al",
+    "viewAll": "Tümünü gör",
+    "viewAllButton": "Tüm Tedavileri Gör",
+    "showFewer": "Daha az göster"
   },
   "videos": {
     "title": "Videolar",
     "play": "Videoyu oynat",
-    "thumbnailAlt": "Video küçük resmi"
+    "thumbnailAlt": "Video küçük resmi",
+    "viewAll": "Tüm Videoları Gör"
   },
   "doctors": {
     "title": "Doktorlarımız",
-    "yearsExpSuffix": "yıl deneyim"
+    "yearsExpSuffix": "yıl deneyim",
+    "teamCard": {
+      "title": "Uzman Ekibimiz",
+      "subtitle": "Deneyimli ve özverili profesyoneller"
+    }
   },
   "contact": {
     "mobileTitle": "Klinikle İletişim",
@@ -74,7 +86,8 @@
     "requestFreeQuote": "Ücretsiz Teklif İste",
     "verifiedBadge": "Dentaloria Onaylı Klinik",
     "mobileBarSubtitle": "Bugün ücretsiz teklif alın",
-    "getQuote": "Teklif Al"
+    "getQuote": "Teklif Al",
+    "trustFooter": "Taahhüt yok • %100 güvenli"
   },
   "aria": {
     "fullScreen": "Tam Ekran",
@@ -82,7 +95,8 @@
     "nextImage": "Sonraki görsel",
     "close": "Kapat",
     "closeVideo": "Videoyu kapat",
-    "videoPlayer": "Video oynatıcı"
+    "videoPlayer": "Video oynatıcı",
+    "viewAllPhotos": "Tüm fotoğrafları gör"
   },
   "loadError": {
     "title": "Hata",
@@ -90,6 +104,60 @@
   },
   "googleReviews": {
     "title": "Hastalar Google'da ne diyor",
-    "subtitle": "Bu kliniğin Google İşletme profilinden otomatik olarak çekilen gerçek yorumlar."
+    "subtitle": "Bu kliniğin Google İşletme profilinden otomatik olarak çekilen gerçek yorumlar.",
+    "viewAll": "Tüm yorumları gör",
+    "reviewsSuffix": "değerlendirme"
+  },
+  "actions": {
+    "save": "Kliniği Kaydet",
+    "saved": "Kaydedildi",
+    "share": "Paylaş",
+    "linkCopied": "Bağlantı panoya kopyalandı"
+  },
+  "quickFacts": {
+    "digitalTechnology": "Dijital Teknoloji",
+    "multiLanguageSupport": "Çoklu Dil Desteği",
+    "patientCare": "7/24 Hasta Bakımı",
+    "bestPriceGuarantee": "En İyi Fiyat Garantisi"
+  },
+  "aboutPills": {
+    "technology": "Modern Teknoloji",
+    "experiencedTeam": "Deneyimli Ekip",
+    "internationalStandards": "Uluslararası Standartlar",
+    "patientSatisfaction": "Hasta Memnuniyeti"
+  },
+  "languagesPanel": {
+    "title": "Sizin Dilinizi Konuşuyoruz",
+    "subtitle": "Çok dilli ekibimiz, deneyiminizi kolay ve konforlu hale getirmek için burada."
+  },
+  "faq": {
+    "title": "Sıkça Sorulan Sorular",
+    "items": [
+      {
+        "question": "Tedavi ağrılı mı?",
+        "answer": "Tedavilerin çoğu lokal anestezi altında yapılır, bu yüzden işlem sırasında ağrı hissetmezsiniz. Sonrasında hafif bir rahatsızlık normaldir ve ilaçlarla kolayca kontrol altına alınır."
+      },
+      {
+        "question": "Türkiye'de ne kadar kalmam gerekiyor?",
+        "answer": "Bu tedavi planınıza bağlıdır, ancak çoğu hasta 3-7 gün arasında kalır. Tedavi planınız hazırlandıktan sonra klinik size tam süreyi bildirecektir."
+      },
+      {
+        "question": "Garanti veriyor musunuz?",
+        "answer": "Evet, Dentaloria'daki klinikler çoğu tedavi için garanti sunar. Kapsam kliniğe ve tedavi türüne göre değişir — ücretsiz teklifinizde tüm detayları öğrenebilirsiniz."
+      },
+      {
+        "question": "Geçici diş alabilir miyim?",
+        "answer": "Evet, implant ve tam ağız tedavilerinin çoğunda geçici diş seçeneği sunulur, böylece gülüşünüze kavuşmak için beklemek zorunda kalmazsınız."
+      },
+      {
+        "question": "Tedavi paketine neler dahildir?",
+        "answer": "Paketler genellikle tedavinin kendisini, konsültasyonları ve röntgenleri içerir. Birçok klinik ayrıca havalimanı transferi ve otel desteği de sunar — tam kapsamı klinikle teyit edin."
+      }
+    ],
+    "stillHaveQuestions": {
+      "title": "Başka sorunuz mu var?",
+      "subtitle": "Hasta koordinatörlerimiz size 7/24 yardımcı olmak için burada.",
+      "cta": "Bize Ulaşın"
+    }
   }
 }

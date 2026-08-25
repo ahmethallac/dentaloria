@@ -25,19 +25,23 @@
   "tabs": {
     "overview": "Overview",
     "about": "About",
-    "photos": "Photos",
     "treatments": "Treatments",
-    "doctors": "Doctors"
+    "doctors": "Doctors",
+    "photos": "Photos",
+    "reviews": "Reviews",
+    "prices": "Prices",
+    "faq": "FAQ"
   },
   "verified": "Verified",
   "beforeAfter": {
     "title": "Before & After",
     "dialogTitle": "Before & after photos",
     "openImage": "Open before & after image {{n}}",
-    "close": "Close"
+    "close": "Close",
+    "viewMore": "View More Results"
   },
   "description": {
-    "title": "About the Clinic",
+    "title": "About {{name}}",
     "showLess": "Show less",
     "readMore": "Read more"
   },
@@ -53,16 +57,24 @@
     "duration": "Duration",
     "startingFrom": "Starting From",
     "contactUs": "Contact us",
-    "getQuote": "Get Quote"
+    "getQuote": "Get Quote",
+    "viewAll": "View all treatments",
+    "viewAllButton": "View All Treatments",
+    "showFewer": "Show fewer"
   },
   "videos": {
     "title": "Videos",
     "play": "Play video",
-    "thumbnailAlt": "Video thumbnail"
+    "thumbnailAlt": "Video thumbnail",
+    "viewAll": "View All Videos"
   },
   "doctors": {
     "title": "Our Doctors",
-    "yearsExpSuffix": "yrs exp."
+    "yearsExpSuffix": "yrs exp.",
+    "teamCard": {
+      "title": "Our Expert Team",
+      "subtitle": "Highly experienced and dedicated professionals"
+    }
   },
   "contact": {
     "mobileTitle": "Contact Clinic",
@@ -74,7 +86,8 @@
     "requestFreeQuote": "Request Free Quote",
     "verifiedBadge": "Dentaloria Verified Clinic",
     "mobileBarSubtitle": "Get a free quote today",
-    "getQuote": "Get Quote"
+    "getQuote": "Get Quote",
+    "trustFooter": "No obligation • 100% secure"
   },
   "aria": {
     "fullScreen": "Full Screen",
@@ -82,7 +95,8 @@
     "nextImage": "Next image",
     "close": "Close",
     "closeVideo": "Close video",
-    "videoPlayer": "Video player"
+    "videoPlayer": "Video player",
+    "viewAllPhotos": "View all photos"
   },
   "loadError": {
     "title": "Error",
@@ -90,6 +104,60 @@
   },
   "googleReviews": {
     "title": "What patients say on Google",
-    "subtitle": "Real reviews pulled automatically from this clinic's Google Business profile."
+    "subtitle": "Real reviews pulled automatically from this clinic's Google Business profile.",
+    "viewAll": "View all reviews",
+    "reviewsSuffix": "reviews"
+  },
+  "actions": {
+    "save": "Save Clinic",
+    "saved": "Saved",
+    "share": "Share",
+    "linkCopied": "Link copied to clipboard"
+  },
+  "quickFacts": {
+    "digitalTechnology": "Digital Technology",
+    "multiLanguageSupport": "Multi-Language Support",
+    "patientCare": "24/7 Patient Care",
+    "bestPriceGuarantee": "Best Price Guarantee"
+  },
+  "aboutPills": {
+    "technology": "Modern Technology",
+    "experiencedTeam": "Highly Experienced Team",
+    "internationalStandards": "International Standards",
+    "patientSatisfaction": "Patient Satisfaction"
+  },
+  "languagesPanel": {
+    "title": "We Speak Your Language",
+    "subtitle": "Our multilingual team is here to make your experience smooth and comfortable."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "Is the treatment painful?",
+        "answer": "Most treatments are performed under local anesthesia, so you won't feel pain during the procedure. Some mild discomfort afterward is normal and easily managed with medication."
+      },
+      {
+        "question": "How long do I need to stay in Turkey?",
+        "answer": "It depends on your treatment plan, but most patients stay between 3 and 7 days. Your clinic will confirm the exact duration once your treatment plan is ready."
+      },
+      {
+        "question": "Do you provide warranty?",
+        "answer": "Yes, clinics on Dentaloria offer a warranty on most treatments. Coverage terms vary by clinic and treatment type — ask for full details in your free quote."
+      },
+      {
+        "question": "Can I get a temporary teeth?",
+        "answer": "Yes, temporary teeth are available for most implant and full-mouth treatments so you don't have to wait to smile with confidence."
+      },
+      {
+        "question": "What is included in the treatment package?",
+        "answer": "Packages typically include the treatment itself, consultations, and X-rays. Many clinics also offer airport transfers and hotel assistance — confirm exact inclusions with the clinic."
+      }
+    ],
+    "stillHaveQuestions": {
+      "title": "Still have questions?",
+      "subtitle": "Our patient coordinators are here to help you 24/7.",
+      "cta": "Contact Us"
+    }
   }
 }

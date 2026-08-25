@@ -11,6 +11,7 @@ import {
   Users,
   Award,
   Shield,
+  ShieldCheck,
   CheckCircle,
   Clock,
   ChevronRight,
@@ -20,6 +21,15 @@ import {
   X,
   Languages as LanguagesIcon,
   Sparkles,
+  Heart,
+  Share2,
+  Cpu,
+  BadgePercent,
+  Linkedin,
+  Headset,
+  ArrowRight,
+  Lock,
+  Star,
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getClinicById, getClinicByIdPrivate, getClinicBySlug } from "@/lib/services";
@@ -48,6 +58,12 @@ import { getLanguage, getFacility } from "@/lib/clinicMeta";
 import HorizontalMediaRow from "@/components/clinic-detail/HorizontalMediaRow";
 import GoogleReviewsCarousel from "@/components/clinic-detail/GoogleReviewsCarousel";
 import { Play } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 /* ───────── mapper ───────── */
 const mapClinic = (db: any) => {
@@ -124,16 +140,23 @@ const mapClinic = (db: any) => {
         thumbnail: v.thumbnail_url as string | null,
       })),
     googleReviews: Array.isArray(db?.google_reviews) ? db.google_reviews : [],
+    googlePlaceId: db.google_place_id || undefined,
   };
 };
 
 /* ───────── tabs config ───────── */
+// `sectionId` is the anchor actually scrolled to / observed; `id` is only the
+// button's React key and active-tab flag, since "Prices" points at the same
+// treatments table as "Treatments" rather than a section of its own.
 const TABS = [
-  { id: "overview", key: "overview" },
-  { id: "about", key: "about" },
-  { id: "photos", key: "photos" },
-  { id: "treatments", key: "treatments" },
-  { id: "doctors", key: "doctors" },
+  { id: "overview", sectionId: "overview", key: "overview" },
+  { id: "about", sectionId: "about", key: "about" },
+  { id: "treatments", sectionId: "treatments", key: "treatments" },
+  { id: "doctors", sectionId: "doctors", key: "doctors" },
+  { id: "photos", sectionId: "photos", key: "photos" },
+  { id: "reviews", sectionId: "reviews", key: "reviews" },
+  { id: "prices", sectionId: "treatments", key: "prices" },
+  { id: "faq", sectionId: "faq", key: "faq" },
 ] as const;
 
 /* ───────── before/after carousel + lightbox ───────── */
@@ -175,6 +198,14 @@ const BeforeAfterCarousel = ({
           </button>
         )}
       />
+
+      {images.length > 1 && (
+        <div className="mt-4 flex justify-center">
+          <Button variant="outline" onClick={() => setLightboxIdx(0)}>
+            {t("beforeAfter.viewMore")}
+          </Button>
+        </div>
+      )}
 
       {/* Lightbox */}
       <Dialog open={lightboxIdx !== null} onOpenChange={(o) => { if (!o) setLightboxIdx(null); }}>
@@ -305,6 +336,26 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
   const [highlightForm, setHighlightForm] = useState(false);
   const [recoOpen, setRecoOpen] = useState(false);
   const [recoValues, setRecoValues] = useState<ContactClinicSubmittedValues | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [treatmentsExpanded, setTreatmentsExpanded] = useState(false);
+
+  const handleShare = useCallback(async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: document.title, url });
+        return;
+      } catch {
+        // user cancelled the native share sheet — fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ description: t("actions.linkCopied") });
+    } catch {
+      // clipboard unavailable — nothing more we can do here
+    }
+  }, [t, toast]);
 
   const handleFormSuccess = (values: ContactClinicSubmittedValues) => {
     setRecoValues(values);
@@ -432,7 +483,7 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
       }
       // active section
       const offsets = TABS.map((t) => {
-        const el = sectionRefs.current[t.id];
+        const el = sectionRefs.current[t.sectionId];
         if (!el) return { id: t.id, top: Infinity };
         return { id: t.id, top: el.getBoundingClientRect().top };
       });
@@ -633,13 +684,8 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <div>
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{clinic.name}</h1>
-              {clinic.isVerified && (
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-medium text-xs">
-                  <Award className="w-3 h-3 mr-1" />
-                  {t("verified")}
-                </Badge>
-              )}
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-brand-navy">{clinic.name}</h1>
+              {clinic.isVerified && <ShieldCheck className="w-6 h-6 text-primary shrink-0" aria-label={t("verified")} />}
             </div>
             <div className="flex items-center gap-4 mt-1.5 flex-wrap">
               <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -648,8 +694,22 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
               </span>
               <span className="flex items-center gap-1.5 text-sm">
                 <GoogleRating rating={clinic.rating} starClassName="w-3.5 h-3.5" />
+                {clinic.reviewCount > 0 && (
+                  <span className="text-muted-foreground">({clinic.reviewCount.toLocaleString()} {t("googleReviews.reviewsSuffix")})</span>
+                )}
               </span>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setSaved((v) => !v)}>
+              <Heart className={`w-4 h-4 ${saved ? "fill-primary text-primary" : ""}`} />
+              {saved ? t("actions.saved") : t("actions.save")}
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleShare}>
+              <Share2 className="w-4 h-4" />
+              {t("actions.share")}
+            </Button>
           </div>
         </div>
       </header>
@@ -666,7 +726,7 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
             {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => scrollTo(tab.id)}
+                onClick={() => scrollTo(tab.sectionId)}
                 className={`shrink-0 px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? "text-primary border-primary"
@@ -689,6 +749,12 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
             <div ref={(el) => (sectionRefs.current["overview"] = el)} className="scroll-mt-32 space-y-8">
               {/* ── Image Slider ── */}
               <div className="relative overflow-hidden rounded-2xl">
+                {clinic.isVerified && (
+                  <div className="absolute left-3 top-3 z-20 flex items-center gap-1.5 rounded-full bg-background/95 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm">
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                    {t("verified")}
+                  </div>
+                )}
                 <div
                   ref={galleryRef}
                   tabIndex={0}
@@ -765,9 +831,76 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                 )}
               </div>
 
+              {/* ── Thumbnail strip ── */}
+              {clinic.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-3">
+                  {clinic.images.slice(1, 5).map((src: string, i: number) => {
+                    const idx = i + 1;
+                    const remaining = clinic.images.length - 5;
+                    const isLastVisible = i === 3 && remaining > 0;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => (isMobile ? setFullscreenIdx(idx) : scrollGalleryToIndex(idx))}
+                        className="relative aspect-video overflow-hidden rounded-xl bg-muted/30"
+                      >
+                        <img
+                          src={src}
+                          alt={`${clinic.name} ${idx + 1}`}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                        {isLastVisible && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/55 text-center text-xs font-medium text-white">
+                            +{remaining}
+                            <br />
+                            {t("aria.viewAllPhotos")}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-
-
+              {/* ── Quick facts ── */}
+              <div className="grid grid-cols-2 gap-3 rounded-xl border border-border/50 bg-muted/20 p-5 sm:grid-cols-3 lg:grid-cols-6">
+                {clinic.experience > 0 && (
+                  <div className="flex items-center gap-2.5">
+                    <Clock className="w-5 h-5 text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold leading-tight">{clinic.experience}+</div>
+                      <div className="text-[11px] text-muted-foreground leading-tight">{t("stats.yearsExperience")}</div>
+                    </div>
+                  </div>
+                )}
+                {clinic.patientCount > 0 && (
+                  <div className="flex items-center gap-2.5">
+                    <Users className="w-5 h-5 text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
+                      <div className="text-[11px] text-muted-foreground leading-tight">{t("stats.happyPatients")}</div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-2.5">
+                  <Cpu className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-xs font-medium">{t("quickFacts.digitalTechnology")}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <LanguagesIcon className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-xs font-medium">{t("quickFacts.multiLanguageSupport")}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Clock className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-xs font-medium">{t("quickFacts.patientCare")}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <BadgePercent className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-xs font-medium">{t("quickFacts.bestPriceGuarantee")}</span>
+                </div>
+              </div>
 
               {/* ── About cluster (description + languages + facilities) ── */}
               <div
@@ -777,61 +910,46 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                 {/* About the Clinic */}
                 {clinic.description && (
                   <div>
-                    <h2 className="text-lg font-semibold mb-3">{t("description.title")}</h2>
+                    <h2 className="text-lg font-semibold mb-3">{t("description.title", { name: clinic.name })}</h2>
                     <ExpandableDescription
                       html={sanitizeRichText(
                         localizedField(clinic.description, clinic.descriptionTranslations, lang || "en")
                       )}
                     />
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {["technology", "experiencedTeam", "internationalStandards", "patientSatisfaction"].map((key) => (
+                        <Badge key={key} variant="secondary" className="bg-primary/10 text-primary border-transparent font-medium">
+                          {t(`aboutPills.${key}`)}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3">
-                  {clinic.experience > 0 && (
-                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold leading-tight">{clinic.experience}+ </div>
-                        <div className="text-xs text-muted-foreground">{t("stats.yearsExperience")}</div>
-                      </div>
-                    </div>
-                  )}
-                  {clinic.patientCount > 0 && (
-                    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold leading-tight">{clinic.patientCount.toLocaleString()}+</div>
-                        <div className="text-xs text-muted-foreground">{t("stats.happyPatients")}</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Supported Languages */}
+                {/* We Speak Your Language */}
                 {clinic.languages.length > 0 && (
                   <div className="rounded-xl border border-border/50 p-6 bg-muted/20">
-                    <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                      <LanguagesIcon className="w-4 h-4 text-primary" /> {t("supportedLanguages")}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {clinic.languages.map((code: string) => {
+                    <h3 className="font-semibold text-primary mb-1">{t("languagesPanel.title")}</h3>
+                    <p className="text-xs text-muted-foreground mb-4 max-w-md">{t("languagesPanel.subtitle")}</p>
+                    <div className="flex flex-wrap items-center gap-3">
+                      {clinic.languages.slice(0, 5).map((code: string) => {
                         const l = getLanguage(code);
                         if (!l) return null;
                         return (
                           <span
                             key={code}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm"
+                            title={tCommon(`languageNames.${l.code}`)}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-xl"
                           >
                             <span aria-hidden>{l.flag}</span>
-                            <span>{tCommon(`languageNames.${l.code}`)}</span>
                           </span>
                         );
                       })}
+                      {clinic.languages.length > 5 && (
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-xs font-semibold text-muted-foreground">
+                          +{clinic.languages.length - 5}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -863,7 +981,18 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
             {/* ── Treatments ── */}
             {clinic.treatments.length > 0 && (
               <div ref={(el) => (sectionRefs.current["treatments"] = el)} className="scroll-mt-32">
-                <h2 className="text-xl font-bold mb-4">{t("treatmentPrices.title")}</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-brand-navy">{t("treatmentPrices.title")}</h2>
+                  {clinic.treatments.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => setTreatmentsExpanded((v) => !v)}
+                      className="text-sm font-medium text-primary hover:underline"
+                    >
+                      {treatmentsExpanded ? t("treatmentPrices.showFewer") : t("treatmentPrices.viewAll")}
+                    </button>
+                  )}
+                </div>
                 <div className="rounded-xl border border-border/50 overflow-hidden">
                   <table className="w-full">
                     <thead>
@@ -875,7 +1004,7 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {clinic.treatments.map((treatment: any, i: number) => (
+                      {(treatmentsExpanded ? clinic.treatments : clinic.treatments.slice(0, 5)).map((treatment: any, i: number) => (
                         <tr
                           key={i}
                           className="border-t border-border/30 hover:bg-muted/20 transition-colors"
@@ -906,6 +1035,13 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                     </tbody>
                   </table>
                 </div>
+                {clinic.treatments.length > 5 && (
+                  <div className="mt-4 flex justify-center">
+                    <Button variant="outline" onClick={() => setTreatmentsExpanded((v) => !v)}>
+                      {treatmentsExpanded ? t("treatmentPrices.showFewer") : t("treatmentPrices.viewAllButton")}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -971,19 +1107,31 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                     )}
                   />
                 </div>
+                {clinic.videos.length > 1 && (
+                  <div className="mt-4 flex justify-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => setVideoLightbox({ provider: clinic.videos[0].provider, providerId: clinic.videos[0].providerId })}
+                    >
+                      {t("videos.viewAll")}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
             {/* ── Google Reviews ── */}
             {clinic.googleReviews && clinic.googleReviews.length > 0 && (
-              <GoogleReviewsCarousel reviews={clinic.googleReviews} lang={lang} />
+              <div ref={(el) => (sectionRefs.current["reviews"] = el)} className="scroll-mt-32">
+                <GoogleReviewsCarousel reviews={clinic.googleReviews} lang={lang} googlePlaceId={clinic.googlePlaceId} />
+              </div>
             )}
 
             {/* ── Doctors ── */}
 
             {clinic.doctors.length > 0 && (
               <div ref={(el) => (sectionRefs.current["doctors"] = el)} className="scroll-mt-32">
-                <h2 className="text-xl font-bold mb-4">{t("doctors.title")}</h2>
+                <h2 className="text-xl font-bold mb-4 text-brand-navy">{t("doctors.title")}</h2>
                 <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
                   {clinic.doctors.map((doc: any, i: number) => (
                     <div
@@ -1006,9 +1154,44 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                       )}
                     </div>
                   ))}
+                  <div className="min-w-[200px] shrink-0 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-5 flex flex-col items-center justify-center text-center gap-2">
+                    <Users className="w-7 h-7 text-primary" />
+                    <h3 className="font-semibold text-sm">{t("doctors.teamCard.title")}</h3>
+                    <p className="text-xs text-muted-foreground">{t("doctors.teamCard.subtitle")}</p>
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* ── FAQ ── */}
+            <div ref={(el) => (sectionRefs.current["faq"] = el)} className="scroll-mt-32">
+              <h2 className="text-xl font-bold mb-4 text-brand-navy">{t("faq.title")}</h2>
+              <div className="grid lg:grid-cols-[1fr_280px] gap-6 items-start">
+                <Accordion type="single" collapsible className="rounded-xl border border-border/50 divide-y divide-border/50">
+                  {(t("faq.items", { returnObjects: true }) as { question: string; answer: string }[]).map((item, i) => (
+                    <AccordionItem key={i} value={`item-${i}`} className="border-0 px-5">
+                      <AccordionTrigger className="text-sm font-medium hover:no-underline">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+
+                <div className="rounded-xl border border-border/50 bg-muted/20 p-6 text-center">
+                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                    <Headset className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-sm">{t("faq.stillHaveQuestions.title")}</h3>
+                  <p className="text-xs text-muted-foreground mt-1.5 mb-4">{t("faq.stillHaveQuestions.subtitle")}</p>
+                  <Button variant="outline" size="sm" onClick={handleGetQuote}>
+                    {t("faq.stillHaveQuestions.cta")}
+                  </Button>
+                </div>
+              </div>
+            </div>
 
             {/* ── Contact anchor (mobile) ── */}
             <div className="scroll-mt-32 lg:hidden">
@@ -1063,6 +1246,11 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
                     <span className="text-xs text-muted-foreground">{t("contact.verifiedBadge")}</span>
                   </div>
                 )}
+
+                <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                  <Lock className="w-3 h-3" />
+                  {t("contact.trustFooter")}
+                </div>
               </div>
             </div>
           </aside>
