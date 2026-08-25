@@ -23,6 +23,7 @@ import { StatsBar } from "@/components/home/StatsBar";
 import { ExampleOffers } from "@/components/home/ExampleOffers";
 import { StartJourneyCta } from "@/components/home/StartJourneyCta";
 import { TrendingSearches } from "@/components/home/TrendingSearches";
+import { PromoBanners } from "@/components/home/PromoBanners";
 import { PopularClinicsSection } from "@/components/home/PopularClinicsSection";
 import { PopularDestinations } from "@/components/home/PopularDestinations";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
@@ -177,6 +178,8 @@ const Index = () => {
         onSearch={handleSearch}
       />
       <StatsBar tone="dark" />
+
+      <PromoBanners />
 
       <TrendingSearches />
 

@@ -203,5 +203,9 @@
     "clinic2": "Istanbul Smile Center",
     "clinic3": "Izmir Dental Hub",
     "disclaimer": "* Example offers for illustration only — not real quotes."
+  },
+  "promoBanners": {
+    "financeAlt": "Dentaloria finance — up to 24 months installments",
+    "quoteToolAlt": "Upload your X-ray, choose your offers"
   }
 }
