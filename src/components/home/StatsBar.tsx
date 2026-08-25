@@ -38,7 +38,7 @@ const TONES = {
   dark: {
     items: HERO_ITEMS,
     fid: "hero.stats",
-    shell: "relative z-10 -mt-[50px] pb-16",
+    shell: "relative z-10 -mt-[50px] pb-8",
     bar: "bg-stats-navy py-[30px] shadow-elegant",
     divider: "lg:border-white/15",
     icon: "text-primary-foreground/90",

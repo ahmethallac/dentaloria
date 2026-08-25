@@ -15,7 +15,7 @@ export const PromoBanners = () => {
   const quoteToolBanner = isTurkish ? quoteToolBannerTr : quoteToolBannerEn;
 
   return (
-    <SectionShell className="pt-10">
+    <SectionShell className="pt-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <img
           src={financeBanner}
