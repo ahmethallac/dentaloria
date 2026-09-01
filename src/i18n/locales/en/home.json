@@ -162,29 +162,6 @@
       "Veneers Turkey"
     ]
   },
-  "getOffers": {
-    "badge": "NEW",
-    "titleAccent": "Get Offers",
-    "titleRest": "From Clinics",
-    "subtitle": "Post your request, clinics will send you their best offers.",
-    "check1": "Upload your X-ray (optional)",
-    "check2": "Describe your request",
-    "check3": "Receive offers from verified clinics",
-    "check4": "Compare and choose the best one",
-    "uploadTitle": "Upload X-ray (Optional)",
-    "uploadHint": "JPG, PNG or DICOM files",
-    "describePlaceholder": "Describe your treatment request…",
-    "submit": "Send Request",
-    "howTitle": "How it works?",
-    "step1Title": "You send your request",
-    "step1Desc": "Upload your X-ray and describe what you need.",
-    "step2Title": "Clinics send you offers",
-    "step2Desc": "Verified clinics review your request and send their best offers.",
-    "step3Title": "Compare & choose",
-    "step3Desc": "Compare offers, ask questions and choose the best one.",
-    "comingSoonTitle": "Coming soon",
-    "comingSoonBody": "Requests aren't being accepted yet. Please contact a clinic directly for now."
-  },
   "bottomStats": {
     "clinicsValue": "500+",
     "clinicsLabel": "Verified Clinics",
@@ -194,15 +171,6 @@
     "patientsLabel": "Happy Patients",
     "ratingValue": "4.8/5",
     "ratingLabel": "Average Rating"
-  },
-  "exampleOffers": {
-    "title": "Example Offers (Illustration)",
-    "watermark": "Sample",
-    "treatment": "All-on-6 Treatment",
-    "clinic1": "Dental Turkey Clinic",
-    "clinic2": "Istanbul Smile Center",
-    "clinic3": "Izmir Dental Hub",
-    "disclaimer": "* Example offers for illustration only — not real quotes."
   },
   "promoBanners": {
     "financeAlt": "Dentaloria finance — up to 24 months installments",

@@ -20,14 +20,12 @@ import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatment
 import { LANGUAGES } from "@/lib/clinicMeta";
 import { HomeHero } from "@/components/home/HomeHero";
 import { StatsBar } from "@/components/home/StatsBar";
-import { ExampleOffers } from "@/components/home/ExampleOffers";
 import { StartJourneyCta } from "@/components/home/StartJourneyCta";
 import { TrendingSearches } from "@/components/home/TrendingSearches";
 import { PromoBanners } from "@/components/home/PromoBanners";
 import { PopularClinicsSection } from "@/components/home/PopularClinicsSection";
 import { PopularDestinations } from "@/components/home/PopularDestinations";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
-import { GetOffersSection } from "@/components/home/GetOffersSection";
 import { PopularTreatmentsSection } from "@/components/home/PopularTreatmentsSection";
 import { WhyChooseSection } from "@/components/home/WhyChooseSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
@@ -201,10 +199,6 @@ const Index = () => {
       />
 
       <HowItWorksSection />
-
-      <GetOffersSection />
-
-      <ExampleOffers />
 
       <PopularTreatmentsSection treatments={treatments} onSelect={handleTreatmentClick} />
 

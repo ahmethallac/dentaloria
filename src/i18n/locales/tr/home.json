@@ -162,29 +162,6 @@
       "Türkiye Veneer"
     ]
   },
-  "getOffers": {
-    "badge": "YENİ",
-    "titleAccent": "Teklif Alın",
-    "titleRest": "Kliniklerden",
-    "subtitle": "Talebinizi paylaşın, klinikler size en iyi tekliflerini göndersin.",
-    "check1": "Röntgeninizi yükleyin (isteğe bağlı)",
-    "check2": "Talebinizi anlatın",
-    "check3": "Doğrulanmış kliniklerden teklif alın",
-    "check4": "Karşılaştırın ve en iyisini seçin",
-    "uploadTitle": "Röntgen Yükle (İsteğe Bağlı)",
-    "uploadHint": "JPG, PNG veya DICOM dosyaları",
-    "describePlaceholder": "Tedavi talebinizi anlatın…",
-    "submit": "Talebi Gönder",
-    "howTitle": "Nasıl çalışır?",
-    "step1Title": "Talebinizi gönderin",
-    "step1Desc": "Röntgeninizi yükleyin ve ihtiyacınızı anlatın.",
-    "step2Title": "Klinikler teklif gönderir",
-    "step2Desc": "Doğrulanmış klinikler talebinizi inceler ve en iyi tekliflerini gönderir.",
-    "step3Title": "Karşılaştır ve seç",
-    "step3Desc": "Teklifleri karşılaştırın, soru sorun ve en iyisini seçin.",
-    "comingSoonTitle": "Çok yakında",
-    "comingSoonBody": "Talepler henüz alınmıyor. Şimdilik lütfen doğrudan bir klinikle iletişime geçin."
-  },
   "bottomStats": {
     "clinicsValue": "500+",
     "clinicsLabel": "Doğrulanmış Klinik",
@@ -194,15 +171,6 @@
     "patientsLabel": "Mutlu Hasta",
     "ratingValue": "4,8/5",
     "ratingLabel": "Ortalama Puan"
-  },
-  "exampleOffers": {
-    "title": "Örnek Teklifler (Temsili)",
-    "watermark": "Örnek",
-    "treatment": "All-on-6 Tedavisi",
-    "clinic1": "Dental Turkey Clinic",
-    "clinic2": "Istanbul Smile Center",
-    "clinic3": "Izmir Dental Hub",
-    "disclaimer": "* Yalnızca temsili örnek tekliflerdir — gerçek fiyat teklifi değildir."
   },
   "promoBanners": {
     "financeAlt": "Dentaloria finans — 24 aya varan taksit",
