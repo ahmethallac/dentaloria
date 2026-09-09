@@ -46,7 +46,7 @@ export default function OutreachDrafts() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
-    name: '', cityId: '', website: '', email: '', phone: '', description: '', source: '',
+    name: '', cityId: '', website: '', email: '', phone: '', description: '',
   })
 
   const [listUrl, setListUrl] = useState('')
@@ -115,7 +115,7 @@ export default function OutreachDrafts() {
 
       await copy(payload.previewToken)
       toast({ title: t('outreach.created'), description: t('outreach.createdHint') })
-      setForm({ name: '', cityId: '', website: '', email: '', phone: '', description: '', source: '' })
+      setForm({ name: '', cityId: '', website: '', email: '', phone: '', description: '' })
       loadDrafts()
     } catch (err: any) {
       toast({ title: t('outreach.createFailed'), description: err?.message, variant: 'destructive' })
@@ -236,10 +236,6 @@ export default function OutreachDrafts() {
             <div>
               <Label htmlFor="od-phone">{t('outreach.phone')}</Label>
               <Input id="od-phone" value={form.phone} onChange={set('phone')} />
-            </div>
-            <div>
-              <Label htmlFor="od-source">{t('outreach.source')}</Label>
-              <Input id="od-source" value={form.source} onChange={set('source')} placeholder="booking.dentist" />
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="od-desc">{t('outreach.description')}</Label>

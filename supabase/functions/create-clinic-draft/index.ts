@@ -95,7 +95,6 @@ Deno.serve(async (req) => {
         email,
         website,
         phone: (body?.phone ?? '').trim() || null,
-        source: (body?.source ?? '').trim() || null,
         // Ownerless and unpublished: sync_clinics_public only copies rows with
         // is_published = true AND page_status = 'live', so this is invisible to
         // the public site until the clinic itself claims it.

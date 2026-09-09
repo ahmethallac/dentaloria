@@ -145,14 +145,6 @@ Deno.serve(async (req) => {
       try {
         await sleep(REQUEST_GAP_MS)
 
-        // Re-importing a clinic would mean mailing them twice.
-        const { data: existing } = await admin
-          .from('clinics').select('id').eq('source', sourceUrl).limit(1)
-        if (existing?.length) {
-          results.push({ slug, status: 'skipped', reason: 'already imported' })
-          continue
-        }
-
         const html = await fetchPage(sourceUrl)
         const node = jsonLdNodes(html).find(isDentist)
         if (!node?.name) {
@@ -174,6 +166,16 @@ Deno.serve(async (req) => {
           continue
         }
 
+        // Re-importing would mean a second mail to the same clinic. We do not
+        // keep the source URL, so identity here is the name within the city —
+        // which is what the source itself is consistent about.
+        const { data: existing } = await admin
+          .from('clinics').select('id').eq('name', node.name).eq('city_id', cityId).limit(1)
+        if (existing?.length) {
+          results.push({ slug, name: node.name, status: 'skipped', reason: 'already in your clinics' })
+          continue
+        }
+
         const description = (node.description || metaContent(html, 'og:description') || '').trim() || null
         const images: string[] = (Array.isArray(node.image) ? node.image : [node.image])
           .map((i: any) => (typeof i === 'string' ? i : i?.url))
@@ -188,7 +190,6 @@ Deno.serve(async (req) => {
             address: node.address?.streetAddress ?? null,
             rating: node.aggregateRating?.ratingValue ?? null,
             review_count: node.aggregateRating?.ratingCount ?? null,
-            source: sourceUrl,
             user_id: null,
             is_published: false,
             page_status: 'awaiting_clinic_approval',
