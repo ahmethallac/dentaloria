@@ -1,20 +1,25 @@
-import type { ReactNode } from "react";
+import { lazy, type ReactNode } from "react";
 import Index from "@/pages/Index";
 import Treatments from "@/pages/Treatments";
 import AboutUs from "@/pages/AboutUs";
 import ClinicDetail from "@/pages/ClinicDetail";
 import ClinicTokenRoute from "@/pages/ClinicTokenRoute";
-import ClinicPanel from "@/pages/ClinicPanel";
+import ClinicDraftPreview from "@/pages/ClinicDraftPreview";
 import ClinicListing from "@/pages/ClinicListing";
 import FeaturedClinic from "@/pages/FeaturedClinic";
 import Auth from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
-import Dashboard from "@/pages/Dashboard";
-import Admin from "@/pages/Admin";
-import AdminApproveClinic from "@/pages/AdminApproveClinic";
 import RegisterClinic from "@/pages/RegisterClinic";
-import BalanceTopupPage from "@/pages/BalanceTopupPage";
-import PurchaseLeadsPage from "@/pages/PurchaseLeadsPage";
+
+// Staff and clinic-owner screens, split out of the main bundle: none of them
+// is reachable without signing in, so shipping them to every visitor only made
+// the first paint slower. Everything a visitor can actually reach stays eager.
+const ClinicPanel = lazy(() => import("@/pages/ClinicPanel"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const AdminApproveClinic = lazy(() => import("@/pages/AdminApproveClinic"));
+const BalanceTopupPage = lazy(() => import("@/pages/BalanceTopupPage"));
+const PurchaseLeadsPage = lazy(() => import("@/pages/PurchaseLeadsPage"));
 
 export interface RouteDef {
   path: string;
@@ -45,4 +50,7 @@ export const ROUTE_DEFS: RouteDef[] = [
   { path: "/clinic/:id/panel/balance", element: <BalanceTopupPage /> },
   { path: "/clinic/:id/panel/purchase-leads", element: <PurchaseLeadsPage /> },
   { path: "/clinic-listing", element: <ClinicListing /> },
+  // Outreach draft, reachable only with its secret token. Short path because
+  // the whole link goes into an email; the page sets noindex itself.
+  { path: "/p/:token", element: <ClinicDraftPreview /> },
 ];

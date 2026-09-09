@@ -31,7 +31,7 @@ import {
   Lock,
   Star,
 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo, type ReactNode } from "react";
 import { getClinicById, getClinicByIdPrivate, getClinicBySlug } from "@/lib/services";
 import { sanitizeRichText } from "@/lib/sanitizeHtml";
 import { localizedField } from "@/lib/i18nContent";
@@ -306,7 +306,16 @@ const ExpandableDescription = ({ html }: { html: string }) => {
 /* ───────── component ───────── */
 // idProp is passed by ClinicLegacyRedirect when rendering the old /clinic/:id
 // route (whose match only provides a "token" param, not "id" — see ClinicTokenRoute).
-const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
+// draftClinic renders an outreach draft: the clinic row is fetched elsewhere
+// (by secret token, through the clinic-preview function) and handed in already
+// loaded, so the clinic sees this exact page rather than a lookalike. The
+// draft screen owns all of its own copy, passed in as draftHeader/draftFooter.
+const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
+  idProp?: string;
+  draftClinic?: any;
+  draftHeader?: ReactNode;
+  draftFooter?: ReactNode;
+} = {}) => {
   const { id: routeId, citySlug, clinicSlug, lang } = useParams();
   const id = idProp ?? routeId;
   const { t } = useTranslation("clinicDetail");
@@ -320,8 +329,8 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
   // is approved and page_status === 'live'.
   const previewRequested = searchParams.get('preview') === '1';
 
-  const [clinic, setClinic] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [clinic, setClinic] = useState<any | null>(draftClinic ? mapClinic(draftClinic) : null);
+  const [loading, setLoading] = useState(!draftClinic);
   const [previewAccess, setPreviewAccess] = useState<'pending' | 'granted' | 'denied'>(previewRequested ? 'pending' : 'granted');
   const [resolvedPreviewRole, setResolvedPreviewRole] = useState<AppRole | null>(userRole);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -438,6 +447,9 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
   const hasSlugRoute = !!citySlug && !!clinicSlug;
 
   useEffect(() => {
+    // A draft arrives already fetched — there is nothing to look up, and the
+    // anon role could not read it here anyway.
+    if (draftClinic) return;
     if (!id && !hasSlugRoute) return;
 
     if (previewRequested && previewAccess !== 'granted') {
@@ -471,7 +483,7 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
         setLoading(false);
       }
     })();
-  }, [id, citySlug, clinicSlug, hasSlugRoute, previewRequested, previewAccess, resolvedPreviewRole, toast]);
+  }, [id, citySlug, clinicSlug, hasSlugRoute, previewRequested, previewAccess, resolvedPreviewRole, draftClinic, toast]);
 
   /* scroll‑spy */
   useEffect(() => {
@@ -654,6 +666,8 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+
+      {draftHeader}
 
       {isPreview && (
         <div className="bg-yellow-500/15 border-b border-yellow-500/40 text-sm">
@@ -1256,6 +1270,8 @@ const ClinicDetail = ({ idProp }: { idProp?: string } = {}) => {
           </aside>
         </div>
       </section>
+
+      {draftFooter}
 
       <Footer />
 

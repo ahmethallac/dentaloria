@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Suspense } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ROUTE_DEFS } from "@/routes/routeDefs";
 import { LocaleLayout } from "@/routes/LocaleLayout";
@@ -31,6 +32,9 @@ const App = () => (
         <AuthProvider>
           <GeoRedirectGate>
             <LocaleSuggestionBanner />
+            {/* Lazy staff screens suspend on first visit; everything a
+                visitor reaches is eager, so this fallback is rarely seen. */}
+            <Suspense fallback={null}>
             <Routes>
               {/* Bare English routes — unprefixed, unchanged from before i18n */}
               {ROUTE_DEFS.map(({ path, element }) => (
@@ -56,6 +60,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
           </GeoRedirectGate>
         </AuthProvider>
       </BrowserRouter>
