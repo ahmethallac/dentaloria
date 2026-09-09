@@ -6,14 +6,16 @@
     "clinics": "Klinikler",
     "approvals": "Bekleyen Onaylar",
     "patients": "Tüm Hastalar",
-    "users": "Kullanıcılar"
+    "users": "Kullanıcılar",
+    "outreach": "Klinik daveti"
   },
   "titles": {
     "dashboard": "Panel",
     "clinics": "Klinikler",
     "approvals": "Bekleyen Onaylar",
     "patients": "Tüm Hastalar",
-    "users": "Kullanıcılar & Roller"
+    "users": "Kullanıcılar & Roller",
+    "outreach": "Klinik davetleri"
   },
   "breadcrumbs": {
     "admin": "Admin"
@@ -245,5 +247,31 @@
       "deletedTitle": "Kullanıcı silindi",
       "errorTitle": "Hata"
     }
+  },
+  "outreach": {
+    "newTitle": "Yeni taslak klinik",
+    "newHint": "Bildiklerini gir, kaydet, sonra kliniğe gizli linki gönder. Tedaviler, fotoğraflar, doktorlar ve videolar sonrasında klinik panelinden ekleniyor.",
+    "name": "Klinik adı",
+    "city": "Şehir",
+    "website": "Web sitesi",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "source": "Nerede bulundu",
+    "description": "Klinik hakkında",
+    "websiteHint": "Klinik üye olurken beklenen kurumsal mail uzantısını önermek için kullanılır.",
+    "create": "Taslağı oluştur ve linki kopyala",
+    "created": "Taslak oluşturuldu",
+    "createdHint": "Gizli link panoya kopyalandı.",
+    "createFailed": "Taslak oluşturulamadı",
+    "suppressed": "Bu klinik daha önce reddetmiş",
+    "copied": "Link kopyalandı",
+    "listTitle": "Yanıt bekleyenler ({{count}})",
+    "listHint": "Henüz onaylanmamış veya reddedilmemiş taslaklar. Süresi dolunca kendiliğinden siliniyorlar.",
+    "empty": "Henüz taslak yok.",
+    "noEmail": "e-posta yok",
+    "noLink": "link yok",
+    "expiresIn": "{{count}} gün kaldı",
+    "copyLink": "Linki kopyala",
+    "editDetails": "Detayları düzenle"
   }
 }

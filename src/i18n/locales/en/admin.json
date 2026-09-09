@@ -6,14 +6,16 @@
     "clinics": "Clinics",
     "approvals": "Pending Approvals",
     "patients": "All Patients",
-    "users": "Users"
+    "users": "Users",
+    "outreach": "Outreach"
   },
   "titles": {
     "dashboard": "Dashboard",
     "clinics": "Clinics",
     "approvals": "Pending Approvals",
     "patients": "All Patients",
-    "users": "Users & Roles"
+    "users": "Users & Roles",
+    "outreach": "Outreach drafts"
   },
   "breadcrumbs": {
     "admin": "Admin"
@@ -245,5 +247,31 @@
       "deletedTitle": "User deleted",
       "errorTitle": "Error"
     }
+  },
+  "outreach": {
+    "newTitle": "New outreach draft",
+    "newHint": "Fill in what you know, save, then send the clinic the secret link. Treatments, photos, doctors and videos are added afterwards from the clinic panel.",
+    "name": "Clinic name",
+    "city": "City",
+    "website": "Website",
+    "email": "Email",
+    "phone": "Phone",
+    "source": "Found on",
+    "description": "About the clinic",
+    "websiteHint": "Used to suggest the work-email domain when the clinic signs up.",
+    "create": "Create draft and copy link",
+    "created": "Draft created",
+    "createdHint": "The secret link is on your clipboard.",
+    "createFailed": "Could not create the draft",
+    "suppressed": "This clinic already said no",
+    "copied": "Link copied",
+    "listTitle": "Waiting for an answer ({{count}})",
+    "listHint": "Drafts nobody has approved or rejected yet. They delete themselves once they expire.",
+    "empty": "No drafts yet.",
+    "noEmail": "no email yet",
+    "noLink": "no link",
+    "expiresIn": "{{count}} days left",
+    "copyLink": "Copy link",
+    "editDetails": "Edit details"
   }
 }

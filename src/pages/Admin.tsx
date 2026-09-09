@@ -15,7 +15,7 @@ import {
   Building2, Users, Clock, CheckCircle, XCircle, FileCheck,
   Loader2, DollarSign, LayoutDashboard, UserCog,
   Trash2, RotateCcw, Trash, X, Power, PowerOff, Download, FileSpreadsheet,
-  ChevronDown, CalendarIcon,
+  ChevronDown, CalendarIcon, Send,
 } from 'lucide-react'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -35,11 +35,12 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import AdminShell, { ShellSection } from '@/components/layout/AdminShell'
+import OutreachDrafts from '@/components/admin/OutreachDrafts'
 import UsersManager from '@/components/admin/UsersManager'
 import * as XLSX from 'xlsx'
 import { withLocalePrefix } from '@/lib/localePath'
 
-type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users'
+type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users' | 'outreach'
 
 const Admin = () => {
   const { user, userRole, loading: authLoading } = useAuth()
@@ -392,6 +393,7 @@ const Admin = () => {
         { id: 'clinics', label: t('sidebar.clinics'), icon: Building2, onClick: () => setSection('clinics'), active: section === 'clinics', badge: stats.totalClinics },
         { id: 'approvals', label: t('sidebar.approvals'), icon: Clock, onClick: () => setSection('approvals'), active: section === 'approvals', badge: stats.pendingApprovals },
         { id: 'patients', label: t('sidebar.patients'), icon: Users, onClick: () => setSection('patients'), active: section === 'patients', badge: stats.totalPatients },
+        { id: 'outreach', label: t('sidebar.outreach'), icon: Send, onClick: () => setSection('outreach'), active: section === 'outreach' },
       ],
     },
     {
@@ -408,6 +410,7 @@ const Admin = () => {
     approvals: t('titles.approvals'),
     patients: t('titles.patients'),
     users: t('titles.users'),
+    outreach: t('titles.outreach'),
   }
 
   return (
@@ -1256,6 +1259,8 @@ const Admin = () => {
           </Card>
         )
       })()}
+
+      {section === 'outreach' && <OutreachDrafts />}
 
       {section === 'users' && isMainAdmin && <UsersManager />}
       {section === 'users' && !isMainAdmin && (
