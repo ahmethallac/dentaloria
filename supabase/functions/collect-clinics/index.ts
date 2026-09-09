@@ -92,6 +92,89 @@ const splitTitle = (full: string): { title: string | null; name: string } => {
   return { title: m[0].trim().replace(/\s+/g, ' '), name: full.slice(m[0].length).trim() || full.trim() }
 }
 
+
+// ── The page's own data layer ──────────────────────────────────────────────
+// The schema.org block is the reliable core, but it only carries what search
+// engines need. Everything else the clinic page shows — phone, the full photo
+// set, amenities, spoken languages, before/after pairs — lives in the Next.js
+// streaming payload, as chunks that reference each other by id ("$7d").
+// Reading it means rebuilding the stream and resolving those references.
+const flightTable = (html: string) => {
+  const stream = [...html.matchAll(/self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)/g)]
+    .map((m) => { try { return JSON.parse('"' + m[1] + '"') } catch { return '' } })
+    .join('')
+  const table = new Map<string, string>()
+  for (const m of stream.matchAll(/(?:^|\n)([0-9a-f]{1,4}):(?:T[0-9a-f]+,)?/g)) {
+    const start = (m.index ?? 0) + m[0].length
+    const end = stream.indexOf('\n', start)
+    table.set(m[1], stream.slice(start, end < 0 ? undefined : end))
+  }
+  return { stream, table }
+}
+
+const resolveRefs = (value: any, table: Map<string, string>, depth = 0): any => {
+  if (depth > 6) return value
+  if (typeof value === 'string' && /^\$[0-9a-f]{1,4}$/.test(value)) {
+    const raw = table.get(value.slice(1))
+    if (raw == null) return null
+    let parsed: any
+    try { parsed = JSON.parse(raw) } catch { parsed = raw }
+    return resolveRefs(parsed, table, depth + 1)
+  }
+  if (Array.isArray(value)) return value.map((v) => resolveRefs(v, table, depth + 1))
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveRefs(v, table, depth + 1)]))
+  }
+  return value
+}
+
+// Brace matching that skips over string literals, so a "{" inside a
+// description does not end the object early.
+const objectAt = (s: string, start: number): string | null => {
+  let depth = 0, inString = false, escaped = false
+  for (let i = start; i < s.length; i++) {
+    const ch = s[i]
+    if (inString) {
+      if (escaped) escaped = false
+      else if (ch === '\\') escaped = true
+      else if (ch === '"') inString = false
+      continue
+    }
+    if (ch === '"') inString = true
+    else if (ch === '{') depth++
+    else if (ch === '}' && --depth === 0) return s.slice(start, i + 1)
+  }
+  return null
+}
+
+const clinicPayload = (html: string): any | null => {
+  const { stream, table } = flightTable(html)
+  const start = stream.indexOf('{"partnerId":"')
+  if (start < 0) return null
+  const raw = objectAt(stream, start)
+  if (!raw) return null
+  try { return resolveRefs(JSON.parse(raw), table) } catch { return null }
+}
+
+// The source folds spoken languages in with its amenities.
+const LANGUAGE_KEYS: Record<string, string> = {
+  englishLanguage: 'en', germanLanguage: 'de', frenchLanguage: 'fr',
+  italianLanguage: 'it', spanishLanguage: 'es', russianLanguage: 'ru',
+  arabicLanguage: 'ar', polishLanguage: 'pl', dutchLanguage: 'nl',
+  portugueseLanguage: 'pt', romanianLanguage: 'ro',
+}
+
+// Only amenities that clearly mean the same thing are carried over. The rest
+// of our list (insurance, dietitian, SIM card, installments) has no equivalent
+// here, and inventing one would put a claim on the clinic's page that they
+// never made.
+const FACILITY_KEYS: Record<string, string> = {
+  freeAccomodation: 'hotel_accommodation',
+  freeVIPTransportation: 'airport_transfer',
+  organizedBusVanTransfer: 'airport_transfer',
+  organizeCityTour: 'city_tours',
+}
+
 const norm = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -197,12 +280,31 @@ Deno.serve(async (req) => {
           continue
         }
 
-        const description = (node.description || metaContent(html, 'og:description') || '').trim() || null
+        const payload = clinicPayload(html)
+
+        // The schema description is a one-line summary; the page's own is the
+        // real thing, already formatted, which is what the clinic expects to
+        // see on their page.
+        const description =
+          (payload?.description || node.description || metaContent(html, 'og:description') || '').trim() || null
+
+        // The payload carries the whole gallery; the schema block only ever
+        // has the cover shot.
+        const payloadImages: string[] = (Array.isArray(payload?.images) ? payload.images : [])
+          .map((i: any) => (typeof i === 'string' ? i : i?.orig ?? i?.url))
+          .filter(Boolean)
         const images: string[] = dedupeImages(
-          (Array.isArray(node.image) ? node.image : [node.image])
-            .map((i: any) => (typeof i === 'string' ? i : i?.url))
-            .filter(Boolean),
+          payloadImages.length
+            ? payloadImages
+            : (Array.isArray(node.image) ? node.image : [node.image])
+                .map((i: any) => (typeof i === 'string' ? i : i?.url))
+                .filter(Boolean),
         )
+
+        const amenityKeys: string[] = (Array.isArray(payload?.amenities) ? payload.amenities : [])
+          .map((a: any) => a?.key).filter(Boolean)
+        const languages = [...new Set(amenityKeys.map((k) => LANGUAGE_KEYS[k]).filter(Boolean))]
+        const facilities = [...new Set(amenityKeys.map((k) => FACILITY_KEYS[k]).filter(Boolean))]
 
         const { data: clinic, error: clinicError } = await admin
           .from('clinics')
@@ -212,8 +314,14 @@ Deno.serve(async (req) => {
             city_id: cityId,
             description,
             address: node.address?.streetAddress ?? null,
-            rating: node.aggregateRating?.ratingValue ?? null,
-            review_count: node.aggregateRating?.ratingCount ?? null,
+            phone: payload?.phoneNumber ?? null,
+            languages,
+            facilities,
+            // rating / review_count stay empty on purpose. On our pages those
+            // fields are the Google Business score, and the source's own
+            // rating is a different number from a different audience —
+            // showing it as a Google rating would be a false claim. They fill
+            // in when the Google Business profile is matched.
             user_id: null,
             is_published: false,
             page_status: 'awaiting_clinic_approval',
@@ -277,6 +385,19 @@ Deno.serve(async (req) => {
           .filter(Boolean)
         if (doctors.length) await admin.from('doctors').insert(doctors)
 
+        // Before/after arrive as pairs; our gallery is a flat ordered list, so
+        // each pair goes in as before-then-after to keep them side by side.
+        const pairs: any[] = Array.isArray(payload?.features?.beforeAndAfter) ? payload.features.beforeAndAfter : []
+        const beforeAfter = pairs.flatMap((pair: any, index: number) => {
+          const before = typeof pair?.before === 'string' ? pair.before : pair?.before?.orig
+          const after = typeof pair?.after === 'string' ? pair.after : pair?.after?.orig
+          return [
+            before && { clinic_id: clinic.id, image_url: before, sort_order: index * 2 },
+            after && { clinic_id: clinic.id, image_url: after, sort_order: index * 2 + 1 },
+          ].filter(Boolean)
+        })
+        if (beforeAfter.length) await admin.from('clinic_before_after_images').insert(beforeAfter)
+
         const previewToken = makeToken()
         const { error: approvalError } = await admin.from('clinic_approvals').insert({
           clinic_id: clinic.id,
@@ -298,6 +419,9 @@ Deno.serve(async (req) => {
           treatments: mapped.length,
           images: images.length,
           doctors: doctors.length,
+          beforeAfter: beforeAfter.length,
+          languages: languages.length,
+          facilities: facilities.length,
           unmappedTreatments: unmapped,
         })
       } catch (err) {

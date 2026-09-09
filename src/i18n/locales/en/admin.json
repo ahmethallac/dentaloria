@@ -280,7 +280,7 @@
     "collect": "Collect clinics",
     "collecting": "Reading clinic pages, roughly a second each…",
     "collectDone": "{{created}} of {{total}} created.",
-    "createdSummary": "{{treatments}} treatments, {{doctors}} doctors, {{images}} images",
+    "createdSummary": "{{treatments}} treatments · {{doctors}} doctors · {{images}} photos · {{beforeAfter}} before/after · {{languages}} languages",
     "unmapped": "{{count}} treatments not in your catalogue",
     "collectFailed": "Collection failed"
   }
