@@ -205,12 +205,20 @@ export default function ClinicInfoTab({ clinic, onUpdated, pageStatus, isAdminUs
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
+          {/* Contact details never reach the public page: clinics_public,
+              the only table anonymous visitors can read, has no email or
+              phone column. Patients reach the clinic through the enquiry
+              form instead, so say so rather than leaving people guessing. */}
           <div>
-            <label className="text-sm font-medium mb-2 block">{t('emailLabel')}</label>
+            <label className="text-sm font-medium mb-2 block">
+              {t('emailLabel')} <span className="font-normal text-muted-foreground">({t('privateNote')})</span>
+            </label>
             <Input value={form.email} onChange={(e) => onChange("email", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">{t('phoneLabel')}</label>
+            <label className="text-sm font-medium mb-2 block">
+              {t('phoneLabel')} <span className="font-normal text-muted-foreground">({t('privateNote')})</span>
+            </label>
             <Input value={form.phone} onChange={(e) => onChange("phone", e.target.value)} />
           </div>
           <div>

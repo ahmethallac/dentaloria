@@ -48,5 +48,6 @@
     "successDesc": "Klinik bilgileri güncellendi.",
     "errorTitle": "Hata",
     "errorDesc": "Klinik bilgileri kaydedilirken bir hata oluştu."
-  }
+  },
+  "privateNote": "herkese açık değil"
 }

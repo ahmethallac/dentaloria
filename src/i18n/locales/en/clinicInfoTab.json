@@ -48,5 +48,6 @@
     "successDesc": "Clinic information updated.",
     "errorTitle": "Error",
     "errorDesc": "An error occurred while saving the clinic information."
-  }
+  },
+  "privateNote": "not shown publicly"
 }
