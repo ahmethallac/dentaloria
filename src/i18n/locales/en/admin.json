@@ -272,6 +272,16 @@
     "noLink": "no link",
     "expiresIn": "{{count}} days left",
     "copyLink": "Copy link",
-    "editDetails": "Edit details"
+    "editDetails": "Edit details",
+    "collectTitle": "Collect clinics from a listing",
+    "collectHint": "Paste a booking.dentist listing or filtered search URL and say how many clinics to take. Each one is read and turned into a draft with its own secret link. Max 20 per run; requests are spaced out on purpose.",
+    "listUrl": "Listing URL",
+    "howMany": "How many",
+    "collect": "Collect clinics",
+    "collecting": "Reading clinic pages, roughly a second each…",
+    "collectDone": "{{created}} of {{total}} created.",
+    "createdSummary": "{{treatments}} treatments, {{images}} images",
+    "unmapped": "{{count}} treatments not in your catalogue",
+    "collectFailed": "Collection failed"
   }
 }

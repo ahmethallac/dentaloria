@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { Copy, ExternalLink, Loader2, Plus, Link2 } from 'lucide-react'
+import { Copy, ExternalLink, Loader2, Plus, Link2, Download, CheckCircle2, AlertTriangle, MinusCircle } from 'lucide-react'
 
 interface City { id: string; name: string }
 
@@ -48,6 +48,32 @@ export default function OutreachDrafts() {
   const [form, setForm] = useState({
     name: '', cityId: '', website: '', email: '', phone: '', description: '', source: '',
   })
+
+  const [listUrl, setListUrl] = useState('')
+  const [count, setCount] = useState('5')
+  const [collecting, setCollecting] = useState(false)
+  const [results, setResults] = useState<any[] | null>(null)
+
+  const collect = async () => {
+    setCollecting(true)
+    setResults(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { data, error } = await supabase.functions.invoke('collect-clinics', {
+        body: { listUrl, limit: Number(count) },
+        headers: session ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+      })
+      const payload = (data ?? {}) as any
+      if (payload?.error && !payload?.results) throw new Error(payload.error)
+      if (error && !payload?.results) throw error
+      setResults(payload.results ?? [])
+      loadDrafts()
+    } catch (err: any) {
+      toast({ title: t('outreach.collectFailed'), description: err?.message, variant: 'destructive' })
+    } finally {
+      setCollecting(false)
+    }
+  }
 
   const loadDrafts = useCallback(async () => {
     const { data } = await supabase
@@ -101,8 +127,77 @@ export default function OutreachDrafts() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }))
 
+  const created = results?.filter((r) => r.status === 'created') ?? []
+
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Download className="w-4 h-4" /> {t('outreach.collectTitle')}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">{t('outreach.collectHint')}</p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-[1fr_140px_auto] sm:items-end">
+            <div>
+              <Label htmlFor="oc-url">{t('outreach.listUrl')}</Label>
+              <Input
+                id="oc-url"
+                value={listUrl}
+                onChange={(e) => setListUrl(e.target.value)}
+                placeholder="https://www.booking.dentist/dental-clinics/turkey/antalya"
+              />
+            </div>
+            <div>
+              <Label htmlFor="oc-count">{t('outreach.howMany')}</Label>
+              <Input id="oc-count" type="number" min={1} max={20} value={count} onChange={(e) => setCount(e.target.value)} />
+            </div>
+            <Button onClick={collect} disabled={collecting || !listUrl.trim()}>
+              {collecting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {t('outreach.collect')}
+            </Button>
+          </div>
+          {collecting && <p className="text-sm text-muted-foreground">{t('outreach.collecting')}</p>}
+
+          {results && (
+            <div className="space-y-2 pt-2">
+              <p className="text-sm font-medium">{t('outreach.collectDone', { created: created.length, total: results.length })}</p>
+              {results.map((r) => (
+                <div key={r.slug} className="flex flex-wrap items-center justify-between gap-2 border rounded-lg p-3 text-sm">
+                  <div className="flex items-start gap-2 min-w-0">
+                    {r.status === 'created' && <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />}
+                    {r.status === 'skipped' && <MinusCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />}
+                    {r.status === 'failed' && <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />}
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{r.name ?? r.slug}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {r.status === 'created'
+                          ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images })
+                          : r.reason}
+                        {r.unmappedTreatments?.length > 0 && (
+                          <> · {t('outreach.unmapped', { count: r.unmappedTreatments.length })}</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {r.previewToken && (
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => copy(r.previewToken)}>
+                        <Copy className="w-3.5 h-3.5 mr-1" /> {t('outreach.copyLink')}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => window.open(draftUrl(r.previewToken), '_blank')}>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
