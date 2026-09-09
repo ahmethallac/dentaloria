@@ -187,10 +187,14 @@ export default function ClinicDraftPreview() {
         if (data?.state !== "pending") return setPhase("gone");
         setClinic(data.clinic);
 
-        // Arriving back from the verification mail: a confirmed session plus a
-        // still-pending draft means the last step never finished.
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email_confirmed_at) return claim();
+        // Only finish the job for someone coming back from the verification
+        // mail — which means Approve was already pressed. Without that check
+        // any signed-in visitor (an admin opening the draft to look at it)
+        // would trigger the claim and get bounced to the mail screen.
+        if (data.consentGiven) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user?.email_confirmed_at) return claim();
+        }
 
         setPhase("preview");
       } catch {

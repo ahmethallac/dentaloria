@@ -71,6 +71,27 @@ const metaContent = (html: string, prop: string): string | null => {
   return m?.[1] ? m[1].replace(/&amp;/g, '&').replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)) : null
 }
 
+// The source publishes the same photo at several widths ("…-1920.webp",
+// "…-1440.webp"). Without collapsing those, one picture becomes several
+// gallery entries.
+const dedupeImages = (urls: string[]): string[] => {
+  const seen = new Map<string, string>()
+  for (const url of urls) {
+    const key = url.replace(/-\d{3,4}\.webp$/i, '')
+    // Keep the first (largest) variant of each picture.
+    if (!seen.has(key)) seen.set(key, url)
+  }
+  return [...seen.values()]
+}
+
+// "Dr. Damla Öztürk" carries its own title; the schema keeps it in the name.
+const TITLE_RE = /^((?:Prof\.|Assoc\.|Asst\.|Op\.|Uzm\.|Dr|Dt|DDS|DMD)[.\s]*)+/i
+const splitTitle = (full: string): { title: string | null; name: string } => {
+  const m = full.match(TITLE_RE)
+  if (!m) return { title: null, name: full.trim() }
+  return { title: m[0].trim().replace(/\s+/g, ' '), name: full.slice(m[0].length).trim() || full.trim() }
+}
+
 const norm = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -177,14 +198,17 @@ Deno.serve(async (req) => {
         }
 
         const description = (node.description || metaContent(html, 'og:description') || '').trim() || null
-        const images: string[] = (Array.isArray(node.image) ? node.image : [node.image])
-          .map((i: any) => (typeof i === 'string' ? i : i?.url))
-          .filter(Boolean)
+        const images: string[] = dedupeImages(
+          (Array.isArray(node.image) ? node.image : [node.image])
+            .map((i: any) => (typeof i === 'string' ? i : i?.url))
+            .filter(Boolean),
+        )
 
         const { data: clinic, error: clinicError } = await admin
           .from('clinics')
           .insert({
             name: node.name,
+            display_name: node.name,
             city_id: cityId,
             description,
             address: node.address?.streetAddress ?? null,
@@ -228,6 +252,31 @@ Deno.serve(async (req) => {
           )
         }
 
+        // Doctors ride along in the schema as staff members, with their
+        // specialty and photo. Graduation year is never published, so it stays
+        // empty for the clinic to fill in — which is the point of storing the
+        // year rather than a hand-maintained experience count.
+        const members: any[] = Array.isArray(node.member) ? node.member : []
+        const doctors = members
+          .map((m: any) => {
+            if (!m?.name) return null
+            const { title, name } = splitTitle(String(m.name))
+            const photos = dedupeImages(
+              (Array.isArray(m.image) ? m.image : [m.image])
+                .map((i: any) => (typeof i === 'string' ? i : i?.url))
+                .filter(Boolean),
+            )
+            return {
+              clinic_id: clinic.id,
+              name,
+              title,
+              specialization: m.jobTitle ?? null,
+              profile_image_url: photos[0] ?? null,
+            }
+          })
+          .filter(Boolean)
+        if (doctors.length) await admin.from('doctors').insert(doctors)
+
         const previewToken = makeToken()
         const { error: approvalError } = await admin.from('clinic_approvals').insert({
           clinic_id: clinic.id,
@@ -248,6 +297,7 @@ Deno.serve(async (req) => {
           previewToken,
           treatments: mapped.length,
           images: images.length,
+          doctors: doctors.length,
           unmappedTreatments: unmapped,
         })
       } catch (err) {

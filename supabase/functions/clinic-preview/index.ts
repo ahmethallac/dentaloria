@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
 
     const { data: approval, error: approvalError } = await supabase
       .from('clinic_approvals')
-      .select('id, clinic_id, status, expires_at')
+      .select('id, clinic_id, status, expires_at, consent_at')
       .eq('preview_token', token)
       .maybeSingle()
 
@@ -117,6 +117,10 @@ Deno.serve(async (req) => {
       state: 'pending',
       clinic,
       expiresAt: approval.expires_at,
+      // Whether Approve was already pressed. The page uses this to decide if a
+      // signed-in visitor is a clinic returning from the verification mail, or
+      // just someone (an admin, say) opening the draft to look at it.
+      consentGiven: !!approval.consent_at,
     })
   } catch (error) {
     console.error('clinic-preview failed:', error)

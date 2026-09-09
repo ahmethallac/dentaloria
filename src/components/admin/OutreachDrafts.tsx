@@ -173,7 +173,7 @@ export default function OutreachDrafts() {
                       <div className="font-medium truncate">{r.name ?? r.slug}</div>
                       <div className="text-xs text-muted-foreground">
                         {r.status === 'created'
-                          ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images })
+                          ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images, doctors: r.doctors ?? 0 })
                           : r.reason}
                         {r.unmappedTreatments?.length > 0 && (
                           <> · {t('outreach.unmapped', { count: r.unmappedTreatments.length })}</>

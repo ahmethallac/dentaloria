@@ -280,7 +280,7 @@
     "collect": "Klinikleri topla",
     "collecting": "Klinik sayfaları okunuyor, her biri yaklaşık bir saniye…",
     "collectDone": "{{total}} klinikten {{created}} tanesi oluşturuldu.",
-    "createdSummary": "{{treatments}} tedavi, {{images}} görsel",
+    "createdSummary": "{{treatments}} tedavi, {{doctors}} doktor, {{images}} görsel",
     "unmapped": "{{count}} tedavi kataloğunda yok",
     "collectFailed": "Toplama başarısız"
   }
