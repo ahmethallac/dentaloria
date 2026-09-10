@@ -175,6 +175,11 @@ export default function OutreachDrafts() {
                         {r.status === 'created'
                           ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images, doctors: r.doctors ?? 0, beforeAfter: r.beforeAfter ?? 0, languages: r.languages ?? 0 })
                           : r.reason}
+                        {r.status === 'created' && (
+                          <> · {r.google === 'linked'
+                            ? t('outreach.googleLinked', { count: r.googleReviews ?? 0 })
+                            : r.google === 'error' ? t('outreach.googleError') : t('outreach.googleNoMatch')}</>
+                        )}
                         {r.unmappedTreatments?.length > 0 && (
                           <> · {t('outreach.unmapped', { count: r.unmappedTreatments.length })}</>
                         )}

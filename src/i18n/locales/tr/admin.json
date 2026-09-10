@@ -282,6 +282,9 @@
     "collectDone": "{{total}} klinikten {{created}} tanesi oluşturuldu.",
     "createdSummary": "{{treatments}} tedavi · {{doctors}} doktor · {{images}} foto · {{beforeAfter}} öncesi/sonrası · {{languages}} dil",
     "unmapped": "{{count}} tedavi kataloğunda yok",
-    "collectFailed": "Toplama başarısız"
+    "collectFailed": "Toplama başarısız",
+    "googleLinked": "Google bağlandı, {{count}} yorum",
+    "googleNoMatch": "Google'da kesin eşleşme yok — panelden bağla",
+    "googleError": "Google araması başarısız — panelden bağla"
   }
 }

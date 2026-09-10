@@ -112,18 +112,25 @@ const flightTable = (html: string) => {
   return { stream, table }
 }
 
-const resolveRefs = (value: any, table: Map<string, string>, depth = 0): any => {
-  if (depth > 6) return value
+// Depth here counts every object and array level, and the before/after images
+// sit a dozen levels down (clinic → features → pairs → pair → image → sizes).
+// A shallow limit silently returned unresolved "$2d0" strings, which were then
+// saved as image URLs and rendered as broken pictures. The seen-set is what
+// actually stops runaway recursion.
+const resolveRefs = (value: any, table: Map<string, string>, depth = 0, seen = new Set<string>()): any => {
+  if (depth > 40) return value
   if (typeof value === 'string' && /^\$[0-9a-f]{1,4}$/.test(value)) {
-    const raw = table.get(value.slice(1))
+    const id = value.slice(1)
+    if (seen.has(id)) return null
+    const raw = table.get(id)
     if (raw == null) return null
     let parsed: any
     try { parsed = JSON.parse(raw) } catch { parsed = raw }
-    return resolveRefs(parsed, table, depth + 1)
+    return resolveRefs(parsed, table, depth + 1, new Set(seen).add(id))
   }
-  if (Array.isArray(value)) return value.map((v) => resolveRefs(v, table, depth + 1))
+  if (Array.isArray(value)) return value.map((v) => resolveRefs(v, table, depth + 1, seen))
   if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveRefs(v, table, depth + 1)]))
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveRefs(v, table, depth + 1, seen)]))
   }
   return value
 }
@@ -173,6 +180,103 @@ const FACILITY_KEYS: Record<string, string> = {
   freeVIPTransportation: 'airport_transfer',
   organizedBusVanTransfer: 'airport_transfer',
   organizeCityTour: 'city_tours',
+}
+
+
+// ── Google Business ────────────────────────────────────────────────────────
+// Links each draft to its Google Business profile exactly the way the clinic
+// panel's "link Google" button does — same five columns, same review shape —
+// so a collected clinic is indistinguishable from one linked by hand.
+declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void } | undefined
+
+const GOOGLE_FIELDS = [
+  'places.id', 'places.displayName', 'places.formattedAddress', 'places.websiteUri',
+  'places.internationalPhoneNumber', 'places.rating', 'places.userRatingCount', 'places.reviews',
+].join(',')
+
+// Turkish letters would otherwise be stripped to nothing by the a-z filter,
+// turning "Ağız ve Çene Kliniği" into unmatchable fragments.
+const fold = (s: string) =>
+  s.toLowerCase()
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+
+const GENERIC = new Set([
+  'dental', 'dentist', 'dentistry', 'clinic', 'clinics', 'center', 'centre', 'oral',
+  'health', 'care', 'the', 'and', 'turkey', 'istanbul', 'antalya', 'izmir',
+  'dis', 'klinigi', 'poliklinigi', 'agiz', 'sagligi', 'merkezi',
+])
+
+// Deciding that a Google result is this clinic. Getting it wrong means showing
+// another business's reviews under this clinic's name, so a miss is always
+// preferred over a guess.
+const isSameBusiness = (sourceName: string, place: any, city: string): boolean => {
+  const googleName = fold(place?.displayName?.text ?? '')
+  const address = fold(place?.formattedAddress ?? '')
+  if (!googleName || !address.includes(fold(city))) return false
+
+  const compact = (x: string) => x.replace(/[^a-z0-9]/g, '')
+  const a = compact(fold(sourceName)), b = compact(googleName)
+  // "Dent Spa" vs "DentSpa Istanbul Dental Clinic": spacing differs, the
+  // name is the same.
+  if (a.length >= 5 && (b.includes(a) || a.includes(b))) return true
+
+  const distinctive = fold(sourceName).split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !GENERIC.has(w))
+  return distinctive.length > 0 && distinctive.some((w) => b.includes(w))
+}
+
+// Mirrors fetch-google-rating: positive reviews only (that is all the page
+// shows), reviewer's original language kept so translate-content works from
+// the real source text.
+const toReviews = (raw: any[]) =>
+  (raw ?? [])
+    .filter((r: any) => (r.rating ?? 0) >= 4)
+    .map((r: any) => ({
+      authorName: r.authorAttribution?.displayName ?? 'Google user',
+      rating: r.rating ?? null,
+      text: r.originalText?.text ?? r.text?.text ?? '',
+      relativeTimeDescription: r.relativePublishTimeDescription ?? '',
+      profilePhotoUrl: r.authorAttribution?.photoUri ?? null,
+      time: r.publishTime ? Math.floor(new Date(r.publishTime).getTime() / 1000) : null,
+    }))
+
+const findGoogleBusiness = async (name: string, city: string): Promise<any | null> => {
+  const apiKey = Deno.env.get('GOOGLE_PLACES_API_KEY')
+  if (!apiKey) return null
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: { 'X-Goog-Api-Key': apiKey, 'X-Goog-FieldMask': GOOGLE_FIELDS, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ textQuery: `${name} ${city}`, languageCode: 'en', maxResultCount: 3 }),
+  })
+  if (!res.ok) throw new Error(`Google Places ${res.status}: ${(await res.text()).slice(0, 160)}`)
+  const data = await res.json()
+  return (data.places ?? []).find((p: any) => isSameBusiness(name, p, city)) ?? null
+}
+
+// Same background translation the panel runs after linking. It must not hold
+// up the collection run, and a failure only means reviews show untranslated.
+const translateReviewsLater = (admin: any, clinicId: string, reviews: any[]) => {
+  const work = (async () => {
+    const url = `${Deno.env.get('SUPABASE_URL')}/functions/v1/translate-content`
+    const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const translated = await Promise.all(reviews.map(async (review) => {
+      if (!review.text?.trim()) return review
+      try {
+        const r = await fetch(url, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: review.text, isHtml: false }),
+        })
+        const data = await r.json()
+        return data?.translations ? { ...review, translations: data.translations } : review
+      } catch {
+        return review
+      }
+    }))
+    await admin.from('clinics').update({ google_reviews: translated }).eq('id', clinicId)
+  })().catch((e) => console.error('review translation failed', clinicId, e))
+  if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(work)
 }
 
 const norm = (s: string) =>
@@ -388,15 +492,48 @@ Deno.serve(async (req) => {
         // Before/after arrive as pairs; our gallery is a flat ordered list, so
         // each pair goes in as before-then-after to keep them side by side.
         const pairs: any[] = Array.isArray(payload?.features?.beforeAndAfter) ? payload.features.beforeAndAfter : []
+        const imageUrl = (v: any): string | null => {
+          const url = typeof v === 'string' ? v : v?.orig ?? v?.url
+          // Anything that is not an absolute URL is an unresolved reference or
+          // junk; saving it produces a broken picture on the clinic's page.
+          return typeof url === 'string' && /^https?:\/\//.test(url) ? url : null
+        }
         const beforeAfter = pairs.flatMap((pair: any, index: number) => {
-          const before = typeof pair?.before === 'string' ? pair.before : pair?.before?.orig
-          const after = typeof pair?.after === 'string' ? pair.after : pair?.after?.orig
+          const before = imageUrl(pair?.before)
+          const after = imageUrl(pair?.after)
           return [
             before && { clinic_id: clinic.id, image_url: before, sort_order: index * 2 },
             after && { clinic_id: clinic.id, image_url: after, sort_order: index * 2 + 1 },
           ].filter(Boolean)
         })
         if (beforeAfter.length) await admin.from('clinic_before_after_images').insert(beforeAfter)
+
+        // Google Business: never allowed to sink the clinic. A lookup error or
+        // an unsure match just leaves the link for the panel's own button.
+        let google: 'linked' | 'no_match' | 'error' = 'no_match'
+        let googleReviews = 0
+        try {
+          const place = await findGoogleBusiness(node.name, locality)
+          if (place) {
+            const reviews = toReviews(place.reviews)
+            googleReviews = reviews.length
+            await admin.from('clinics').update({
+              google_place_id: place.id,
+              rating: place.rating ?? null,
+              review_count: place.userRatingCount ?? null,
+              google_reviews: reviews,
+              google_rating_synced_at: new Date().toISOString(),
+              website: place.websiteUri ?? null,
+              // The source's number wins when it has one; Google fills the gap.
+              phone: payload?.phoneNumber ?? place.internationalPhoneNumber ?? null,
+            }).eq('id', clinic.id)
+            if (reviews.length) translateReviewsLater(admin, clinic.id, reviews)
+            google = 'linked'
+          }
+        } catch (e) {
+          console.error('google lookup failed', node.name, e)
+          google = 'error'
+        }
 
         const previewToken = makeToken()
         const { error: approvalError } = await admin.from('clinic_approvals').insert({
@@ -422,6 +559,8 @@ Deno.serve(async (req) => {
           beforeAfter: beforeAfter.length,
           languages: languages.length,
           facilities: facilities.length,
+          google,
+          googleReviews,
           unmappedTreatments: unmapped,
         })
       } catch (err) {

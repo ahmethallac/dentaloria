@@ -282,6 +282,9 @@
     "collectDone": "{{created}} of {{total}} created.",
     "createdSummary": "{{treatments}} treatments · {{doctors}} doctors · {{images}} photos · {{beforeAfter}} before/after · {{languages}} languages",
     "unmapped": "{{count}} treatments not in your catalogue",
-    "collectFailed": "Collection failed"
+    "collectFailed": "Collection failed",
+    "googleLinked": "Google linked, {{count}} reviews",
+    "googleNoMatch": "no confident Google match — link it from the panel",
+    "googleError": "Google lookup failed — link it from the panel"
   }
 }
