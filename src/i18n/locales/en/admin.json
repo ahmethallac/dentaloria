@@ -32,7 +32,7 @@
   "clinics": {
     "title": "All Clinics",
     "activeDesc": "Active clinics. Move to Trash to hide them from the public site.",
-    "trashDesc": "Trashed clinics. Restore them or delete permanently.",
+    "trashDesc": "Trashed clinics are kept for 15 days, then deleted permanently. Restore one before then, or delete it now.",
     "activeTab": "Active ({{count}})",
     "trashTab": "Trash ({{count}})",
     "searchPlaceholder": "Search by name…",
@@ -67,7 +67,9 @@
     "deletePermanentlyTitle": "Delete permanently",
     "restore": "Restore",
     "noActiveClinics": "No active clinics.",
-    "trashEmpty": "Trash is empty."
+    "trashEmpty": "Trash is empty.",
+    "purgesIn": "deleted in {{count}} days",
+    "purgesTonight": "deleted tonight"
   },
   "hardDeleteDialog": {
     "emptyTitle": "Empty Trash?",
@@ -175,7 +177,7 @@
     "errorTitle": "Error",
     "documentErrorDesc": "Could not open document",
     "movedToTrashTitle": "Moved to Trash",
-    "movedToTrashDesc": "{{count}} clinic(s) trashed.",
+    "movedToTrashDesc": "{{count}} clinic(s) moved to trash. They will be deleted permanently in 15 days.",
     "restoredTitle": "Restored",
     "restoredDesc": "{{count}} clinic(s) restored.",
     "permanentlyDeletedTitle": "Permanently deleted",

@@ -32,7 +32,7 @@
   "clinics": {
     "title": "Tüm Klinikler",
     "activeDesc": "Aktif klinikler. Genel siteden gizlemek için Çöp Kutusuna taşıyın.",
-    "trashDesc": "Çöp kutusundaki klinikler. Geri yükleyin veya kalıcı olarak silin.",
+    "trashDesc": "Çöp kutusundaki klinikler 15 gün saklanır, sonra kalıcı olarak silinir. Bu süre dolmadan geri yükleyebilir ya da hemen silebilirsiniz.",
     "activeTab": "Aktif ({{count}})",
     "trashTab": "Çöp Kutusu ({{count}})",
     "searchPlaceholder": "İsme göre ara…",
@@ -67,7 +67,9 @@
     "deletePermanentlyTitle": "Kalıcı olarak sil",
     "restore": "Geri Yükle",
     "noActiveClinics": "Aktif klinik yok.",
-    "trashEmpty": "Çöp kutusu boş."
+    "trashEmpty": "Çöp kutusu boş.",
+    "purgesIn": "{{count}} gün sonra silinecek",
+    "purgesTonight": "bu gece silinecek"
   },
   "hardDeleteDialog": {
     "emptyTitle": "Çöp Kutusu Boşaltılsın mı?",
@@ -175,7 +177,7 @@
     "errorTitle": "Hata",
     "documentErrorDesc": "Belge açılamadı",
     "movedToTrashTitle": "Çöp Kutusuna Taşındı",
-    "movedToTrashDesc": "{{count}} klinik çöpe taşındı.",
+    "movedToTrashDesc": "{{count}} klinik çöp kutusuna taşındı. 15 gün sonra kalıcı olarak silinecek.",
     "restoredTitle": "Geri Yüklendi",
     "restoredDesc": "{{count}} klinik geri yüklendi.",
     "permanentlyDeletedTitle": "Kalıcı olarak silindi",

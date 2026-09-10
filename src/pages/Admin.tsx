@@ -40,6 +40,13 @@ import UsersManager from '@/components/admin/UsersManager'
 import * as XLSX from 'xlsx'
 import { withLocalePrefix } from '@/lib/localePath'
 
+// Trashed clinics are deleted for good this many days after being trashed, by
+// the nightly purge-expired function (which holds the same number). Shown as a
+// countdown so nobody is surprised when one disappears.
+const TRASH_RETENTION_DAYS = 15
+const daysUntilPurge = (deletedAt: string) =>
+  Math.max(0, TRASH_RETENTION_DAYS - Math.floor((Date.now() - new Date(deletedAt).getTime()) / 86_400_000))
+
 type AdminSection = 'dashboard' | 'clinics' | 'approvals' | 'patients' | 'users' | 'outreach'
 
 const Admin = () => {
@@ -647,7 +654,14 @@ const Admin = () => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold truncate">{clinic.display_name || clinic.name}</h3>
                           {clinic.deleted_at ? (
-                            <Badge variant="outline" className="text-destructive border-destructive">{t('clinics.inTrash')}</Badge>
+                            <>
+                              <Badge variant="outline" className="text-destructive border-destructive">{t('clinics.inTrash')}</Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {daysUntilPurge(clinic.deleted_at) === 0
+                                  ? t('clinics.purgesTonight')
+                                  : t('clinics.purgesIn', { count: daysUntilPurge(clinic.deleted_at) })}
+                              </span>
+                            </>
                           ) : (
                             <>
                               {clinic.is_published ? (

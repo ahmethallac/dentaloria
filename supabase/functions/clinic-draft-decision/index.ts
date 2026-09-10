@@ -10,6 +10,7 @@
 // Keeping the approval row 'pending' until then means someone who abandons the
 // signup halfway can come back to the same link and finish.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.53.0'
+import { purgeClinics } from '../_shared/purgeClinics.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -81,21 +82,10 @@ Deno.serve(async (req) => {
         reason: 'clinic_rejected',
       })
 
-      // Copied videos live in storage, which the row delete does not cascade
-      // into. "We delete all your data" has to include them.
-      const { data: files } = await supabase.storage.from('clinic-videos').list(approval.clinic_id)
-      if (files?.length) {
-        await supabase.storage
-          .from('clinic-videos')
-          .remove(files.map((f: { name: string }) => `${approval.clinic_id}/${f.name}`))
-      }
-
-      const { error: deleteError } = await supabase
-        .from('clinics')
-        .delete()
-        .eq('id', approval.clinic_id)
-
-      if (deleteError) throw deleteError
+      // Permanent, never the trash: the page promised that saying no removes
+      // everything, files in storage included. Drafts have no owner account.
+      const purged = await purgeClinics(supabase, [approval.clinic_id], { deleteOwners: false })
+      if (!purged.deletedClinics && purged.errors.length) throw new Error(purged.errors.join('; '))
 
       return json({ state: 'rejected' })
     }
