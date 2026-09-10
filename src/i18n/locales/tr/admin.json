@@ -280,7 +280,7 @@
     "collect": "Klinikleri topla",
     "collecting": "Klinik sayfaları okunuyor, her biri yaklaşık bir saniye…",
     "collectDone": "{{total}} klinikten {{created}} tanesi oluşturuldu.",
-    "createdSummary": "{{treatments}} tedavi · {{doctors}} doktor · {{images}} foto · {{beforeAfter}} öncesi/sonrası · {{languages}} dil",
+    "createdSummary": "{{treatments}} tedavi · {{doctors}} doktor · {{images}} foto · {{beforeAfter}} öncesi/sonrası · {{languages}} dil · {{videos}} video (arka planda kopyalanıyor)",
     "unmapped": "{{count}} tedavi kataloğunda yok",
     "collectFailed": "Toplama başarısız",
     "googleLinked": "Google bağlandı, {{count}} yorum",

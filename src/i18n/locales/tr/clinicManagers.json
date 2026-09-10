@@ -72,7 +72,7 @@
   },
   "videos": {
     "title": "Videolar",
-    "hint": "Bir YouTube veya Instagram bağlantısı yapıştırın. Videolar genel sayfanızda 9:16 (Reels) çerçevesinde gösterilir.",
+    "hint": "Bir YouTube veya Instagram bağlantısı yapıştırın ya da video dosyası yükleyin. Videolar genel sayfanızda 9:16 (Reels) çerçevesinde gösterilir.",
     "placeholder": "https://www.youtube.com/watch?v=… veya https://www.instagram.com/reel/…",
     "addVideo": "Video ekle",
     "noVideos": "Henüz video yok.",
@@ -86,8 +86,15 @@
       "removedTitle": "Kaldırıldı",
       "removedDesc": "Video kaldırıldı.",
       "removeErrorDesc": "Video kaldırılamadı.",
-      "errorTitle": "Hata"
-    }
+      "errorTitle": "Hata",
+      "tooLargeTitle": "Dosya çok büyük",
+      "tooLargeDesc": "Video dosyaları en fazla 50 MB olabilir.",
+      "uploadErrorDesc": "Video yüklenemedi."
+    },
+    "orUpload": "veya",
+    "uploadButton": "Video dosyası yükle",
+    "uploading": "Yükleniyor…",
+    "uploadHint": "MP4, WebM veya MOV, en fazla 50 MB."
   },
   "googleBusiness": {
     "label": "Google Puanı",

@@ -508,6 +508,29 @@ Deno.serve(async (req) => {
         })
         if (beforeAfter.length) await admin.from('clinic_before_after_images').insert(beforeAfter)
 
+        // The headline video plus the patient testimonial clips, each with
+        // its poster when the source has one. Copying them is handed to
+        // import-clinic-videos, which answers immediately and copies in its
+        // own run — inline, a listing's worth of 30–40 MB files would outlast
+        // this function's time limit.
+        const videoSources = [
+          payload?.featuredVideo?.url ? { url: payload.featuredVideo.url, poster: null } : null,
+          ...(Array.isArray(payload?.patientTestimonials) ? payload.patientTestimonials : []).map((tm: any) =>
+            tm?.videoUrl ? { url: tm.videoUrl, poster: typeof tm.poster === 'string' ? tm.poster : null } : null,
+          ),
+        ].filter((v: any) => v && /^https?:\/\//.test(v.url))
+
+        if (videoSources.length) {
+          await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/import-clinic-videos`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ clinicId: clinic.id, videos: videoSources }),
+          }).catch((e) => console.error('video hand-off failed', clinic.id, e))
+        }
+
         // Google Business: never allowed to sink the clinic. A lookup error or
         // an unsure match just leaves the link for the panel's own button.
         let google: 'linked' | 'no_match' | 'error' = 'no_match'
@@ -557,6 +580,7 @@ Deno.serve(async (req) => {
           images: images.length,
           doctors: doctors.length,
           beforeAfter: beforeAfter.length,
+          videos: videoSources.length,
           languages: languages.length,
           facilities: facilities.length,
           google,

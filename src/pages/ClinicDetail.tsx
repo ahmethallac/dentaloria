@@ -134,7 +134,7 @@ const mapClinic = (db: any) => {
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map((v) => ({
         id: v.id,
-        provider: v.provider as "youtube" | "instagram",
+        provider: v.provider as "youtube" | "instagram" | "file",
         providerId: v.provider_id,
         url: v.video_url,
         thumbnail: v.thumbnail_url as string | null,
@@ -338,7 +338,7 @@ const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [tabSticky, setTabSticky] = useState(false);
   const [fullscreenIdx, setFullscreenIdx] = useState<number | null>(null);
-  const [videoLightbox, setVideoLightbox] = useState<null | { provider: "youtube" | "instagram"; providerId: string }>(null);
+  const [videoLightbox, setVideoLightbox] = useState<null | { provider: "youtube" | "instagram" | "file"; providerId: string; url?: string }>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [tappedImageIdx, setTappedImageIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -1080,11 +1080,39 @@ const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
                     renderItem={(v: any) => (
                       <button
                         type="button"
-                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId })}
+                        onClick={() => setVideoLightbox({ provider: v.provider, providerId: v.providerId, url: v.url })}
                         className="relative w-full h-full block group"
                         aria-label={t("videos.play")}
                       >
-                        {v.provider === "youtube" && v.thumbnail ? (
+                        {v.provider === "file" ? (
+                          <>
+                            {/* Uploaded files have no platform thumbnail. A poster
+                                is used when we have one; otherwise the video's
+                                own first frame, fetched with preload="metadata"
+                                so the tile never downloads the whole file. */}
+                            {v.thumbnail ? (
+                              <img
+                                src={v.thumbnail}
+                                alt={t("videos.thumbnailAlt")}
+                                loading="lazy"
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            ) : (
+                              <video
+                                src={`${v.url}#t=0.1`}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                className="h-full w-full object-cover pointer-events-none"
+                              />
+                            )}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                              <div className="rounded-full bg-white/90 p-2.5 shadow-lg">
+                                <Play className="w-5 h-5 text-black fill-black" />
+                              </div>
+                            </div>
+                          </>
+                        ) : v.provider === "youtube" && v.thumbnail ? (
                           <>
                             <img
                               src={v.thumbnail}
@@ -1125,7 +1153,7 @@ const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
                   <div className="mt-4 flex justify-center">
                     <Button
                       variant="outline"
-                      onClick={() => setVideoLightbox({ provider: clinic.videos[0].provider, providerId: clinic.videos[0].providerId })}
+                      onClick={() => setVideoLightbox({ provider: clinic.videos[0].provider, providerId: clinic.videos[0].providerId, url: clinic.videos[0].url })}
                     >
                       {t("videos.viewAll")}
                     </Button>
@@ -1325,15 +1353,25 @@ const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
               <X className="w-6 h-6" />
             </button>
             <div className="aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl">
-              <iframe
-                src={
-                  videoLightbox.provider === "instagram"
-                    ? `https://www.instagram.com/reel/${videoLightbox.providerId}/embed`
-                    : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
-                }
-                className="w-full h-full"
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-              />
+              {videoLightbox.provider === "file" ? (
+                <video
+                  src={videoLightbox.url}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <iframe
+                  src={
+                    videoLightbox.provider === "instagram"
+                      ? `https://www.instagram.com/reel/${videoLightbox.providerId}/embed`
+                      : `https://www.youtube.com/embed/${videoLightbox.providerId}?autoplay=1`
+                  }
+                  className="w-full h-full"
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                />
+              )}
             </div>
           </div>
         </div>

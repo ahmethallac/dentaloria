@@ -81,6 +81,15 @@ Deno.serve(async (req) => {
         reason: 'clinic_rejected',
       })
 
+      // Copied videos live in storage, which the row delete does not cascade
+      // into. "We delete all your data" has to include them.
+      const { data: files } = await supabase.storage.from('clinic-videos').list(approval.clinic_id)
+      if (files?.length) {
+        await supabase.storage
+          .from('clinic-videos')
+          .remove(files.map((f: { name: string }) => `${approval.clinic_id}/${f.name}`))
+      }
+
       const { error: deleteError } = await supabase
         .from('clinics')
         .delete()

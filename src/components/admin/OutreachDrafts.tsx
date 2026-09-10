@@ -173,7 +173,7 @@ export default function OutreachDrafts() {
                       <div className="font-medium truncate">{r.name ?? r.slug}</div>
                       <div className="text-xs text-muted-foreground">
                         {r.status === 'created'
-                          ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images, doctors: r.doctors ?? 0, beforeAfter: r.beforeAfter ?? 0, languages: r.languages ?? 0 })
+                          ? t('outreach.createdSummary', { treatments: r.treatments, images: r.images, doctors: r.doctors ?? 0, beforeAfter: r.beforeAfter ?? 0, languages: r.languages ?? 0, videos: r.videos ?? 0 })
                           : r.reason}
                         {r.status === 'created' && (
                           <> · {r.google === 'linked'

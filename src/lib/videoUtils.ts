@@ -1,4 +1,11 @@
-export type VideoProvider = "youtube" | "instagram";
+// "file" is a video uploaded to our own storage (clinic-videos bucket) rather
+// than embedded from a platform; provider_id then holds its storage path.
+export type VideoProvider = "youtube" | "instagram" | "file";
+
+export const VIDEO_BUCKET = "clinic-videos";
+// Matches the bucket's own file_size_limit, so the panel refuses a file up
+// front instead of letting the upload fail halfway through.
+export const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 
 export interface ParsedVideo {
   provider: VideoProvider;
@@ -63,6 +70,7 @@ export function parseVideoUrl(input: string): ParsedVideo | null {
 }
 
 export function getVideoEmbedUrl(provider: VideoProvider, id: string, kindHint?: string): string {
+  if (provider === "file") return id;
   if (provider === "youtube") return `https://www.youtube.com/embed/${id}`;
   return `https://www.instagram.com/${kindHint || "reel"}/${id}/embed`;
 }

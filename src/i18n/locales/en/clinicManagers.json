@@ -72,7 +72,7 @@
   },
   "videos": {
     "title": "Videos",
-    "hint": "Paste a YouTube or Instagram link. Videos display in a 9:16 (Reels) frame on your public page.",
+    "hint": "Paste a YouTube or Instagram link, or upload a video file. Videos display in a 9:16 (Reels) frame on your public page.",
     "placeholder": "https://www.youtube.com/watch?v=… or https://www.instagram.com/reel/…",
     "addVideo": "Add video",
     "noVideos": "No videos yet.",
@@ -86,8 +86,15 @@
       "removedTitle": "Removed",
       "removedDesc": "Video removed.",
       "removeErrorDesc": "Could not remove video.",
-      "errorTitle": "Error"
-    }
+      "errorTitle": "Error",
+      "tooLargeTitle": "File too large",
+      "tooLargeDesc": "Video files can be up to 50 MB.",
+      "uploadErrorDesc": "Could not upload the video."
+    },
+    "orUpload": "or",
+    "uploadButton": "Upload video file",
+    "uploading": "Uploading…",
+    "uploadHint": "MP4, WebM or MOV, up to 50 MB."
   },
   "googleBusiness": {
     "label": "Google Rating",
