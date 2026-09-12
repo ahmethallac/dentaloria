@@ -4,32 +4,48 @@
     "description": "Dentaloria; fiyat, tedavi seçenekleri, konum ve hasta yorumlarına göre diş kliniklerini karşılaştırmanıza yardımcı olur — yurt dışındaki en iyi kliniği güvenle seçmenizi kolaylaştırır."
   },
   "hero": {
-    "titleLead": "Mükemmel",
-    "titleWord": "Gülüşünüz",
-    "titleBreaksMobile": "1,2",
-    "titleLine2": "Burada Başlıyor",
-    "subtitle": "Doğrulanmış diş kliniklerini, gerçek fiyatları ve hasta yorumlarını tek bir yerde karşılaştırın.",
-    "orFilters": "ya da filtrelerle arayın",
-    "selectTreatment": "Tedavi Seçin",
-    "selectCountry": "Ülke Seçin",
-    "searchClinics": "Klinik Ara",
-    "verifiedClinics": "Onaylı Klinik",
-    "happyPatients": "Memnun Hasta",
-    "averageRating": "Ortalama Puan",
+    "eyebrow": "DÜNYANIN EN İYİ DİŞ KLİNİKLERİ TEK YERDE",
+    "titleLine1": "En Güzel Gülüşler,",
+    "titleLine2": "Doğru Seçimle Başlar",
+    "subtitle": "Doğrulanmış klinikleri, fiyatları ve hasta yorumlarını karşılaştırın",
     "badgeVerified": "Doğrulanmış Klinikler",
     "badgeTransparent": "Şeffaf Fiyatlar",
     "badgeReviews": "Gerçek Hasta Yorumları",
-    "tabFindBy": "Tedavi ve Ülkeye Göre Bul",
+    "tabByTreatment": "Tedaviye Göre Ara",
     "tabAiSearch": "AI Arama",
     "badgeNew": "Yeni",
+    "selectTreatment": "Tedavi Seçin",
+    "selectCountry": "Ülke Seçin",
+    "selectLanguage": "Dil (opsiyonel)",
+    "searchClinics": "Klinik Ara",
     "popularSearches": "Popüler aramalar:",
     "popularSearchItems": [
-      "İstanbul'da All-on-6",
-      "Antalya'da Hollywood Smile",
-      "İzmir'de Zirkonyum Kron",
-      "Bodrum'da Diş Beyazlatma"
+      {
+        "label": "Antalya'da Hollywood Smile",
+        "treatment": "Porcelain Veneers",
+        "city": "Antalya"
+      },
+      {
+        "label": "İzmir'de Zirkonyum Kron",
+        "treatment": "Zirconium Crown",
+        "city": "Izmir"
+      },
+      {
+        "label": "Bodrum'da Diş Beyazlatma",
+        "treatment": "Teeth Whitening",
+        "city": "Bodrum"
+      },
+      {
+        "label": "İstanbul'da All-on-6",
+        "treatment": "All-on-6 Dental Implants",
+        "city": "Istanbul"
+      },
+      {
+        "label": "Estetik Diş Hekimliği",
+        "treatment": "Laminate Veneer"
+      }
     ],
-    "selectLanguage": "Dil (opsiyonel)"
+    "worldwide": "Dünya Çapında Klinikler"
   },
   "aiSearch": {
     "badge": "Yapay zeka destekli arama",

@@ -15,10 +15,9 @@ import { Star, Users, Award, CheckCircle, MapPin, Search, UserCheck, Activity, A
 import { getFeaturedClinics, getTreatments, getCountries, getCities, type Clinic, type Treatment } from "@/lib/services";
 import { useToast } from "@/hooks/use-toast";
 import FeaturedClinicsSection, { ShowcaseCard } from "@/components/home/FeaturedClinicsSection";
-import { AISearchBar } from "@/components/home/AISearchBar";
 import { HOMEPAGE_SHOWCASE_TREATMENTS, getTreatmentImage } from "@/lib/treatmentMeta";
 import { LANGUAGES } from "@/lib/clinicMeta";
-import { HomeHero } from "@/components/home/HomeHero";
+import { HomeHero, type PopularSearch } from "@/components/home/HomeHero";
 import { StatsBar } from "@/components/home/StatsBar";
 import { StartJourneyCta } from "@/components/home/StartJourneyCta";
 import { TrendingSearches } from "@/components/home/TrendingSearches";
@@ -151,6 +150,27 @@ const Index = () => {
     navigate(withLocalePrefix(`/clinic-listing?treatment=${treatmentId}`, lang));
   };
 
+  // A hero chip carries canonical English names rather than ids, because the
+  // ids only exist once the data has loaded. Whatever resolves gets applied and
+  // the rest is dropped, so a chip naming a treatment or city this deployment
+  // does not have still lands on the listing instead of erroring.
+  const handlePopularSearch = ({ treatment, city }: PopularSearch) => {
+    const byName = <T extends { name?: string }>(list: T[], name?: string) =>
+      name ? list.find((x) => x.name?.toLowerCase() === name.toLowerCase()) : undefined;
+
+    const params = new URLSearchParams();
+    const matchedTreatment = byName(treatments, treatment);
+    const matchedCity = byName(popularCities, city);
+
+    if (matchedTreatment) params.set("treatment", matchedTreatment.id);
+    if (matchedCity) {
+      params.set("city", matchedCity.id);
+      if (matchedCity.country_id) params.set("country", matchedCity.country_id);
+    }
+
+    navigate(withLocalePrefix(`/clinic-listing?${params.toString()}`, lang));
+  };
+
   useHeadMeta({
     title: t("meta.title"),
     description: t("meta.description"),
@@ -174,8 +194,8 @@ const Index = () => {
         selectedLanguage={selectedLanguage}
         onLanguageChange={setSelectedLanguage}
         onSearch={handleSearch}
+        onPopularSearch={handlePopularSearch}
       />
-      <StatsBar tone="dark" />
 
       <PromoBanners />
 

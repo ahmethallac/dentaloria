@@ -4,32 +4,48 @@
     "description": "Dentaloria helps you compare dental clinics by price, treatment options, location, and patient reviews — making it easy to choose the best clinic abroad with confidence."
   },
   "hero": {
-    "titleLead": "Your Perfect",
-    "titleWord": "Smile",
-    "titleBreaksMobile": "1",
-    "titleLine2": "Starts Here",
-    "subtitle": "Compare verified dental clinics, real prices and patient reviews — all in one place.",
-    "orFilters": "or search with filters",
-    "selectTreatment": "Select Treatment",
-    "selectCountry": "Select Country",
-    "searchClinics": "Search Clinics",
-    "verifiedClinics": "Verified Clinics",
-    "happyPatients": "Happy Patients",
-    "averageRating": "Average Rating",
+    "eyebrow": "THE WORLD'S BEST DENTAL CLINICS IN ONE PLACE",
+    "titleLine1": "The Best Smiles,",
+    "titleLine2": "Start With The Right Choice",
+    "subtitle": "Compare verified clinics, prices and patient reviews",
     "badgeVerified": "Verified Clinics",
     "badgeTransparent": "Transparent Prices",
     "badgeReviews": "Real Patient Reviews",
-    "tabFindBy": "Find by Treatment & Country",
+    "tabByTreatment": "Search by Treatment",
     "tabAiSearch": "AI Search",
     "badgeNew": "New",
+    "selectTreatment": "Select Treatment",
+    "selectCountry": "Select Country",
+    "selectLanguage": "Language (optional)",
+    "searchClinics": "Search Clinics",
     "popularSearches": "Popular searches:",
     "popularSearchItems": [
-      "All-on-6 in Istanbul",
-      "Hollywood Smile in Antalya",
-      "Zirconium Crown in Izmir",
-      "Teeth Whitening in Bodrum"
+      {
+        "label": "Hollywood Smile in Antalya",
+        "treatment": "Porcelain Veneers",
+        "city": "Antalya"
+      },
+      {
+        "label": "Zirconium Crown in Izmir",
+        "treatment": "Zirconium Crown",
+        "city": "Izmir"
+      },
+      {
+        "label": "Teeth Whitening in Bodrum",
+        "treatment": "Teeth Whitening",
+        "city": "Bodrum"
+      },
+      {
+        "label": "All-on-6 in Istanbul",
+        "treatment": "All-on-6 Dental Implants",
+        "city": "Istanbul"
+      },
+      {
+        "label": "Cosmetic Dentistry",
+        "treatment": "Laminate Veneer"
+      }
     ],
-    "selectLanguage": "Language (optional)"
+    "worldwide": "Clinics Worldwide"
   },
   "aiSearch": {
     "badge": "AI-powered search",

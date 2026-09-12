@@ -130,28 +130,6 @@ export function AISearchBar({ className, onResults, variant = "full" }: AISearch
         </>
       )}
       <div className="relative">
-        {variant === "full" && <svg
-          viewBox="0 0 60 60"
-          className="absolute -top-7 left-2 sm:left-10 w-9 h-9 sm:w-12 sm:h-12 -scale-x-100 animate-bounce"
-          style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6)) drop-shadow(0 0 5px rgba(0,0,0,0.35))" }}
-          aria-hidden="true"
-        >
-          <path
-            d="M50 6 C 32 6, 14 16, 11 36"
-            fill="none"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M11 36 L4 26 M11 36 L21 31"
-            fill="none"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>}
         <div className={`flex gap-2 rounded-xl p-3 ${
           variant === "bare"
             // stacked under sm so the field is not squeezed to ~200px beside the button
