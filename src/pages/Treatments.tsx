@@ -120,7 +120,7 @@ export default function Treatments() {
                         onClick={() => handleTreatmentClick(treatment.id)}
                       >
                         <CardContent className="p-6 text-center">
-                          <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <div className="bg-primary text-white rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                             <Icon className="h-9 w-9" />
                           </div>
                           <h3 className="font-semibold mb-1">{treatment.name}</h3>

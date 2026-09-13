@@ -19,6 +19,12 @@ colour finds nothing. Resolve it instead:
 node .claude/skills/dentaloria-ui-fidelity/scripts/token-map.mjs --lookup 'rgb(9, 87, 251)'
 ```
 
+The brand palette is **four colours**: Dentaloria blue `#0957fb` (`--primary`),
+night navy `#062051` (`--stats-navy`), ink `#2e385d` (`--brand-navy`), ice
+`#f0f5ff` (`--brand-ice`). Everything else is a tint of those; body-copy grey
+(`--nav-muted`) and functional green/red are not brand colours. Do not add
+`blue-600`, purple or teal — `--gradient-*` tokens are brand-only now.
+
 `--radius: 1rem`, so `rounded-lg` is **16px** here, not Tailwind's 8. Check the
 number, not the name. Spacing is the stock 4px grid.
 
@@ -43,6 +49,13 @@ The most-iterated part of the site. What is settled:
   "Hollywood Smile" and "Estetik Diş Hekimliği" are **not rows in the treatments
   table** and point at the nearest real one.
 
+Mobile (below `lg`), approved at 390px: the photo stays a backdrop running
+behind the header (`-top-20`, 380px tall), drawn 900px wide and pinned by its
+right edge so her face sits on the right. The client chose a **small headline**
+(22px, 20px under 380px, capped at 235px wide) so it ends before her face, and
+only **two** trust badges — "Şeffaf Fiyatlar" is desktop-only because a third
+lands on her face. Check TR *and* EN: the EN headline is longer.
+
 ## Working from design comps — read this first
 
 Comps arrive as **screenshots, not Figma files**. Two things have cost days:
@@ -61,10 +74,6 @@ not screenshots — they are cheap, exact, and do not bloat the session. Take a
 screenshot only at decision points, at reduced scale.
 
 ## Known issues, not yet fixed
-
-- **The mobile hero has no agreed design.** Only the desktop layout above is
-  signed off. Several attempts at the phone layout were rejected; nothing from
-  them is in the tree.
 
 - **768px has horizontal page overflow, from the header.** `header.nav` and
   `header.actions` appear at `md` but do not fit until ~1100px. The client has

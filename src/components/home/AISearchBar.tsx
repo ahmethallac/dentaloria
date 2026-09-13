@@ -156,7 +156,7 @@ export function AISearchBar({ className, onResults, variant = "full" }: AISearch
           <Button
             onClick={handleSubmit}
             disabled={submitting || !query.trim() || !data}
-            className={`h-12 shrink-0 rounded-xl px-6 font-semibold ${variant === "bare" ? "w-full bg-primary hover:bg-primary/90 sm:w-auto sm:self-center" : "self-center bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700"}`}
+            className={`h-12 shrink-0 rounded-xl px-6 font-semibold ${variant === "bare" ? "w-full bg-primary hover:bg-primary/90 sm:w-auto sm:self-center" : "self-center bg-primary hover:bg-primary/90"}`}
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("aiSearch.search")}
           </Button>

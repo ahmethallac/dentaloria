@@ -16,9 +16,8 @@ import { withLocalePrefix } from "@/lib/localePath";
  * chevron beside its heading but still shows the email field open beneath it,
  * and burying a signup field behind a tap costs more than it saves.
  *
- * The card marks are rendered as type rather than brand artwork: shipping
- * Visa/Mastercard logos means shipping their assets under their brand rules.
- * Swap in licensed SVGs when you have them.
+ * No payment marks: patients never pay Dentaloria (clinics do), so "we accept
+ * Visa" would only mislead the people this site is for.
  */
 
 const SOCIALS = [
@@ -85,7 +84,12 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-0 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.3fr] lg:gap-10">
           {/* Brand */}
           <div className="pb-6 lg:pb-0">
-            <div className="text-xl font-bold text-primary-foreground">dentaloria</div>
+            {/* The header logo, knocked out to white for the navy ground. */}
+            <img
+              src="/lovable-uploads/3cf7c960-f1c2-47ee-afa2-077677baed1e.png"
+              alt="Dentaloria"
+              className="h-8 w-auto brightness-0 invert"
+            />
             <p className="mt-4 max-w-[280px] text-sm leading-relaxed text-primary-foreground/65">
               {t("footer.tagline")}
             </p>
@@ -178,15 +182,6 @@ export const Footer = () => {
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs text-primary-foreground/55">{t("footer.weAccept")}</span>
-            {["VISA", "Mastercard", "AMEX"].map((brand) => (
-              <span
-                key={brand}
-                className="rounded-md bg-white/10 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-primary-foreground/80"
-              >
-                {brand}
-              </span>
-            ))}
             <span className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-primary-foreground/80">
               <Lock className="h-3 w-3" aria-hidden="true" />
               {t("footer.sslSecured")}

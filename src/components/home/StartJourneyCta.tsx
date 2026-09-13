@@ -24,7 +24,9 @@ export const StartJourneyCta = () => {
     <SectionShell className="pt-10">
       <div
         data-fid="cta"
-        className="grid overflow-hidden rounded-xl bg-gradient-to-br from-primary to-brand-blue-bright lg:grid-cols-2"
+        /* Brand blue deepening into the footer navy — the old second stop was a
+           lighter periwinkle that read as off-brand next to the logo. */
+        className="grid overflow-hidden rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--primary))_40%,hsl(var(--stats-navy))_130%)] lg:grid-cols-2"
       >
         <div className="h-48 w-full lg:h-full lg:min-h-[320px] lg:order-last">
           <img

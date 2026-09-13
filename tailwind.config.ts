@@ -60,7 +60,8 @@ export default {
 				brand: {
 					navy: 'hsl(var(--brand-navy))',
 					blue: 'hsl(var(--brand-blue))',
-					'blue-bright': 'hsl(var(--brand-blue-bright))'
+					'blue-bright': 'hsl(var(--brand-blue-bright))',
+					ice: 'hsl(var(--brand-ice))'
 				},
 				stats: {
 					navy: 'hsl(var(--stats-navy))'

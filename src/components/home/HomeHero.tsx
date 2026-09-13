@@ -185,9 +185,9 @@ export const HomeHero = ({
   const [tab, setTab] = useState<"filters" | "ai">("filters");
   const { photoRef, cardRef } = useHeroParallax();
 
-  const selectClass = "h-[50px] flex-1 rounded-xl border-border/70 bg-white text-sm";
+  const selectClass = "h-[50px] flex-1 rounded-xl border-border/70 bg-white text-[15px] lg:text-sm";
   const tabClass = (on: boolean) =>
-    `flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-[13px] transition-colors lg:text-[15px] ${
+    `flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-[14px] transition-colors lg:text-[15px] ${
       on
         ? "border-primary font-semibold text-primary"
         : "border-transparent font-normal text-nav-muted hover:text-primary"
@@ -199,22 +199,27 @@ export const HomeHero = ({
           `50% / 46px` radius is what curves the white page up into the bottom
           two corners instead of cutting the photo off on a straight line.
 
-          Below lg it steps out of the backdrop and becomes a banner in the
-          flow: the headline is three lines on a phone and would otherwise land
-          on the subject's face, which no gradient makes readable. */}
+          On a phone too it runs up behind the header, so the header fades over
+          the photo exactly as on desktop. Below lg it is but a tight crop on her face: the
+          image is drawn 900px wide and pinned by its right edge so the face
+          sits ~70px in from the viewport's right at any phone width. The mobile
+          comp was drawn at ~590px; at 390 the headline is shrunk (client's
+          choice) so it ends before the face rather than covering it. */}
       <div
         data-fid="hero.photo"
-        className="relative h-[210px] w-full overflow-hidden rounded-b-[28px] lg:absolute lg:inset-x-0 lg:-top-20 lg:h-[612px] lg:rounded-b-none"
+        className="absolute inset-x-0 -top-20 h-[380px] w-full overflow-hidden lg:h-[612px]"
       >
         <img
           ref={photoRef}
           src={heroImage}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover object-[68%_center] will-change-transform lg:object-[center_22%]"
+          className="absolute right-[-130px] top-[2px] w-[900px] max-w-none will-change-transform lg:static lg:h-full lg:w-full lg:max-w-full lg:object-cover lg:object-[center_22%]"
         />
         {/* Dissolve the left edge into the page instead of ending on a line. */}
-        <div className="absolute inset-y-0 left-0 hidden w-[55%] bg-gradient-to-r from-background via-background/70 to-transparent lg:block" />
+        <div className="absolute inset-y-0 left-0 w-[72%] bg-gradient-to-r from-background/95 via-background/75 to-transparent lg:w-[55%] lg:from-background lg:via-background/70" />
+        {/* Phone only: fade the band out under the search card. */}
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent lg:hidden" />
 
         {/* The page's white lifted into an arc: highest behind the card and
             falling away to either side, so the photo runs LOWER at the two
@@ -229,19 +234,20 @@ export const HomeHero = ({
         <div className="absolute inset-x-0 bottom-0 hidden h-[46px] bg-background lg:block lg:[border-top-left-radius:50%_46px] lg:[border-top-right-radius:50%_46px]" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1264px] px-5 pb-10 pt-10 sm:px-6 lg:pb-6 lg:pt-11 xl:px-0">
+      <div className="relative mx-auto w-full max-w-[1264px] px-6 pb-8 pt-5 lg:pb-6 lg:pt-11 xl:px-0">
         <div className="max-w-[620px]">
           <p
             data-fid="hero.eyebrow"
-            className="flex items-center gap-4 text-[11px] font-semibold uppercase tracking-[0.17em] text-brand-navy lg:text-[12px]"
+            className="flex items-center gap-3 text-[10px] font-semibold uppercase leading-[1.8] tracking-[0.2em] text-brand-navy lg:gap-4 lg:text-[12px] lg:leading-normal lg:tracking-[0.17em]"
           >
-            {t("hero.eyebrow")}
-            <span className="hidden h-px w-9 bg-brand-navy/30 sm:block" />
+            {/* Two lines on a phone, as in the comp; the rule trails the second. */}
+            <span className="max-w-[215px] lg:max-w-none">{t("hero.eyebrow")}</span>
+            <span className="mb-[7px] h-px w-7 self-end bg-brand-navy/30 lg:mb-0 lg:w-9 lg:self-auto" />
           </p>
 
           <h1
             data-fid="hero.title"
-            className="mt-5 text-[34px]/[1.1] font-bold tracking-[-0.015em] sm:text-[42px]/[1.08] lg:mt-7 lg:text-[50px]/[1.0]"
+            className="mt-3 max-w-[235px] text-[20px]/[1.12] font-bold min-[380px]:text-[22px]/[1.12] tracking-[-0.02em] lg:mt-7 lg:max-w-none lg:text-[50px]/[1.0] lg:tracking-[-0.015em]"
           >
             <span className="block text-brand-navy">{t("hero.titleLine1")}</span>
             <span className="block text-brand-blue-bright">{t("hero.titleLine2")}</span>
@@ -249,28 +255,28 @@ export const HomeHero = ({
 
           <p
             data-fid="hero.subtitle"
-            className="mt-4 max-w-[400px] text-[15px]/[1.5] text-hero-subtitle lg:mt-4 lg:max-w-none lg:text-[16px]/[1.3]"
+            className="mt-2 max-w-[215px] text-[13px]/[1.35] text-hero-subtitle lg:mt-4 lg:max-w-none lg:text-[16px]/[1.3]"
           >
             {t("hero.subtitle")}
           </p>
 
           <ul
             data-fid="hero.badges"
-            className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 lg:mt-6 lg:gap-x-6"
+            className="mt-4 flex flex-nowrap items-center lg:mt-6 lg:flex-wrap lg:gap-x-6 lg:gap-y-3"
           >
             {TRUST_BADGES.map(({ Icon, key }, i) => (
               <li
                 key={key}
-                className={`flex items-center gap-2.5 ${
-                  /* Dividers only where the row cannot wrap; a wrapped row
-                     would otherwise start with a stray rule. */
-                  i > 0 ? "lg:border-l lg:border-border lg:pl-6" : ""
+                /* "Transparent prices" is desktop-only: with three in a row on a
+                   phone the last one lands on her face and cannot be read. */
+                className={`items-center gap-1.5 lg:gap-2.5 ${i === 1 ? "hidden lg:flex" : "flex"} ${
+                  i > 0 ? "ml-2 border-l border-border pl-2 lg:ml-0 lg:pl-6" : ""
                 }`}
               >
-                <Icon className="h-[22px] w-[22px] shrink-0 text-primary" />
+                <Icon className="h-[18px] w-[18px] shrink-0 text-primary lg:h-[22px] lg:w-[22px]" />
                 {/* Narrow on purpose: the comp breaks every label after its
                     first word, onto two lines. */}
-                <span className="max-w-[92px] text-[13px] font-medium leading-[1.25] text-brand-navy">
+                <span className="max-w-[73px] text-[11px] font-medium leading-[1.25] text-brand-navy lg:max-w-[92px] lg:text-[13px]">
                   {t(key)}
                 </span>
               </li>
@@ -282,9 +288,9 @@ export const HomeHero = ({
         <div
           ref={cardRef}
           data-fid="hero.card"
-          className="mt-6 w-full rounded-[16px] bg-white shadow-[0_14px_38px_-16px_rgba(9,87,251,0.20)] will-change-transform lg:mx-auto lg:mt-10 lg:max-w-[1120px]"
+          className="mt-5 w-full rounded-[16px] bg-white shadow-[0_14px_38px_-16px_rgba(9,87,251,0.20)] will-change-transform lg:mx-auto lg:mt-10 lg:max-w-[1120px]"
         >
-          <div className="flex items-center gap-5 overflow-x-auto px-5 pt-4 sm:px-9 lg:gap-10">
+          <div className="flex items-center gap-5 overflow-x-auto px-4 pt-4 sm:px-9 lg:gap-10">
             <button
               type="button"
               onClick={() => setTab("filters")}
@@ -315,7 +321,7 @@ export const HomeHero = ({
             </div>
           ) : (
             <div>
-              <div className="flex flex-col gap-3 px-5 pt-5 sm:px-9 lg:flex-row lg:items-center lg:gap-[18px]">
+              <div className="flex flex-col gap-[7px] px-4 pt-4 sm:px-9 lg:flex-row lg:pt-5 lg:items-center lg:gap-[18px]">
                 <Select value={selectedTreatment} onValueChange={onTreatmentChange}>
                   <SelectTrigger data-fid="hero.treatment" className={selectClass}>
                     <span className="!flex items-center gap-2.5">
@@ -367,7 +373,7 @@ export const HomeHero = ({
                 <Button
                   data-fid="hero.search"
                   onClick={onSearch}
-                  className="h-[50px] w-full justify-between rounded-xl bg-primary px-5 text-[15px] font-semibold text-primary-foreground hover:bg-primary/90 lg:w-[277px]"
+                  className="h-[50px] w-full justify-between rounded-xl bg-primary px-5 text-[16px] font-semibold lg:text-[15px] text-primary-foreground hover:bg-primary/90 lg:w-[277px]"
                 >
                   <span className="flex items-center gap-2.5">
                     <Search className="h-[18px] w-[18px]" aria-hidden="true" />
@@ -377,9 +383,9 @@ export const HomeHero = ({
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2 px-5 pb-5 pt-5 sm:px-9 lg:gap-2.5">
+              <div className="flex items-center gap-2 px-4 pb-4 pt-4 sm:px-9 lg:gap-2.5 lg:pb-5 lg:pt-5">
                 <span className="hidden h-px w-4 shrink-0 bg-border lg:block" />
-                <span className="shrink-0 text-[13px] text-nav-muted">
+                <span className="max-w-[66px] shrink-0 text-[12px] leading-tight text-nav-muted lg:max-w-none lg:text-[13px] lg:leading-normal">
                   {t("hero.popularSearches")}
                 </span>
 
@@ -400,7 +406,7 @@ export const HomeHero = ({
                             aria-hidden={copy > 0}
                             tabIndex={copy > 0 ? -1 : 0}
                             onClick={() => onPopularSearch(item)}
-                            className="shrink-0 whitespace-nowrap rounded-[9px] border border-border/70 px-3 py-1.5 text-[11px] leading-snug text-brand-navy transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary lg:text-[13px]"
+                            className="shrink-0 whitespace-nowrap rounded-[5px] border border-border/70 px-3 py-2 text-[11px] leading-snug lg:rounded-[9px] lg:py-1.5 text-brand-navy transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary lg:text-[13px]"
                           >
                             {item.label}
                           </button>
@@ -417,23 +423,28 @@ export const HomeHero = ({
         {/* Stats strip closing the hero. */}
         <div
           data-fid="hero.stats"
-          className="mt-7 grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4"
+          className="mt-4 grid grid-cols-2 rounded-[16px] bg-white px-2 shadow-[0_14px_38px_-16px_rgba(9,87,251,0.20)] lg:mt-7 lg:grid-cols-4 lg:gap-x-4 lg:gap-y-6 lg:rounded-none lg:bg-transparent lg:px-0 lg:shadow-none"
         >
           {STATS.map(({ Icon, valueKey, labelKey }, i) => (
             <div
               key={valueKey}
-              className={`flex items-center gap-3 lg:gap-4 ${
-                i > 0 ? "lg:border-l lg:border-border lg:pl-8" : ""
-              }`}
+              /* On a phone it is a 2x2 card: short inset rules between the
+                 columns and under the top row, drawn as pseudo-elements so
+                 they stop short of the edges as in the comp. */
+              className={`relative flex items-center gap-2.5 py-4 lg:gap-4 lg:py-0 lg:before:hidden lg:after:hidden ${
+                i % 2 ? "pl-3 before:absolute before:inset-y-3 before:left-0 before:w-px before:bg-border before:content-['']" : "pr-1 lg:pr-0"
+              } ${
+                i < 2 ? "after:absolute after:bottom-0 after:left-2 after:right-2 after:h-px after:bg-border after:content-['']" : ""
+              } ${i > 0 ? "lg:border-l lg:border-border lg:pl-8" : ""}`}
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 lg:h-[50px] lg:w-[50px]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 lg:h-[50px] lg:w-[50px]">
                 <Icon className="h-5 w-5 text-primary lg:h-6 lg:w-6" aria-hidden="true" />
               </span>
               <div className="min-w-0">
-                <div className="text-sm font-bold leading-snug text-brand-navy lg:text-[20px]">
+                <div className="text-[14px] font-bold leading-tight text-brand-navy lg:text-[20px] lg:leading-snug">
                   {t(valueKey)}
                 </div>
-                <div className="text-[11px] leading-snug text-nav-muted lg:text-sm">
+                <div className="mt-0.5 text-[12px] leading-snug text-nav-muted lg:mt-0 lg:text-sm">
                   {t(labelKey)}
                 </div>
               </div>

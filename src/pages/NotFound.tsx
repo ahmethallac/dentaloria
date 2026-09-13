@@ -21,7 +21,7 @@ const NotFound = () => {
         <p className="text-xl text-gray-600 mb-4">{t("notFound.subtitle")}</p>
         <a
           href={withLocalePrefix("/", i18n.language !== "en" ? i18n.language : undefined)}
-          className="text-blue-500 hover:text-blue-700 underline"
+          className="text-primary hover:text-primary/80 underline"
         >
           {t("notFound.backHome")}
         </a>

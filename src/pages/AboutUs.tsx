@@ -47,7 +47,7 @@ export default function AboutUs() {
                 className="text-center group animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="bg-gradient-to-br from-primary to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <item.icon className="h-8 w-8" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{t(`whatWeDo.${item.key}.title`)}</h3>
