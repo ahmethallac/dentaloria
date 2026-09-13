@@ -95,7 +95,7 @@ export const updateProfile = async (updates: Partial<Profile>) => {
 }
 
 // Auth state management
-export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => {
+export const onAuthStateChange = (callback: (user: AuthUser | null, event?: string) => void) => {
   if (!supabase) {
     // Return a dummy subscription when Supabase is not connected
     return {
@@ -113,9 +113,9 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
       callback({
         ...session.user,
         profile: undefined // Profile will be loaded separately
-      } as AuthUser)
+      } as AuthUser, event)
     } else {
-      callback(null)
+      callback(null, event)
     }
   })
 }

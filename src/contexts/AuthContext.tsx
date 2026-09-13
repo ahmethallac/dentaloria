@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
 import type { Database } from '@/integrations/supabase/types'
 
@@ -35,10 +35,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [userRole, setUserRole] = useState<AppRole | null>(null)
   const [loading, setLoading] = useState(true)
+  // Whose session is loaded right now. Supabase re-emits SIGNED_IN and
+  // TOKEN_REFRESHED for the SAME user whenever the browser tab regains focus;
+  // treating that as a fresh sign-in flipped `loading` on, which unmounted
+  // every guarded page (admin, clinic panel) and threw away what was on
+  // screen — it looked exactly like the page reloading.
+  const userIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     // Get initial user
     getCurrentUser().then(async (user) => {
+      userIdRef.current = user?.id ?? null
       setUser(user)
       if (user) {
         const role = await getCurrentUserRole()
@@ -49,8 +56,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     })
 
     // Listen for auth changes - NO ASYNC in callback to prevent deadlock
-    const { data: { subscription } } = onAuthStateChange((authUser) => {
-      console.log('Auth state changed:', authUser)
+    const { data: { subscription } } = onAuthStateChange((authUser, event) => {
+      if (authUser && authUser.id === userIdRef.current) {
+        // Same person. Only a real profile change is worth refetching, and
+        // even that happens quietly, without the loading screen.
+        if (event === 'USER_UPDATED') {
+          setTimeout(async () => setUser(await getCurrentUser()), 0)
+        }
+        return
+      }
+      userIdRef.current = authUser?.id ?? null
       if (authUser) {
         // Simple state update - fetch profile separately
         setUser(authUser as AuthUser)

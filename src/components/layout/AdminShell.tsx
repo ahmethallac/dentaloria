@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { LucideIcon, LogOut, ExternalLink, ChevronRight } from 'lucide-react'
 import {
   SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -48,6 +49,7 @@ export function AdminShell({
 }: AdminShellProps) {
   const navigate = useNavigate()
   const { userRole, profile, signOut } = useAuth()
+  const { t } = useTranslation('common')
 
   const handleSignOut = async () => {
     await signOut()
@@ -137,21 +139,21 @@ export function AdminShell({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={() => navigate('/')}
-                  tooltip="Back to site"
+                  tooltip={t('nav.backToSite')}
                   className="text-slate-300 hover:bg-slate-800 hover:text-white"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>Back to site</span>
+                  <span>{t('nav.backToSite')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleSignOut}
-                  tooltip="Sign out"
+                  tooltip={t('nav.signOut')}
                   className="text-slate-300 hover:bg-slate-800 hover:text-white"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span>Sign out</span>
+                  <span>{t('nav.signOut')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -166,10 +168,10 @@ export function AdminShell({
             {headerExtra}
             <div className="hidden sm:flex items-center gap-2">
               <span className="text-xs text-muted-foreground">
-                {profile?.full_name || 'Account'}
+                {profile?.full_name || t('nav.account')}
               </span>
               <Badge variant={roleBadgeVariant(userRole)} className="text-xs">
-                {displayRoleName(userRole)}
+                {t(`roles.${userRole ?? 'guest'}`, { defaultValue: displayRoleName(userRole) })}
               </Badge>
             </div>
           </header>

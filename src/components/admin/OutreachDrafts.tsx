@@ -1,58 +1,123 @@
-// Admin screen for building outreach drafts by hand: fill in a clinic, get the
-// secret link, send it yourself.
+// Admin "Clinic invites" screen, in three tabs:
+//   collect  — read a listing into draft pages, each with its secret link
+//   email    — find each clinic's address and send the invitation mail
+//   whatsapp — ready-to-send WhatsApp text and number, sent by hand
 //
-// This is the manual half of the flow that the collector will later automate.
-// Everything downstream — the clinic's preview page, approval, signup and
-// publishing — already works, so drafts made here are the real thing.
+// The tab lives in the URL next to ?section=, so a reload or a trip to another
+// browser tab comes back to the same place.
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { withLocalePrefix } from '@/lib/localePath'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
-import { Copy, ExternalLink, Loader2, Plus, Link2, Download, CheckCircle2, AlertTriangle, MinusCircle } from 'lucide-react'
+import { Copy, ExternalLink, Loader2, Link2, Download, CheckCircle2, AlertTriangle, MinusCircle, Mail, MessageCircle } from 'lucide-react'
+import {
+  DRAFT_SELECT, approvalOf, inviteLink, localeOf, type InviteLocale, type OutreachDraft,
+} from '@/lib/outreach'
+import OutreachEmail from './OutreachEmail'
+import OutreachWhatsApp from './OutreachWhatsApp'
 
-interface City { id: string; name: string }
-
-interface Draft {
-  id: string
-  name: string
-  created_at: string
-  email: string | null
-  clinic_approvals: { preview_token: string | null; expires_at: string | null; status: string }[]
-}
-
-const draftUrl = (token: string) => `${window.location.origin}/p/${token}`
+type OutreachTab = 'collect' | 'email' | 'whatsapp'
 
 const daysLeft = (iso: string | null) => {
   if (!iso) return null
   return Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000)
 }
 
+const LOCALE_KEY = 'dentaloria_invite_locale'
+
 export default function OutreachDrafts() {
+  const { t } = useTranslation('admin')
+  const [params, setParams] = useSearchParams()
+  const tab = (params.get('tab') as OutreachTab) || 'collect'
+  const setTab = (next: string) => {
+    const p = new URLSearchParams(params)
+    p.set('tab', next)
+    setParams(p, { replace: true })
+  }
+
+  const [drafts, setDrafts] = useState<OutreachDraft[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const loadDrafts = useCallback(async () => {
+    const { data } = await supabase
+      .from('clinics')
+      .select(DRAFT_SELECT)
+      .eq('page_status', 'awaiting_clinic_approval')
+      .order('created_at', { ascending: false })
+    setDrafts((data ?? []) as any)
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { loadDrafts() }, [loadDrafts])
+
+  return (
+    <Tabs value={tab} onValueChange={setTab} className="space-y-6">
+      <TabsList className="h-auto flex-wrap">
+        <TabsTrigger value="collect"><Download className="w-4 h-4 mr-1.5" />{t('outreach.tabs.collect')}</TabsTrigger>
+        <TabsTrigger value="email"><Mail className="w-4 h-4 mr-1.5" />{t('outreach.tabs.email')}</TabsTrigger>
+        <TabsTrigger value="whatsapp"><MessageCircle className="w-4 h-4 mr-1.5" />{t('outreach.tabs.whatsapp')}</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="collect" className="space-y-6 mt-0">
+        <CollectTab drafts={drafts} loading={loading} reload={loadDrafts} />
+      </TabsContent>
+      <TabsContent value="email" className="mt-0">
+        <OutreachEmail drafts={drafts} loading={loading} reload={loadDrafts} />
+      </TabsContent>
+      <TabsContent value="whatsapp" className="mt-0">
+        <OutreachWhatsApp drafts={drafts} loading={loading} reload={loadDrafts} />
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+export const InviteLocaleSelect = ({
+  value, onChange, className = 'w-[130px]',
+}: { value: InviteLocale; onChange: (v: InviteLocale) => void; className?: string }) => {
+  const { t } = useTranslation('admin')
+  return (
+    <Select value={value} onValueChange={(v) => onChange(v as InviteLocale)}>
+      <SelectTrigger className={className}><SelectValue /></SelectTrigger>
+      <SelectContent>
+        <SelectItem value="tr">{t('outreach.langTr')}</SelectItem>
+        <SelectItem value="en">{t('outreach.langEn')}</SelectItem>
+      </SelectContent>
+    </Select>
+  )
+}
+
+function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; loading: boolean; reload: () => void }) {
   const { t } = useTranslation('admin')
   const { lang } = useParams()
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  const [cities, setCities] = useState<City[]>([])
-  const [drafts, setDrafts] = useState<Draft[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({
-    name: '', cityId: '', website: '', email: '', phone: '', description: '',
-  })
-
   const [listUrl, setListUrl] = useState('')
   const [count, setCount] = useState('5')
+  const [inviteLocale, setInviteLocale] = useState<InviteLocale>(() => {
+    try { return localStorage.getItem(LOCALE_KEY) === 'en' ? 'en' : 'tr' } catch { return 'tr' }
+  })
   const [collecting, setCollecting] = useState(false)
   const [results, setResults] = useState<any[] | null>(null)
+
+  const chooseLocale = (v: InviteLocale) => {
+    setInviteLocale(v)
+    try { localStorage.setItem(LOCALE_KEY, v) } catch { /* private mode */ }
+  }
+
+  const copy = async (token: string, locale: InviteLocale) => {
+    await navigator.clipboard.writeText(inviteLink(token, locale))
+    toast({ title: t('outreach.copied') })
+  }
 
   const collect = async () => {
     setCollecting(true)
@@ -60,14 +125,14 @@ export default function OutreachDrafts() {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       const { data, error } = await supabase.functions.invoke('collect-clinics', {
-        body: { listUrl, limit: Number(count) },
+        body: { listUrl, limit: Number(count), inviteLocale },
         headers: session ? { Authorization: `Bearer ${session.access_token}` } : undefined,
       })
       const payload = (data ?? {}) as any
       if (payload?.error && !payload?.results) throw new Error(payload.error)
       if (error && !payload?.results) throw error
       setResults(payload.results ?? [])
-      loadDrafts()
+      reload()
     } catch (err: any) {
       toast({ title: t('outreach.collectFailed'), description: err?.message, variant: 'destructive' })
     } finally {
@@ -75,62 +140,20 @@ export default function OutreachDrafts() {
     }
   }
 
-  const loadDrafts = useCallback(async () => {
-    const { data } = await supabase
-      .from('clinics')
-      .select('id, name, created_at, email, clinic_approvals ( preview_token, expires_at, status )')
-      .eq('page_status', 'awaiting_clinic_approval')
-      .order('created_at', { ascending: false })
-    setDrafts((data ?? []) as any)
-    setLoading(false)
-  }, [])
-
-  useEffect(() => {
-    supabase.from('cities').select('id, name').order('name').then(({ data }) => setCities((data ?? []) as City[]))
-    loadDrafts()
-  }, [loadDrafts])
-
-  const copy = async (token: string) => {
-    await navigator.clipboard.writeText(draftUrl(token))
-    toast({ title: t('outreach.copied') })
-  }
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const { data, error } = await supabase.functions.invoke('create-clinic-draft', {
-        body: form,
-        headers: session ? { Authorization: `Bearer ${session.access_token}` } : undefined,
-      })
-      // The suppression refusal is the one error worth reading out loud — it
-      // means this clinic already said no and must be left alone.
-      const payload = (data ?? {}) as any
-      if (payload?.suppressed) {
-        toast({ title: t('outreach.suppressed'), description: payload.error, variant: 'destructive' })
-        return
-      }
-      if (error || !payload?.previewToken) throw error ?? new Error(payload?.error ?? 'failed')
-
-      await copy(payload.previewToken)
-      toast({ title: t('outreach.created'), description: t('outreach.createdHint') })
-      setForm({ name: '', cityId: '', website: '', email: '', phone: '', description: '' })
-      loadDrafts()
-    } catch (err: any) {
-      toast({ title: t('outreach.createFailed'), description: err?.message, variant: 'destructive' })
-    } finally {
-      setSaving(false)
+  const changeLocale = async (approvalId: string, locale: InviteLocale) => {
+    const { error } = await (supabase as any).from('clinic_approvals').update({ invite_locale: locale }).eq('id', approvalId)
+    if (error) {
+      toast({ title: t('outreach.updateFailed'), description: error.message, variant: 'destructive' })
+      return
     }
+    toast({ title: t('outreach.localeUpdated') })
+    reload()
   }
-
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const created = results?.filter((r) => r.status === 'created') ?? []
 
   return (
-    <div className="space-y-6">
+    <>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
@@ -139,7 +162,7 @@ export default function OutreachDrafts() {
           <p className="text-sm text-muted-foreground">{t('outreach.collectHint')}</p>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-[1fr_140px_auto] sm:items-end">
+          <div className="grid gap-4 sm:grid-cols-[1fr_110px_150px_auto] sm:items-end">
             <div>
               <Label htmlFor="oc-url">{t('outreach.listUrl')}</Label>
               <Input
@@ -153,11 +176,16 @@ export default function OutreachDrafts() {
               <Label htmlFor="oc-count">{t('outreach.howMany')}</Label>
               <Input id="oc-count" type="number" min={1} max={20} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
+            <div>
+              <Label>{t('outreach.inviteLanguage')}</Label>
+              <InviteLocaleSelect value={inviteLocale} onChange={chooseLocale} className="w-full" />
+            </div>
             <Button onClick={collect} disabled={collecting || !listUrl.trim()}>
               {collecting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {t('outreach.collect')}
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground">{t('outreach.inviteLanguageHint')}</p>
           {collecting && <p className="text-sm text-muted-foreground">{t('outreach.collecting')}</p>}
 
           {results && (
@@ -188,10 +216,10 @@ export default function OutreachDrafts() {
                   </div>
                   {r.previewToken && (
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => copy(r.previewToken)}>
+                      <Button size="sm" variant="outline" onClick={() => copy(r.previewToken, r.inviteLocale ?? inviteLocale)}>
                         <Copy className="w-3.5 h-3.5 mr-1" /> {t('outreach.copyLink')}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => window.open(draftUrl(r.previewToken), '_blank')}>
+                      <Button size="sm" variant="ghost" onClick={() => window.open(inviteLink(r.previewToken, r.inviteLocale ?? inviteLocale), '_blank')}>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </Button>
                     </div>
@@ -200,59 +228,6 @@ export default function OutreachDrafts() {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Plus className="w-4 h-4" /> {t('outreach.newTitle')}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">{t('outreach.newHint')}</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label htmlFor="od-name">{t('outreach.name')} *</Label>
-              <Input id="od-name" required value={form.name} onChange={set('name')} />
-            </div>
-            <div>
-              <Label htmlFor="od-city">{t('outreach.city')} *</Label>
-              <select
-                id="od-city"
-                required
-                value={form.cityId}
-                onChange={(e) => setForm((f) => ({ ...f, cityId: e.target.value }))}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="">—</option>
-                {cities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="od-website">{t('outreach.website')}</Label>
-              <Input id="od-website" value={form.website} onChange={set('website')} placeholder="https://" />
-              <p className="text-xs text-muted-foreground mt-1">{t('outreach.websiteHint')}</p>
-            </div>
-            <div>
-              <Label htmlFor="od-email">{t('outreach.email')}</Label>
-              <Input id="od-email" type="email" value={form.email} onChange={set('email')} />
-            </div>
-            <div>
-              <Label htmlFor="od-phone">{t('outreach.phone')}</Label>
-              <Input id="od-phone" value={form.phone} onChange={set('phone')} />
-            </div>
-            <div className="sm:col-span-2">
-              <Label htmlFor="od-desc">{t('outreach.description')}</Label>
-              <Textarea id="od-desc" rows={4} value={form.description} onChange={set('description')} />
-            </div>
-            <div className="sm:col-span-2">
-              <Button type="submit" disabled={saving}>
-                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {t('outreach.create')}
-              </Button>
-            </div>
-          </form>
         </CardContent>
       </Card>
 
@@ -271,25 +246,29 @@ export default function OutreachDrafts() {
           ) : (
             <div className="space-y-3">
               {drafts.map((d) => {
-                const approval = d.clinic_approvals?.[0]
+                const approval = approvalOf(d)
+                const locale = localeOf(d)
                 const left = daysLeft(approval?.expires_at ?? null)
                 return (
                   <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 border rounded-lg p-3">
                     <div className="min-w-0">
                       <div className="font-medium truncate">{d.name}</div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {d.email || t('outreach.noEmail')}
+                        {approval?.contact_email || d.email || t('outreach.noEmail')}
                         {left !== null && <> · {t('outreach.expiresIn', { count: left })}</>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {approval && (
+                        <InviteLocaleSelect value={locale} onChange={(v) => changeLocale(approval.id, v)} className="h-9 w-[120px]" />
+                      )}
                       {!approval?.preview_token && <Badge variant="secondary">{t('outreach.noLink')}</Badge>}
                       {approval?.preview_token && (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => copy(approval.preview_token!)}>
+                          <Button size="sm" variant="outline" onClick={() => copy(approval.preview_token!, locale)}>
                             <Copy className="w-3.5 h-3.5 mr-1" /> {t('outreach.copyLink')}
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => window.open(draftUrl(approval.preview_token!), '_blank')}>
+                          <Button size="sm" variant="ghost" onClick={() => window.open(inviteLink(approval.preview_token!, locale), '_blank')}>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Button>
                         </>
@@ -305,6 +284,6 @@ export default function OutreachDrafts() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </>
   )
 }

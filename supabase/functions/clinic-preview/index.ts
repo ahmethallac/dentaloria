@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
 
     const { data: approval, error: approvalError } = await supabase
       .from('clinic_approvals')
-      .select('id, clinic_id, status, expires_at, consent_at')
+      .select('id, clinic_id, status, expires_at, consent_at, invite_locale')
       .eq('preview_token', token)
       .maybeSingle()
 
@@ -121,6 +121,9 @@ Deno.serve(async (req) => {
       // signed-in visitor is a clinic returning from the verification mail, or
       // just someone (an admin, say) opening the draft to look at it.
       consentGiven: !!approval.consent_at,
+      // The language the admin picked for this invite. It drives the approval
+      // bar and signup screens only; the clinic page follows the site locale.
+      inviteLocale: approval.invite_locale === 'en' ? 'en' : 'tr',
     })
   } catch (error) {
     console.error('clinic-preview failed:', error)

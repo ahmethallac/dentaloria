@@ -106,7 +106,9 @@ const Admin = () => {
     if (user && userRole === 'admin') {
       loadAllData()
     }
-  }, [user, userRole, authLoading])
+    // Keyed on the user's id, not the object: a token refresh hands back a new
+    // object for the same person, and reloading then wiped the open section.
+  }, [user?.id, userRole, authLoading])
 
   const loadAllData = async () => {
     setLoading(true)
@@ -1224,7 +1226,7 @@ const Admin = () => {
                         <Checkbox
                           checked={allFilteredSelected ? true : someFilteredSelected ? 'indeterminate' : false}
                           onCheckedChange={toggleSelectAll}
-                          aria-label="Select all"
+                          aria-label={t('outreach.selectAll')}
                         />
                       </th>
                       <th className="text-left py-2 px-3">{t('patients.tableName')}</th>

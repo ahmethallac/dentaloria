@@ -1303,18 +1303,25 @@ const ClinicDetail = ({ idProp, draftClinic, draftHeader, draftFooter }: {
 
       <Footer />
 
-      {/* ── Mobile Bottom CTA ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 shadow-lg lg:hidden">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <div className="text-sm font-semibold">{clinic.name}</div>
-            <div className="text-xs text-muted-foreground">{t("contact.mobileBarSubtitle")}</div>
+      {/* Draft preview pins its own Approve / Reject bar to the bottom; leave
+          room for it so the footer is not hidden underneath. */}
+      {draftFooter && <div aria-hidden="true" className="h-40 lg:h-24" />}
+
+      {/* ── Mobile Bottom CTA ── (not on a draft: nobody can ask an unpublished
+          clinic for a quote, and it would sit on top of the approval bar) */}
+      {!draftClinic && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 shadow-lg lg:hidden">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div>
+              <div className="text-sm font-semibold">{clinic.name}</div>
+              <div className="text-xs text-muted-foreground">{t("contact.mobileBarSubtitle")}</div>
+            </div>
+            <Button onClick={() => setMobileOpen(true)} className="bg-primary text-primary-foreground">
+              {t("contact.getQuote")}
+            </Button>
           </div>
-          <Button onClick={() => setMobileOpen(true)} className="bg-primary text-primary-foreground">
-            {t("contact.getQuote")}
-          </Button>
         </div>
-      </div>
+      )}
 
       {/* Mobile Dialog */}
       <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>

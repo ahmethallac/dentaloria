@@ -327,6 +327,8 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const listUrl: string = (body?.listUrl ?? '').trim()
     const limit = Math.min(Math.max(parseInt(body?.limit ?? '5', 10) || 5, 1), MAX_PER_RUN)
+    // Language of the approval screen and invitation messages for this batch.
+    const inviteLocale = body?.inviteLocale === 'en' ? 'en' : 'tr'
     if (!/^https?:\/\/(www\.)?booking\.dentist\//i.test(listUrl)) {
       return json({ error: 'Only booking.dentist listing URLs are supported for now.' }, 400)
     }
@@ -563,6 +565,7 @@ Deno.serve(async (req) => {
           clinic_id: clinic.id,
           status: 'pending',
           preview_token: previewToken,
+          invite_locale: inviteLocale,
           expires_at: new Date(Date.now() + DRAFT_LIFETIME_DAYS * 86_400_000).toISOString(),
         })
         if (approvalError) {
@@ -576,6 +579,7 @@ Deno.serve(async (req) => {
           status: 'created',
           clinicId: clinic.id,
           previewToken,
+          inviteLocale,
           treatments: mapped.length,
           images: images.length,
           doctors: doctors.length,

@@ -5,7 +5,8 @@
     "info": "Clinic Information",
     "sponsored": "Sponsored",
     "settings": "Admin Settings",
-    "clinicInfoShort": "Clinic Info"
+    "clinicInfoShort": "Clinic Info",
+    "preferences": "Settings"
   },
   "sidebar": {
     "clinicGroup": "Clinic",
@@ -93,5 +94,11 @@
     "showcaseRemovedDesc": "This clinic will no longer appear on the homepage.",
     "submittedTitle": "Submitted",
     "submittedDesc": "Your page has been submitted for Super Admin approval."
+  },
+  "language": {
+    "title": "Language",
+    "label": "Interface language",
+    "description": "Choose the language for your panel and the site. The notification emails we send you follow the same choice.",
+    "descriptionAdmin": "Choose the language for the panel."
   }
 }

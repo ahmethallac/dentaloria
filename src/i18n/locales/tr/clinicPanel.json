@@ -5,7 +5,8 @@
     "info": "Klinik Bilgileri",
     "sponsored": "Sponsorlu",
     "settings": "Admin Ayarları",
-    "clinicInfoShort": "Klinik Bilgisi"
+    "clinicInfoShort": "Klinik Bilgisi",
+    "preferences": "Ayarlar"
   },
   "sidebar": {
     "clinicGroup": "Klinik",
@@ -93,5 +94,11 @@
     "showcaseRemovedDesc": "Bu klinik artık ana sayfada görünmeyecek.",
     "submittedTitle": "Gönderildi",
     "submittedDesc": "Sayfanız Süper Admin onayı için gönderildi."
+  },
+  "language": {
+    "title": "Dil",
+    "label": "Arayüz dili",
+    "description": "Paneli ve siteyi hangi dilde kullanmak istediğinizi seçin. Size gönderdiğimiz bilgilendirme e-postaları da bu dilde olur.",
+    "descriptionAdmin": "Paneli hangi dilde kullanmak istediğini seç."
   }
 }

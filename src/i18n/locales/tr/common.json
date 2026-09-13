@@ -10,7 +10,9 @@
     "signOut": "Çıkış Yap",
     "destinations": "Destinasyonlar",
     "howItWorks": "Nasıl Çalışır",
-    "language": "Dil"
+    "language": "Dil",
+    "backToSite": "Siteye dön",
+    "account": "Hesap"
   },
   "footer": {
     "tagline": "Türkiye'nin en güvenilir diş kliniği karşılaştırma platformu. En uygun fiyata en iyi tedaviyi bulmanıza yardımcı oluyoruz.",
@@ -112,5 +114,12 @@
       "sendErrorTitle": "Gönderilemedi",
       "sendErrorDesc": "Lütfen tekrar deneyin."
     }
+  },
+  "roles": {
+    "admin": "Süper Admin",
+    "sub_admin": "Alt Admin",
+    "clinic_admin": "Klinik Yöneticisi",
+    "patient": "Hasta",
+    "guest": "Misafir"
   }
 }

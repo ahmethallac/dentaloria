@@ -1,5 +1,11 @@
 // The page a clinic lands on from our outreach mail: their own Dentaloria
-// page, already filled in, with Approve / Reject at the bottom.
+// page, already filled in, with Approve / Reject pinned to the bottom of the
+// screen on every device.
+//
+// The approval copy is in the language the admin chose for the invite
+// (clinic_approvals.invite_locale), not the URL's: the page content follows
+// the site locale, but the buttons the clinic must press have to be in a
+// language they read.
 //
 // It renders the real ClinicDetail rather than a lookalike, so what they
 // approve is exactly what goes live. The draft itself is unreadable to the
@@ -41,6 +47,8 @@ const COPY = {
       "Dentaloria, hastaları kliniklerle buluşturan ücretsiz bir karşılaştırma platformudur. Sizin adınıza bu sayfayı hazırladık. Onaylarsanız yayına alırız ve her şeyi kendiniz düzenleyebilirsiniz. Reddederseniz sayfayı ve tüm verileri hemen sileriz.",
     approve: "Onaylıyorum, yayınlansın",
     reject: "Reddediyorum, silin",
+    approveShort: "Onayla",
+    rejectShort: "Reddet",
     rejectConfirm:
       "Sayfa ve içindeki tüm veriler kalıcı olarak silinecek ve size bir daha yazmayacağız. Emin misiniz?",
     rejectedTitle: "Silindi.",
@@ -78,6 +86,8 @@ const COPY = {
       "Dentaloria is a free comparison platform that connects patients with clinics. We prepared this page on your behalf. Approve it and we publish it — you can then edit everything yourself. Reject it and we delete the page and all its data immediately.",
     approve: "Approve and publish",
     reject: "Reject and delete",
+    approveShort: "Approve",
+    rejectShort: "Reject",
     rejectConfirm:
       "The page and all of its data will be permanently deleted, and we will not contact you again. Are you sure?",
     rejectedTitle: "Deleted.",
@@ -122,7 +132,8 @@ const Centered = ({ children }: { children: React.ReactNode }) => (
 export default function ClinicDraftPreview() {
   const { token, lang } = useParams();
   const navigate = useNavigate();
-  const c = COPY[lang === "tr" ? "tr" : "en"];
+  const [inviteLocale, setInviteLocale] = useState<"tr" | "en" | null>(null);
+  const c = COPY[inviteLocale ?? (lang === "tr" ? "tr" : "en")];
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [clinic, setClinic] = useState<any | null>(null);
@@ -185,6 +196,7 @@ export default function ClinicDraftPreview() {
         if (cancelled) return;
 
         if (data?.state !== "pending") return setPhase("gone");
+        if (data.inviteLocale === "tr" || data.inviteLocale === "en") setInviteLocale(data.inviteLocale);
         setClinic(data.clinic);
 
         // Only finish the job for someone coming back from the verification
@@ -255,28 +267,47 @@ export default function ClinicDraftPreview() {
   ), [c]);
 
   const draftFooter = useMemo(() => (
-    <div className="border-t bg-muted/40">
-      <div className="container mx-auto px-4 py-8 max-w-3xl text-center">
-        <h2 className="text-xl font-bold mb-2">{c.barTitle}</h2>
-        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{c.barText}</p>
-        {error && <p className="text-sm text-destructive mb-3">{error}</p>}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button size="lg" disabled={busy} onClick={() => decide("approve")}>
-            {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
-            {c.approve}
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            disabled={busy}
-            onClick={() => { if (window.confirm(c.rejectConfirm)) decide("reject"); }}
-          >
-            {c.reject}
-          </Button>
+    <>
+      {/* The full explanation stays in the page, above the footer… */}
+      <div className="border-t bg-muted/40">
+        <div className="container mx-auto px-4 py-8 max-w-3xl text-center">
+          <h2 className="text-xl font-bold mb-2">{c.barTitle}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{c.barText}</p>
         </div>
-        <p className="text-xs text-muted-foreground mt-4">{c.consent}</p>
       </div>
-    </div>
+
+      {/* …while the decision itself is pinned to the bottom of the screen on
+          every device, so the clinic always sees what to press. The consent
+          line sits right above the buttons it applies to. */}
+      <div
+        data-fid="draft.bar"
+        className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-background/95 shadow-[0_-10px_30px_-12px_rgba(6,32,81,0.25)] backdrop-blur-md"
+      >
+        <div className="container mx-auto flex max-w-5xl flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center lg:gap-6">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold lg:text-base">{c.barTitle}</p>
+            <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground lg:text-xs">{c.consent}</p>
+            {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+          </div>
+          <div className="grid grid-cols-2 gap-2 lg:flex lg:shrink-0">
+            <Button disabled={busy} onClick={() => decide("approve")} className="h-11 lg:px-6">
+              {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
+              <span className="lg:hidden">{c.approveShort}</span>
+              <span className="hidden lg:inline">{c.approve}</span>
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy}
+              className="h-11 lg:px-6"
+              onClick={() => { if (window.confirm(c.rejectConfirm)) decide("reject"); }}
+            >
+              <span className="lg:hidden">{c.rejectShort}</span>
+              <span className="hidden lg:inline">{c.reject}</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
   ), [c, busy, error]);
 
   if (phase === "loading") {

@@ -76,8 +76,28 @@ screenshot only at decision points, at reduced scale.
 ## Known issues, not yet fixed
 
 - **768px has horizontal page overflow, from the header.** `header.nav` and
-  `header.actions` appear at `md` but do not fit until ~1100px. The client has
-  asked that `navbar.tsx` not be touched.
+  `header.actions` appear at `md` but do not fit until ~1100px. Only change
+  `navbar.tsx` when the client asks; "Destinations" and "How It Works" were
+  removed from its menu at their request (the footer still links to both).
 - **The hero's language filter never applies.** `Index.tsx` writes `language=`
   into the URL; `ClinicListing.tsx` reads `languages=`. Pre-existing.
 - `StatsBar`'s `dark` tone is unused since the hero grew its own stats row.
+
+## Clinic invites (admin → "Klinik daveti")
+
+Three tabs in `src/components/admin/OutreachDrafts.tsx`: **collect** (booking.dentist
+listing → draft pages via `collect-clinics`), **email** (`outreach-find-contacts`
+scans the clinic's own website for an address, `outreach-send-invites` mails it
+through Resend), **whatsapp** (message + number + `wa.me` link; nothing is sent).
+
+- Per-invite state lives on `clinic_approvals` (`invite_locale`, `contact_email`,
+  `whatsapp_phone`, `invite_sent_at`, …); texts in `outreach_templates`.
+  Placeholders are `{{clinic}}` and `{{link}}`.
+- `invite_locale` is the language of the **approval bar and invite messages only**.
+  The draft page itself follows the site locale. TR invites link to `/tr/p/<token>`.
+- Rejecting deletes the clinic and writes `outreach_suppressions`; the send
+  function refuses anyone on that list. Never bypass it.
+- The frontend selects the new columns, so the migration
+  `20260914120000_outreach_campaigns.sql` and the functions must be deployed
+  **before** the frontend that uses them.
+

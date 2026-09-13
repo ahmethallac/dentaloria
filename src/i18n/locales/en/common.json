@@ -10,7 +10,9 @@
     "signOut": "Sign Out",
     "destinations": "Destinations",
     "howItWorks": "How It Works",
-    "language": "Language"
+    "language": "Language",
+    "backToSite": "Back to site",
+    "account": "Account"
   },
   "footer": {
     "tagline": "Turkey's most trusted dental clinic comparison platform. We help you find the best treatment at the most affordable price.",
@@ -112,5 +114,12 @@
       "sendErrorTitle": "Could not send",
       "sendErrorDesc": "Please try again."
     }
+  },
+  "roles": {
+    "admin": "Super Admin",
+    "sub_admin": "Sub-Admin",
+    "clinic_admin": "Clinic Admin",
+    "patient": "Patient",
+    "guest": "Guest"
   }
 }

@@ -19,16 +19,14 @@ interface NavLinkDef {
   key: string;
 }
 
-// Order and membership follow the Figma header (node 2:412). "Destinations"
-// and "How It Works" have no route of their own — they target sections on the
-// home page, so they are plain anchors that resolve from any page.
+// Order follows the Figma header (node 2:412). "Destinations" and "How It
+// Works" were removed at the client's request; the home sections themselves
+// stay, and the footer still links to them.
 const NAV_LINK_DEFS: NavLinkDef[] = [
   { to: "/", key: "nav.home" },
   { to: "/clinic-listing", key: "nav.clinics" },
   { to: "/treatments", key: "nav.treatments" },
-  { hash: "#destinations", key: "nav.destinations" },
   { to: "/about-us", key: "nav.aboutUs" },
-  { hash: "#how-it-works", key: "nav.howItWorks" },
 ];
 
 const getInitials = (name: string) =>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,18 +15,21 @@ import ApplicationsTab from "@/components/clinic-panel/ApplicationsTab";
 import ClinicInfoTab from "@/components/clinic-panel/ClinicInfoTab";
 import {
   Building2, Users, Settings, BarChart3, Shield, LayoutDashboard, Loader2, AlertTriangle, Wallet,
-  Clock, UserCog, ArrowLeft, Megaphone,
+  Clock, UserCog, ArrowLeft, Megaphone, Globe,
 } from "lucide-react";
 import AdminShell, { ShellSection } from "@/components/layout/AdminShell";
 import BalanceWidget from "@/components/clinic-panel/BalanceWidget";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { withLocalePrefix } from "@/lib/localePath";
+import { SITE_LOCALES } from "@/i18n/siteLocales";
+import { LOCALE_CHOICE_KEY } from "@/components/i18n/GeoRedirectGate";
 
 type PanelSection = 'overview' | 'patients' | 'info' | 'sponsored' | 'settings';
 
 const ClinicPanel = () => {
   const { id, lang } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation('clinicPanel');
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -150,6 +153,18 @@ const ClinicPanel = () => {
     }
   };
 
+  // The panel's language lives in the URL like the rest of the site. For a
+  // clinic user it also becomes the language of the mails we send them; an
+  // admin switching their own screen must not change a clinic's mail language.
+  const changeLanguage = async (code: string) => {
+    try { localStorage.setItem(LOCALE_CHOICE_KEY, code); } catch { /* private mode */ }
+    if (!isAdminUser && id) {
+      await supabase.from('clinics').update({ locale: code }).eq('id', id);
+    }
+    const path = location.pathname.replace(lang ? new RegExp(`^/${lang}(?=/|$)`) : /^$/, '') || '/';
+    navigate(withLocalePrefix(path, code === 'en' ? undefined : code) + location.search);
+  };
+
   const handleSubmitForApproval = async () => {
     if (!id) return;
     setSubmittingPage(true);
@@ -186,7 +201,7 @@ const ClinicPanel = () => {
     patients: t('sections.patients'),
     info: t('sections.info'),
     sponsored: t('sections.sponsored'),
-    settings: t('sections.settings'),
+    settings: isAdminUser ? t('sections.settings') : t('sections.preferences'),
   };
 
   const clinicSections: ShellSection[] = [
@@ -201,7 +216,7 @@ const ClinicPanel = () => {
     {
       label: t('sidebar.administrationGroup'),
       items: [
-        { id: 'settings', label: t('sections.settings'), icon: Shield, onClick: () => setSection('settings'), active: section === 'settings', hidden: !isAdminUser },
+        { id: 'settings', label: t('sections.preferences'), icon: Settings, onClick: () => setSection('settings'), active: section === 'settings' },
       ],
     },
   ];
@@ -250,7 +265,7 @@ const ClinicPanel = () => {
       breadcrumbs={breadcrumbs}
       headerExtra={
         <Badge variant={(clinic as any).approval_status === 'approved' ? 'default' : 'secondary'}>
-          {(clinic as any).approval_status || 'pending'}
+          {({ pending: t('settings.statusPending'), approved: t('settings.statusApproved'), rejected: t('settings.statusRejected') } as Record<string, string>)[(clinic as any).approval_status || 'pending'] ?? (clinic as any).approval_status}
         </Badge>
       }
     >
@@ -439,6 +454,30 @@ const ClinicPanel = () => {
         </Card>
       )}
 
+
+      {section === 'settings' && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="w-5 h-5" /> {t('language.title')}
+            </CardTitle>
+            <CardDescription>{isAdminUser ? t('language.descriptionAdmin') : t('language.description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-w-xs space-y-2">
+              <Label>{t('language.label')}</Label>
+              <Select value={lang === 'tr' ? 'tr' : 'en'} onValueChange={changeLanguage}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SITE_LOCALES.map((l) => (
+                    <SelectItem key={l.code} value={l.code}>{l.flag} {l.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {section === 'settings' && isAdminUser && (
         <Card className="border-primary/30">
