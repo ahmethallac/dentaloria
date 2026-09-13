@@ -1,0 +1,74 @@
+# dentaloria
+
+Vite + React + TypeScript, Tailwind, shadcn/ui, Supabase, react-i18next.
+Locales: **tr and en only** (`src/i18n/locales/<loc>/*.json`).
+
+## Running it
+
+Use the Browser pane's `preview_start` with `dentaloria-dev` (port 8080) — never
+`npm run dev` through Bash. Check with `npx tsc --noEmit -p tsconfig.app.json`
+and `npx vite build` before proposing a commit.
+
+## Design tokens
+
+Colours live in `src/index.css` as **bare HSL triplets** (`--primary: 220.7 96.8% 51.0%`)
+consumed via `hsl(var(--x))`. The browser reports `rgb(...)`, so grepping a measured
+colour finds nothing. Resolve it instead:
+
+```bash
+node .claude/skills/dentaloria-ui-fidelity/scripts/token-map.mjs --lookup 'rgb(9, 87, 251)'
+```
+
+`--radius: 1rem`, so `rounded-lg` is **16px** here, not Tailwind's 8. Check the
+number, not the name. Spacing is the stock 4px grid.
+
+## Home hero — `src/components/home/HomeHero.tsx`
+
+The most-iterated part of the site. What is settled:
+
+- **Content column is 1264px**, the same one `navbar.tsx` uses, so the eyebrow,
+  headline, card and stats line up with the logo. Do not change this.
+- Desktop geometry, signed off by the client at a 1655px viewport:
+  `photo 0..612` · `card 404..598 x=268 w=1120` · `stats 626 x=196 w=1264` · `eyebrow 124`.
+  Re-measure against these after any hero change.
+- The photo band runs **up behind the header** (`-top-20`), which is what the
+  translucent header fades over. Its bottom is an ellipse: a white shape with cut
+  **top** corners, not a photo with cut bottom corners — a bottom radius curves the
+  arc the wrong way up.
+- A `/` inside a Tailwind arbitrary value is parsed as the opacity separator, so
+  two-radius forms like `rounded-b-[50%_/_46px]` compile to **nothing, silently**.
+  Use arbitrary properties or plain CSS.
+- The popular-search chips carry canonical English `treatment`/`city` names in
+  `home.json`; the click resolves them against loaded data in `Index.tsx`.
+  "Hollywood Smile" and "Estetik Diş Hekimliği" are **not rows in the treatments
+  table** and point at the nearest real one.
+
+## Working from design comps — read this first
+
+Comps arrive as **screenshots, not Figma files**. Two things have cost days:
+
+1. **Never derive px values by eyeballing the raster.** Measure a known anchor
+   (the 1264 column, a 50px select) to get the comp's scale, then convert. Better
+   still, ask for the numbers.
+2. **The mobile comps are drawn at ~620px wide; real phones are 390px.** Their
+   text-left / subject-right split does not survive the difference: at 390 the
+   headline cannot both stay large and clear her face. Say so before writing any
+   code and let the client choose the trade-off — eight rounds went into
+   discovering this by trial and error, and the result was still rejected.
+
+Verify with **DOM measurements** (`getBoundingClientRect` via `javascript_tool`),
+not screenshots — they are cheap, exact, and do not bloat the session. Take a
+screenshot only at decision points, at reduced scale.
+
+## Known issues, not yet fixed
+
+- **The mobile hero has no agreed design.** Only the desktop layout above is
+  signed off. Several attempts at the phone layout were rejected; nothing from
+  them is in the tree.
+
+- **768px has horizontal page overflow, from the header.** `header.nav` and
+  `header.actions` appear at `md` but do not fit until ~1100px. The client has
+  asked that `navbar.tsx` not be touched.
+- **The hero's language filter never applies.** `Index.tsx` writes `language=`
+  into the URL; `ClinicListing.tsx` reads `languages=`. Pre-existing.
+- `StatsBar`'s `dark` tone is unused since the hero grew its own stats row.
