@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Wallet, Loader2, Check, Tag, X } from "lucide-react";
 import { withLocalePrefix } from "@/lib/localePath";
+import BetaNotice from "@/components/clinic-panel/BetaNotice";
+import { BETA_DISCOUNT_CODE } from "@/lib/betaDiscount";
 
 const PRICE_CENTS = 2500;
 
@@ -42,6 +44,7 @@ export default function BalanceTopupPage() {
   const [codeInput, setCodeInput] = useState("");
   const [applyingCode, setApplyingCode] = useState(false);
   const [discount, setDiscount] = useState<{ code: string; percentOff: number } | null>(null);
+  const autoAppliedRef = useRef(false);
 
   useEffect(() => {
     if (!id) return;
@@ -119,12 +122,15 @@ export default function BalanceTopupPage() {
     }
   };
 
-  const applyCode = async () => {
-    const code = codeInput.trim().toUpperCase();
+  // Validates a code against a placeholder amount (€25) — the server
+  // re-validates against the real amount on purchase. `silent` skips the
+  // toasts for the automatic beta apply, so nobody sees an error if the code
+  // has since been switched off.
+  const applyCode = async (codeOverride?: string, silent = false) => {
+    const code = (codeOverride ?? codeInput).trim().toUpperCase();
     if (!code) return;
     setApplyingCode(true);
     try {
-      // Validate against a placeholder amount (€25) — server re-validates against actual amount on purchase
       const { data, error } = await supabase.rpc("validate_discount_code", {
         p_code: code,
         p_amount_cents: 2500,
@@ -132,18 +138,33 @@ export default function BalanceTopupPage() {
       if (error) throw error;
       const v = data as any;
       if (!v?.valid) {
-        toast({ title: t('topup.toasts.invalidCodeTitle'), description: v?.reason || t('topup.toasts.codeErrorDesc'), variant: "destructive" });
+        if (!silent) {
+          toast({ title: t('topup.toasts.invalidCodeTitle'), description: v?.reason || t('topup.toasts.codeErrorDesc'), variant: "destructive" });
+        }
         setDiscount(null);
         return;
       }
       setDiscount({ code: v.code, percentOff: v.percent_off });
-      toast({ title: t('topup.toasts.discountReadyTitle'), description: t('topup.toasts.discountReadyDesc', { code: v.code, percent: v.percent_off }) });
+      if (!silent) {
+        toast({ title: t('topup.toasts.discountReadyTitle'), description: t('topup.toasts.discountReadyDesc', { code: v.code, percent: v.percent_off }) });
+      }
     } catch (e: any) {
-      toast({ title: t('topup.toasts.errorTitle'), description: e.message || t('topup.toasts.validateErrorDesc'), variant: "destructive" });
+      if (!silent) {
+        toast({ title: t('topup.toasts.errorTitle'), description: e.message || t('topup.toasts.validateErrorDesc'), variant: "destructive" });
+      }
     } finally {
       setApplyingCode(false);
     }
   };
+
+  // Beta: nobody has to type BETA100 in by hand. Runs once; a clinic that
+  // presses "Kaldır" stays without it until they reload the page.
+  useEffect(() => {
+    if (!loaded || autoAppliedRef.current) return;
+    autoAppliedRef.current = true;
+    applyCode(BETA_DISCOUNT_CODE, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded]);
 
   const removeCode = () => { setDiscount(null); setCodeInput(""); };
 
@@ -166,7 +187,9 @@ export default function BalanceTopupPage() {
           </Link>
         </div>
 
-        <Card className="mb-6">
+        <BetaNotice title={t('beta.title')} body={t('beta.body')} />
+
+        <Card className="mt-6 mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Wallet className="w-5 h-5 text-primary" /> {t('topup.title')}
@@ -200,7 +223,22 @@ export default function BalanceTopupPage() {
               <CardContent className="pt-6 text-center space-y-2">
                 <div className="text-3xl font-bold">{pkg.leads}</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wider">{t('topup.leadsUnit')}</div>
-                <div className="text-xl font-semibold text-primary">€{(pkg.amountCents / 100).toFixed(0)}</div>
+                {(() => {
+                  const finalPkgCents = discount
+                    ? Math.round((pkg.amountCents * (100 - discount.percentOff)) / 100)
+                    : pkg.amountCents;
+                  const discounted = finalPkgCents < pkg.amountCents;
+                  return (
+                    <div className="flex items-center justify-center gap-2">
+                      {discounted && (
+                        <span className="text-sm text-muted-foreground line-through">€{(pkg.amountCents / 100).toFixed(0)}</span>
+                      )}
+                      <span className="text-xl font-semibold text-primary">
+                        {finalPkgCents === 0 ? t('topup.free') : `€${(finalPkgCents / 100).toFixed(finalPkgCents % 100 ? 2 : 0)}`}
+                      </span>
+                    </div>
+                  );
+                })()}
                 <Button
                   className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white"
                   onClick={() => startTopup(pkg.amountCents, pkg.amountCents)}
@@ -211,7 +249,7 @@ export default function BalanceTopupPage() {
                   ) : (
                     <Check className="w-4 h-4 mr-2" />
                   )}
-                  {t('topup.buyNow')}
+                  {discount?.percentOff === 100 ? t('topup.getFree') : t('topup.buyNow')}
                 </Button>
               </CardContent>
             </Card>
@@ -248,7 +286,7 @@ export default function BalanceTopupPage() {
                     onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}
                   />
                 </div>
-                <Button onClick={applyCode} disabled={applyingCode || !codeInput.trim()} variant="outline">
+                <Button onClick={() => applyCode()} disabled={applyingCode || !codeInput.trim()} variant="outline">
                   {applyingCode ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                   {t('topup.discountCode.apply')}
                 </Button>
@@ -282,7 +320,7 @@ export default function BalanceTopupPage() {
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
                 {submitting === "custom" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                {t('topup.customAmount.button')}
+                {discount?.percentOff === 100 ? t('topup.getFree') : t('topup.customAmount.button')}
               </Button>
             </div>
           </CardContent>

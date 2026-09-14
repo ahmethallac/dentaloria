@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getContactRequests, updateContactRequest, type ContactRequest } from "@/lib/services";
 import { Mail, Phone, Search, Lock, Unlock, Loader2, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import BetaNotice from "@/components/clinic-panel/BetaNotice";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { withLocalePrefix } from "@/lib/localePath";
 
@@ -377,6 +378,8 @@ export default function ApplicationsTab({ clinicId }: ApplicationsTabProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <BetaNotice title={t('beta.title')} body={t('beta.body')} />
+
         {/* Balance summary */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-3 rounded-lg border border-border/60 bg-muted/40">
           <div className="text-sm">

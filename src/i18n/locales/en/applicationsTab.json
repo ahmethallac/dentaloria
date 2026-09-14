@@ -6,7 +6,11 @@
   "leadsRemaining_other": "{{count}} leads remaining",
   "addBalance": "Add Balance",
   "searchPlaceholder": "Search by name...",
-  "tabs": { "pending": "Pending", "expired": "Expired", "purchased": "Purchased" },
+  "tabs": {
+    "pending": "Pending",
+    "expired": "Expired",
+    "purchased": "Purchased"
+  },
   "loading": "Loading...",
   "noPending": "No pending leads.",
   "noExpired": "No expired leads.",
@@ -22,7 +26,11 @@
   "internalNotes": "Internal notes",
   "notesPlaceholder": "Notes...",
   "save": "Save",
-  "status": { "new": "New", "contacted": "Contacted", "completed": "Completed" },
+  "status": {
+    "new": "New",
+    "contacted": "Contacted",
+    "completed": "Completed"
+  },
   "selectAriaLabel": "Select {{name}}",
   "selectAllVisibleAriaLabel": "Select all visible pending leads",
   "selectLeadsToPurchase": "Select leads to purchase",
@@ -47,5 +55,9 @@
     "doneTitle": "Done",
     "unlockedCount_one": "{{count}} lead unlocked.",
     "unlockedCount_other": "{{count}} leads unlocked."
+  },
+  "beta": {
+    "title": "We're in beta: patient requests are free for now.",
+    "body": "Balance top-ups are not open yet. When they are, being listed on the platform will still be free — you will only pay for the patient requests you receive."
   }
 }

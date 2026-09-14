@@ -40,7 +40,9 @@
       "validateErrorDesc": "Could not validate code.",
       "invalidAmountTitle": "Invalid amount",
       "invalidAmountDesc": "Minimum top-up is €25."
-    }
+    },
+    "free": "Free",
+    "getFree": "Get it free"
   },
   "purchase": {
     "title": "Purchase leads",
@@ -87,5 +89,9 @@
       "invalid_input": "Please enter a valid code.",
       "default": "This code cannot be applied."
     }
+  },
+  "beta": {
+    "title": "We're in beta: patient requests are free for now.",
+    "body": "Balance top-ups are not open yet. When they are, being listed on the platform will still be free — you will only pay for the patient requests you receive."
   }
 }

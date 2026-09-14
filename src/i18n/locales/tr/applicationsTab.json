@@ -6,7 +6,11 @@
   "leadsRemaining_other": "{{count}} aday kaldı",
   "addBalance": "Bakiye Ekle",
   "searchPlaceholder": "İsme göre ara...",
-  "tabs": { "pending": "Bekleyen", "expired": "Süresi Dolmuş", "purchased": "Satın Alınan" },
+  "tabs": {
+    "pending": "Bekleyen",
+    "expired": "Süresi Dolmuş",
+    "purchased": "Satın Alınan"
+  },
   "loading": "Yükleniyor...",
   "noPending": "Bekleyen aday yok.",
   "noExpired": "Süresi dolmuş aday yok.",
@@ -22,7 +26,11 @@
   "internalNotes": "Dahili notlar",
   "notesPlaceholder": "Notlar...",
   "save": "Kaydet",
-  "status": { "new": "Yeni", "contacted": "İletişime Geçildi", "completed": "Tamamlandı" },
+  "status": {
+    "new": "Yeni",
+    "contacted": "İletişime Geçildi",
+    "completed": "Tamamlandı"
+  },
   "selectAriaLabel": "{{name}} seç",
   "selectAllVisibleAriaLabel": "Görünen tüm bekleyen adayları seç",
   "selectLeadsToPurchase": "Satın alınacak adayları seçin",
@@ -47,5 +55,9 @@
     "doneTitle": "Tamamlandı",
     "unlockedCount_one": "{{count}} adayın kilidi açıldı.",
     "unlockedCount_other": "{{count}} adayın kilidi açıldı."
+  },
+  "beta": {
+    "title": "Beta dönemindeyiz: hasta talepleri şimdilik ücretsiz.",
+    "body": "Bakiye yükleme henüz açık değil. Açıldığında da platformda yer almak yine ücretsiz olacak; yalnızca size gelen hasta talepleri için ödeme yapacaksınız."
   }
 }

@@ -40,7 +40,9 @@
       "validateErrorDesc": "Kod doğrulanamadı.",
       "invalidAmountTitle": "Geçersiz tutar",
       "invalidAmountDesc": "Minimum yükleme tutarı €25'tir."
-    }
+    },
+    "free": "Ücretsiz",
+    "getFree": "Ücretsiz al"
   },
   "purchase": {
     "title": "Aday satın al",
@@ -87,5 +89,9 @@
       "invalid_input": "Lütfen geçerli bir kod girin.",
       "default": "Bu kod uygulanamıyor."
     }
+  },
+  "beta": {
+    "title": "Beta dönemindeyiz: hasta talepleri şimdilik ücretsiz.",
+    "body": "Bakiye yükleme henüz açık değil. Açıldığında da platformda yer almak yine ücretsiz olacak; yalnızca size gelen hasta talepleri için ödeme yapacaksınız."
   }
 }

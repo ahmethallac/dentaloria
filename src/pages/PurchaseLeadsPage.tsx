@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, ShoppingCart, Loader2, Tag, Check, X, AlertCircle } from "lucide-react";
 import { withLocalePrefix } from "@/lib/localePath";
+import { BETA_DISCOUNT_CODE } from "@/lib/betaDiscount";
 
 const PRICE_CENTS = 2500;
 const EXPIRY_MS = 48 * 60 * 60 * 1000;
@@ -53,6 +54,7 @@ export default function PurchaseLeadsPage() {
   const [discount, setDiscount] = useState<DiscountState | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
+  const autoAppliedRef = useRef(false);
 
   const reasonText = (reason?: string) => {
     const key = reason && ['not_found', 'inactive', 'expired', 'max_uses_reached', 'invalid_input'].includes(reason)
@@ -116,8 +118,10 @@ export default function PurchaseLeadsPage() {
   const subtotalCents = leads.length * PRICE_CENTS;
   const finalCents = discount ? discount.finalCents : subtotalCents;
 
-  const applyCode = async () => {
-    const code = codeInput.trim().toUpperCase();
+  // `silent` drops the toasts for the automatic beta apply, so nobody sees
+  // an error toast if the code has since been switched off.
+  const applyCode = async (codeOverride?: string, silent = false) => {
+    const code = (codeOverride ?? codeInput).trim().toUpperCase();
     if (!code) return;
     setApplyingCode(true);
     try {
@@ -128,11 +132,13 @@ export default function PurchaseLeadsPage() {
       if (error) throw error;
       const v = data as any;
       if (!v?.valid) {
-        toast({
-          title: t('purchase.toasts.invalidCodeTitle'),
-          description: reasonText(v?.reason),
-          variant: "destructive",
-        });
+        if (!silent) {
+          toast({
+            title: t('purchase.toasts.invalidCodeTitle'),
+            description: reasonText(v?.reason),
+            variant: "destructive",
+          });
+        }
         setDiscount(null);
         return;
       }
@@ -142,13 +148,26 @@ export default function PurchaseLeadsPage() {
         finalCents: v.final_cents,
         percentOff: v.percent_off,
       });
-      toast({ title: t('purchase.toasts.appliedTitle'), description: t('purchase.toasts.appliedDesc', { code: v.code, percent: v.percent_off }) });
+      if (!silent) {
+        toast({ title: t('purchase.toasts.appliedTitle'), description: t('purchase.toasts.appliedDesc', { code: v.code, percent: v.percent_off }) });
+      }
     } catch (e: any) {
-      toast({ title: t('purchase.toasts.invalidCodeTitle'), description: e.message || t('purchase.toasts.validateErrorDesc'), variant: "destructive" });
+      if (!silent) {
+        toast({ title: t('purchase.toasts.invalidCodeTitle'), description: e.message || t('purchase.toasts.validateErrorDesc'), variant: "destructive" });
+      }
     } finally {
       setApplyingCode(false);
     }
   };
+
+  // Beta: apply BETA100 the moment the real subtotal is known, so nobody
+  // has to type it in. Runs once; pressing "Kaldır" stays removed.
+  useEffect(() => {
+    if (!loaded || leads.length === 0 || autoAppliedRef.current) return;
+    autoAppliedRef.current = true;
+    applyCode(BETA_DISCOUNT_CODE, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, leads.length]);
 
   const removeCode = () => {
     setDiscount(null);
@@ -278,7 +297,7 @@ export default function PurchaseLeadsPage() {
                         onKeyDown={(e) => { if (e.key === "Enter") applyCode(); }}
                       />
                     </div>
-                    <Button onClick={applyCode} disabled={applyingCode || !codeInput.trim()} variant="outline">
+                    <Button onClick={() => applyCode()} disabled={applyingCode || !codeInput.trim()} variant="outline">
                       {applyingCode ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                       {t('purchase.discountCode.apply')}
                     </Button>
