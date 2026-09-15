@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
-import { CheckCircle2, Loader2, Mail, Search, Send, AlertTriangle, BellRing } from 'lucide-react'
+import { CheckCircle2, Loader2, Mail, Search, Send, AlertTriangle, BellRing, Trash2 } from 'lucide-react'
 import {
   approvalOf, clinicLabel, fillTemplate, inviteLink, invokeInBatches, loadTemplates, localeOf, saveTemplates,
   type InviteLocale, type OutreachChannel, type OutreachDraft, type TemplateSet,
@@ -43,6 +43,7 @@ export default function OutreachEmail({ drafts, loading, reload }: Props) {
   const [savingTpl, setSavingTpl] = useState(false)
   const [finding, setFinding] = useState<{ done: number; total: number } | null>(null)
   const [sending, setSending] = useState<{ done: number; total: number } | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [manual, setManual] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function OutreachEmail({ drafts, loading, reload }: Props) {
   const emailOf = (d: OutreachDraft) => approvalOf(d)?.contact_email || d.email
   const chosen = pool.filter((d) => selected.has(d.id))
   const ready = chosen.filter((d) => emailOf(d))
-  const busy = !!finding || !!sending
+  const busy = !!finding || !!sending || deleting
 
   const switchView = (next: View) => { setView(next); setSelected(new Set()) }
   const toggle = (id: string, on: boolean) =>
@@ -145,6 +146,29 @@ export default function OutreachEmail({ drafts, loading, reload }: Props) {
     }
   }
 
+  // For the clinics we decide not to approach at all. This is the same purge
+  // rejection runs, plus the suppression tombstone, so they do not reappear in
+  // the next listing run.
+  const remove = async () => {
+    if (!chosen.length) return
+    if (!window.confirm(t('outreach.email.deleteConfirm', { count: chosen.length }))) return
+    setDeleting(true)
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-delete-clinics', {
+        body: { clinicIds: chosen.map((d) => d.id), suppress: true },
+      })
+      if (error) throw error
+      if (data?.error) throw new Error(data.error)
+      toast({ title: t('outreach.email.deleted', { count: data?.deletedClinics ?? chosen.length }) })
+      setSelected(new Set())
+    } catch (err: any) {
+      toast({ title: t('outreach.email.deleteFailed'), description: err?.message, variant: 'destructive' })
+    } finally {
+      setDeleting(false)
+      reload()
+    }
+  }
+
   const saveManualEmail = async (d: OutreachDraft) => {
     const email = (manual[d.id] ?? '').trim().toLowerCase()
     const approval = approvalOf(d)
@@ -223,6 +247,10 @@ export default function OutreachEmail({ drafts, loading, reload }: Props) {
             </label>
             <span className="text-sm text-muted-foreground">{t('outreach.selectedCount', { count: chosen.length })}</span>
             <div className="flex-1" />
+            <Button variant="destructive" size="sm" disabled={!chosen.length || busy} onClick={remove}>
+              {deleting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Trash2 className="w-4 h-4 mr-1.5" />}
+              {t('outreach.email.deleteSelected', { count: chosen.length })}
+            </Button>
             {view === 'new' && (
               <Button variant="outline" size="sm" disabled={!chosen.length || busy} onClick={findContacts}>
                 {finding ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Search className="w-4 h-4 mr-1.5" />}

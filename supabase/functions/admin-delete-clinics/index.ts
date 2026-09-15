@@ -3,6 +3,7 @@
 // nightly purge exactly.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
 import { purgeClinics } from '../_shared/purgeClinics.ts'
+import { hostnameOf } from '../_shared/outreach.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,6 +38,27 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}))
     const clinicIds: string[] = Array.isArray(body.clinicIds) ? body.clinicIds.filter((x: any) => typeof x === 'string') : []
     if (!clinicIds.length) return json({ error: 'clinicIds required' }, 400)
+
+    // "And never collect this one again" — the same tombstone a clinic leaves
+    // when it rejects its own draft. Deleting alone would not hold: the
+    // collector's duplicate check only looks at clinics that still exist, so
+    // the next listing run would import this one straight back. Written before
+    // the purge, and a failure here stops the delete, because deleting without
+    // the tombstone is the one outcome that quietly undoes itself.
+    if (body.suppress === true) {
+      const { data: clinics } = await admin
+        .from('clinics').select('name, email, website').in('id', clinicIds)
+      const rows = (clinics ?? []).map((c: any) => ({
+        clinic_name: c.name ?? 'unknown',
+        email: c.email ?? null,
+        website_domain: hostnameOf(c.website ?? null),
+        reason: 'admin_removed',
+      }))
+      if (rows.length) {
+        const { error } = await admin.from('outreach_suppressions').insert(rows)
+        if (error) return json({ error: `Could not record the suppression: ${error.message}` }, 500)
+      }
+    }
 
     return json(await purgeClinics(admin, clinicIds))
   } catch (e: any) {

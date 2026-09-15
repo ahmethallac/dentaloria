@@ -341,7 +341,11 @@
       "remindedSummary": "{{total}} klinikten {{sent}} tanesine hatırlatma gönderildi",
       "remindedTimes": "{{count}} hatırlatma · son {{date}}",
       "emptyNew": "Mail gönderilmemiş klinik yok. Yeni klinik toplamak için \"Klinik topla\" sekmesini kullan.",
-      "emptySent": "Henüz hiçbir kliniğe mail gönderilmedi."
+      "emptySent": "Henüz hiçbir kliniğe mail gönderilmedi.",
+      "deleteSelected": "{{count}} kliniği sil",
+      "deleteConfirm": "{{count}} klinik kalıcı olarak silinecek: sayfası, fotoğrafları ve daveti tamamen kaldırılacak. Ayrıca kara listeye eklenecekler, yani yeni liste çektiğinde bir daha karşına gelmeyecekler. Emin misin?",
+      "deleted": "{{count}} klinik silindi",
+      "deleteFailed": "Silinemedi"
     },
     "whatsapp": {
       "title": "WhatsApp ile pazarla",

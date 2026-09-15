@@ -341,7 +341,11 @@
       "remindedSummary": "Reminded {{sent}} of {{total}} clinics",
       "remindedTimes": "{{count}} reminders · last {{date}}",
       "emptyNew": "No clinics left to mail. Use the \"Collect clinics\" tab to add more.",
-      "emptySent": "No clinic has been mailed yet."
+      "emptySent": "No clinic has been mailed yet.",
+      "deleteSelected": "Delete {{count}}",
+      "deleteConfirm": "{{count}} clinics will be deleted for good — page, photos and invite all removed. They also go on the suppression list, so a future listing run will not bring them back. Are you sure?",
+      "deleted": "Deleted {{count}} clinics",
+      "deleteFailed": "Could not delete"
     },
     "whatsapp": {
       "title": "Market on WhatsApp",
