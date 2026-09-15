@@ -174,7 +174,7 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
             </div>
             <div>
               <Label htmlFor="oc-count">{t('outreach.howMany')}</Label>
-              <Input id="oc-count" type="number" min={1} max={20} value={count} onChange={(e) => setCount(e.target.value)} />
+              <Input id="oc-count" type="number" min={1} max={50} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div>
               <Label>{t('outreach.inviteLanguage')}</Label>

@@ -26,7 +26,7 @@ const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 // One page per second-ish. Nothing here needs to be quick, and hammering the
 // source is both rude and the fastest way to get blocked.
 const REQUEST_GAP_MS = 900
-const MAX_PER_RUN = 20
+const MAX_PER_RUN = 50
 const DRAFT_LIFETIME_DAYS = 14
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -308,6 +308,63 @@ const catalogueKey = (rawName: string): string | null => {
   return null
 }
 
+// ── Pagination ──────────────────────────────────────────────────────────────
+// A listing URL — a city page or a filtered search-results URL — only ever
+// shows its own first page (a city page's "Top 10", or a search-results
+// page's own ten). Getting more than that means walking further
+// search-results pages for the same location, the way "See all N clinics"
+// does client-side. A city page doesn't put that location id in its own URL,
+// but it does embed it in the "see all" link inside its HTML — that is where
+// this pulls it from when the given URL isn't already a search-results one.
+const LOCATION_RE = /[?&]location=([a-f0-9-]{36})/i
+const MAX_LISTING_PAGES = 12 // ~10 clinics/page; well past MAX_PER_RUN's worth
+
+const collectSlugs = async (listUrl: string, limit: number): Promise<string[]> => {
+  const firstHtml = await fetchPage(listUrl)
+  const slugs = new Set<string>(
+    [...firstHtml.matchAll(/\/dental-clinic\/([a-z0-9-]+)/gi)].map((m) => m[1]),
+  )
+  if (slugs.size >= limit) return [...slugs].slice(0, limit)
+
+  let searchUrl: URL
+  let page: number
+  try {
+    searchUrl = new URL(listUrl)
+  } catch {
+    return [...slugs]
+  }
+
+  if (/\/search-results\/?$/i.test(searchUrl.pathname)) {
+    page = parseInt(searchUrl.searchParams.get('page') ?? '1', 10) || 1
+  } else {
+    const location = firstHtml.match(LOCATION_RE)?.[1]
+    if (!location) return [...slugs] // no way to find further pages
+    searchUrl = new URL('https://www.booking.dentist/search-results')
+    searchUrl.searchParams.set('direction', 'DESC')
+    searchUrl.searchParams.set('limit', '10')
+    searchUrl.searchParams.set('location', location)
+    searchUrl.searchParams.set('sortBy', 'recommended')
+    page = 1
+  }
+
+  for (let i = 0; i < MAX_LISTING_PAGES && slugs.size < limit; i++) {
+    page += 1
+    searchUrl.searchParams.set('page', String(page))
+    await sleep(REQUEST_GAP_MS)
+    let html: string
+    try {
+      html = await fetchPage(searchUrl.toString())
+    } catch {
+      break
+    }
+    const before = slugs.size
+    for (const m of html.matchAll(/\/dental-clinic\/([a-z0-9-]+)/gi)) slugs.add(m[1])
+    if (slugs.size === before) break // this page had nothing new — end of the list
+  }
+
+  return [...slugs].slice(0, limit)
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
@@ -341,10 +398,7 @@ Deno.serve(async (req) => {
     const cityByName = new Map((cities ?? []).map((c: any) => [norm(c.name), c.id]))
     const treatmentByName = new Map((treatments ?? []).map((t: any) => [norm(t.name), t.id]))
 
-    const listingHtml = await fetchPage(listUrl)
-    const slugs = [...new Set(
-      [...listingHtml.matchAll(/\/dental-clinic\/([a-z0-9-]+)/gi)].map((m) => m[1]),
-    )].slice(0, limit)
+    const slugs = await collectSlugs(listUrl, limit)
 
     if (!slugs.length) return json({ error: 'No clinics found on that page.', results: [] }, 200)
 
