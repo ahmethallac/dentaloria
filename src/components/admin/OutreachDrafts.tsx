@@ -108,9 +108,11 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
   })
   const [collecting, setCollecting] = useState(false)
   const [results, setResults] = useState<any[] | null>(null)
-  // Set when the run hit its time budget rather than the number asked for —
-  // the same URL run again carries on from there.
+  // Set when the rounds ended before the number asked for — usually the
+  // listing has no more clinics we do not already have.
   const [stoppedEarly, setStoppedEarly] = useState(false)
+  // Live count while the rounds run, so a two-minute wait shows movement.
+  const [progress, setProgress] = useState<{ created: number; target: number } | null>(null)
 
   const chooseLocale = (v: InviteLocale) => {
     setInviteLocale(v)
@@ -122,25 +124,50 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
     toast({ title: t('outreach.copied') })
   }
 
+  // One call stops at its own time budget — around twenty clinics — because a
+  // longer request is killed by the platform and then reports nothing at all.
+  // So a hundred is asked for in rounds instead of making him press the button
+  // five times: each round continues past everything already collected. It
+  // gives up when a round adds nobody, which is what an exhausted listing
+  // looks like from here, and keeps whatever the earlier rounds made.
   const collect = async () => {
+    const target = Math.min(Math.max(Number(count) || 1, 1), 100)
     setCollecting(true)
     setResults(null)
+    setStoppedEarly(false)
+    setProgress({ created: 0, target })
+    const all: any[] = []
+    const seen = new Set<string>()
+    let created = 0
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const { data, error } = await supabase.functions.invoke('collect-clinics', {
-        body: { listUrl, limit: Number(count), inviteLocale },
-        headers: session ? { Authorization: `Bearer ${session.access_token}` } : undefined,
-      })
-      const payload = (data ?? {}) as any
-      if (payload?.error && !payload?.results) throw new Error(payload.error)
-      if (error && !payload?.results) throw error
-      setResults(payload.results ?? [])
-      setStoppedEarly(payload.stoppedEarly === 'time')
-      reload()
+      for (let round = 0; round < 10 && created < target; round++) {
+        const { data, error } = await supabase.functions.invoke('collect-clinics', {
+          body: { listUrl, limit: target - created, inviteLocale },
+          headers: session ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+        })
+        const payload = (data ?? {}) as any
+        if (payload?.error && !payload?.results) throw new Error(payload.error)
+        if (error && !payload?.results) throw error
+        const roundResults: any[] = payload.results ?? []
+        for (const r of roundResults) {
+          if (seen.has(r.slug)) continue
+          seen.add(r.slug)
+          all.push(r)
+        }
+        const madeHere = roundResults.filter((r) => r.status === 'created').length
+        created += madeHere
+        setProgress({ created, target })
+        if (!madeHere) break
+      }
     } catch (err: any) {
       toast({ title: t('outreach.collectFailed'), description: err?.message, variant: 'destructive' })
     } finally {
+      setResults(all)
+      setStoppedEarly(created < target)
+      setProgress(null)
       setCollecting(false)
+      reload()
     }
   }
 
@@ -190,7 +217,13 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">{t('outreach.inviteLanguageHint')}</p>
-          {collecting && <p className="text-sm text-muted-foreground">{t('outreach.collecting')}</p>}
+          {collecting && (
+            <p className="text-sm text-muted-foreground">
+              {progress && progress.created > 0
+                ? t('outreach.collectingProgress', { created: progress.created, target: progress.target })
+                : t('outreach.collecting')}
+            </p>
+          )}
 
           {results && (
             <div className="space-y-2 pt-2">

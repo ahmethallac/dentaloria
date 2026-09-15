@@ -269,11 +269,12 @@
     "copyLink": "Linki kopyala",
     "editDetails": "Detayları düzenle",
     "collectTitle": "Listeden klinik topla",
-    "collectHint": "booking.dentist ya da whatclinic.com listeleme linkini yapıştır, kaç klinik alınacağını yaz. Sayfalar gerektiği kadar ilerlenir; daha önce çekilmiş klinikler atlanır ve sayıya dahil edilmez. Çalıştırma başına en fazla 100; istekler bilerek aralıklı gönderilir.",
+    "collectHint": "booking.dentist ya da whatclinic.com listeleme linkini yapıştır, kaç klinik alınacağını yaz. Sayfalar gerektiği kadar ilerlenir; daha önce çekilmiş klinikler atlanır ve sayıya dahil edilmez. Çalıştırma başına en fazla 100; istekler bilerek aralıklı gönderilir, 100 klinik birkaç dakika sürer.",
     "listUrl": "Liste linki",
     "howMany": "Kaç adet",
     "collect": "Klinikleri topla",
-    "collecting": "Klinik sayfaları okunuyor, her biri yaklaşık bir saniye…",
+    "collecting": "Klinik sayfaları okunuyor, her biri yaklaşık bir saniye… Yüz klinik birkaç dakika sürer, sayfayı kapatma.",
+    "collectingProgress": "{{target}} klinikten {{created}} tanesi hazır, devam ediliyor…",
     "collectDone": "{{total}} klinikten {{created}} tanesi oluşturuldu.",
     "createdSummary": "{{treatments}} tedavi · {{doctors}} doktor · {{images}} foto · {{beforeAfter}} öncesi/sonrası · {{languages}} dil · {{videos}} video (arka planda kopyalanıyor)",
     "unmapped": "{{count}} tedavi kataloğunda yok",
@@ -360,6 +361,6 @@
       "copyNumber": "Numarayı kopyala",
       "noNumber": "Numara bulunamadı, elle girebilirsin."
     },
-    "collectStoppedEarly": "Süre sınırına takıldı, istenen sayıya ulaşılamadı. Aynı linki tekrar çalıştır — kaldığı yerden devam eder, daha önce çekilenleri atlar."
+    "collectStoppedEarly": "İstenen sayıya ulaşılamadı — listede elimizde olmayan başka klinik kalmamış olabilir. Başka bir şehrin ya da tedavinin listesini dene."
   }
 }

@@ -269,11 +269,12 @@
     "copyLink": "Copy link",
     "editDetails": "Edit details",
     "collectTitle": "Collect clinics from a listing",
-    "collectHint": "Paste a booking.dentist or whatclinic.com listing URL and say how many clinics to take. It walks as many listing pages as it needs, skipping clinics already collected without counting them. Max 100 per run; requests are spaced out on purpose.",
+    "collectHint": "Paste a booking.dentist or whatclinic.com listing URL and say how many clinics to take. It walks as many listing pages as it needs, skipping clinics already collected without counting them. Max 100 per run; requests are spaced out on purpose, so a hundred takes a few minutes.",
     "listUrl": "Listing URL",
     "howMany": "How many",
     "collect": "Collect clinics",
-    "collecting": "Reading clinic pages, roughly a second each…",
+    "collecting": "Reading clinic pages, roughly a second each… A hundred takes a few minutes; leave this page open.",
+    "collectingProgress": "{{created}} of {{target}} done, still going…",
     "collectDone": "{{created}} of {{total}} created.",
     "createdSummary": "{{treatments}} treatments · {{doctors}} doctors · {{images}} photos · {{beforeAfter}} before/after · {{languages}} languages · {{videos}} videos (copying in background)",
     "unmapped": "{{count}} treatments not in your catalogue",
@@ -360,6 +361,6 @@
       "copyNumber": "Copy number",
       "noNumber": "No number found, you can type one in."
     },
-    "collectStoppedEarly": "Stopped at the time limit before reaching the number you asked for. Run the same URL again — it carries on from there and skips what it already collected."
+    "collectStoppedEarly": "Ran out before reaching the number you asked for — the listing may hold no clinics we do not already have. Try another city or treatment."
   }
 }

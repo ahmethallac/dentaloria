@@ -38,11 +38,14 @@ const REQUEST_GAP_MS = 900
 const MAX_PER_RUN = 100
 const DRAFT_LIFETIME_DAYS = 14
 
-// A run this long is close enough to the platform's ceiling that being cut off
-// mid-clinic is the likely next step. Stopping cleanly instead returns the
-// drafts already made and reports it; the same URL run again picks up where
-// this left off, because everything collected is skipped on the way past.
-const RUN_BUDGET_MS = 220_000
+// The platform cuts a request off well before this function runs out of work,
+// and when it does the caller sees only "non-2xx" — the drafts made so far are
+// in the database, but nothing says which, so the run looks like a total
+// failure. So stop on our own clock, comfortably inside the ceiling, and
+// report it. Asking for 100 therefore takes several rounds; the panel makes
+// them automatically, and each one picks up where the last stopped because
+// everything already collected is skipped on the way past.
+const RUN_BUDGET_MS = 110_000
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 

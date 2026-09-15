@@ -94,8 +94,12 @@ Resend), **whatsapp** (message + number + `wa.me` link; nothing is sent).
   (schema.org JSON-LD + the Next.js flight payload) and whatclinic.com (JSON-LD
   + RDFa `property=` attributes). The count is clinics **created**, not pages
   read — anything already in `clinics` is skipped without spending quota, so
-  re-running the same URL continues the listing. It stops at a time budget and
-  says so rather than being killed mid-clinic.
+  re-running the same URL continues the listing. One call stops at its own
+  110s budget — a longer request is killed by the platform, and then the panel
+  sees only "non-2xx" while the drafts it did make sit in the database
+  unreported. So the panel calls it **in rounds** until the number asked for is
+  reached or a round adds nobody. Never raise `RUN_BUDGET_MS` to buy a bigger
+  batch; add rounds.
 - whatclinic caveats: it publishes **no phone and no website** (both sit behind
   its enquiry form), so "find emails" cannot help there — the address is typed
   in by hand, or arrives with the Google Business match. Its prices are TL, so
