@@ -169,7 +169,7 @@ export const Footer = () => {
 
             <p className="mt-4 flex items-center gap-2 text-sm text-primary-foreground/65">
               <Mail className="h-4 w-4" aria-hidden="true" />
-              info@dentaloria.com
+              info@digimoria.com
             </p>
           </div>
         </div>
