@@ -5,6 +5,12 @@
 // filled in. A clinic is skipped, never guessed at, when it has no address,
 // its invite expired or was answered, it was already mailed, or it sits on
 // the suppression list.
+//
+// mode: 'reminder' is the mirror image — it mails *only* clinics that were
+// already invited and have not answered, with the reminder text, and can be
+// run again as often as the admin likes. It leaves invite_sent_at alone
+// (that is the record of first contact) and counts itself separately, so the
+// panel can show "reminded twice" without losing when the first mail went.
 import {
   corsHeaders, fillTemplate, hostnameOf, inviteUrl, json, rejectNonAdmin, serviceClient,
   type InviteLocale,
@@ -46,7 +52,9 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('RESEND_API_KEY')
     if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
 
-    const { clinicIds, templates } = (await req.json()) as { clinicIds: string[]; templates: Templates }
+    const { clinicIds, templates, mode } = (await req.json()) as
+      { clinicIds: string[]; templates: Templates; mode?: 'invite' | 'reminder' }
+    const reminding = mode === 'reminder'
     const ids = (Array.isArray(clinicIds) ? clinicIds : []).slice(0, MAX_PER_CALL)
     if (!ids.length) return json({ error: 'clinicIds is required' }, 400)
     for (const locale of ['tr', 'en'] as const) {
@@ -58,7 +66,7 @@ Deno.serve(async (req) => {
 
     const { data: approvals, error } = await admin
       .from('clinic_approvals')
-      .select('id, clinic_id, status, preview_token, expires_at, invite_locale, contact_email, invite_sent_at, clinics ( name, display_name, email, website )')
+      .select('id, clinic_id, status, preview_token, expires_at, invite_locale, contact_email, invite_sent_at, invite_reminder_count, clinics ( name, display_name, email, website )')
       .in('clinic_id', ids)
       .eq('status', 'pending')
     if (error) throw error
@@ -71,7 +79,10 @@ Deno.serve(async (req) => {
 
       if (!a.preview_token) { skip('no link'); continue }
       if (a.expires_at && new Date(a.expires_at) <= new Date()) { skip('invite expired'); continue }
-      if (a.invite_sent_at) { skip('already sent'); continue }
+      if (reminding ? !a.invite_sent_at : !!a.invite_sent_at) {
+        skip(reminding ? 'never invited' : 'already sent')
+        continue
+      }
       if (!to) { skip('no email'); continue }
 
       const domain = hostnameOf(clinic?.website)
@@ -104,7 +115,16 @@ Deno.serve(async (req) => {
         if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 200)}`)
 
         await admin.from('clinic_approvals')
-          .update({ invite_sent_at: new Date().toISOString(), invite_send_error: null, contact_email: to })
+          .update(
+            reminding
+              ? {
+                  invite_reminder_sent_at: new Date().toISOString(),
+                  invite_reminder_count: ((a as any).invite_reminder_count ?? 0) + 1,
+                  invite_send_error: null,
+                  contact_email: to,
+                }
+              : { invite_sent_at: new Date().toISOString(), invite_send_error: null, contact_email: to },
+          )
           .eq('id', a.id)
         results.push({ clinicId: a.clinic_id, status: 'sent', to })
       } catch (err) {

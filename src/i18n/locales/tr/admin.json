@@ -107,7 +107,15 @@
     "approveGoLive": "Onayla ve Yayına Al",
     "sendBack": "Geri Gönder",
     "pendingPageBadge": "Sayfa onayı bekliyor",
-    "noPages": "Onay bekleyen sayfa yok."
+    "noPages": "Onay bekleyen sayfa yok.",
+    "selfTab": "Dışarıdan Başvuranlar ({{count}})",
+    "invitedTab": "Davet Gönderdiklerim ({{count}})",
+    "selfHint": "Bu klinikler siteye kendileri başvurdu. Davet göndererek eklediklerin ayrı sekmede.",
+    "invitedHint": "Bunlar senin davet gönderdiğin, taslak sayfası hazırlanmış klinikler. Onaylamaları için kendilerinin linke tıklaması gerekir.",
+    "originSelf": "Kendisi başvurdu",
+    "originInvite": "Davet gönderildi (taslak)",
+    "originInviteSent": "Davet maili gönderildi · {{date}}",
+    "noInvited": "Davet gönderdiğin, cevap bekleyen klinik yok."
   },
   "patients": {
     "title": "Tüm Hastalar",
@@ -261,7 +269,7 @@
     "copyLink": "Linki kopyala",
     "editDetails": "Detayları düzenle",
     "collectTitle": "Listeden klinik topla",
-    "collectHint": "booking.dentist listeleme ya da filtrelenmiş arama linkini yapıştır, kaç klinik alınacağını yaz. Her klinik tek tek okunup gizli linkiyle taslağa dönüşür. Çalıştırma başına en fazla 20; istekler bilerek aralıklı gönderilir.",
+    "collectHint": "booking.dentist ya da whatclinic.com listeleme linkini yapıştır, kaç klinik alınacağını yaz. Sayfalar gerektiği kadar ilerlenir; daha önce çekilmiş klinikler atlanır ve sayıya dahil edilmez. Çalıştırma başına en fazla 100; istekler bilerek aralıklı gönderilir.",
     "listUrl": "Liste linki",
     "howMany": "Kaç adet",
     "collect": "Klinikleri topla",
@@ -323,7 +331,17 @@
       "sentSummary": "{{total}} klinikten {{sent}} tanesine mail gönderildi",
       "someFailed": "{{count}} gönderim başarısız oldu, satırlardaki hataya bak.",
       "sendFailed": "Gönderilemedi",
-      "sentAt": "{{email}} · {{date}} tarihinde gönderildi"
+      "sentAt": "{{email}} · {{date}} tarihinde gönderildi",
+      "tabNew": "Yeni ({{count}})",
+      "tabSent": "Daha önce gönderilenler ({{count}})",
+      "reminderHint": "Bu kliniklere davet maili bir kez gitti ama henüz cevap vermediler. Hatırlatma metnini istediğin kadar tekrar gönderebilirsin.",
+      "reminderTemplateTitle": "Hatırlatma metni",
+      "sendReminder": "{{count}} kliniğe hatırlat",
+      "reminderConfirm": "{{count}} kliniğe hatırlatma maili gönderilecek. Devam edilsin mi?",
+      "remindedSummary": "{{total}} klinikten {{sent}} tanesine hatırlatma gönderildi",
+      "remindedTimes": "{{count}} hatırlatma · son {{date}}",
+      "emptyNew": "Mail gönderilmemiş klinik yok. Yeni klinik toplamak için \"Klinik topla\" sekmesini kullan.",
+      "emptySent": "Henüz hiçbir kliniğe mail gönderilmedi."
     },
     "whatsapp": {
       "title": "WhatsApp ile pazarla",
@@ -337,6 +355,7 @@
       "copyMessage": "Mesajı kopyala",
       "copyNumber": "Numarayı kopyala",
       "noNumber": "Numara bulunamadı, elle girebilirsin."
-    }
+    },
+    "collectStoppedEarly": "Süre sınırına takıldı, istenen sayıya ulaşılamadı. Aynı linki tekrar çalıştır — kaldığı yerden devam eder, daha önce çekilenleri atlar."
   }
 }

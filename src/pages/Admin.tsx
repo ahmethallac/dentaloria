@@ -61,7 +61,7 @@ const Admin = () => {
   const [clinics, setClinics] = useState<any[]>([])
   const [pendingApprovals, setPendingApprovals] = useState<any[]>([])
   const [pendingPageApprovals, setPendingPageApprovals] = useState<any[]>([])
-  const [approvalsTab, setApprovalsTab] = useState<'application' | 'page'>('application')
+  const [approvalsTab, setApprovalsTab] = useState<'application' | 'invited' | 'page'>('application')
   const [patients, setPatients] = useState<any[]>([])
   const [stats, setStats] = useState({ totalClinics: 0, pendingApprovals: 0, totalPatients: 0, totalRevenue: 0 })
   const [loading, setLoading] = useState(true)
@@ -788,7 +788,19 @@ const Admin = () => {
       </Dialog>
 
 
-      {section === 'approvals' && (
+      {section === 'approvals' && (() => {
+        // A clinic we invited ourselves and one that walked in off the site are
+        // the same row in the same table, and mixing them meant a real
+        // application could sit unnoticed behind forty of our own drafts.
+        // Anything carrying invite machinery — a secret link, a sent date, an
+        // expiry — came from outreach; the rest applied on their own.
+        const fromOutreach = (a: any) =>
+          !!(a.preview_token || a.invite_sent_at || a.expires_at || a.consent_at)
+        const selfApplied = pendingApprovals.filter(a => !fromOutreach(a))
+        const invited = pendingApprovals.filter(fromOutreach)
+        const shown = approvalsTab === 'invited' ? invited : selfApplied
+
+        return (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
             <div>
@@ -803,7 +815,14 @@ const Admin = () => {
                 size="sm"
                 onClick={() => setApprovalsTab('application')}
               >
-                {t('approvals.applicationTab', { count: pendingApprovals.length })}
+                {t('approvals.selfTab', { count: selfApplied.length })}
+              </Button>
+              <Button
+                variant={approvalsTab === 'invited' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setApprovalsTab('invited')}
+              >
+                {t('approvals.invitedTab', { count: invited.length })}
               </Button>
               <Button
                 variant={approvalsTab === 'page' ? 'default' : 'ghost'}
@@ -815,9 +834,12 @@ const Admin = () => {
             </div>
           </CardHeader>
           <CardContent>
-            {approvalsTab === 'application' && (
+            {approvalsTab !== 'page' && (
               <div className="space-y-4">
-                {pendingApprovals.map(approval => {
+                <p className="text-sm text-muted-foreground">
+                  {t(approvalsTab === 'invited' ? 'approvals.invitedHint' : 'approvals.selfHint')}
+                </p>
+                {shown.map(approval => {
                   const c = approval.clinics || {}
                   const country = c.cities?.countries?.name
                   const city = c.cities?.name
@@ -829,6 +851,15 @@ const Admin = () => {
                           <p className="text-sm text-muted-foreground">
                             {[country, city].filter(Boolean).join(' • ') || '—'}
                           </p>
+                          <Badge variant={fromOutreach(approval) ? 'secondary' : 'default'} className="mt-1.5">
+                            {fromOutreach(approval)
+                              ? approval.invite_sent_at
+                                ? t('approvals.originInviteSent', {
+                                    date: new Date(approval.invite_sent_at).toLocaleDateString(),
+                                  })
+                                : t('approvals.originInvite')
+                              : t('approvals.originSelf')}
+                          </Badge>
                           <div className="text-sm mt-1 space-y-0.5">
                             <p><span className="text-muted-foreground">{t('approvals.emailLabel')}</span> {c.email || '—'}</p>
                             <p><span className="text-muted-foreground">{t('approvals.phoneLabel')}</span> {c.phone || '—'}</p>
@@ -879,8 +910,10 @@ const Admin = () => {
                     </div>
                   )
                 })}
-                {pendingApprovals.length === 0 && (
-                  <p className="text-center text-muted-foreground py-6">{t('approvals.noApplications')}</p>
+                {shown.length === 0 && (
+                  <p className="text-center text-muted-foreground py-6">
+                    {t(approvalsTab === 'invited' ? 'approvals.noInvited' : 'approvals.noApplications')}
+                  </p>
                 )}
               </div>
             )}
@@ -927,7 +960,8 @@ const Admin = () => {
             )}
           </CardContent>
         </Card>
-      )}
+        )
+      })()}
 
       {section === 'patients' && (() => {
         // Build language options from all clinics

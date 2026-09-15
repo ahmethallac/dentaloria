@@ -85,11 +85,33 @@ screenshot only at decision points, at reduced scale.
 
 ## Clinic invites (admin → "Klinik daveti")
 
-Three tabs in `src/components/admin/OutreachDrafts.tsx`: **collect** (booking.dentist
-listing → draft pages via `collect-clinics`), **email** (`outreach-find-contacts`
-scans the clinic's own website for an address, `outreach-send-invites` mails it
-through Resend), **whatsapp** (message + number + `wa.me` link; nothing is sent).
+Three tabs in `src/components/admin/OutreachDrafts.tsx`: **collect** (a listing →
+draft pages via `collect-clinics`), **email** (`outreach-find-contacts` scans the
+clinic's own website for an address, `outreach-send-invites` mails it through
+Resend), **whatsapp** (message + number + `wa.me` link; nothing is sent).
 
+- **collect** reads two sources, behind one `Scraped` shape: booking.dentist
+  (schema.org JSON-LD + the Next.js flight payload) and whatclinic.com (JSON-LD
+  + RDFa `property=` attributes). The count is clinics **created**, not pages
+  read — anything already in `clinics` is skipped without spending quota, so
+  re-running the same URL continues the listing. It stops at a time budget and
+  says so rather than being killed mid-clinic.
+- whatclinic caveats: it publishes **no phone and no website** (both sit behind
+  its enquiry form), so "find emails" cannot help there — the address is typed
+  in by hand, or arrives with the Google Business match. Its prices are TL, so
+  treatments land with `starting_price_euro` null rather than a converted
+  number. No videos are imported from it.
+- The scraper's `UA` must stay a recent Chrome: whatclinic answers 403
+  "Client-OldBrowserSpam" to older ones. Every clinic failing at once is the
+  symptom.
+- The **email** tab is two lists: never-mailed and already-mailed. The second
+  one sends the reminder (`outreach_templates.channel = 'email_reminder'`),
+  repeatably — it counts on `invite_reminder_count` / `invite_reminder_sent_at`
+  and never touches `invite_sent_at`, which stays the record of first contact.
+- Admin → approvals splits the same `clinic_approvals` rows into clinics we
+  invited and clinics that applied themselves, by whether the row carries
+  invite machinery (`preview_token` / `invite_sent_at` / `expires_at` /
+  `consent_at`). They used to be one list, and real applications got lost in it.
 - Per-invite state lives on `clinic_approvals` (`invite_locale`, `contact_email`,
   `whatsapp_phone`, `invite_sent_at`, …); texts in `outreach_templates`.
   Placeholders are `{{clinic}}` and `{{link}}`.
@@ -97,7 +119,13 @@ through Resend), **whatsapp** (message + number + `wa.me` link; nothing is sent)
   The draft page itself follows the site locale. TR invites link to `/tr/p/<token>`.
 - Rejecting deletes the clinic and writes `outreach_suppressions`; the send
   function refuses anyone on that list. Never bypass it.
-- The frontend selects the new columns, so the migration
-  `20260914120000_outreach_campaigns.sql` and the functions must be deployed
-  **before** the frontend that uses them.
+- The frontend selects the new columns, so the migrations
+  (`20260914120000_outreach_campaigns.sql`, `20260916120000_outreach_reminders.sql`)
+  and the functions must be deployed **before** the frontend that uses them.
+  Miss that order and the whole panel reads empty: PostgREST 400s the select.
+- **`supabase db push` is not usable on this project.** `supabase migration list`
+  shows most local migrations with an empty `remote` column even though they are
+  live, so a push would try to replay them all. Apply new SQL by pasting it into
+  the Supabase SQL editor, and keep the migration file in the repo as the record.
+  `supabase functions deploy <name>` is fine and is how the functions ship.
 

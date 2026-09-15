@@ -4,7 +4,7 @@
 import { supabase } from '@/integrations/supabase/client'
 
 export type InviteLocale = 'tr' | 'en'
-export type OutreachChannel = 'email' | 'whatsapp'
+export type OutreachChannel = 'email' | 'whatsapp' | 'email_reminder'
 
 export interface OutreachTemplate { subject: string; body: string }
 export type TemplateSet = Record<InviteLocale, OutreachTemplate>
@@ -21,6 +21,8 @@ export interface DraftApproval {
   whatsapp_source: string | null
   contacts_checked_at: string | null
   invite_sent_at: string | null
+  invite_reminder_sent_at: string | null
+  invite_reminder_count: number | null
   invite_send_error: string | null
 }
 
@@ -36,7 +38,7 @@ export interface OutreachDraft {
 }
 
 export const DRAFT_SELECT =
-  'id, name, display_name, created_at, email, website, phone, clinic_approvals ( id, preview_token, expires_at, status, invite_locale, contact_email, contact_email_source, whatsapp_phone, whatsapp_source, contacts_checked_at, invite_sent_at, invite_send_error )'
+  'id, name, display_name, created_at, email, website, phone, clinic_approvals ( id, preview_token, expires_at, status, invite_locale, contact_email, contact_email_source, whatsapp_phone, whatsapp_source, contacts_checked_at, invite_sent_at, invite_reminder_sent_at, invite_reminder_count, invite_send_error )'
 
 export const approvalOf = (d: OutreachDraft): DraftApproval | undefined =>
   d.clinic_approvals?.find((a) => a.status === 'pending') ?? d.clinic_approvals?.[0]
@@ -87,6 +89,52 @@ Take a look, and if you like it, approve it with one click. It goes live the mom
 If you would rather not, just press "Reject" on the same page. We delete the page and all its data straight away and will not contact you again.
 
 If you have any questions, simply reply to this email.
+
+Best wishes,
+The Dentaloria Team`,
+    },
+  },
+  // The nudge, for clinics that were mailed once and never answered. It leads
+  // with the reason to look again rather than repeating the first mail.
+  email_reminder: {
+    tr: {
+      subject: '{{clinic}} — hazırladığımız sayfa hâlâ sizi bekliyor',
+      body: `Merhaba {{clinic}} ekibi,
+
+Bir süre önce size yazmıştık, gözünüzden kaçmış olabilir diye kısaca hatırlatmak istedik.
+
+Kliniğiniz için hazırladığımız sayfa hâlâ onayınızı bekliyor:
+{{link}}
+
+Dentaloria yakında yüksek bütçeli reklam yayınlarına başlıyor. Bu sizin için şu demek: reklam ajanslarına ve reklam bütçelerine ciddi paralar ödemeden, tedavi arayan hastalardan doğrudan kaliteli talepler alabilirsiniz.
+
+Şimdilik herkes için tamamen ücretsiz — komisyon yok, taahhüt yok. Siz de ücretsiz deneyin.
+
+Sayfanıza göz atıp tek tıkla yayına almak için:
+{{link}}
+
+İstemiyorsanız aynı sayfadaki "Reddet" butonuna basmanız yeterli; sayfayı ve tüm bilgileri hemen siler, size bir daha yazmayız.
+
+İyi çalışmalar,
+Dentaloria Ekibi`,
+    },
+    en: {
+      subject: '{{clinic}} — your page is still waiting for you',
+      body: `Hi {{clinic}} team,
+
+We wrote to you a little while ago and thought it might have slipped past you, so here is a short reminder.
+
+The page we prepared for your clinic is still waiting for your approval:
+{{link}}
+
+Dentaloria is about to start advertising with serious budgets. For you that means high-quality enquiries from patients looking for treatment — without paying an agency or funding the ad spend yourself.
+
+It is completely free for everyone for now: no commission, no commitment. Try it at no cost.
+
+To take a look and publish it with one click:
+{{link}}
+
+If you would rather not, just press "Reject" on that page. We delete the page and all its data straight away and will not write to you again.
 
 Best wishes,
 The Dentaloria Team`,

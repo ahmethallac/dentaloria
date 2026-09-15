@@ -107,7 +107,15 @@
     "approveGoLive": "Approve & Go Live",
     "sendBack": "Send Back",
     "pendingPageBadge": "Pending page approval",
-    "noPages": "No pages waiting for approval."
+    "noPages": "No pages waiting for approval.",
+    "selfTab": "Applied Themselves ({{count}})",
+    "invitedTab": "Clinics I Invited ({{count}})",
+    "selfHint": "These clinics applied to the site on their own. The ones you invited are on the other tab.",
+    "invitedHint": "Clinics you sent an invitation to, with a draft page prepared. They publish by opening the link themselves.",
+    "originSelf": "Applied themselves",
+    "originInvite": "Invited (draft)",
+    "originInviteSent": "Invitation sent · {{date}}",
+    "noInvited": "No invited clinics waiting to answer."
   },
   "patients": {
     "title": "All Patients",
@@ -261,7 +269,7 @@
     "copyLink": "Copy link",
     "editDetails": "Edit details",
     "collectTitle": "Collect clinics from a listing",
-    "collectHint": "Paste a booking.dentist listing or filtered search URL and say how many clinics to take. Each one is read and turned into a draft with its own secret link. Max 20 per run; requests are spaced out on purpose.",
+    "collectHint": "Paste a booking.dentist or whatclinic.com listing URL and say how many clinics to take. It walks as many listing pages as it needs, skipping clinics already collected without counting them. Max 100 per run; requests are spaced out on purpose.",
     "listUrl": "Listing URL",
     "howMany": "How many",
     "collect": "Collect clinics",
@@ -323,7 +331,17 @@
       "sentSummary": "Sent to {{sent}} of {{total}} clinics",
       "someFailed": "{{count}} failed, see the error on those rows.",
       "sendFailed": "Could not send",
-      "sentAt": "sent to {{email}} on {{date}}"
+      "sentAt": "sent to {{email}} on {{date}}",
+      "tabNew": "New ({{count}})",
+      "tabSent": "Already mailed ({{count}})",
+      "reminderHint": "These clinics were invited once and have not answered. The reminder can go out as many times as you like.",
+      "reminderTemplateTitle": "Reminder text",
+      "sendReminder": "Remind {{count}} clinics",
+      "reminderConfirm": "A reminder email will go to {{count}} clinics. Continue?",
+      "remindedSummary": "Reminded {{sent}} of {{total}} clinics",
+      "remindedTimes": "{{count}} reminders · last {{date}}",
+      "emptyNew": "No clinics left to mail. Use the \"Collect clinics\" tab to add more.",
+      "emptySent": "No clinic has been mailed yet."
     },
     "whatsapp": {
       "title": "Market on WhatsApp",
@@ -337,6 +355,7 @@
       "copyMessage": "Copy message",
       "copyNumber": "Copy number",
       "noNumber": "No number found, you can type one in."
-    }
+    },
+    "collectStoppedEarly": "Stopped at the time limit before reaching the number you asked for. Run the same URL again — it carries on from there and skips what it already collected."
   }
 }

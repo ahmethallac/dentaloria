@@ -108,6 +108,9 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
   })
   const [collecting, setCollecting] = useState(false)
   const [results, setResults] = useState<any[] | null>(null)
+  // Set when the run hit its time budget rather than the number asked for —
+  // the same URL run again carries on from there.
+  const [stoppedEarly, setStoppedEarly] = useState(false)
 
   const chooseLocale = (v: InviteLocale) => {
     setInviteLocale(v)
@@ -132,6 +135,7 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
       if (payload?.error && !payload?.results) throw new Error(payload.error)
       if (error && !payload?.results) throw error
       setResults(payload.results ?? [])
+      setStoppedEarly(payload.stoppedEarly === 'time')
       reload()
     } catch (err: any) {
       toast({ title: t('outreach.collectFailed'), description: err?.message, variant: 'destructive' })
@@ -174,7 +178,7 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
             </div>
             <div>
               <Label htmlFor="oc-count">{t('outreach.howMany')}</Label>
-              <Input id="oc-count" type="number" min={1} max={50} value={count} onChange={(e) => setCount(e.target.value)} />
+              <Input id="oc-count" type="number" min={1} max={100} value={count} onChange={(e) => setCount(e.target.value)} />
             </div>
             <div>
               <Label>{t('outreach.inviteLanguage')}</Label>
@@ -191,6 +195,9 @@ function CollectTab({ drafts, loading, reload }: { drafts: OutreachDraft[]; load
           {results && (
             <div className="space-y-2 pt-2">
               <p className="text-sm font-medium">{t('outreach.collectDone', { created: created.length, total: results.length })}</p>
+              {stoppedEarly && (
+                <p className="text-sm text-amber-600 dark:text-amber-500">{t('outreach.collectStoppedEarly')}</p>
+              )}
               {results.map((r) => (
                 <div key={r.slug} className="flex flex-wrap items-center justify-between gap-2 border rounded-lg p-3 text-sm">
                   <div className="flex items-start gap-2 min-w-0">
