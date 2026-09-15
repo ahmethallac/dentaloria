@@ -31,5 +31,11 @@
     "title": "Gizliliğiniz Bizim İçin Önemli",
     "description": "Dentaloria üzerinden paylaştığınız her bilgi — kişisel bilgiler ve tedavi detayları dahil — sıkı bir gizlilik anlayışıyla işlenir ve yalnızca seçtiğiniz klinikle sizi buluşturmak için kullanılır."
   },
-  "operatedBy": "Dentaloria, Digimoria tarafından geliştirilip işletilmektedir."
+  "operatedBy": "Dentaloria, Digimoria tarafından geliştirilip işletilmektedir.",
+  "contact": {
+    "title": "Digimoria İletişim",
+    "email": "info@digimoria.com",
+    "phone": "+1 307 430 1457",
+    "address": "1603 Capitol Ave Ste 413 E328, Cheyenne, WY 82001, ABD"
+  }
 }

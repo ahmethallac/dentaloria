@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ShieldCheck, Tag, Languages as LanguagesIcon, UserCheck, Lock } from "lucide-react";
+import { ShieldCheck, Tag, Languages as LanguagesIcon, UserCheck, Lock, Mail, Phone, MapPin } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { useHeadMeta } from "@/hooks/useHeadMeta";
@@ -69,8 +69,23 @@ export default function AboutUs() {
           </div>
         </section>
 
-        <section className="text-center text-sm text-muted-foreground">
-          {t("operatedBy")}
+        <section className="text-center text-sm text-muted-foreground space-y-4">
+          <p>{t("operatedBy")}</p>
+          <div className="inline-flex flex-col items-center gap-1.5 text-foreground/80">
+            <span className="font-semibold text-foreground">{t("contact.title")}</span>
+            <span className="flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("contact.email")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("contact.phone")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("contact.address")}
+            </span>
+          </div>
         </section>
       </div>
 
