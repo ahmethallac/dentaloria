@@ -58,6 +58,8 @@ const COPY = {
     signupText:
       "Merak etmeyin, istediğiniz her şeyi düzenleyebileceksiniz. Önce bu kliniğin size ait olduğundan emin olmamız gerekiyor. Lütfen kurumsal e-posta adresinizle kayıt olun.",
     emailLabel: "Kurumsal e-posta adresiniz",
+    emailLabelGeneric: "E-posta adresiniz",
+    notCorporateEmail: "Kurumsal mailim bu değil",
     passwordLabel: "Şifre belirleyin",
     passwordHint: "En az 8 karakter",
     submit: "Kayıt ol ve yayınla",
@@ -97,6 +99,8 @@ const COPY = {
     signupText:
       "Don't worry — you will be able to edit everything. First we need to be sure this clinic is yours. Please sign up with your work email address.",
     emailLabel: "Your work email address",
+    emailLabelGeneric: "Your email address",
+    notCorporateEmail: "This isn't my work email",
     passwordLabel: "Choose a password",
     passwordHint: "At least 8 characters",
     submit: "Sign up and publish",
@@ -138,6 +142,7 @@ export default function ClinicDraftPreview() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [clinic, setClinic] = useState<any | null>(null);
   const [expectedDomain, setExpectedDomain] = useState<string | null>(null);
+  const [useOtherEmail, setUseOtherEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -382,17 +387,28 @@ export default function ClinicDraftPreview() {
         <p className="text-sm text-muted-foreground mb-6">{c.signupText}</p>
         <form onSubmit={submitSignup} className="space-y-4 text-left">
           <div>
-            <Label htmlFor="draft-email">{c.emailLabel}</Label>
+            <Label htmlFor="draft-email">
+              {expectedDomain && !useOtherEmail ? c.emailLabel : c.emailLabelGeneric}
+            </Label>
             <Input
               id="draft-email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={expectedDomain ? `you@${expectedDomain}` : undefined}
+              placeholder={expectedDomain && !useOtherEmail ? `you@${expectedDomain}` : undefined}
             />
-            {expectedDomain && (
-              <p className="text-xs text-muted-foreground mt-1">{c.expectedDomainHint(expectedDomain)}</p>
+            {expectedDomain && !useOtherEmail && (
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <p className="text-xs text-muted-foreground">{c.expectedDomainHint(expectedDomain)}</p>
+                <button
+                  type="button"
+                  onClick={() => setUseOtherEmail(true)}
+                  className="text-xs font-medium text-primary underline underline-offset-2"
+                >
+                  {c.notCorporateEmail}
+                </button>
+              </div>
             )}
           </div>
           <div>
